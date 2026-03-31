@@ -3,18 +3,18 @@
  * @see https://pengu.lol/runtime-api
  */
 
-interface PenguContext {
-  rcp: {
-    preInit: (name: string, callback: (api: unknown) => void) => void
-    postInit: (name: string, callback: (api: unknown) => void) => void
-  }
-  socket: {
-    observe: (uri: string, callback: (data: unknown) => void) => void
-    disconnect: () => void
-  }
-}
-
 declare global {
+  interface PenguContext {
+    rcp: {
+      preInit: (name: string, callback: (api: unknown) => void) => void
+      postInit: (name: string, callback: (api: unknown) => void) => void
+    }
+    socket: {
+      observe: (uri: string, callback: (data: unknown) => void) => void
+      disconnect: () => void
+    }
+  }
+
   interface Window {
     /** Opens Chrome DevTools window */
     openDevTools(remote?: boolean): void

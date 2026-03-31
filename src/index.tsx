@@ -1,3 +1,4 @@
+/// <reference path="../pengu.d.ts" />
 declare const __PLUGIN_VERSION__: string  //  这个变量信息在vite.config.js中定义
 
 import { createRoot } from 'react-dom/client'
