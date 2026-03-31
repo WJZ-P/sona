@@ -1,6 +1,17 @@
+declare const __PLUGIN_VERSION__: string  //  这个变量信息在vite.config.js中定义
+
 import { createRoot } from 'react-dom/client'
 import { App } from '@/App'
+import { createLogger } from '@/lib/logger'
 import '@/styles/index.css'
+
+const PLUGIN_NAME = 'Sona'
+const PLUGIN_VERSION = __PLUGIN_VERSION__
+
+export const logger = createLogger({
+  name: PLUGIN_NAME,
+  version: PLUGIN_VERSION,
+})
 
 // Store context for use across the plugin
 let penguContext: PenguContext | null = null
@@ -11,7 +22,7 @@ let penguContext: PenguContext | null = null
  */
 export function init(context: PenguContext) {
   penguContext = context
-  console.log('[Sona] Plugin initializing...')
+  logger.printBanner()
 }
 
 /**
@@ -19,7 +30,7 @@ export function init(context: PenguContext) {
  * Safe to manipulate DOM here.
  */
 export function load() {
-  console.log('[Sona] Plugin loading...')
+  logger.info('Plugin loading...')
   mountApp()
 }
 
@@ -68,5 +79,5 @@ async function mountApp() {
   const root = createRoot(container)
   root.render(<App />)
 
-  console.log('[Sona] Plugin mounted successfully!')
+  logger.info('Mounted ✓')
 }

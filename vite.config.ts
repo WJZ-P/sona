@@ -30,20 +30,21 @@ function penguServe(): Plugin {
         }
 
         // Ensure plugins directory exists
-        if (fs.existsSync(PLUGINS_DIR)) {
-          fs.rmSync(PLUGINS_DIR, { recursive: true })
-        }
         fs.mkdirSync(PLUGINS_DIR, { recursive: true })
 
         // Write dev entry index.js
+        // Must await @vite/client before loading plugin modules,
+        // otherwise React refresh preamble won't be detected.
         const devEntry = [
+          `const viteClient = import("https://localhost:${port}/@vite/client");`,
+          `const pluginModule = () => viteClient.then(() => import("https://localhost:${port}/src/index.tsx"));`,
+          ``,
           `export function init(context) {`,
-          `  import("https://localhost:${port}/@vite/client");`,
-          `  import("https://localhost:${port}/src/index.tsx").then(m => m.init(context));`,
+          `  pluginModule().then(m => m.init(context));`,
           `}`,
           ``,
           `export function load() {`,
-          `  import("https://localhost:${port}/src/index.tsx").then(m => m.load?.());`,
+          `  pluginModule().then(m => m.load?.());`,
           `}`,
         ].join('\n')
 
@@ -136,6 +137,9 @@ function copyDirSync(src: string, dest: string) {
 }
 
 export default defineConfig({
+  define: {
+    __PLUGIN_VERSION__: JSON.stringify(pkg.version),
+  },
   plugins: [
     react(),
     mkcert(),
