@@ -33,6 +33,16 @@ declare global {
     /** Current Pengu Loader version */
     version: string
   }
+
+  /** Toast notification API @since v1.1.0 */
+  const Toast: {
+    /** Push a notification with a success checkmark icon */
+    success(message: string): void
+    /** Push a notification with a failure icon */
+    error(message: string): void
+    /** Push a progress notification that awaits a promise */
+    promise<T>(promise: Promise<T>, msg: { loading: string; success: string; error: string }): Promise<T>
+  }
 }
 
 export {}

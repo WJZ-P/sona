@@ -43,30 +43,9 @@ export function getContext(): PenguContext | null {
 }
 
 /**
- * Wait for the League Client UI to be ready
- */
-function waitForClientReady(): Promise<void> {
-  return new Promise((resolve) => {
-    const check = () => {
-      // Check if the League Client UI manager is loaded
-      const uiManager = document.querySelector('lol-uikit-layer-manager-wrapper')
-      if (uiManager) {
-        resolve()
-      } else {
-        setTimeout(check, 300)
-      }
-    }
-    check()
-  })
-}
-
-/**
  * Mount the React application into the League Client
  */
-async function mountApp() {
-  await waitForClientReady()
-
-  // Create or find the root container
+function mountApp() {
   const CONTAINER_ID = 'sona-root'
   let container = document.getElementById(CONTAINER_ID)
 
@@ -81,4 +60,5 @@ async function mountApp() {
   root.render(<App />)
 
   logger.info('Mounted ✓')
+  Toast.success('Sona 已启动！')
 }

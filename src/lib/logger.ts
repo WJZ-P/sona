@@ -27,11 +27,11 @@ export function createLogger(options: LoggerOptions) {
   const {
     name,
     version,
-    primaryColor = '#5865F2',
+    primaryColor = '#66ccff',
     accentColor = '#43b581',
   } = options
 
-  const prefix = `[${name}]`
+  const prefix = `${name}`
 
   /** 打印带样式的 banner */
   function printBanner() {
@@ -72,21 +72,31 @@ export function createLogger(options: LoggerOptions) {
   function log(level: LogLevel, message: string, ...args: unknown[]) {
     const { badge, color, method } = LEVEL_CONFIG[level]
 
-    const badgeStyle = [
+    const nameBadgeStyle = [
+      'color: #fff',
+      `background: ${primaryColor}`,
+      'padding: 2px 6px',
+      'border-radius: 3px 0 0 3px',
+      'font-weight: bold',
+      'font-size: 13px',
+    ].join(';')
+
+    const levelBadgeStyle = [
       'color: #fff',
       `background: ${color}`,
       'padding: 2px 6px',
-      'border-radius: 3px',
+      'border-radius: 0 3px 3px 0',
       'font-weight: bold',
-      'font-size: 11px',
+      'font-size: 13px',
     ].join(';')
 
     const resetStyle = 'color: inherit; background: inherit;'
 
-    // %c badge %c 之后拼接用户的 message（保留占位符让浏览器处理）
+    // %c 插件名 %c 级别 %c 正文（保留占位符让浏览器处理）
     ;(console[method] as (...a: unknown[]) => void)(
-      `%c${badge}%c ${prefix} ${message}`,
-      badgeStyle,
+      `%c${prefix}%c${badge}%c ${message}`,
+      nameBadgeStyle,
+      levelBadgeStyle,
       resetStyle,
       ...args,
     )

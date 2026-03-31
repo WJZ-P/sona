@@ -1,14 +1,17 @@
 /* Sona Plugin - Global Styles */
 
-/* Reset styles within our container to avoid conflicts with League Client */
+/* 
+ * 不使用全屏覆盖，避免在 League Client CEF 环境中阻挡事件。
+ * #sona-root 仅作为一个不影响布局的挂载点。
+ */
 #sona-root {
   position: fixed;
-  top: 0;
-  left: 0;
+  bottom: 0;
+  right: 0;
   width: 0;
   height: 0;
-  z-index: 9999;
-  pointer-events: none;
+  overflow: visible;
+  z-index: 666;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 

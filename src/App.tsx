@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import '@/styles/App.css'
+import { logger } from '.'
 
 export function App() {
   const [visible, setVisible] = useState(true)
@@ -13,7 +14,7 @@ export function App() {
           <span className="sona-title">🎵 Sona</span>
           <button
             className="sona-close"
-            onClick={() => setVisible(false)}
+            onClick={() => {setVisible(false);logger.info('Closed');}}
             title="Close"
           >
             ✕
