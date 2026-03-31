@@ -1,0 +1,116 @@
+/* Sona Plugin - App Styles */
+
+.sona-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 10000;
+  pointer-events: auto;
+}
+
+.sona-panel {
+  width: 320px;
+  background: rgba(1, 10, 19, 0.92);
+  border: 1px solid rgba(200, 170, 110, 0.4);
+  border-radius: 4px;
+  box-shadow:
+    0 0 15px rgba(200, 170, 110, 0.15),
+    0 8px 32px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+  animation: sona-fade-in 0.3s ease-out;
+}
+
+@keyframes sona-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.sona-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: linear-gradient(
+    135deg,
+    rgba(200, 170, 110, 0.15) 0%,
+    rgba(200, 170, 110, 0.05) 100%
+  );
+  border-bottom: 1px solid rgba(200, 170, 110, 0.2);
+}
+
+.sona-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #c8aa6e;
+  letter-spacing: 1px;
+}
+
+.sona-close {
+  background: none;
+  border: none;
+  color: rgba(200, 170, 110, 0.6);
+  font-size: 14px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 2px;
+  transition: all 0.2s;
+  pointer-events: auto;
+}
+
+.sona-close:hover {
+  color: #c8aa6e;
+  background: rgba(200, 170, 110, 0.1);
+}
+
+.sona-content {
+  padding: 16px;
+}
+
+.sona-welcome {
+  font-size: 18px;
+  font-weight: 600;
+  color: #f0e6d2;
+  margin: 0 0 8px 0;
+}
+
+.sona-desc {
+  font-size: 13px;
+  color: #a09b8c;
+  margin: 0 0 16px 0;
+  line-height: 1.5;
+}
+
+.sona-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sona-info-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background: rgba(200, 170, 110, 0.05);
+  border-radius: 3px;
+  border: 1px solid rgba(200, 170, 110, 0.08);
+}
+
+.sona-info-label {
+  font-size: 12px;
+  color: #a09b8c;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.sona-info-value {
+  font-size: 12px;
+  color: #c8aa6e;
+  font-weight: 500;
+}
