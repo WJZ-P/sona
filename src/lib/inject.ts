@@ -12,27 +12,27 @@ import sonaIcon from '../../assets/Champie_Sona_profileicon.png'
 
 const BUTTON_ID = 'sona-entry-btn'
 
-/** 面板可见性变化的监听器 */
+/** 模态窗口可见性变化的监听器 */
 type VisibilityListener = (visible: boolean) => void
 const listeners: Set<VisibilityListener> = new Set()
 
-let panelVisible = false
+let modalVisible = false
 
-export function isPanelVisible() {
-  return panelVisible
+export function isModalVisible() {
+  return modalVisible
 }
 
-export function togglePanel() {
-  panelVisible = !panelVisible
-  listeners.forEach((fn) => fn(panelVisible))
+export function openModal() {
+  modalVisible = true
+  listeners.forEach((fn) => fn(modalVisible))
 }
 
-export function setPanelVisible(visible: boolean) {
-  panelVisible = visible
-  listeners.forEach((fn) => fn(panelVisible))
+export function closeModal() {
+  modalVisible = false
+  listeners.forEach((fn) => fn(modalVisible))
 }
 
-export function onPanelVisibilityChange(fn: VisibilityListener) {
+export function onModalVisibilityChange(fn: VisibilityListener) {
   listeners.add(fn)
   return () => {
     listeners.delete(fn)
@@ -52,14 +52,20 @@ function createEntryButton(): HTMLElement {
     <img class="sona-entry-icon" src="${sonaIcon}" alt="Sona" />
   `
 
+  // 防一手客户端底层的 mousedown/mouseup 监听
+  btn.addEventListener('mousedown', (e) => e.stopPropagation())
+  btn.addEventListener('mouseup', (e) => e.stopPropagation())
+
   btn.addEventListener('click', (e) => {
-    e.stopPropagation() //  这里阻止了冒泡，但是点击的时候，还是会触发container的点击事件
-    // 🪄 加上这两句，防一手客户端底层的 mousedown/mouseup 监听！
-    btn.addEventListener('mousedown', (e) => e.stopPropagation())
-    btn.addEventListener('mouseup', (e) => e.stopPropagation())
-    togglePanel()
-    btn.classList.toggle('sona-entry-btn--active', panelVisible)
-    logger.info('Panel toggled: %s', panelVisible ? 'open' : 'closed')
+    e.stopPropagation()
+    openModal()
+    btn.classList.add('sona-entry-btn--active')
+    logger.info('Modal opened')
+  })
+
+  // 模态窗口关闭时移除 active 状态
+  onModalVisibilityChange((visible) => {
+    btn.classList.toggle('sona-entry-btn--active', visible)
   })
 
   return btn

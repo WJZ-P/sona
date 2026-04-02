@@ -1,116 +1,134 @@
-/* Sona Plugin - App Styles */
+/* Sona Plugin - Home Page Styles (inside Modal) */
 
-.sona-container {
-  position: absolute;
-  bottom: 20px;
-  right: 20px;
-  z-index: 10000;
-  pointer-events: auto;
-}
-
-.sona-panel {
-  width: 320px;
-  background: rgba(1, 10, 19, 0.92);
-  border: 1px solid rgba(200, 170, 110, 0.4);
-  border-radius: 4px;
-  box-shadow:
-    0 0 15px rgba(200, 170, 110, 0.15),
-    0 8px 32px rgba(0, 0, 0, 0.5);
-  overflow: hidden;
-  animation: sona-fade-in 0.3s ease-out;
-}
-
-@keyframes sona-fade-in {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.sona-header {
+.sona-home {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 16px;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* Banner */
+.sona-home-banner {
+  position: relative;
+  padding: 32px 28px 24px;
   background: linear-gradient(
     135deg,
-    rgba(200, 170, 110, 0.15) 0%,
-    rgba(200, 170, 110, 0.05) 100%
+    rgba(200, 170, 110, 0.08) 0%,
+    rgba(100, 180, 255, 0.04) 50%,
+    rgba(200, 170, 110, 0.06) 100%
   );
-  border-bottom: 1px solid rgba(200, 170, 110, 0.2);
+  border-bottom: 1px solid rgba(200, 170, 110, 0.1);
 }
 
-.sona-title {
-  font-size: 16px;
-  font-weight: 600;
-  color: #c8aa6e;
-  letter-spacing: 1px;
+.sona-home-banner::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 5%;
+  right: 5%;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(200, 170, 110, 0.2),
+    transparent
+  );
 }
 
-.sona-close {
-  background: none;
-  border: none;
-  color: rgba(200, 170, 110, 0.6);
-  font-size: 14px;
-  cursor: pointer;
-  padding: 4px 8px;
-  border-radius: 2px;
-  transition: all 0.2s;
-  pointer-events: auto;
-}
-
-.sona-close:hover {
-  color: #c8aa6e;
-  background: rgba(200, 170, 110, 0.1);
-}
-
-.sona-content {
-  padding: 16px;
-}
-
-.sona-welcome {
-  font-size: 18px;
-  font-weight: 600;
+.sona-home-heading {
+  margin: 0 0 6px 0;
+  font-size: 22px;
+  font-weight: 700;
   color: #f0e6d2;
-  margin: 0 0 8px 0;
+  letter-spacing: 0.3px;
 }
 
-.sona-desc {
+.sona-home-subtitle {
+  margin: 0;
   font-size: 13px;
   color: #a09b8c;
-  margin: 0 0 16px 0;
   line-height: 1.5;
 }
 
-.sona-info {
+.sona-modal-emoji {
+  font-size: 16px;
+}
+
+/* Content */
+.sona-home-content {
+  padding: 20px 28px 28px;
+  flex: 1;
+}
+
+/* Info Cards */
+.sona-home-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.sona-info-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  background: rgba(200, 170, 110, 0.04);
+  border: 1px solid rgba(200, 170, 110, 0.1);
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.sona-info-card:hover {
+  background: rgba(200, 170, 110, 0.07);
+  border-color: rgba(200, 170, 110, 0.2);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.sona-info-card-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.sona-info-card-text {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 2px;
+  min-width: 0;
 }
 
-.sona-info-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px 12px;
-  background: rgba(200, 170, 110, 0.05);
-  border-radius: 3px;
-  border: 1px solid rgba(200, 170, 110, 0.08);
-}
-
-.sona-info-label {
-  font-size: 12px;
+.sona-info-card-label {
+  font-size: 11px;
   color: #a09b8c;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
-.sona-info-value {
-  font-size: 12px;
+.sona-info-card-value {
+  font-size: 13px;
   color: #c8aa6e;
   font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Sections */
+.sona-home-section {
+  margin-top: 4px;
+}
+
+.sona-home-section-title {
+  margin: 0 0 8px 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: #c8aa6e;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+.sona-home-section-text {
+  margin: 0;
+  font-size: 13px;
+  color: #a09b8c;
+  line-height: 1.7;
 }
