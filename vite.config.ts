@@ -129,14 +129,20 @@ function penguBuild(): Plugin {
         fs.writeFileSync(cssPath, css)
       }
 
-      // Clean target directory and copy build output
-      if (fs.existsSync(PLUGINS_DIR)) {
-        fs.rmSync(PLUGINS_DIR, { recursive: true })
+      // Copy build output to plugins directory (skip if it's the project root)
+      const projectRoot = path.resolve(__dirname)
+      if (path.resolve(PLUGINS_DIR) === projectRoot) {
+        // Target is the project itself — just move dist contents to project root
+        copyDirSync(outDir, projectRoot)
+        console.log(`\n  ✅ Plugin "${PLUGIN_NAME}" built in-place (project root)\n`)
+      } else {
+        if (fs.existsSync(PLUGINS_DIR)) {
+          fs.rmSync(PLUGINS_DIR, { recursive: true })
+        }
+        fs.mkdirSync(PLUGINS_DIR, { recursive: true })
+        copyDirSync(outDir, PLUGINS_DIR)
+        console.log(`\n  ✅ Plugin "${PLUGIN_NAME}" built to ${PLUGINS_DIR}\n`)
       }
-      fs.mkdirSync(PLUGINS_DIR, { recursive: true })
-      copyDirSync(outDir, PLUGINS_DIR)
-
-      console.log(`\n  ✅ Plugin "${PLUGIN_NAME}" built to ${PLUGINS_DIR}\n`)
     },
   }
 }
