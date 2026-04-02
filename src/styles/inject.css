@@ -1,0 +1,56 @@
+/* Sona Entry Button Styles */
+
+.sona-entry-btn {
+  /* 🪄 按钮现在是 .play-button-container 的兄弟节点，
+     绝对定位基于共同的父容器 */
+  position: absolute;
+  /* 定位到 play-button-container 的左侧 */
+  left: 37px;
+  top: 50%;
+  transform: translateX(-100%) translateY(-50%);
+
+  /* 🪄 魔法 3：让内部的 svg 音符居中 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  border: 1px solid rgba(200, 170, 110, 0.4);
+  background: rgba(1, 10, 19, 0.85);
+  color: #a09b8c;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  pointer-events: auto;
+  z-index: 9999;
+}
+
+.sona-entry-btn:hover {
+  color: #c8aa6e;
+  border-color: #c8aa6e;
+  background: rgba(200, 170, 110, 0.12);
+  box-shadow: 0 0 8px rgba(200, 170, 110, 0.25);
+  /* ⚠️ 避坑重点：要把原始 transform 带上，再加上缩放 scale(1.08) */
+  transform: translateX(-100%) translateY(-50%) scale(1.08);
+}
+
+.sona-entry-btn--active {
+  color: #c8aa6e;
+  border-color: #c8aa6e;
+  background: rgba(200, 170, 110, 0.15);
+  box-shadow: 0 0 12px rgba(200, 170, 110, 0.3);
+}
+
+.sona-entry-btn--active:hover {
+  background: rgba(200, 170, 110, 0.2);
+}
+
+.sona-entry-icon {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  border-radius: 50%;
+}

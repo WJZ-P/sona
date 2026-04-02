@@ -172,6 +172,7 @@ export default defineConfig({
   server: {
     port: 3000,
     https: {},
+    origin: 'https://localhost:3000',// 必须加这个，否则引入图片资源等会失败
   },
   build: {
     outDir: 'dist',

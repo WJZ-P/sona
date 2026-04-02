@@ -1,9 +1,14 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import '@/styles/App.css'
 import { logger } from '.'
+import { onPanelVisibilityChange, isPanelVisible, setPanelVisible } from '@/lib/inject'
 
 export function App() {
-  const [visible, setVisible] = useState(true)
+  const [visible, setVisible] = useState(isPanelVisible())
+
+  useEffect(() => {
+    return onPanelVisibilityChange((v) => setVisible(v))
+  }, [])
 
   if (!visible) return null
 
@@ -14,7 +19,10 @@ export function App() {
           <span className="sona-title">🎵 Sona</span>
           <button
             className="sona-close"
-            onClick={() => {setVisible(false);logger.info('Closed');}}
+            onClick={() => {
+              setPanelVisible(false)
+              logger.info('Closed')
+            }}
             title="Close"
           >
             ✕
