@@ -1,5 +1,37 @@
 /* Sona Entry Button Styles */
 
+/* ✨ 呼吸光环动画 —— 模拟 Sona 的魔法韵律 */
+@keyframes sona-glow-pulse {
+  0%, 100% {
+    box-shadow:
+      0 0 6px rgba(200, 170, 110, 0.15),
+      0 0 12px rgba(100, 180, 255, 0.05);
+  }
+  50% {
+    box-shadow:
+      0 0 10px rgba(200, 170, 110, 0.35),
+      0 0 22px rgba(100, 180, 255, 0.15);
+  }
+}
+
+/* ✨ 外圈涟漪扩散 —— 像琴弦拨动后的音波 */
+@keyframes sona-ripple {
+  0% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+
+/* ✨ 悬停时的旋转微光 */
+@keyframes sona-ring-spin {
+  0%   { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
 .sona-entry-btn {
   /* 🪄 按钮现在是 .play-button-container 的兄弟节点，
      绝对定位基于共同的父容器 */
@@ -17,29 +49,88 @@
   width: 45px;
   height: 45px;
   border-radius: 50%;
-  border: 1px solid rgba(200, 170, 110, 0.4);
+  border: 2px solid rgba(200, 170, 110, 0.5);
   background: rgba(1, 10, 19, 0.85);
   color: #a09b8c;
   cursor: pointer;
-  transition: all 0.25s ease;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   pointer-events: auto;
   z-index: 9999;
+
+  /* ✨ 默认就有呼吸光环 */
+  animation: sona-glow-pulse 2.5s ease-in-out infinite;
+}
+
+/* ✨ 涟漪伪元素 —— 持续扩散的音波环 */
+.sona-entry-btn::before {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  border: 2px solid rgba(200, 170, 110, 0.35);
+  animation: sona-ripple 2.5s ease-out infinite;
+  pointer-events: none;
+}
+
+/* ✨ 旋转光弧伪元素 —— hover 时出现 */
+.sona-entry-btn::after {
+  content: '';
+  position: absolute;
+  inset: -5px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  border-top-color: rgba(200, 170, 110, 0.5);
+  border-right-color: rgba(100, 180, 255, 0.3);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
 }
 
 .sona-entry-btn:hover {
   color: #c8aa6e;
-  border-color: #c8aa6e;
+  border-color: rgba(200, 170, 110, 0.9);
   background: rgba(200, 170, 110, 0.12);
-  box-shadow: 0 0 8px rgba(200, 170, 110, 0.25);
+  box-shadow:
+    0 0 12px rgba(200, 170, 110, 0.4),
+    0 0 24px rgba(100, 180, 255, 0.15),
+    inset 0 0 8px rgba(200, 170, 110, 0.1);
   /* ⚠️ 避坑重点：要把原始 transform 带上，再加上缩放 scale(1.08) */
   transform: translateX(-100%) translateY(-50%) scale(1.08);
+  /* 悬停时暂停呼吸，改用更亮的静态光 */
+  animation: none;
+}
+
+/* ✨ hover 时旋转光弧出现 */
+.sona-entry-btn:hover::after {
+  opacity: 1;
+  animation: sona-ring-spin 2s linear infinite;
+}
+
+/* ✨ hover 时涟漪加速 */
+.sona-entry-btn:hover::before {
+  animation: sona-ripple 1.5s ease-out infinite;
+  border-color: rgba(200, 170, 110, 0.5);
 }
 
 .sona-entry-btn--active {
   color: #c8aa6e;
-  border-color: #c8aa6e;
+  border-color: rgba(200, 170, 110, 0.85);
   background: rgba(200, 170, 110, 0.15);
-  box-shadow: 0 0 12px rgba(200, 170, 110, 0.3);
+  box-shadow:
+    0 0 14px rgba(200, 170, 110, 0.45),
+    0 0 28px rgba(100, 180, 255, 0.12);
+}
+
+/* ✨ active 状态涟漪更明显 */
+.sona-entry-btn--active::before {
+  border-color: rgba(200, 170, 110, 0.5);
+  animation: sona-ripple 2s ease-out infinite;
+}
+
+/* ✨ active 状态旋转光弧常驻 */
+.sona-entry-btn--active::after {
+  opacity: 0.7;
+  animation: sona-ring-spin 3s linear infinite;
 }
 
 .sona-entry-btn--active:hover {
@@ -53,4 +144,12 @@
   object-fit: contain;
   pointer-events: none;
   border-radius: 50%;
+  /* ✨ 给头像加一点柔和的金色内发光 */
+  filter: drop-shadow(0 0 2px rgba(200, 170, 110, 0.3));
+  transition: filter 0.3s ease;
+}
+
+.sona-entry-btn:hover .sona-entry-icon {
+  /* ✨ hover 时头像光芒更强 */
+  filter: drop-shadow(0 0 4px rgba(200, 170, 110, 0.6));
 }

@@ -46,7 +46,6 @@ function createEntryButton(): HTMLElement {
   const btn = document.createElement('div')
   btn.id = BUTTON_ID
   btn.className = 'sona-entry-btn'
-  btn.title = 'Sona 插件'
 
   // Sona 头像图标
   btn.innerHTML = `
