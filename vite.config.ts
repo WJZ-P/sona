@@ -163,6 +163,7 @@ function copyDirSync(src: string, dest: string) {
 export default defineConfig({
   define: {
     __PLUGIN_VERSION__: JSON.stringify(pkg.version),
+    'process.env.NODE_ENV': JSON.stringify('production'),
   },
   plugins: [
     react(),
@@ -182,10 +183,14 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist',
+    lib: {
+      entry: path.resolve(__dirname, 'src/index.tsx'),
+      formats: ['es'],
+      fileName: () => 'index.js',
+    },
     rollupOptions: {
       output: {
         manualChunks: undefined,
-        entryFileNames: 'index.js',
         assetFileNames: (assetInfo) => {
           if (assetInfo.names?.[0]?.endsWith('.css')) return 'index.css'
           return 'assets/[name]-[hash][extname]'
