@@ -11,9 +11,10 @@
   width: 0;
   height: 0;
   overflow: visible;
-  z-index: 666;
+  z-index: 0821;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
+
 
 #sona-root * {
   box-sizing: border-box;

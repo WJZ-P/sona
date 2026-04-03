@@ -10,14 +10,80 @@ import '@/styles/inject.css'
 
 const PLUGIN_NAME = 'Sona'
 const PLUGIN_VERSION = __PLUGIN_VERSION__
+const CONTAINER_ID = 'sona-root'
 
 export const logger = createLogger({
   name: PLUGIN_NAME,
   version: PLUGIN_VERSION,
 })
 
+
+
+
+function getRuntime(): SonaRuntime {
+  if (!window.__SONA_RUNTIME__) {
+    window.__SONA_RUNTIME__ = {
+      container: null,
+      root: null,
+      domObserver: null,
+      hasShownStartupToast: false,
+    }
+  }
+
+  return window.__SONA_RUNTIME__
+}
+
+function appendContainer(container: HTMLDivElement) {
+  const host = document.body ?? document.documentElement
+  host.appendChild(container)
+}
+
+function ensureContainer(runtime: SonaRuntime) {
+  const existing = document.getElementById(CONTAINER_ID)
+  if (existing instanceof HTMLDivElement) {
+    runtime.container = existing
+  }
+
+  if (!runtime.container) {
+    runtime.container = document.createElement('div')
+    runtime.container.id = CONTAINER_ID
+    logger.info('Created app container')
+  }
+
+  if (!runtime.container.isConnected) {
+    appendContainer(runtime.container)
+    logger.warn('App container was missing from DOM and has been reattached')
+  }
+
+  return runtime.container
+}
+
+function ensureDomGuard(runtime: SonaRuntime) {
+  if (runtime.domObserver) return
+
+  const observerTarget = document.documentElement ?? document.body
+  if (!observerTarget) return
+
+  const observer = new MutationObserver(() => {
+    const container = runtime.container
+    if (!container || container.isConnected) return
+
+    appendContainer(container)
+    logger.warn('Detected host DOM refresh; restored app container')
+  })
+
+  observer.observe(observerTarget, {
+    childList: true,
+    subtree: true,
+  })
+
+  runtime.domObserver = observer
+  logger.info('Started app container DOM guard')
+}
+
 // Store context for use across the plugin
 let penguContext: PenguContext | null = null
+
 
 /**
  * Called before League Client initializes its scripts.
@@ -49,19 +115,25 @@ export function getContext(): PenguContext | null {
  * Mount the React application into the League Client
  */
 function mountApp() {
-  const CONTAINER_ID = 'sona-root'
-  let container = document.getElementById(CONTAINER_ID)
+  const runtime = getRuntime()
+  const container = ensureContainer(runtime)
 
-  if (!container) {
-    container = document.createElement('div')
-    container.id = CONTAINER_ID
-    document.body.appendChild(container)
+  ensureDomGuard(runtime)
+
+  if (!runtime.root) {
+    runtime.root = createRoot(container)
+    logger.info('Created React root')
+  } else {
+    logger.info('Reusing existing React root')
   }
 
-  // Mount React app
-  const root = createRoot(container)
-  root.render(<App />)
+  runtime.root.render(<App />)
 
-  logger.info('Mounted ✓')
-  Toast.success('Sona 已启动！')
+  logger.info('Mounted ✓ (container connected: %s)', String(container.isConnected))
+
+  if (!runtime.hasShownStartupToast) {
+    Toast.success('Sona 已启动！')
+    runtime.hasShownStartupToast = true
+  }
 }
+

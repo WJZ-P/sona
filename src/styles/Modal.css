@@ -38,11 +38,11 @@
 .sona-modal-overlay {
   position: fixed;
   inset: 0;
-  z-index: 99999;
+  z-index: 0821;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(0, 0, 0, 0.25);
   backdrop-filter: blur(4px);
   animation: sona-modal-overlay-in 0.2s ease-out;
   pointer-events: auto;
@@ -56,6 +56,7 @@
 
 /* 对话框容器 */
 .sona-modal-dialog {
+  position: relative;
   display: flex;
   flex-direction: column;
   background: rgba(1, 10, 19, 0.96);
@@ -69,6 +70,16 @@
   animation: sona-modal-dialog-in 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   max-width: 90vw;
   max-height: 85vh;
+}
+
+/* 粒子 Canvas 背景 — 覆盖整个 dialog（含 header） */
+.sona-modal-particle-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
 }
 
 /* 对话框退场 */
@@ -96,6 +107,7 @@
 /* Header */
 .sona-modal-header {
   position: relative;
+  z-index: 1;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -146,6 +158,8 @@
 
 /* Body */
 .sona-modal-body {
+  position: relative;
+  z-index: 1;
   flex: 1;
   overflow: auto;
   padding: 0;

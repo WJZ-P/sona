@@ -24,6 +24,10 @@ export function isModalVisible() {
 
 export function openModal() {
   modalVisible = true
+
+  const rootConnected = Boolean(document.getElementById('sona-root')?.isConnected)
+  logger.debug('openModal() called (root in DOM: %s, listeners: %d)', String(rootConnected), listeners.size)
+
   listeners.forEach((fn) => fn(modalVisible))
 }
 

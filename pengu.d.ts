@@ -3,6 +3,8 @@
  * @see https://pengu.lol/runtime-api
  */
 
+import type { Root } from 'react-dom/client'
+
 declare global {
   interface PenguContext {
     rcp: {
@@ -26,6 +28,8 @@ declare global {
     restartClient(): void
     /** Gets the current script path */
     getScriptPath(): string
+    /** Sona plugin runtime state */
+    __SONA_RUNTIME__?: SonaRuntime
   }
 
   /** Pengu Loader namespace */
@@ -42,6 +46,13 @@ declare global {
     error(message: string): void
     /** Push a progress notification that awaits a promise */
     promise<T>(promise: Promise<T>, msg: { loading: string; success: string; error: string }): Promise<T>
+  }
+
+  type SonaRuntime = {
+    container: HTMLDivElement | null
+    root: Root | null
+    domObserver: MutationObserver | null
+    hasShownStartupToast: boolean
   }
 }
 

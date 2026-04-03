@@ -1,0 +1,218 @@
+/* Sona Plugin - Home Page Styles (New Design with Particles & Hex Effects) */
+
+.sona-home {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 32px;
+  overflow: hidden;
+}
+
+/* ---- 欢迎区域 ---- */
+.sona-home-welcome {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.sona-home-heading {
+  margin: 0 0 6px 0;
+  font-size: 26px;
+  font-weight: 700;
+  color: #f0e6d2;
+  letter-spacing: 2px;
+  text-shadow: 0 0 8px rgba(200, 170, 110, 0.4);
+}
+
+.sona-home-subtitle {
+  margin: 0;
+  font-size: 13px;
+  color: #a09b8c;
+}
+
+/* ---- Quick Actions ---- */
+.sona-home-actions {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 32px;
+}
+
+.sona-home-actions-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #c8aa6e;
+  letter-spacing: 0.2em;
+  margin-bottom: 14px;
+  opacity: 0.8;
+}
+
+.sona-home-actions-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+}
+
+/* ---- Hex Button (海克斯科技按钮) ---- */
+.sona-hex-btn {
+  position: relative;
+  overflow: hidden;
+  padding: 8px 24px;
+  background: rgba(30, 35, 40, 0.8);
+  border: 1px solid #785a28;
+  color: #cdbe91;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  font-family: inherit;
+}
+
+/* 光扫动画 */
+.sona-hex-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(to right, transparent, rgba(200, 170, 110, 0.1), transparent);
+  transform: skewX(-20deg);
+  transition: all 0.4s ease;
+}
+
+.sona-hex-btn:hover::before {
+  left: 150%;
+}
+
+.sona-hex-btn:hover {
+  background: rgba(200, 170, 110, 0.15);
+  border-color: #c8aa6e;
+  color: #f0e6d2;
+  box-shadow:
+    inset 0 0 0 1px #c8aa6e,
+    0 0 15px rgba(200, 170, 110, 0.4);
+  transform: translateY(-1px);
+}
+
+/* 危险按钮变体 */
+.sona-hex-btn--danger:hover {
+  border-color: #e23636;
+  color: #ff6666;
+  box-shadow:
+    inset 0 0 0 1px #e23636,
+    0 0 15px rgba(226, 54, 54, 0.4);
+  background: rgba(226, 54, 54, 0.1);
+}
+
+/* ---- 双栏网格 ---- */
+.sona-home-grid {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
+  flex: 1;
+  min-height: 0;
+}
+
+/* ---- Hex Card (海克斯信息卡片) ---- */
+.sona-home-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sona-hex-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  background: rgba(1, 10, 19, 0.6);
+  border: 1px solid #3c2e16;
+  transition: all 0.3s ease;
+  cursor: default;
+}
+
+.sona-hex-card:hover {
+  border-color: #c8aa6e;
+  background: rgba(9, 20, 40, 0.8);
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.5),
+    0 0 8px rgba(200, 170, 110, 0.2);
+  transform: translateX(4px);
+}
+
+.sona-hex-card-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #c8aa6e;
+  filter: drop-shadow(0 0 5px rgba(200, 170, 110, 0.5));
+  flex-shrink: 0;
+}
+
+.sona-hex-card-text {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.sona-hex-card-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: #c8aa6e;
+  letter-spacing: 0.15em;
+}
+
+.sona-hex-card-value {
+  font-size: 13px;
+  color: #f0e6d2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ---- About 区域 ---- */
+.sona-home-about {
+  position: relative;
+  padding: 0 0 0 24px;
+  border-left: 1px solid #3c2e16;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background: radial-gradient(circle at center, rgba(9, 20, 40, 0.3) 0%, transparent 100%);
+}
+
+.sona-home-about-title {
+  margin: 0 0 14px 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: #c8aa6e;
+  letter-spacing: 0.15em;
+  text-shadow: 0 0 3px rgba(200, 170, 110, 0.5);
+}
+
+.sona-home-about-text {
+  margin: 0 0 14px 0;
+  font-size: 13px;
+  color: #a09b8c;
+  line-height: 1.7;
+}
+
+.sona-home-about-quote {
+  margin: 0;
+  font-size: 12px;
+  color: #c8aa6e;
+  font-style: italic;
+  opacity: 0.8;
+  border-left: 2px solid #785a28;
+  padding-left: 12px;
+}

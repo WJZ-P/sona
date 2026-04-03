@@ -32,6 +32,7 @@ export function Modal({
 }: ModalProps) {
   const dialogRef = useRef<HTMLDivElement>(null)
   const overlayRef = useRef<HTMLDivElement>(null)
+  const canvasRef = useRef<HTMLCanvasElement>(null)
   const [mounted, setMounted] = useState(false)
   const [closing, setClosing] = useState(false)
 
@@ -74,6 +75,93 @@ export function Modal({
     return () => document.removeEventListener('keydown', handleKey)
   }, [open, onClose])
 
+  // 🪄 Sona 音乐星光粒子效果
+  useEffect(() => {
+    if (!mounted || closing) return
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+
+    let animationFrameId: number
+    let initialized = false
+    const particles: Array<{
+      x: number; y: number; size: number;
+      speedY: number; speedX: number; opacity: number; isGold: boolean
+    }> = []
+
+    const resizeCanvas = () => {
+      const parent = canvas.parentElement
+      if (parent) {
+        const w = parent.offsetWidth
+        const h = parent.offsetHeight
+        if (w > 0 && h > 0) {
+          canvas.width = w
+          canvas.height = h
+        }
+      }
+    }
+
+    const initParticles = () => {
+      if (initialized || canvas.width === 0 || canvas.height === 0) return
+      initialized = true
+      for (let i = 0; i < 60; i++) {
+        particles.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          size: Math.random() * 1.5 + 0.5,
+          speedY: Math.random() * 0.4 + 0.1,
+          speedX: (Math.random() - 0.5) * 0.2,
+          opacity: Math.random() * 0.3 + 0.1,
+          isGold: Math.random() > 0.7,
+        })
+      }
+    }
+
+    const render = () => {
+      if (!initialized) {
+        resizeCanvas()
+        initParticles()
+      }
+      ctx.clearRect(0, 0, canvas.width, canvas.height)
+      particles.forEach((p) => {
+        p.y -= p.speedY
+        p.x += p.speedX
+        p.opacity += (Math.random() - 0.5) * 0.02
+        if (p.opacity < 0.1) p.opacity = 0.1
+        if (p.opacity > 0.5) p.opacity = 0.5
+        if (p.y < 0) {
+          p.y = canvas.height
+          p.x = Math.random() * canvas.width
+        }
+        if (p.isGold) {
+          ctx.shadowBlur = 4
+          ctx.shadowColor = `rgba(200, 170, 110, ${p.opacity})`
+        } else {
+          ctx.shadowBlur = 3
+          ctx.shadowColor = `rgba(0, 180, 255, ${p.opacity * 0.8})`
+        }
+        ctx.beginPath()
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2)
+        ctx.fillStyle = p.isGold
+          ? `rgba(220, 190, 130, ${p.opacity})`
+          : `rgba(80, 200, 255, ${p.opacity * 0.85})`
+        ctx.fill()
+      })
+      ctx.shadowBlur = 0
+      ctx.shadowColor = 'transparent'
+      animationFrameId = requestAnimationFrame(render)
+    }
+
+    animationFrameId = requestAnimationFrame(render)
+    window.addEventListener('resize', resizeCanvas)
+
+    return () => {
+      window.removeEventListener('resize', resizeCanvas)
+      cancelAnimationFrame(animationFrameId)
+    }
+  }, [mounted, closing])
+
   // 打开时阻止背景滚动
   useEffect(() => {
     if (mounted && !closing) {
@@ -111,6 +199,11 @@ export function Modal({
         style={style}
         onClick={(e) => e.stopPropagation()}
       >
+        {/* Canvas 粒子背景 */}
+        <canvas
+          ref={canvasRef}
+          className="sona-modal-particle-canvas"
+        />
         {/* Header */}
         {(title || closable) && (
           <div className="sona-modal-header">

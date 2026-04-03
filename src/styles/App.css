@@ -1,134 +1,17 @@
-/* Sona Plugin - Home Page Styles (inside Modal) */
+/* Sona Plugin - App-level Styles */
 
-.sona-home {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
-
-/* Banner */
-.sona-home-banner {
-  position: relative;
-  padding: 32px 28px 24px;
-  background: linear-gradient(
-    135deg,
-    rgba(200, 170, 110, 0.08) 0%,
-    rgba(100, 180, 255, 0.04) 50%,
-    rgba(200, 170, 110, 0.06) 100%
-  );
-  border-bottom: 1px solid rgba(200, 170, 110, 0.1);
-}
-
-.sona-home-banner::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 5%;
-  right: 5%;
-  height: 1px;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(200, 170, 110, 0.2),
-    transparent
-  );
-}
-
-.sona-home-heading {
-  margin: 0 0 6px 0;
-  font-size: 22px;
-  font-weight: 700;
-  color: #f0e6d2;
-  letter-spacing: 0.3px;
-}
-
-.sona-home-subtitle {
-  margin: 0;
-  font-size: 13px;
-  color: #a09b8c;
-  line-height: 1.5;
-}
-
-.sona-modal-emoji {
-  font-size: 16px;
-}
-
-/* Content */
-.sona-home-content {
-  padding: 20px 28px 28px;
-  flex: 1;
-}
-
-/* Info Cards */
-.sona-home-cards {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-  margin-bottom: 24px;
-}
-
-.sona-info-card {
+/* ---- Modal 标题图标 ---- */
+.sona-modal-title-inner {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 14px 16px;
-  background: rgba(200, 170, 110, 0.04);
-  border: 1px solid rgba(200, 170, 110, 0.1);
-  border-radius: 4px;
-  transition: all 0.2s ease;
+  gap: 8px;
 }
 
-.sona-info-card:hover {
-  background: rgba(200, 170, 110, 0.07);
-  border-color: rgba(200, 170, 110, 0.2);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+.sona-title-icon {
+  animation: sona-pulse 2s ease-in-out infinite;
 }
 
-.sona-info-card-icon {
-  font-size: 20px;
-  flex-shrink: 0;
-}
-
-.sona-info-card-text {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  min-width: 0;
-}
-
-.sona-info-card-label {
-  font-size: 11px;
-  color: #a09b8c;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.sona-info-card-value {
-  font-size: 13px;
-  color: #c8aa6e;
-  font-weight: 500;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* Sections */
-.sona-home-section {
-  margin-top: 4px;
-}
-
-.sona-home-section-title {
-  margin: 0 0 8px 0;
-  font-size: 13px;
-  font-weight: 600;
-  color: #c8aa6e;
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-}
-
-.sona-home-section-text {
-  margin: 0;
-  font-size: 13px;
-  color: #a09b8c;
-  line-height: 1.7;
+@keyframes sona-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
 }
