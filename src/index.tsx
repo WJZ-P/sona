@@ -5,6 +5,7 @@ import { createRoot } from 'react-dom/client'
 import { App } from '@/App'
 import { createLogger } from '@/lib/logger'
 import { startInjection } from '@/lib/inject'
+import { lcu } from '@/lib/lcu'
 import '@/styles/index.css'
 import '@/styles/inject.css'
 
@@ -91,6 +92,7 @@ let penguContext: PenguContext | null = null
  */
 export function init(context: PenguContext) {
   penguContext = context
+  lcu.bindContext(context)
   logger.printBanner()
 }
 

@@ -105,7 +105,7 @@ export function Modal({
     const initParticles = () => {
       if (initialized || canvas.width === 0 || canvas.height === 0) return
       initialized = true
-      for (let i = 0; i < 60; i++) {
+      for (let i = 0; i < 80; i++) {
         particles.push({
           x: Math.random() * canvas.width,
           y: Math.random() * canvas.height,
