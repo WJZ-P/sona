@@ -1,6 +1,50 @@
 /* Sona Plugin - App-level Styles */
 
-/* ---- Modal 标题图标 ---- */
+/* ---- 主布局：侧边栏 + 内容区 ---- */
+.sona-layout {
+  display: flex;
+  height: 100%;
+  overflow: hidden;
+}
+
+.sona-content {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  overflow: auto;
+  min-width: 0;
+}
+
+/* 自定义滚动条 */
+.sona-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sona-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sona-content::-webkit-scrollbar-thumb {
+  background: rgba(200, 170, 110, 0.2);
+  border-radius: 3px;
+}
+
+.sona-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(200, 170, 110, 0.35);
+}
+
+/* ---- 占位页面 ---- */
+.sona-page-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #a09b8c;
+  font-size: 14px;
+  letter-spacing: 0.05em;
+}
+
+/* ---- Modal 标题图标（保留兼容） ---- */
 .sona-modal-title-inner {
   display: flex;
   align-items: center;

@@ -6,8 +6,6 @@ export interface ModalProps {
   open: boolean
   /** 关闭回调 */
   onClose: () => void
-  /** 标题 */
-  title?: ReactNode
   /** 内容 */
   children: ReactNode
   /** 宽度，默认 680px */
@@ -23,7 +21,6 @@ export interface ModalProps {
 export function Modal({
   open,
   onClose,
-  title,
   children,
   width = 680,
   height = 520,
@@ -204,18 +201,13 @@ export function Modal({
           ref={canvasRef}
           className="sona-modal-particle-canvas"
         />
-        {/* Header */}
-        {(title || closable) && (
-          <div className="sona-modal-header">
-            <div className="sona-modal-title">{title}</div>
-            {closable && (
-              <button className="sona-modal-close" onClick={onClose} title="Close">
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                  <path d="M1 1L13 13M13 1L1 13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                </svg>
-              </button>
-            )}
-          </div>
+        {/* 关闭按钮（悬浮右上角） */}
+        {closable && (
+          <button className="sona-modal-close" onClick={onClose} title="Close">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <path d="M1 1L13 13M13 1L1 13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            </svg>
+          </button>
         )}
         {/* Body */}
         <div className="sona-modal-body">

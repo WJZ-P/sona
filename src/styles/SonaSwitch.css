@@ -1,0 +1,56 @@
+/* Sona Switch - 海克斯风格开关 */
+
+.sona-switch {
+  position: relative;
+  width: 44px;
+  height: 22px;
+  border-radius: 11px;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  background: rgba(30, 35, 40, 0.8);
+  border: 1px solid #5c5b57;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  padding: 0;
+  outline: none;
+}
+
+.sona-switch:hover {
+  border-color: #a09b8c;
+}
+
+/* ON 状态 */
+.sona-switch--on {
+  background: rgba(200, 170, 110, 0.2);
+  border-color: #c8aa6e;
+  box-shadow: inset 0 0 8px rgba(200, 170, 110, 0.3);
+}
+
+.sona-switch--on:hover {
+  border-color: #c8aa6e;
+  box-shadow: inset 0 0 12px rgba(200, 170, 110, 0.4);
+}
+
+/* 禁用状态 */
+.sona-switch--disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* 滑块 */
+.sona-switch-thumb {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #a09b8c;
+  left: 2px;
+  transition: all 0.3s ease;
+}
+
+.sona-switch--on .sona-switch-thumb {
+  left: calc(100% - 18px);
+  background: #c8aa6e;
+  box-shadow: 0 0 10px rgba(200, 170, 110, 0.8);
+}

@@ -72,7 +72,7 @@
   max-height: 85vh;
 }
 
-/* 粒子 Canvas 背景 — 覆盖整个 dialog（含 header） */
+/* 粒子 Canvas 背景 — 覆盖整个 dialog */
 .sona-modal-particle-canvas {
   position: absolute;
   inset: 0;
@@ -104,40 +104,18 @@
   z-index: 1;
 }
 
-/* Header */
-.sona-modal-header {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 14px 20px;
-  background: linear-gradient(
-    180deg,
-    rgba(200, 170, 110, 0.1) 0%,
-    rgba(200, 170, 110, 0.03) 100%
-  );
-  border-bottom: 1px solid rgba(200, 170, 110, 0.15);
-  flex-shrink: 0;
-}
-
-.sona-modal-title {
-  font-size: 15px;
-  font-weight: 600;
-  color: #c8aa6e;
-  letter-spacing: 0.5px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
+/* 关闭按钮 — 悬浮右上角 */
 .sona-modal-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 10;
   display: flex;
   align-items: center;
   justify-content: center;
   width: 28px;
   height: 28px;
-  background: none;
+  background: rgba(1, 10, 19, 0.6);
   border: 1px solid transparent;
   border-radius: 3px;
   color: rgba(200, 170, 110, 0.5);
@@ -149,37 +127,19 @@
 .sona-modal-close:hover {
   color: #c8aa6e;
   border-color: rgba(200, 170, 110, 0.3);
-  background: rgba(200, 170, 110, 0.08);
+  background: rgba(200, 170, 110, 0.12);
 }
 
 .sona-modal-close:active {
   transform: scale(0.9);
 }
 
-/* Body */
+/* Body — 占满整个 dialog */
 .sona-modal-body {
   position: relative;
   z-index: 1;
   flex: 1;
-  overflow: auto;
+  overflow: hidden;
   padding: 0;
   min-height: 0;
-}
-
-/* 自定义滚动条 */
-.sona-modal-body::-webkit-scrollbar {
-  width: 6px;
-}
-
-.sona-modal-body::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.sona-modal-body::-webkit-scrollbar-thumb {
-  background: rgba(200, 170, 110, 0.2);
-  border-radius: 3px;
-}
-
-.sona-modal-body::-webkit-scrollbar-thumb:hover {
-  background: rgba(200, 170, 110, 0.35);
 }

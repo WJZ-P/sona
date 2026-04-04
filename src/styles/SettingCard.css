@@ -1,0 +1,80 @@
+/* Sona Setting Card & Group Styles */
+
+/* ---- 设置分组 ---- */
+.sona-setting-group {
+  margin-bottom: 28px;
+}
+
+.sona-setting-group-title {
+  margin: 0 0 14px 0;
+  padding-bottom: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #c8aa6e;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  border-bottom: 1px solid rgba(200, 170, 110, 0.2);
+  text-shadow: 0 0 3px rgba(200, 170, 110, 0.4);
+}
+
+.sona-setting-group-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* ---- 设置卡片 ---- */
+.sona-setting-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  background: rgba(1, 10, 19, 0.4);
+  border: 1px solid rgba(60, 46, 22, 0.6);
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  cursor: default;
+}
+
+.sona-setting-card:hover {
+  background: rgba(9, 20, 40, 0.8);
+  border-color: rgba(200, 170, 110, 0.5);
+  box-shadow:
+    0 4px 15px rgba(0, 0, 0, 0.4),
+    0 0 10px rgba(200, 170, 110, 0.15);
+  transform: translateX(2px);
+}
+
+.sona-setting-card-info {
+  flex: 1;
+  padding-right: 20px;
+  min-width: 0;
+}
+
+.sona-setting-card-title {
+  margin: 0 0 4px 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: #f0e6d2;
+  letter-spacing: 0.03em;
+  transition: color 0.2s ease;
+}
+
+.sona-setting-card:hover .sona-setting-card-title {
+  color: #c8aa6e;
+}
+
+.sona-setting-card-desc {
+  margin: 0;
+  font-size: 11px;
+  color: #a09b8c;
+  line-height: 1.6;
+}
+
+.sona-setting-card-action {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-width: 50px;
+}
