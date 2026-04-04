@@ -49,7 +49,7 @@ export function SettingsPage() {
       <SettingGroup title="高级选项">
         <SettingCard
           title="开发者模式"
-          description="启用详细的控制台日志和调试工具。（需要重启客户端）"
+          description="你最好知道你在做什么"
         >
           <SonaSwitch checked={developerMode} onChange={setDeveloperMode} />
         </SettingCard>

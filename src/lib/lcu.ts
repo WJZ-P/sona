@@ -21,13 +21,15 @@ import type {
   ChampSelectSession,
   ChatConversation,
   ChatMessage,
+  ChatMe,
+  Availability,
   SendChatMessageBody,
   QueueId,
   LCUEventMessage,
 } from '@/types/lcu'
 
 // Re-export types for convenience
-export type { SummonerInfo, LobbyConfig, Lobby, GameflowPhase, GameflowSession, LCUEventMessage, ChatConversation, ChatMessage, SendChatMessageBody }
+export type { SummonerInfo, LobbyConfig, Lobby, GameflowPhase, GameflowSession, LCUEventMessage, ChatConversation, ChatMessage, ChatMe, Availability, SendChatMessageBody }
 export { LcuEventUri, QueueId } from '@/types/lcu'
 
 // ==================== 底层请求方法 ====================
@@ -289,6 +291,29 @@ class LCUManager {
   }
 
   // ==================== 聊天 ====================
+
+  /** 获取当前用户的聊天状态信息 */
+  getChatMe(): Promise<ChatMe> {
+    return get<ChatMe>('/lol-chat/v1/me')
+  }
+
+  /**
+   * 更改玩家在线状态
+   * @param availability 在线状态: 'chat'(在线) | 'away'(离开) | 'dnd'(勿扰) | 'offline'(隐身) | 'mobile'(手机在线)
+   * @param statusMessage 可选，自定义签名
+   */
+  setAvailability(availability: Availability, statusMessage?: string): Promise<ChatMe> {
+    const body: Partial<ChatMe> = { availability }
+    if (statusMessage != null) {
+      body.statusMessage = statusMessage
+    }
+    return put<ChatMe>('/lol-chat/v1/me', body)
+  }
+
+  /** 设置自定义签名 */
+  setStatusMessage(statusMessage: string): Promise<ChatMe> {
+    return put<ChatMe>('/lol-chat/v1/me', { statusMessage })
+  }
 
   /** 获取聊天对话列表 */
   getChatConversations(): Promise<ChatConversation[]> {

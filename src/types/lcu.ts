@@ -423,3 +423,27 @@ export interface SendChatMessageBody {
   body: string
   type?: 'chat' | 'celebration' | (string & {})
 }
+
+/** 玩家在线状态 */
+export type Availability = 'chat' | 'away' | 'dnd' | 'offline' | 'mobile' | (string & {})
+
+/** 当前用户聊天状态 — GET /lol-chat/v1/me */
+export interface ChatMe {
+  availability: Availability
+  gameName: string
+  gameTag: string
+  icon: number
+  id: string
+  lol: Record<string, string>
+  name: string
+  obfuscatedSummonerId: number
+  patchline: string
+  pid: string
+  platformId: string
+  product: string
+  productName: string
+  puuid: string
+  statusMessage: string
+  summary: string
+  summonerId: number
+}
