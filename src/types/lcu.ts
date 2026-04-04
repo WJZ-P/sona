@@ -404,3 +404,22 @@ export interface ChatConversation {
   type: 'chat' | 'customGame' | 'championSelect' | 'postGame' | (string & {})
   unreadMessageCount: number
 }
+
+/** 聊天消息 — GET/POST /lol-chat/v1/conversations/{id}/messages */
+export interface ChatMessage {
+  body: string
+  fromId: string
+  fromObfuscatedSummonerId: number
+  fromPid: string
+  fromSummonerId: number
+  id: string
+  isHistorical: boolean
+  timestamp: string
+  type: 'chat' | 'celebration' | 'system' | (string & {})
+}
+
+/** 发送聊天消息的请求体 */
+export interface SendChatMessageBody {
+  body: string
+  type?: 'chat' | 'celebration' | (string & {})
+}

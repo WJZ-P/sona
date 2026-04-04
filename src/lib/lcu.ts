@@ -20,12 +20,14 @@ import type {
   GameflowSession,
   ChampSelectSession,
   ChatConversation,
+  ChatMessage,
+  SendChatMessageBody,
   QueueId,
   LCUEventMessage,
 } from '@/types/lcu'
 
 // Re-export types for convenience
-export type { SummonerInfo, LobbyConfig, Lobby, GameflowPhase, GameflowSession, LCUEventMessage }
+export type { SummonerInfo, LobbyConfig, Lobby, GameflowPhase, GameflowSession, LCUEventMessage, ChatConversation, ChatMessage, SendChatMessageBody }
 export { LcuEventUri, QueueId } from '@/types/lcu'
 
 // ==================== 底层请求方法 ====================
@@ -220,11 +222,100 @@ class LCUManager {
     return get<ChampSelectSession>('/lol-champ-select/v1/session')
   }
 
+  /** 获取当前可选的英雄 ID 列表 */
+  getPickableChampionIds(): Promise<number[]> {
+    return get<number[]>('/lol-champ-select/v1/pickable-champion-ids')
+  }
+
+  /** 获取当前可禁用的英雄 ID 列表 */
+  getBannableChampionIds(): Promise<number[]> {
+    return get<number[]>('/lol-champ-select/v1/bannable-champion-ids')
+  }
+
+  /**
+   * 锁定英雄（完成选人/禁人动作）
+   *
+   * 流程：从当前 session 中找到属于自己的、正在进行中的 action，
+   * 先 PATCH 设置英雄，再 POST complete 锁定。
+   *
+   * @param championId 要锁定的英雄 ID
+   * @param actionId 可选，直接指定 action ID（不传则自动查找当前正在进行的 action）
+   */
+  async lockChampion(championId: number, actionId?: number): Promise<void> {
+    let targetActionId = actionId
+
+    if (targetActionId == null) {
+      const session = await this.getChampSelectSession()
+      const myAction = session.actions
+        .flat()
+        .find((a) => a.actorCellId === session.localPlayerCellId && a.isInProgress && !a.completed)
+
+      if (!myAction) {
+        throw new Error('[LCU] 找不到当前正在进行的选人/禁人动作')
+      }
+      targetActionId = myAction.id
+    }
+
+    // 先选择英雄
+    await patch(`/lol-champ-select/v1/session/actions/${targetActionId}`, { championId })
+    // 再锁定确认
+    await post(`/lol-champ-select/v1/session/actions/${targetActionId}/complete`)
+  }
+
+  /**
+   * 修改自己的选人信息（皮肤、召唤师技能等）
+   * @param selection 选择参数
+   */
+  updateMySelection(selection: { selectedSkinId?: number; spell1Id?: number; spell2Id?: number; wardSkinId?: number }): Promise<unknown> {
+    return patch('/lol-champ-select/v1/session/my-selection', selection)
+  }
+
   // ==================== 聊天 ====================
 
   /** 获取聊天对话列表 */
   getChatConversations(): Promise<ChatConversation[]> {
     return get<ChatConversation[]>('/lol-chat/v1/conversations')
+  }
+
+  /** 获取指定会话的消息记录 */
+  getChatMessages(conversationId: string): Promise<ChatMessage[]> {
+    return get<ChatMessage[]>(`/lol-chat/v1/conversations/${conversationId}/messages`)
+  }
+
+  /**
+   * 向指定会话发送消息
+   * @param conversationId 会话 ID
+   * @param message 消息内容（字符串或完整请求体）
+   */
+  sendChatMessage(conversationId: string, message: string | SendChatMessageBody): Promise<ChatMessage> {
+    const body: SendChatMessageBody = typeof message === 'string'
+      ? { body: message, type: 'chat' }
+      : message
+    return post<ChatMessage>(`/lol-chat/v1/conversations/${conversationId}/messages`, body)
+  }
+
+  /**
+   * 获取当前英雄选择阶段的聊天会话
+   * 从所有会话中找到 type 为 'championSelect' 的会话
+   * @returns 英雄选择聊天会话，如果不在选人阶段则返回 null
+   */
+  async getChampSelectConversation(): Promise<ChatConversation | null> {
+    const conversations = await this.getChatConversations()
+    return conversations.find((c) => c.type === 'championSelect') ?? null
+  }
+
+  /**
+   * 在英雄选择界面发送消息（一步到位）
+   * 自动找到选人聊天会话并发送消息
+   * @param message 消息内容
+   * @throws 如果当前不在选人阶段（找不到 championSelect 会话）
+   */
+  async sendChampSelectMessage(message: string): Promise<ChatMessage> {
+    const conversation = await this.getChampSelectConversation()
+    if (!conversation) {
+      throw new Error('[LCU] 当前不在英雄选择阶段，找不到 championSelect 会话')
+    }
+    return this.sendChatMessage(conversation.id, message)
   }
 
   // ==================== 队列信息 ====================
