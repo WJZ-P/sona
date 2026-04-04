@@ -51,7 +51,6 @@ declare global {
   type SonaRuntime = {
     container: HTMLDivElement | null
     root: Root | null
-    domObserver: MutationObserver | null
     hasShownStartupToast: boolean
   }
 }

@@ -49,7 +49,7 @@ export function SettingsPage() {
       <SettingGroup title="高级选项">
         <SettingCard
           title="开发者模式"
-          description="你最好知道你在做什么"
+          description="你最好知道你在做什么 ( ˘•ω•˘ )◞⚠"
         >
           <SonaSwitch checked={developerMode} onChange={setDeveloperMode} />
         </SettingCard>

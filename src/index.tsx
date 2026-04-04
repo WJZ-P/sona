@@ -4,7 +4,8 @@ declare const __PLUGIN_VERSION__: string  //  这个变量信息在vite.config.j
 import { createRoot } from 'react-dom/client'
 import { App } from '@/App'
 import { createLogger } from '@/lib/logger'
-import { startInjection } from '@/lib/inject'
+import { registerAllInjections } from '@/lib/injections'
+import { injector } from '@/lib/InjectorManager'
 import { lcu } from '@/lib/lcu'
 import '@/styles/index.css'
 import '@/styles/inject.css'
@@ -18,15 +19,11 @@ export const logger = createLogger({
   version: PLUGIN_VERSION,
 })
 
-
-
-
 function getRuntime(): SonaRuntime {
   if (!window.__SONA_RUNTIME__) {
     window.__SONA_RUNTIME__ = {
       container: null,
       root: null,
-      domObserver: null,
       hasShownStartupToast: false,
     }
   }
@@ -59,32 +56,8 @@ function ensureContainer(runtime: SonaRuntime) {
   return runtime.container
 }
 
-function ensureDomGuard(runtime: SonaRuntime) {
-  if (runtime.domObserver) return
-
-  const observerTarget = document.documentElement ?? document.body
-  if (!observerTarget) return
-
-  const observer = new MutationObserver(() => {
-    const container = runtime.container
-    if (!container || container.isConnected) return
-
-    appendContainer(container)
-    logger.warn('Detected host DOM refresh; restored app container')
-  })
-
-  observer.observe(observerTarget, {
-    childList: true,
-    subtree: true,
-  })
-
-  runtime.domObserver = observer
-  logger.info('Started app container DOM guard')
-}
-
 // Store context for use across the plugin
 let penguContext: PenguContext | null = null
-
 
 /**
  * Called before League Client initializes its scripts.
@@ -102,7 +75,7 @@ export function init(context: PenguContext) {
  */
 export function load() {
   logger.info('Plugin loading...')
-  startInjection()  //  注入插件入口按钮
+  registerAllInjections()  //  注册所有 DOM 注入点并启动守护
   mountApp()
 }
 
@@ -114,13 +87,28 @@ export function getContext(): PenguContext | null {
 }
 
 /**
+ * 容器守护注入任务
+ * 检测 #sona-root 是否脱离 DOM，脱离则自动重新挂载
+ */
+function tryGuardContainer(): boolean {
+  const runtime = getRuntime()
+  if (runtime.container?.isConnected) return true
+  if (runtime.container) {
+    appendContainer(runtime.container)
+    logger.warn('Detected host DOM refresh; restored app container')
+  }
+  return Boolean(runtime.container?.isConnected)
+}
+
+/**
  * Mount the React application into the League Client
  */
 function mountApp() {
   const runtime = getRuntime()
   const container = ensureContainer(runtime)
 
-  ensureDomGuard(runtime)
+  // 将容器守护注册到全局 InjectorManager
+  injector.register(tryGuardContainer)
 
   if (!runtime.root) {
     runtime.root = createRoot(container)
@@ -138,4 +126,3 @@ function mountApp() {
     runtime.hasShownStartupToast = true
   }
 }
-

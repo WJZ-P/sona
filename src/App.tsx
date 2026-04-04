@@ -6,7 +6,7 @@ import { Sidebar, type SidebarItem } from '@/components/Sidebar'
 import { HomePage } from '@/components/HomePage'
 import { SettingsPage } from '@/components/SettingsPage'
 import { HomeIcon, GamepadIcon, SettingsIcon, InfoIcon } from '@/components/icons'
-import { onModalVisibilityChange, isModalVisible, closeModal } from '@/lib/inject'
+import { onModalVisibilityChange, isModalVisible, closeModal } from '@/lib/modal'
 
 const sidebarItems: SidebarItem[] = [
   { id: 'home', icon: <HomeIcon />, label: '主页' },
