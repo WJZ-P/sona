@@ -270,6 +270,24 @@ class LCUManager {
     return patch('/lol-champ-select/v1/session/my-selection', selection)
   }
 
+  /**
+   * 从 ARAM 共享池（Bench）中拿取英雄
+   * 将自己当前的英雄放回池子，换取池中指定的英雄
+   * @param championId 要从池中拿取的英雄 ID
+   */
+  benchSwap(championId: number): Promise<unknown> {
+    return post(`/lol-champ-select/v1/session/bench/swap/${championId}`)
+  }
+
+  /**
+   * 获取当前 ARAM 共享池中的英雄列表
+   * 从 session 的 benchChampions 字段提取
+   */
+  async getBenchChampions(): Promise<{ championId: number; isPriority: boolean }[]> {
+    const session = await this.getChampSelectSession()
+    return session.benchChampions
+  }
+
   // ==================== 聊天 ====================
 
   /** 获取聊天对话列表 */

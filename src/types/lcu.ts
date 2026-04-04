@@ -280,7 +280,7 @@ export interface ChampSelectSession {
   allowDuplicatePicks: boolean
   allowRerolling: boolean
   allowSkinSelection: boolean
-  benchChampions: BenchChampion[]
+  benchChampions: BenchChampion[] // ARAM 模式，共享池中的英雄
   benchEnabled: boolean
   gameId: number
   localPlayerCellId: number
