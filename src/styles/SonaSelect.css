@@ -1,0 +1,117 @@
+/* Sona Select - 海克斯风格下拉菜单 */
+
+.sona-select {
+  position: relative;
+  width: 100%;
+}
+
+/* 触发按钮 */
+.sona-select-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 8px 14px;
+  background: rgba(1, 10, 19, 0.8);
+  border: 1px solid #3c2e16;
+  color: #a09b8c;
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+.sona-select-trigger:hover {
+  border-color: #785a28;
+  color: #f0e6d2;
+}
+
+.sona-select-trigger--open {
+  border-color: #c8aa6e;
+  color: #f0e6d2;
+  box-shadow: 0 0 10px rgba(200, 170, 110, 0.2);
+}
+
+.sona-select-value {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sona-select-arrow {
+  flex-shrink: 0;
+  transition: transform 0.3s ease;
+  color: inherit;
+}
+
+.sona-select-arrow--open {
+  transform: rotate(180deg);
+  color: #c8aa6e;
+}
+
+/* 下拉列表 */
+.sona-select-dropdown {
+  position: absolute;
+  z-index: 50;
+  width: 100%;
+  margin-top: 4px;
+  background: #010a13;
+  border: 1px solid #785a28;
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.8),
+    0 0 15px rgba(200, 170, 110, 0.15);
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.sona-select-dropdown::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sona-select-dropdown::-webkit-scrollbar-track {
+  background: rgba(1, 10, 19, 0.8);
+}
+
+.sona-select-dropdown::-webkit-scrollbar-thumb {
+  background: #3c2e16;
+}
+
+.sona-select-dropdown::-webkit-scrollbar-thumb:hover {
+  background: #785a28;
+}
+
+/* 选项 */
+.sona-select-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 9px 14px;
+  background: none;
+  border: none;
+  border-left: 2px solid transparent;
+  color: #a09b8c;
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: left;
+}
+
+.sona-select-option:hover {
+  background: #1e2328;
+  color: #f0e6d2;
+}
+
+.sona-select-option--active {
+  background: rgba(200, 170, 110, 0.2);
+  color: #c8aa6e;
+  font-weight: 600;
+  border-left-color: #c8aa6e;
+}
+
+.sona-select-option--active:hover {
+  background: rgba(200, 170, 110, 0.25);
+  color: #c8aa6e;
+}

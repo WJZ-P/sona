@@ -1,0 +1,77 @@
+/* Sona Button - 海克斯风格按钮 */
+
+.sona-btn {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 22px;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: inherit;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  outline: none;
+}
+
+.sona-btn--disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Primary 变体 */
+.sona-btn--primary {
+  background: rgba(30, 35, 40, 0.8);
+  border: 1px solid #785a28;
+  color: #cdbe91;
+}
+
+.sona-btn--primary:hover:not(:disabled) {
+  background: rgba(200, 170, 110, 0.15);
+  border-color: #c8aa6e;
+  color: #f0e6d2;
+  box-shadow:
+    inset 0 0 0 1px #c8aa6e,
+    0 0 15px rgba(200, 170, 110, 0.4);
+}
+
+.sona-btn--primary:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+/* Secondary 变体 */
+.sona-btn--secondary {
+  background: transparent;
+  border: 1px solid transparent;
+  color: #a09b8c;
+}
+
+.sona-btn--secondary:hover:not(:disabled) {
+  background: #1e2328;
+  border-color: #3c2e16;
+  color: #f0e6d2;
+}
+
+.sona-btn--secondary:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+/* 扫光特效 */
+.sona-btn-shine {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(to right, transparent, rgba(200, 170, 110, 0.1), transparent);
+  transform: skewX(-12deg);
+  transition: left 0.5s ease;
+  pointer-events: none;
+}
+
+.sona-btn:hover .sona-btn-shine {
+  left: 150%;
+}

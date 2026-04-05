@@ -1,0 +1,62 @@
+/* Sona Checkbox - 海克斯风格复选框 */
+
+.sona-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.sona-checkbox--disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.sona-checkbox-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  background: #010a13;
+  border: 1px solid #3c2e16;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.sona-checkbox:hover .sona-checkbox-box {
+  border-color: #785a28;
+}
+
+.sona-checkbox-box--checked {
+  background: rgba(200, 170, 110, 0.2);
+  border-color: #c8aa6e;
+  box-shadow: 0 0 8px rgba(200, 170, 110, 0.3);
+}
+
+.sona-checkbox-icon {
+  color: #c8aa6e;
+  opacity: 0;
+  transform: scale(0.5);
+  transition: all 0.2s ease;
+}
+
+.sona-checkbox-icon--visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.sona-checkbox-label {
+  font-size: 13px;
+  color: #a09b8c;
+  transition: color 0.2s ease;
+}
+
+.sona-checkbox:hover .sona-checkbox-label {
+  color: #f0e6d2;
+}
+
+.sona-checkbox-label--checked {
+  color: #f0e6d2;
+}
