@@ -1,6 +1,6 @@
 import '@/styles/HomePage.css'
-import { InfoCard } from '@/components/InfoCard'
-import { ZapIcon, CodeIcon, BoxIcon } from '@/components/icons'
+import { InfoCard } from '@/components/ui/InfoCard'
+import { ZapIcon, CodeIcon, BoxIcon } from '@/components/ui/icons'
 
 export function HomePage() {
   return (

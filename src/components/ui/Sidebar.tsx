@@ -1,5 +1,5 @@
 import { type ReactNode } from 'react'
-import { MusicIcon, ChevronLeftIcon, ChevronRightIcon } from '@/components/icons'
+import { MusicIcon, ChevronLeftIcon, ChevronRightIcon } from '@/components/ui/icons'
 import '@/styles/Sidebar.css'
 
 export interface SidebarItem {

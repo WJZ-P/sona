@@ -31,3 +31,44 @@
   letter-spacing: 2px;
   text-shadow: 0 0 8px rgba(200, 170, 110, 0.2);
 }
+
+/* ---- 调试页按钮行 ---- */
+.sona-debug-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* ---- 调试输出区 ---- */
+.sona-debug-output {
+  margin-top: 20px;
+  padding: 16px;
+  background: rgba(1, 10, 19, 0.6);
+  border: 1px solid #3c2e16;
+  border-radius: 4px;
+  max-height: 240px;
+  overflow: auto;
+}
+
+.sona-debug-output::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sona-debug-output::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sona-debug-output::-webkit-scrollbar-thumb {
+  background: rgba(200, 170, 110, 0.2);
+  border-radius: 3px;
+}
+
+.sona-debug-output pre {
+  margin: 0;
+  font-size: 11px;
+  font-family: 'Consolas', 'Monaco', monospace;
+  color: #a09b8c;
+  white-space: pre-wrap;
+  word-break: break-all;
+  line-height: 1.6;
+}

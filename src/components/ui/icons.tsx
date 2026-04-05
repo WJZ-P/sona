@@ -82,3 +82,15 @@ export function ChevronRightIcon() {
     </svg>
   )
 }
+
+export function BugIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="8" y="6" width="8" height="14" rx="4" />
+      <path d="M6 12H2" /><path d="M22 12h-4" />
+      <path d="M6 8l-2-2" /><path d="M18 8l2-2" />
+      <path d="M6 18l-2 2" /><path d="M18 18l2 2" />
+      <path d="M12 6V2" />
+    </svg>
+  )
+}
