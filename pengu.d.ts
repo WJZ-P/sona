@@ -48,6 +48,22 @@ declare global {
     promise<T>(promise: Promise<T>, msg: { loading: string; success: string; error: string }): Promise<T>
   }
 
+  /**
+   * DataStore - 持久化存储 API
+   * 数据以 JSON 格式存储在磁盘上
+   * @see https://pengu.lol/runtime-api/data-store
+   */
+  const DataStore: {
+    /** 存储数据，返回是否成功 */
+    set(key: string | number, value: unknown): boolean
+    /** 读取数据，不存在时返回 fallback 或 undefined */
+    get<T = unknown>(key: string | number, fallback?: T): T | undefined
+    /** 检查键是否存在 */
+    has(key: string | number): boolean
+    /** 移除数据，返回是否成功 */
+    remove(key: string | number): boolean
+  }
+
   type SonaRuntime = {
     container: HTMLDivElement | null
     root: Root | null
