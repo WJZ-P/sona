@@ -71,23 +71,10 @@ function tryInjectSonaButton(): boolean {
   return true
 }
 
-// ==================== 解锁自定义签名 ====================
-
-/**
- * 注入任务：移除 .lower-details .status 上的 disabled 类名
- * 客户端默认禁用了签名编辑，移除 disabled 后即可自定义签名
- * 持续守护：客户端可能随时重新加上 disabled，所以每次 DOM 变动都检查
- */
-function tryUnlockStatusInput(): boolean {
-  const statusEl = document.querySelector('.lower-details .status.disabled')
-  if (!statusEl) return true  // 没有 disabled 的 .status，说明已解锁或还没出现
-
-  statusEl.classList.remove('disabled')
-  logger.info('Status input unlocked ✓ (removed disabled from .status)')
-  return true
-}
 
 // ==================== 接管在线状态切换按钮 ====================
+
+
 
 
 const MENU_ID = 'sona-availability-menu'
@@ -236,7 +223,6 @@ function tryHijackAvailabilityHitbox(): boolean {
  */
 export function registerAllInjections() {
   injector.register(tryInjectSonaButton)
-  injector.register(tryUnlockStatusInput)
   injector.register(tryHijackAvailabilityHitbox)
 
   injector.start()

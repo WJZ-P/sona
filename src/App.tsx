@@ -4,7 +4,9 @@ import { logger } from '.'
 import { Modal } from '@/components/ui/Modal'
 import { Sidebar, type SidebarItem } from '@/components/ui/Sidebar'
 import { HomePage } from '@/components/pages/HomePage'
+import { ToolsPage } from '@/components/pages/ToolsPage'
 import { SettingsPage } from '@/components/pages/SettingsPage'
+import { AboutPage } from '@/components/pages/AboutPage'
 import { DebugPage } from '@/components/pages/DebugPage'
 import { HomeIcon, GamepadIcon, SettingsIcon, InfoIcon, BugIcon } from '@/components/ui/icons'
 import { onModalVisibilityChange, isModalVisible, closeModal } from '@/lib/modal'
@@ -26,11 +28,11 @@ function PageContent({ pageId }: { pageId: string }) {
     case 'home':
       return <HomePage />
     case 'tools':
-      return <div className="sona-page-placeholder">工具页面（开发中）</div>
+      return <ToolsPage />
     case 'settings':
       return <SettingsPage />
     case 'about':
-      return <div className="sona-page-placeholder">关于页面（开发中）</div>
+      return <AboutPage />
     case 'debug':
       return <DebugPage />
     default:

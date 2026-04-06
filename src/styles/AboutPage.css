@@ -1,0 +1,102 @@
+/* Sona About Page */
+
+.sona-about {
+  padding: 32px;
+  height: 100%;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.sona-about::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sona-about::-webkit-scrollbar-thumb {
+  background: rgba(200, 170, 110, 0.2);
+  border-radius: 3px;
+}
+
+.sona-about-header {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.sona-about-title {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 700;
+  color: #c8aa6e;
+  letter-spacing: 2px;
+  text-shadow: 0 0 8px rgba(200, 170, 110, 0.3);
+}
+
+.sona-about-version {
+  font-size: 13px;
+  color: #785a28;
+  font-weight: 600;
+}
+
+.sona-about-desc {
+  margin: 0 0 28px 0;
+  font-size: 13px;
+  color: #a09b8c;
+  line-height: 1.7;
+}
+
+.sona-about-section {
+  margin-bottom: 24px;
+}
+
+.sona-about-section-title {
+  margin: 0 0 10px 0;
+  font-size: 11px;
+  font-weight: 700;
+  color: #c8aa6e;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(200, 170, 110, 0.2);
+}
+
+.sona-about-list {
+  margin: 0;
+  padding: 0 0 0 18px;
+  list-style: none;
+}
+
+.sona-about-list li {
+  position: relative;
+  font-size: 13px;
+  color: #a09b8c;
+  line-height: 2;
+  padding-left: 4px;
+}
+
+.sona-about-list li::before {
+  content: '◆';
+  position: absolute;
+  left: -16px;
+  color: #785a28;
+  font-size: 8px;
+  top: 1px;
+}
+
+.sona-about-text {
+  margin: 0;
+  font-size: 13px;
+  color: #a09b8c;
+}
+
+.sona-about-quote {
+  margin-top: auto;
+  padding-top: 24px;
+  font-size: 12px;
+  color: #c8aa6e;
+  font-style: italic;
+  opacity: 0.7;
+  border-top: 1px solid rgba(200, 170, 110, 0.1);
+  line-height: 1.6;
+}
