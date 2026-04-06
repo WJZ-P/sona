@@ -11,6 +11,7 @@
 
 import { logger } from '@/index'
 import { injector } from '@/lib/InjectorManager'
+import { store } from '@/lib/store'
 import { openModal, onModalVisibilityChange } from '@/lib/modal'
 import sonaIcon from '../../assets/Champie_Sona_profileicon.png'
 import { lcu } from '@/lib/lcu'
@@ -99,8 +100,41 @@ const AVAILABILITY_OPTIONS: { value: Availability; label: string }[] = [
   { value: 'mobile', label: '手机在线' },
 ]
 
-/** 当前状态缓存 */
-let currentAvailability: Availability = 'chat'
+/** 当前状态缓存（从 store 初始化） */
+let currentAvailability: Availability = store.get('availability') as Availability
+
+/**
+ * 启动时恢复持久化的在线状态和签名
+ * - 将 store 中保存的 availability 设置到客户端
+ * - 检测到签名为空时，自动恢复 store 中保存的签名
+ */
+async function restoreAvailabilityAndStatus() {
+  try {
+    const me = await lcu.getChatMe()
+    const savedAvailability = store.get('availability') as Availability
+    const savedStatus = store.get('statusMessage')
+
+    // 恢复在线状态
+    if (savedAvailability && savedAvailability !== me.availability) {
+      await lcu.setAvailability(savedAvailability)
+      currentAvailability = savedAvailability
+      logger.info('Restored availability: %s', savedAvailability)
+    } else {
+      currentAvailability = me.availability
+    }
+
+    // 签名为空且有保存的签名时，自动恢复
+    if (me.statusMessage.length === 0 && savedStatus) {
+      await lcu.setStatusMessage(savedStatus)
+      logger.info('Restored status message: %s', savedStatus)
+    } else if (me.statusMessage) {
+      // 客户端有签名，同步到 store
+      store.set('statusMessage', me.statusMessage)
+    }
+  } catch (err) {
+    logger.warn('Failed to restore availability/status:', err)
+  }
+}
 
 /** 关闭已有的菜单 */
 function closeAvailabilityMenu() {
@@ -131,6 +165,7 @@ function showAvailabilityMenu(anchor: HTMLElement) {
 
       if (option.value !== currentAvailability) {
         currentAvailability = option.value
+        store.set('availability', option.value)
         lcu.setAvailability(option.value)
           .then(() => logger.info('Status changed to: %s', option.value))
           .catch((err) => logger.error('Failed to set status:', err))
@@ -171,10 +206,8 @@ function tryHijackAvailabilityHitbox(): boolean {
 
   hitbox.setAttribute(HIJACKED_ATTR, 'true')
 
-  // 初始化时获取当前真实状态
-  lcu.getChatMe()
-    .then((me) => { currentAvailability = me.availability })
-    .catch(() => {})
+  // 启动时恢复持久化的在线状态和签名
+  restoreAvailabilityAndStatus()
 
   hitbox.addEventListener('click', (e) => {
     e.stopPropagation()

@@ -31,6 +31,10 @@ export interface SonaConfig {
   unlockStatus: boolean
   /** 侧边栏收缩状态 */
   sidebarCollapsed: boolean
+  /** 在线状态 */
+  availability: string
+  /** 自定义签名 */
+  statusMessage: string
 }
 
 /** 配置项默认值 */
@@ -39,6 +43,8 @@ const DEFAULT_CONFIG: SonaConfig = {
   developerMode: false,
   unlockStatus: true,
   sidebarCollapsed: false,
+  availability: 'chat',
+  statusMessage: '',
 }
 
 // ==================== Store 实现 ====================
@@ -51,23 +57,22 @@ type ChangeListener<K extends ConfigKey = ConfigKey> = (value: SonaConfig[K], ke
 
 class SonaStore {
   private listeners = new Map<ConfigKey, Set<ChangeListener>>()
-  private cache: Partial<SonaConfig> = {}
+  private cache: SonaConfig
 
   constructor() {
     // 启动时把所有配置加载到内存缓存中
+    const loaded = { ...DEFAULT_CONFIG }
     for (const key of Object.keys(DEFAULT_CONFIG) as ConfigKey[]) {
-      this.cache[key] = this.readFromDisk(key)
+      (loaded as Record<string, unknown>)[key] = this.readFromDisk(key)
     }
+    this.cache = loaded
   }
 
   /**
    * 获取配置值
    */
   get<K extends ConfigKey>(key: K): SonaConfig[K] {
-    if (key in this.cache) {
-      return this.cache[key] as SonaConfig[K]
-    }
-    return DEFAULT_CONFIG[key]
+    return this.cache[key]
   }
 
   /**
