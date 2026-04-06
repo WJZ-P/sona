@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { SettingCard, SettingGroup } from '@/components/ui/SettingCard'
 import { SonaButton } from '@/components/ui/SonaButton'
 import { SonaSwitch } from '@/components/ui/SonaSwitch'
+import { SonaSelect } from '@/components/ui/SonaSelect'
 import { logger } from '@/index'
 import { lcu } from '@/lib/lcu'
 import { store } from '@/lib/store'
@@ -17,19 +18,42 @@ async function run(label: string, fn: () => Promise<unknown>) {
   }
 }
 
+const effectOptions = [
+  { value: 'none', label: '无（默认）' },
+  { value: 'blurbehind', label: '毛玻璃' },
+  { value: 'acrylic', label: '亚克力' },
+  { value: 'unified', label: '混合' },
+  { value: 'mica', label: '云母 (Win11)' },
+  { value: 'transparent', label: '透明' },
+]
+
 export function ToolsPage() {
   const [autoAccept, setAutoAccept] = useState(store.get('autoAcceptMatch'))
   const [unlockStatus, setUnlockStatus] = useState(store.get('unlockStatus'))
   const [benchNoCooldown, setBenchNoCooldown] = useState(store.get('benchNoCooldown'))
+  const [windowEffect, setWindowEffect] = useState(store.get('windowEffect'))
 
   useEffect(() => {
     const unsubs = [
       store.onChange('autoAcceptMatch', setAutoAccept),
       store.onChange('unlockStatus', setUnlockStatus),
       store.onChange('benchNoCooldown', setBenchNoCooldown),
+      store.onChange('windowEffect', setWindowEffect),
     ]
     return () => unsubs.forEach((fn) => fn())
   }, [])
+
+  const handleEffectChange = (value: string) => {
+    setWindowEffect(value)
+    store.set('windowEffect', value)
+    if (value === 'none') {
+      Effect.clear()
+      logger.info('Window effect cleared')
+    } else {
+      Effect.apply(value as 'acrylic', { color: '#0006' })
+      logger.info('Window effect applied: %s', value)
+    }
+  }
 
   return (
     <div className="sona-settings">
@@ -62,6 +86,21 @@ export function ToolsPage() {
             checked={benchNoCooldown}
             onChange={(v) => { setBenchNoCooldown(v); store.set('benchNoCooldown', v) }}
           />
+        </SettingCard>
+      </SettingGroup>
+
+      <SettingGroup title="界面">
+        <SettingCard
+          title="窗口特效"
+          description="为客户端窗口添加毛玻璃等视觉效果。Win10 拖动窗口时可能卡顿。但实际测试下来好像没啥效果？"
+        >
+          <div style={{ minWidth: 130 }}>
+            <SonaSelect
+              options={effectOptions}
+              value={windowEffect}
+              onChange={handleEffectChange}
+            />
+          </div>
         </SettingCard>
       </SettingGroup>
 

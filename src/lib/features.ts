@@ -148,5 +148,12 @@ export function initFeatures() {
   updateBenchNoCooldown(store.get('benchNoCooldown'))
   store.onChange('benchNoCooldown', updateBenchNoCooldown)
 
+  // 恢复窗口特效
+  const savedEffect = store.get('windowEffect')
+  if (savedEffect && savedEffect !== 'none') {
+    Effect.apply(savedEffect as 'acrylic', { color: '#0006' })
+    logger.info('Restored window effect: %s', savedEffect)
+  }
+
   logger.info('Features initialized ✓')
 }

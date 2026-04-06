@@ -25,6 +25,8 @@
 
 /* ---- 设置卡片 ---- */
 .sona-setting-card {
+  position: relative;
+  z-index: 1;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -37,12 +39,18 @@
 }
 
 .sona-setting-card:hover {
+  z-index: 2;
   background: rgba(9, 20, 40, 0.8);
   border-color: rgba(200, 170, 110, 0.5);
   box-shadow:
     0 4px 15px rgba(0, 0, 0, 0.4),
     0 0 10px rgba(200, 170, 110, 0.15);
   transform: translateX(2px);
+}
+
+/* 包含下拉菜单的卡片，展开时层级最高 */
+.sona-setting-card:has(.sona-select-dropdown) {
+  z-index: 200;
 }
 
 .sona-setting-card-info {

@@ -64,6 +64,19 @@ declare global {
     remove(key: string | number): boolean
   }
 
+  /**
+   * Effect - 窗口视觉效果 API
+   * @see https://pengu.dev/runtime-api/effect
+   */
+  const Effect: {
+    /** 应用窗口视觉效果 */
+    apply(name: 'transparent' | 'blurbehind' | 'acrylic' | 'unified' | 'mica' | 'vibrancy', options?: { color?: string; material?: string; alwaysOn?: boolean }): void
+    /** 清除当前效果 */
+    clear(): void
+    /** 设置主题 */
+    setTheme(theme: 'light' | 'dark'): void
+  }
+
   type SonaRuntime = {
     container: HTMLDivElement | null
     root: Root | null

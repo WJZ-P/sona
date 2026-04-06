@@ -39,6 +39,8 @@ export interface SonaConfig {
   statusMessage: string
   /** 面板快捷键 */
   hotkey: string
+  /** 窗口视觉特效 */
+  windowEffect: string
 }
 
 /** 配置项默认值 */
@@ -51,6 +53,7 @@ const DEFAULT_CONFIG: SonaConfig = {
   availability: 'chat',
   statusMessage: '',
   hotkey: 'F1',
+  windowEffect: 'none',
 }
 
 // ==================== Store 实现 ====================
