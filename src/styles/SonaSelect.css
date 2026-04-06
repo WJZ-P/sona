@@ -3,6 +3,7 @@
 .sona-select {
   position: relative;
   width: 100%;
+  z-index: 100;
 }
 
 /* 触发按钮 */

@@ -6,6 +6,7 @@ import { App } from '@/App'
 import { createLogger } from '@/lib/logger'
 import { registerAllInjections } from '@/lib/injections'
 import { initFeatures } from '@/lib/features'
+import { registerHotkey } from '@/lib/modal'
 import { injector } from '@/lib/InjectorManager'
 import { lcu } from '@/lib/lcu'
 import '@/styles/index.css'
@@ -79,6 +80,7 @@ export function load() {
   logger.info('Plugin loading...')
   registerAllInjections()  //  注册所有 DOM 注入点并启动守护
   initFeatures()           //  初始化功能监听（自动接受、解锁签名等）
+  registerHotkey()         //  注册 F1 快捷键
   mountApp()
 }
 
@@ -125,7 +127,7 @@ function mountApp() {
   logger.info('Mounted ✓ (container connected: %s)', String(container.isConnected))
 
   if (!runtime.hasShownStartupToast) {
-    Toast.success('Sona 已启动！')
+    lcu.sendNotification('Sona', '插件已启动 ♫')
     runtime.hasShownStartupToast = true
   }
 }

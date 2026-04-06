@@ -373,6 +373,26 @@ class LCUManager {
     return get('/lol-lobby/v1/parties/gamemode')
   }
 
+  // ==================== 通知 ====================
+
+  /**
+   * 发送客户端原生通知（右下角弹窗）
+   * @param title 通知标题
+   * @param details 通知内容
+   */
+  sendNotification(title: string, details: string): Promise<unknown> {
+    return post('/player-notifications/v1/notifications', {
+      detailKey: 'pre_translated_details',
+      titleKey: 'pre_translated_title',
+      backgroundUrl: '',
+      data: { title, details },
+      iconUrl: '/lol-game-data/assets/v1/profile-icons/3867.jpg',// https://heimerdinger.lol/index.php/icon/sona-champie-icon-5s8jq
+      source: 'sona',
+      state: 'toast',
+      type: 'string',
+    })
+  }
+
   // ==================== WebSocket 事件 ====================
 
   /**

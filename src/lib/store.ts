@@ -37,6 +37,8 @@ export interface SonaConfig {
   availability: string
   /** 自定义签名 */
   statusMessage: string
+  /** 面板快捷键 */
+  hotkey: string
 }
 
 /** 配置项默认值 */
@@ -48,6 +50,7 @@ const DEFAULT_CONFIG: SonaConfig = {
   sidebarCollapsed: false,
   availability: 'chat',
   statusMessage: '',
+  hotkey: 'F1',
 }
 
 // ==================== Store 实现 ====================
