@@ -29,7 +29,7 @@ import type {
 } from '@/types/lcu'
 
 // Re-export types for convenience
-export type { SummonerInfo, LobbyConfig, Lobby, GameflowPhase, GameflowSession, LCUEventMessage, ChatConversation, ChatMessage, ChatMe, Availability, SendChatMessageBody }
+export type { SummonerInfo, LobbyConfig, Lobby, GameflowPhase, GameflowSession, LCUEventMessage, ChatConversation, ChatMessage, ChatMe, Availability, SendChatMessageBody, ReadyCheck }
 export { LcuEventUri, QueueId } from '@/types/lcu'
 
 // ==================== 底层请求方法 ====================

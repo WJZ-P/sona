@@ -19,6 +19,7 @@ function updateAutoAccept(enabled: boolean) {
   if (enabled && !autoAcceptUnsub) {
     autoAcceptUnsub = lcu.observe(LcuEventUri.READY_CHECK, (event: LCUEventMessage) => {
       const readyCheck = event.data as ReadyCheck
+      logger.info('Ready check event → %o', readyCheck)
       if (readyCheck.state === 'InProgress' && readyCheck.playerResponse === 'None') {
         lcu.acceptMatch()
           .then(() => logger.info('Auto accepted match ✓'))
