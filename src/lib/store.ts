@@ -29,6 +29,8 @@ export interface SonaConfig {
   developerMode: boolean
   /** 解锁自定义签名 */
   unlockStatus: boolean
+  /** 大乱斗无CD换英雄 */
+  benchNoCooldown: boolean
   /** 侧边栏收缩状态 */
   sidebarCollapsed: boolean
   /** 在线状态 */
@@ -42,6 +44,7 @@ const DEFAULT_CONFIG: SonaConfig = {
   autoAcceptMatch: false,
   developerMode: false,
   unlockStatus: true,
+  benchNoCooldown: false,
   sidebarCollapsed: false,
   availability: 'chat',
   statusMessage: '',

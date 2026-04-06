@@ -20,11 +20,13 @@ async function run(label: string, fn: () => Promise<unknown>) {
 export function ToolsPage() {
   const [autoAccept, setAutoAccept] = useState(store.get('autoAcceptMatch'))
   const [unlockStatus, setUnlockStatus] = useState(store.get('unlockStatus'))
+  const [benchNoCooldown, setBenchNoCooldown] = useState(store.get('benchNoCooldown'))
 
   useEffect(() => {
     const unsubs = [
       store.onChange('autoAcceptMatch', setAutoAccept),
       store.onChange('unlockStatus', setUnlockStatus),
+      store.onChange('benchNoCooldown', setBenchNoCooldown),
     ]
     return () => unsubs.forEach((fn) => fn())
   }, [])
@@ -50,6 +52,15 @@ export function ToolsPage() {
           <SonaSwitch
             checked={unlockStatus}
             onChange={(v) => { setUnlockStatus(v); store.set('unlockStatus', v) }}
+          />
+        </SettingCard>
+        <SettingCard
+          title="大乱斗无CD换英雄"
+          description="移除共享池英雄的切换冷却限制，随时换取心仪英雄。"
+        >
+          <SonaSwitch
+            checked={benchNoCooldown}
+            onChange={(v) => { setBenchNoCooldown(v); store.set('benchNoCooldown', v) }}
           />
         </SettingCard>
       </SettingGroup>
