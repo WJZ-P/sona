@@ -84,9 +84,11 @@ function tryHijackBenchItems(): boolean {
   const container = document.querySelector('.bench-container')
   if (!container) return true
 
-  // 视觉：移除所有 CD 类名和遮罩
-  container.querySelectorAll('[class*="on-cooldown"]').forEach((el) => {
-    const toRemove = Array.from(el.classList).filter((c) => c.startsWith('on-cooldown'))
+  // 视觉：移除所有限制类名和遮罩
+  container.querySelectorAll('.champion-bench-item').forEach((el) => {
+    const toRemove = Array.from(el.classList).filter((c) =>
+      c.startsWith('on-cooldown') || c === 'locked-out' || c.startsWith('waiting-on-finalization')
+    )
     toRemove.forEach((c) => el.classList.remove(c))
     const mask = el.querySelector('.cooldown-mask')
     if (mask instanceof HTMLElement) mask.style.display = 'none'
@@ -94,8 +96,8 @@ function tryHijackBenchItems(): boolean {
 
   // 逻辑：接管未被接管的 bench item 的点击事件
   container.querySelectorAll(`.champion-bench-item:not([${BENCH_HIJACK_ATTR}])`).forEach((item) => {
-    // 跳过空位和锁定位
-    if (item.classList.contains('empty-bench-item') || item.classList.contains('locked-out')) return
+    // 跳过空位
+    if (item.classList.contains('empty-bench-item')) return
 
     item.setAttribute(BENCH_HIJACK_ATTR, 'true')
 
