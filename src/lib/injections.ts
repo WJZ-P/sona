@@ -13,6 +13,11 @@ import { logger } from '@/index'
 import { injector } from '@/lib/InjectorManager'
 import { openModal, onModalVisibilityChange } from '@/lib/modal'
 import sonaIcon from '../../assets/Champie_Sona_profileicon.png'
+import { lcu } from '@/lib/lcu'
+import type { Availability } from '@/lib/lcu'
+
+/** 通用标记：标识已被 Sona 接管的 DOM 元素，防止重复绑定 */
+const HIJACKED_ATTR = 'data-sona-hijacked'
 
 // ==================== Sona 入口按钮 ====================
 
@@ -81,6 +86,115 @@ function tryUnlockStatusInput(): boolean {
   return true
 }
 
+// ==================== 接管在线状态切换按钮 ====================
+
+
+const MENU_ID = 'sona-availability-menu'
+
+const AVAILABILITY_OPTIONS: { value: Availability; label: string }[] = [
+  { value: 'chat', label: '在线' },
+  { value: 'away', label: '离开' },
+  //{ value: 'dnd', label: '勿扰' }, 勿扰跟离开看起来是一样的，留一个就行了
+  { value: 'offline', label: '隐身' },
+  { value: 'mobile', label: '手机在线' },
+]
+
+/** 当前状态缓存 */
+let currentAvailability: Availability = 'chat'
+
+/** 关闭已有的菜单 */
+function closeAvailabilityMenu() {
+  document.getElementById(MENU_ID)?.remove()
+}
+
+/** 创建并显示状态选择菜单 */
+function showAvailabilityMenu(anchor: HTMLElement) {
+  closeAvailabilityMenu()
+
+  const menu = document.createElement('div')
+  menu.id = MENU_ID
+  menu.className = 'sona-availability-menu'
+
+  for (const option of AVAILABILITY_OPTIONS) {
+    const btn = document.createElement('button')
+    btn.className = `sona-availability-option${currentAvailability === option.value ? ' sona-availability-option--active' : ''}`
+    btn.type = 'button'
+    btn.innerHTML = `
+      <span class="sona-availability-dot sona-availability-dot--${option.value}"></span>
+      <span>${option.label}</span>
+    `
+
+    btn.addEventListener('mousedown', (e) => e.stopPropagation())
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation()
+      e.stopImmediatePropagation()
+
+      if (option.value !== currentAvailability) {
+        currentAvailability = option.value
+        lcu.setAvailability(option.value)
+          .then(() => logger.info('Status changed to: %s', option.value))
+          .catch((err) => logger.error('Failed to set status:', err))
+      }
+      closeAvailabilityMenu()
+    }, true)
+
+    menu.appendChild(btn)
+  }
+
+  // 计算 fixed 定位坐标，基于 anchor 的位置
+  const rect = anchor.getBoundingClientRect()
+  menu.style.top = `${rect.bottom + 6}px`
+  menu.style.left = `${rect.left + rect.width / 2 - 6}px` // 60 ≈ min-width/2
+
+  document.body.appendChild(menu)
+
+  // 点击外部关闭
+  const onOutsideClick = (e: MouseEvent) => {
+    if (!menu.contains(e.target as Node)) {
+      closeAvailabilityMenu()
+      document.removeEventListener('mousedown', onOutsideClick, true)
+    }
+  }
+  // 延迟一帧再绑定，避免当前这次点击立刻触发关闭
+  requestAnimationFrame(() => {
+    document.addEventListener('mousedown', onOutsideClick, true)
+  })
+}
+
+/**
+ * 注入任务：接管 .lol-social-availability-hitbox 的点击事件
+ * 阻止客户端原有逻辑，替换为自定义的状态选择菜单
+ */
+function tryHijackAvailabilityHitbox(): boolean {
+  const hitbox = document.querySelector(`.lol-social-availability-hitbox:not([${HIJACKED_ATTR}])`) as HTMLElement | null
+  if (!hitbox) return true
+
+  hitbox.setAttribute(HIJACKED_ATTR, 'true')
+
+  // 初始化时获取当前真实状态
+  lcu.getChatMe()
+    .then((me) => { currentAvailability = me.availability })
+    .catch(() => {})
+
+  hitbox.addEventListener('click', (e) => {
+    e.stopPropagation()
+    e.stopImmediatePropagation()
+    e.preventDefault()
+    logger.debug('Availability hitbox clicked')
+    // 已经打开则关闭，否则打开
+    if (document.getElementById(MENU_ID)) {
+      closeAvailabilityMenu()
+      logger.debug('Availability menu closed')
+    } else {
+      showAvailabilityMenu(hitbox)
+      logger.debug('Availability menu shown')
+    }
+  }, true)
+
+  logger.info('Availability hitbox hijacked ✓')
+  return true
+}
+
 // ==================== 注册所有注入点 ====================
 
 /**
@@ -90,6 +204,7 @@ function tryUnlockStatusInput(): boolean {
 export function registerAllInjections() {
   injector.register(tryInjectSonaButton)
   injector.register(tryUnlockStatusInput)
+  injector.register(tryHijackAvailabilityHitbox)
 
   injector.start()
 }

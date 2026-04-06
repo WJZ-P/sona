@@ -9,6 +9,7 @@ import { injector } from '@/lib/InjectorManager'
 import { lcu } from '@/lib/lcu'
 import '@/styles/index.css'
 import '@/styles/inject.css'
+import '@/styles/availabilityMenu.css'
 
 const PLUGIN_NAME = 'Sona'
 const PLUGIN_VERSION = __PLUGIN_VERSION__
