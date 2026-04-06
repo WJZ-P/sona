@@ -69,7 +69,7 @@
 }
 
 .sona-availability-dot--chat     { background: #43b581; box-shadow: 0 0 4px rgba(67, 181, 129, 0.6); }
-.sona-availability-dot--away     { background: #faa61a; box-shadow: 0 0 4px rgba(250, 166, 26, 0.6); }
-.sona-availability-dot--dnd      { background: #f04747; box-shadow: 0 0 4px rgba(240, 71, 71, 0.6); }
+.sona-availability-dot--away     { background: #f04747; box-shadow: 0 0 4px rgba(240, 71, 71, 0.6);}
+.sona-availability-dot--dnd      { background: #faa61a; box-shadow: 0 0 4px rgba(250, 166, 26, 0.6);}
 .sona-availability-dot--offline  { background: #747f8d; box-shadow: none; }
 .sona-availability-dot--mobile   { background: #43b581; box-shadow: 0 0 4px rgba(67, 181, 129, 0.6); }
