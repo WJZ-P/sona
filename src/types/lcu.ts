@@ -337,6 +337,20 @@ export interface ChampSelectPlayer {
   team: number
 }
 
+/** 选人阶段玩家详细信息（组合查询结果） */
+export interface ChampSelectPlayerDetail {
+  summonerId: number
+  championId: number
+  assignedPosition: string
+  gameName: string
+  tagLine: string
+  summonerLevel: number
+  puuid: string
+  profileIconId: number
+  ranked: unknown
+  recentMatches: unknown
+}
+
 // ==================== 队列相关 ====================
 
 /** 常用队列ID */

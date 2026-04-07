@@ -19,6 +19,7 @@ import type {
   GameflowPhase,
   GameflowSession,
   ChampSelectSession,
+  ChampSelectPlayerDetail,
   ChatConversation,
   ChatMessage,
   ChatMe,
@@ -29,7 +30,7 @@ import type {
 } from '@/types/lcu'
 
 // Re-export types for convenience
-export type { SummonerInfo, LobbyConfig, Lobby, GameflowPhase, GameflowSession, LCUEventMessage, ChatConversation, ChatMessage, ChatMe, Availability, SendChatMessageBody, ReadyCheck }
+export type { SummonerInfo, LobbyConfig, Lobby, GameflowPhase, GameflowSession, LCUEventMessage, ChatConversation, ChatMessage, ChatMe, Availability, SendChatMessageBody, ReadyCheck, ChampSelectPlayerDetail }
 export { LcuEventUri, QueueId } from '@/types/lcu'
 
 // ==================== 底层请求方法 ====================
@@ -138,6 +139,26 @@ class LCUManager {
   /** 获取当前登录的召唤师信息 */
   getSummonerInfo(): Promise<SummonerInfo> {
     return get<SummonerInfo>('/lol-summoner/v1/current-summoner')
+  }
+
+  /** 通过 summoner ID 获取召唤师信息 */
+  getSummonerById(summonerId: number): Promise<SummonerInfo> {
+    return get<SummonerInfo>(`/lol-summoner/v1/summoners/${summonerId}`)
+  }
+
+  /** 通过 puuid 获取召唤师信息 */
+  getSummonerByPuuid(puuid: string): Promise<SummonerInfo> {
+    return get<SummonerInfo>(`/lol-summoner/v2/summoners/puuid/${puuid}`)
+  }
+
+  /** 获取当前玩家的排位数据 */
+  getCurrentRankedStats(): Promise<unknown> {
+    return get('/lol-ranked/v1/current-ranked-stats')
+  }
+
+  /** 通过 puuid 获取排位数据 */
+  getRankedStats(puuid: string): Promise<unknown> {
+    return get(`/lol-ranked/v1/ranked-stats/${puuid}`)
   }
 
   // ==================== 房间/大厅 ====================
@@ -288,6 +309,60 @@ class LCUManager {
   async getBenchChampions(): Promise<{ championId: number; isPriority: boolean }[]> {
     const session = await this.getChampSelectSession()
     return session.benchChampions
+  }
+
+  /**
+   * 获取本局选人阶段所有玩家的详细信息
+   * 包含召唤师信息、排位数据、近期战绩
+   * @returns 我方和敌方玩家信息数组
+   */
+  async getChampSelectPlayers(): Promise<{
+    myTeam: ChampSelectPlayerDetail[]
+    theirTeam: ChampSelectPlayerDetail[]
+  }> {
+    const session = await this.getChampSelectSession()
+
+    const fetchDetail = async (player: { summonerId: number; championId: number; assignedPosition: string }): Promise<ChampSelectPlayerDetail> => {
+      try {
+        const summoner = await this.getSummonerById(player.summonerId)
+        const [ranked, matchHistory] = await Promise.all([
+          this.getRankedStats(summoner.puuid).catch(() => null),
+          this.getMatchHistory(summoner.puuid, 0, 19).catch(() => null),
+        ])
+        return {
+          summonerId: player.summonerId,
+          championId: player.championId,
+          assignedPosition: player.assignedPosition,
+          gameName: summoner.gameName,
+          tagLine: summoner.tagLine,
+          summonerLevel: summoner.summonerLevel,
+          puuid: summoner.puuid,
+          profileIconId: summoner.profileIconId,
+          ranked,
+          recentMatches: matchHistory,
+        }
+      } catch {
+        return {
+          summonerId: player.summonerId,
+          championId: player.championId,
+          assignedPosition: player.assignedPosition,
+          gameName: 'Unknown',
+          tagLine: '',
+          summonerLevel: 0,
+          puuid: '',
+          profileIconId: 0,
+          ranked: null,
+          recentMatches: null,
+        }
+      }
+    }
+
+    const [myTeam, theirTeam] = await Promise.all([
+      Promise.all(session.myTeam.map(fetchDetail)),
+      Promise.all(session.theirTeam.map(fetchDetail)),
+    ])
+
+    return { myTeam, theirTeam }
   }
 
   // ==================== 聊天 ====================
