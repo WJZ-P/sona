@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { SettingCard, SettingGroup } from '@/components/ui/SettingCard'
 import { SonaButton } from '@/components/ui/SonaButton'
+import { SonaInput } from '@/components/ui/SonaInput'
 import { store } from '@/lib/store'
 import { lcu } from '@/lib/lcu'
 import { logger } from '@/index'
@@ -8,6 +9,8 @@ import '@/styles/SettingsPage.css'
 
 export function DebugPage() {
   const [output, setOutput] = useState('')
+  const [gameId, setGameId] = useState('')
+  const [puuid, setPuuid] = useState('')
 
   const runAndLog = async (label: string, fn: () => Promise<unknown>) => {
     setOutput(`⏳ ${label}...`)
@@ -38,6 +41,55 @@ export function DebugPage() {
           </SonaButton>
           <SonaButton onClick={() => runAndLog('获取聊天会话', () => lcu.getChatConversations())}>
             聊天会话列表
+          </SonaButton>
+        </div>
+      </SettingGroup>
+
+      <SettingGroup title="战绩查询">
+        <div className="sona-debug-actions">
+          <SonaButton onClick={() => runAndLog('获取战绩列表', () => lcu.getMatchHistory())}>
+            我的战绩
+          </SonaButton>
+          <SonaButton onClick={() => runAndLog('最近一起玩的人', () => lcu.getRecentlyPlayedSummoners())}>
+            最近队友
+          </SonaButton>
+        </div>
+        <div className="sona-debug-actions" style={{ marginTop: 8, alignItems: 'flex-end', gap: 8 }}>
+          <div style={{ flex: 1 }}>
+            <SonaInput
+              value={puuid}
+              onChange={setPuuid}
+              placeholder="输入 PUUID 查他人战绩..."
+            />
+          </div>
+          <SonaButton onClick={() => {
+            if (!puuid.trim()) { setOutput('❌ 请输入 PUUID'); return }
+            runAndLog(`战绩 (${puuid.slice(0, 8)}...)`, () => lcu.getMatchHistory(puuid.trim()))
+          }}>
+            查询战绩
+          </SonaButton>
+        </div>
+        <div className="sona-debug-actions" style={{ marginTop: 8, alignItems: 'flex-end', gap: 8 }}>
+          <div style={{ flex: 1 }}>
+            <SonaInput
+              value={gameId}
+              onChange={setGameId}
+              placeholder="输入 Game ID..."
+            />
+          </div>
+          <SonaButton onClick={() => {
+            const id = Number(gameId)
+            if (!id) { setOutput('❌ 请输入有效的 Game ID'); return }
+            runAndLog(`对局详情 #${id}`, () => lcu.getMatchDetail(id))
+          }}>
+            对局详情
+          </SonaButton>
+          <SonaButton onClick={() => {
+            const id = Number(gameId)
+            if (!id) { setOutput('❌ 请输入有效的 Game ID'); return }
+            runAndLog(`时间线 #${id}`, () => lcu.getMatchTimeline(id))
+          }}>
+            时间线
           </SonaButton>
         </div>
       </SettingGroup>

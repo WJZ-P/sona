@@ -373,6 +373,42 @@ class LCUManager {
     return get('/lol-lobby/v1/parties/gamemode')
   }
 
+  // ==================== 战绩 ====================
+
+  /**
+   * 获取战绩列表
+   * @param puuid 不传则查当前玩家，传入则查指定玩家
+   * @param begIndex 起始索引，默认 0
+   * @param endIndex 结束索引，默认 19（共 20 条）
+   */
+  getMatchHistory(puuid?: string, begIndex = 0, endIndex = 19): Promise<unknown> {
+    const base = puuid
+      ? `/lol-match-history/v1/products/lol/${puuid}/matches`
+      : '/lol-match-history/v1/products/lol/current-summoner/matches'
+    return get(`${base}?begIndex=${begIndex}&endIndex=${endIndex}`)
+  }
+
+  /**
+   * 获取单局对局详情
+   * @param gameId 对局 ID
+   */
+  getMatchDetail(gameId: number): Promise<unknown> {
+    return get(`/lol-match-history/v1/games/${gameId}`)
+  }
+
+  /**
+   * 获取单局时间线数据
+   * @param gameId 对局 ID
+   */
+  getMatchTimeline(gameId: number): Promise<unknown> {
+    return get(`/lol-match-history/v1/game-timelines/${gameId}`)
+  }
+
+  /** 获取最近一起玩过的召唤师 */
+  getRecentlyPlayedSummoners(): Promise<unknown> {
+    return get('/lol-match-history/v1/recently-played-summoners')
+  }
+
   // ==================== 通知 ====================
 
   /**
