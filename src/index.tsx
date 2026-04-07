@@ -127,7 +127,7 @@ function mountApp() {
   logger.info('Mounted ✓ (container connected: %s)', String(container.isConnected))
 
   if (!runtime.hasShownStartupToast) {
-    lcu.sendNotification('Sona', '插件已启动 ♫')
+    Toast.success('Sona 已启动 ♫')
     runtime.hasShownStartupToast = true
   }
 }
