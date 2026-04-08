@@ -8,7 +8,7 @@
 import { logger } from '@/index'
 import { store } from '@/lib/store'
 import { lcu, LcuEventUri } from '@/lib/lcu'
-import type { LCUEventMessage, ReadyCheck } from '@/lib/lcu'
+import type { LCUEventMessage, GameflowPhase } from '@/lib/lcu'
 import { injector } from '@/lib/InjectorManager'
 
 // ==================== 自动接受对局 ====================
@@ -17,10 +17,10 @@ let autoAcceptUnsub: (() => void) | null = null
 
 function updateAutoAccept(enabled: boolean) {
   if (enabled && !autoAcceptUnsub) {
-    autoAcceptUnsub = lcu.observe(LcuEventUri.READY_CHECK, (event: LCUEventMessage) => {
-      const readyCheck = event.data as ReadyCheck
-      logger.info('Ready check event → %o', readyCheck)
-      if (readyCheck.state === 'InProgress' && readyCheck.playerResponse === 'None') {
+    autoAcceptUnsub = lcu.observe(LcuEventUri.GAMEFLOW_PHASE_CHANGE, (event: LCUEventMessage) => {
+      const phase = event.data as GameflowPhase
+      logger.info('Gameflow phase → %s', phase)
+      if (phase === 'ReadyCheck') {
         lcu.acceptMatch()
           .then(() => logger.info('Auto accepted match ✓'))
           .catch((err) => logger.error('Auto accept failed:', err))
