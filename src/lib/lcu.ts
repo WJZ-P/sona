@@ -122,6 +122,8 @@ class LCUManager {
    */
   bindContext(context: PenguContext) {
     this.penguContext = context
+    // reload 后拿到新 context，必须清空旧注册，让 observe() 用新 socket 重新订阅
+    this.eventListeners.clear()
   }
 
   // -------------------- 底层请求 (公开) --------------------
@@ -532,17 +534,24 @@ class LCUManager {
       return () => {}
     }
 
+    console.log('[LCUManager] observe() called → uri=%s, penguContext=%o, socket=%o', uri, this.penguContext, this.penguContext.socket)
+    console.log('[LCUManager] eventListeners has uri? %s, listeners count: %d', this.eventListeners.has(uri), this.eventListeners.get(uri)?.size ?? 0)
+
     let listeners = this.eventListeners.get(uri)
     if (!listeners) {
       listeners = new Set()
       this.eventListeners.set(uri, listeners)
 
+      console.log('[LCUManager] 首次注册 URI: %s → 调用 penguContext.socket.observe', uri)
       // 首次注册此 URI 时，通过 Pengu 的 socket 订阅
       this.penguContext.socket.observe(uri, (data) => {
+        console.log('[LCUManager] WS 收到事件 → uri=%s, data=%o', uri, data)
         const message = data as LCUEventMessage
         const cbs = this.eventListeners.get(uri)
         cbs?.forEach((cb) => cb(message))
       })
+    } else {
+      console.log('[LCUManager] URI 已存在，跳过 socket.observe，直接追加回调: %s', uri)
     }
 
     listeners.add(callback)
