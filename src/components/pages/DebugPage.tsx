@@ -11,6 +11,7 @@ export function DebugPage() {
   const [output, setOutput] = useState('')
   const [gameId, setGameId] = useState('')
   const [puuid, setPuuid] = useState('')
+  const [chatMsg, setChatMsg] = useState('')
 
   const runAndLog = async (label: string, fn: () => Promise<unknown>) => {
     setOutput(`⏳ ${label}...`)
@@ -123,6 +124,25 @@ export function DebugPage() {
             时间线
           </SonaButton>
         </div>
+      </SettingGroup>
+
+      <SettingGroup title="聊天调试">
+        <div className="sona-debug-actions" style={{ gap: 8 }}>
+          <div style={{ flex: 1 }}>
+            <SonaInput
+              value={chatMsg}
+              onChange={setChatMsg}
+              placeholder="输入要发送到选人聊天的消息..."
+            />
+          </div>
+          <SonaButton onClick={() => {
+            if (!chatMsg.trim()) { setOutput('❌ 请输入消息'); return }
+            runAndLog(`发送聊天 (${chatMsg.length}字)`, () => lcu.sendChampSelectMessage(chatMsg))
+          }}>
+            发送
+          </SonaButton>
+        </div>
+        <p className="sona-subtitle">字数: {chatMsg.length}</p>
       </SettingGroup>
 
       <SettingGroup title="客户端操作">

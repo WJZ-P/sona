@@ -32,6 +32,8 @@ export function ToolsPage() {
   const [unlockStatus, setUnlockStatus] = useState(store.get('unlockStatus'))
   const [benchNoCooldown, setBenchNoCooldown] = useState(store.get('benchNoCooldown'))
   const [windowEffect, setWindowEffect] = useState(store.get('windowEffect'))
+  const [champSelectAssist, setChampSelectAssist] = useState(store.get('champSelectAssist'))
+  const [analyzeTeamPower, setAnalyzeTeamPower] = useState(store.get('analyzeTeamPower'))
 
   useEffect(() => {
     const unsubs = [
@@ -39,6 +41,8 @@ export function ToolsPage() {
       store.onChange('unlockStatus', setUnlockStatus),
       store.onChange('benchNoCooldown', setBenchNoCooldown),
       store.onChange('windowEffect', setWindowEffect),
+      store.onChange('champSelectAssist', setChampSelectAssist),
+      store.onChange('analyzeTeamPower', setAnalyzeTeamPower),
     ]
     return () => unsubs.forEach((fn) => fn())
   }, [])
@@ -61,6 +65,18 @@ export function ToolsPage() {
 
       <SettingGroup title="客户端功能">
         <SettingCard
+          title="解锁自定义签名"
+          description="移除客户端对签名编辑的禁用限制，可自由修改个人签名。"
+        >
+          <SonaSwitch
+            checked={unlockStatus}
+            onChange={(v) => { setUnlockStatus(v); store.set('unlockStatus', v) }}
+          />
+        </SettingCard>
+      </SettingGroup>
+
+      <SettingGroup title="对局相关">
+        <SettingCard
           title="自动接受对局"
           description="匹配到对局时自动点击接受，再也不会错过。"
         >
@@ -70,21 +86,30 @@ export function ToolsPage() {
           />
         </SettingCard>
         <SettingCard
-          title="解锁自定义签名"
-          description="移除客户端对签名编辑的禁用限制，可自由修改个人签名。"
-        >
-          <SonaSwitch
-            checked={unlockStatus}
-            onChange={(v) => { setUnlockStatus(v); store.set('unlockStatus', v) }}
-          />
-        </SettingCard>
-        <SettingCard
           title="大乱斗无CD换英雄"
           description="移除共享池英雄的切换冷却限制，随时换取心仪英雄。"
         >
           <SonaSwitch
             checked={benchNoCooldown}
             onChange={(v) => { setBenchNoCooldown(v); store.set('benchNoCooldown', v) }}
+          />
+        </SettingCard>
+        <SettingCard
+          title="分析友方战力"
+          description="进入英雄选择时，自动分析队友近期战绩并发送到队伍聊天框。"
+        >
+          <SonaSwitch
+            checked={analyzeTeamPower}
+            onChange={(v) => { setAnalyzeTeamPower(v); store.set('analyzeTeamPower', v) }}
+          />
+        </SettingCard>
+        <SettingCard
+          title="友方头像交互"
+          description="英雄选择时，点击队友头像展示其历史信息。"
+        >
+          <SonaSwitch
+            checked={champSelectAssist}
+            onChange={(v) => { setChampSelectAssist(v); store.set('champSelectAssist', v) }}
           />
         </SettingCard>
       </SettingGroup>

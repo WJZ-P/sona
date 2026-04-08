@@ -27,10 +27,11 @@ import type {
   SendChatMessageBody,
   QueueId,
   LCUEventMessage,
+  MatchHistoryResponse,
 } from '@/types/lcu'
 
 // Re-export types for convenience
-export type { SummonerInfo, LobbyConfig, Lobby, GameflowPhase, GameflowSession, LCUEventMessage, ChatConversation, ChatMessage, ChatMe, Availability, SendChatMessageBody, ReadyCheck, ChampSelectPlayerDetail }
+export type { SummonerInfo, LobbyConfig, Lobby, GameflowPhase, GameflowSession, LCUEventMessage, ChatConversation, ChatMessage, ChatMe, Availability, SendChatMessageBody, ReadyCheck, ChampSelectPlayerDetail, MatchHistoryResponse }
 export { LcuEventUri, QueueId } from '@/types/lcu'
 
 // ==================== 底层请求方法 ====================
@@ -412,6 +413,10 @@ class LCUManager {
 
   /**
    * 向指定会话发送消息
+   *
+   * 注意：LCU API 单条消息最大长度为 2696 个字符（含空格），超出会被截断或拒绝。
+   * 该限制为 API 层限制，客户端前端 UI 的 200 字限制仅为前端校验。
+   *
    * @param conversationId 会话 ID
    * @param message 消息内容（字符串或完整请求体）
    */
@@ -466,7 +471,7 @@ class LCUManager {
    * @param begIndex 起始索引，默认 0
    * @param endIndex 结束索引，默认 19（共 20 条）
    */
-  getMatchHistory(puuid?: string, begIndex = 0, endIndex = 19): Promise<unknown> {
+  getMatchHistory(puuid?: string, begIndex = 0, endIndex = 19): Promise<MatchHistoryResponse> {
     const base = puuid
       ? `/lol-match-history/v1/products/lol/${puuid}/matches`
       : '/lol-match-history/v1/products/lol/current-summoner/matches'

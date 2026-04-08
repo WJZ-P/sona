@@ -375,6 +375,115 @@ export enum QueueId {
   ARAM = 450,
 }
 
+// ==================== 战绩相关 ====================
+
+/** 战绩列表响应 — GET /lol-match-history/v1/products/lol/{puuid}/matches */
+export interface MatchHistoryResponse {
+  accountId: number
+  games: {
+    gameBeginDate: string
+    gameCount: number
+    gameEndDate: string
+    gameIndexBegin: number
+    gameIndexEnd: number
+    games: MatchGame[]
+  }
+  platformId: string
+}
+
+/** 单场对局 */
+export interface MatchGame {
+  gameCreation: number
+  gameCreationDate: string
+  gameDuration: number
+  gameId: number
+  gameMode: string
+  gameType: string
+  gameVersion: string
+  mapId: number
+  participantIdentities: ParticipantIdentity[]
+  participants: Participant[]
+  queueId: number
+  seasonId: number
+}
+
+/** 参与者身份 */
+export interface ParticipantIdentity {
+  participantId: number
+  player: {
+    accountId: number
+    currentAccountId: number
+    currentPlatformId: string
+    gameName: string
+    matchHistoryUri: string
+    platformId: string
+    profileIcon: number
+    puuid: string
+    summonerId: number
+    summonerName: string
+    tagLine: string
+  }
+}
+
+/** 参与者数据 */
+export interface Participant {
+  championId: number
+  participantId: number
+  spell1Id: number
+  spell2Id: number
+  stats: ParticipantStats
+  teamId: number
+  timeline: Record<string, unknown>
+}
+
+/** 参与者统计数据 */
+export interface ParticipantStats {
+  assists: number
+  causedEarlySurrender: boolean
+  champLevel: number
+  damageDealtToObjectives: number
+  damageDealtToTurrets: number
+  damageSelfMitigated: number
+  deaths: number
+  doubleKills: number
+  earlySurrenderAccomplice: boolean
+  firstBloodAssist: boolean
+  firstBloodKill: boolean
+  goldEarned: number
+  goldSpent: number
+  item0: number
+  item1: number
+  item2: number
+  item3: number
+  item4: number
+  item5: number
+  item6: number
+  kills: number
+  largestKillingSpree: number
+  largestMultiKill: number
+  magicDamageDealt: number
+  magicDamageDealtToChampions: number
+  magicDamageTaken: number
+  neutralMinionsKilled: number
+  pentaKills: number
+  physicalDamageDealt: number
+  physicalDamageDealtToChampions: number
+  physicalDamageTaken: number
+  quadraKills: number
+  totalDamageDealt: number
+  totalDamageDealtToChampions: number
+  totalDamageTaken: number
+  totalHeal: number
+  totalMinionsKilled: number
+  tripleKills: number
+  turretKills: number
+  visionScore: number
+  visionWardsBoughtInGame: number
+  wardsKilled: number
+  wardsPlaced: number
+  win: boolean
+}
+
 // ==================== WebSocket 事件相关 ====================
 
 /** LCU WebSocket 事件消息 */

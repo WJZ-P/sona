@@ -10,6 +10,7 @@ import { store } from '@/lib/store'
 import { lcu, LcuEventUri } from '@/lib/lcu'
 import type { LCUEventMessage, GameflowPhase } from '@/lib/lcu'
 import { injector } from '@/lib/InjectorManager'
+import { sleep } from '@/lib/utils'
 
 // ==================== 自动接受对局 ====================
 
@@ -194,6 +195,137 @@ function updateBenchNoCooldown(enabled: boolean) {
   }
 }
 
+// ==================== 选人阶段辅助信息 ====================
+
+/**
+ * 根据胜率和 KDA 给出 LOL 风格幽默评价
+ */
+function getRating(winRate: number, kda: number): string {
+  if (winRate >= 75 && kda >= 4.5) return '👑 峡谷通天代'
+  if (winRate >= 70) return '🚀 降维来炸鱼'
+  if (winRate >= 65) return '🔥 绝对真大腿'
+  if (winRate >= 60) return '⚔️ 绝活哥出列'
+  if (winRate >= 56) return '✨ 稳健老司机'
+  if (winRate >= 52) return '🛡️ 上分好帮手'
+  if (winRate >= 48) return '🎲 峡谷摇摆人'
+  if (winRate >= 45) return '🫠 尽力局局长'
+  if (winRate >= 41) return '🍂 随缘在补位'
+  if (winRate >= 37) return '💀 连败渡劫中'
+  if (winRate >= 33) return '🤡 敌方突破口'
+  if (winRate >= 28) return '💸 峡谷提款机'
+  if (winRate >= 20) return '🏳️ 投降发起人'
+  return '☠️ 演员已就位'
+}
+
+async function analyzeTeammates() {
+  try {
+    const session = await lcu.getChampSelectSession()
+    const myTeam = session.myTeam.filter((p) => p.summonerId > 0)
+    const localPlayer = session.myTeam.find((p) => p.cellId === session.localPlayerCellId)
+
+    // 判断红蓝方：cellId 0-4 蓝方，5-9 红方
+    const isBlue = localPlayer ? localPlayer.cellId < 5 : true
+    const sideText = isBlue ? '🔵 蓝方 (左下方)' : '🔴 红方 (右上方)'
+
+    logger.info('┌─── 队友战绩分析 ───')
+    logger.info('│ 阵营: %s', sideText)
+
+    const chatLines: string[] = [`Sona ♫ 本局${isBlue ? '🔵 蓝方 (左下方)' : '🔴 红方 (右上方)'} — 本局队友卡池一览:`]
+
+    for (let i = 0; i < myTeam.length; i++) {
+      const player = myTeam[i]
+      const floor = `${i + 1}楼`
+
+      try {
+        const summoner = await lcu.getSummonerById(player.summonerId)
+        const history = await lcu.getMatchHistory(summoner.puuid, 0, 19)
+        const games = history.games?.games ?? []
+
+        if (games.length === 0) {
+          logger.info('│ %s — %s#%s — 无近期战绩', floor, summoner.gameName, summoner.tagLine)
+          chatLines.push(`${floor}: 🆕 萌新上线 (无战绩)`)
+          continue
+        }
+
+        let wins = 0, totalKills = 0, totalDeaths = 0, totalAssists = 0
+
+        for (const game of games) {
+          const identity = game.participantIdentities.find((id) => id.player.puuid === summoner.puuid)
+          if (!identity) continue
+          const participant = game.participants.find((p) => p.participantId === identity.participantId)
+          if (!participant) continue
+
+          if (participant.stats.win) wins++
+          totalKills += participant.stats.kills
+          totalDeaths += participant.stats.deaths
+          totalAssists += participant.stats.assists
+        }
+
+        const total = games.length
+        const winRateNum = (wins / total) * 100
+        const winRate = winRateNum.toFixed(1)
+        const avgK = (totalKills / total).toFixed(1)
+        const avgD = (totalDeaths / total).toFixed(1)
+        const avgA = (totalAssists / total).toFixed(1)
+        const kdaNum = totalDeaths === 0 ? 99 : (totalKills + totalAssists) / totalDeaths
+        const kdaStr = totalDeaths === 0 ? 'Perfect' : kdaNum.toFixed(2)
+        const rating = getRating(winRateNum, kdaNum)
+
+        logger.info(
+          '│ %s — %s#%s — 近%d场 胜率: %s%% (%d胜%d负) | KDA: %s (%s/%s/%s) | %s',
+          floor, summoner.gameName, summoner.tagLine,
+          total, winRate, wins, total - wins,
+          kdaStr, avgK, avgD, avgA, rating,
+        )
+
+        chatLines.push(`${floor}: ${rating} | 胜率${winRate}% | KDA ${kdaStr}`)
+      } catch {
+        logger.warn('│ %s — 查询失败', floor)
+        chatLines.push(`${floor}: ❓ 查询失败`)
+      }
+    }
+
+    logger.info('└────────────────────')
+
+    // 等待聊天室就绪后发送（刚进选人阶段时聊天室可能还没初始化）
+    const msg = chatLines.join('\n')
+    for (let attempt = 0; attempt < 10; attempt++) {
+      try {
+        await lcu.sendChampSelectMessage(msg)
+        logger.info('队友分析已发送到聊天框 ✓')
+        break
+      } catch {
+        if (attempt < 9) {
+          logger.warn(`第${attempt + 1}次聊天发送失败，重试中...`)
+          await sleep(1000)
+        } else {
+          logger.warn('聊天发送失败，聊天室始终未就绪')
+        }
+      }
+    }
+  } catch (err) {
+    logger.error('队友战绩分析失败:', err)
+  }
+}
+
+let analyzeTeamPowerUnsub: (() => void) | null = null
+
+function updateAnalyzeTeamPower(enabled: boolean) {
+  if (enabled && !analyzeTeamPowerUnsub) {
+    analyzeTeamPowerUnsub = lcu.observe(LcuEventUri.GAMEFLOW_PHASE_CHANGE, (event: LCUEventMessage) => {
+      const phase = event.data as GameflowPhase
+      if (phase === 'ChampSelect') {
+        analyzeTeammates()
+      }
+    })
+    logger.info('Analyze team power enabled ✓')
+  } else if (!enabled && analyzeTeamPowerUnsub) {
+    analyzeTeamPowerUnsub()
+    analyzeTeamPowerUnsub = null
+    logger.info('Analyze team power disabled')
+  }
+}
+
 // ==================== 初始化 ====================
 
 /**
@@ -212,6 +344,11 @@ export function initFeatures() {
 
   updateBenchNoCooldown(store.get('benchNoCooldown'))
   store.onChange('benchNoCooldown', updateBenchNoCooldown)
+
+  updateAnalyzeTeamPower(store.get('analyzeTeamPower'))
+  store.onChange('analyzeTeamPower', updateAnalyzeTeamPower)
+
+  // TODO: champSelectAssist — 选人头像交互（未实现）
 
   // 恢复窗口特效
   const savedEffect = store.get('windowEffect')
