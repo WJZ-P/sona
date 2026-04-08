@@ -45,6 +45,37 @@ export function DebugPage() {
         </div>
       </SettingGroup>
 
+      <SettingGroup title="英雄选择 (ARAM)">
+        <div className="sona-debug-actions">
+          <SonaButton onClick={() => runAndLog('ARAM 重随', () => lcu.reroll())}>
+            重随英雄
+          </SonaButton>
+          <SonaButton onClick={() => runAndLog('英雄选择会话', () => lcu.getChampSelectSession())}>
+            选人 Session
+          </SonaButton>
+          <SonaButton onClick={() => runAndLog('共享池英雄', () => lcu.getBenchChampions())}>
+            Bench 英雄
+          </SonaButton>
+          <SonaButton onClick={() => runAndLog('可选英雄列表', () => lcu.getPickableChampionIds())}>
+            可选英雄
+          </SonaButton>
+        </div>
+        <p className="sona-subtitle">点击选取共享池对应槽位的英雄</p>
+        <div className="sona-debug-actions">
+          {Array.from({ length: 10 }, (_, i) => (
+            <SonaButton key={i} style={{ minWidth: 40, padding: '6px 0' }} onClick={() => runAndLog(`Bench 换英雄 (槽位 ${i + 1})`, async () => {
+              const bench = await lcu.getBenchChampions()
+              if (i >= bench.length) throw new Error(`槽位 ${i + 1} 不存在，当前 Bench 共 ${bench.length} 个英雄`)
+              const target = bench[i]
+              logger.info('尝试换取槽位 %d 的英雄 → championId: %d', i + 1, target.championId)
+              return lcu.benchSwap(target.championId)
+            })}>
+              {i + 1}
+            </SonaButton>
+          ))}
+        </div>
+      </SettingGroup>
+
       <SettingGroup title="战绩查询">
         <div className="sona-debug-actions">
           <SonaButton onClick={() => runAndLog('获取战绩列表', () => lcu.getMatchHistory())}>

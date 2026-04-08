@@ -296,6 +296,14 @@ class LCUManager {
   }
 
   /**
+   * ARAM 重随英雄
+   * 消耗重随点数，随机获得一个新英雄
+   */
+  reroll(): Promise<unknown> {
+    return post('/lol-champ-select/v1/session/my-selection/reroll')
+  }
+
+  /**
    * 从 ARAM 共享池（Bench）中拿取英雄
    * 将自己当前的英雄放回池子，换取池中指定的英雄
    * @param championId 要从池中拿取的英雄 ID

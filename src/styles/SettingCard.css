@@ -86,3 +86,12 @@
   justify-content: flex-end;
   min-width: 50px;
 }
+
+/* ---- 通用小标题/说明文字 ---- */
+.sona-subtitle {
+  margin: 8px 0 4px;
+  font-size: 11px;
+  color: #a09b8c;
+  letter-spacing: 0.03em;
+  line-height: 1.6;
+}
