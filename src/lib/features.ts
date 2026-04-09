@@ -302,6 +302,8 @@ function tryInjectChampSelectTier(): boolean {
     iconContainer.setAttribute(SONA_TIER_ATTR, String(winRate))
     iconContainer.style.position = 'relative'
     iconContainer.style.overflow = 'visible'
+    iconContainer.style.borderRadius = '50%'
+
 
     const config = getTierConfig(winRate)
     if (config.filter) iconContainer.style.filter = config.filter

@@ -12,32 +12,36 @@ interface TierConfig {
 }
 
 function getTierConfig(winRate: number): TierConfig {
-  if (winRate >= 58) return {
+  if (winRate >= 70 ) return {
     id: 'blazing',
     borderColor: '#ff3300',
     particleColors: ['#ff3300', '#ffaa00', '#ff003c'],
     particleStyle: 'fire',
     boxShadow: '0 0 15px rgba(255,51,0,0.5)',
   }
-  if (winRate >= 52) return {
+  if (winRate >= 60 ) return {
     id: 'strong',
     borderColor: '#c8aa6e',
-    particleColors: ['#c8aa6e', '#f0e6d2', '#785a28'],
+    particleColors: ['#4a9eff', '#7ec8ff', '#2060c0'],
     particleStyle: 'magic',
-    boxShadow: '0 0 8px rgba(200,170,110,0.3)',
+    boxShadow: '0 0 8px rgba(74,158,255,0.35)',
   }
-  if (winRate >= 45) return {
+
+  if (winRate >= 50) return {
     id: 'normal',
     borderColor: '#3c2e16',
     particleColors: ['#a09b8c', '#5c6b73', '#d1d8e0'],
     particleStyle: 'ambient',
+    boxShadow: '0 0 6px rgba(160,155,140,0.25)',
   }
-  if (winRate >= 35) return {
+  if (winRate >= 40) return {
     id: 'shaky',
     borderColor: '#555555',
-    particleColors: ['#888888', '#555555', '#aaaaaa'],
+    particleColors: ['#8b6914', '#a07828', '#6b4e0a'],
     particleStyle: 'ash',
     filter: 'saturate(0.5)',
+    boxShadow: '0 0 6px rgba(139,105,20,0.3)',
+
   }
   return {
     id: 'dizzy',
@@ -45,7 +49,9 @@ function getTierConfig(winRate: number): TierConfig {
     particleColors: ['#8b00ff', '#4a0080', '#000000'],
     particleStyle: 'void',
     filter: 'grayscale(1) contrast(1.2)',
+    boxShadow: '0 0 10px rgba(139,0,255,0.4)',
   }
+
 }
 
 // ==================== 粒子类型 ====================
@@ -107,8 +113,9 @@ export function ChampSelectIconEffect({ winRate, width = 160, height = 160 }: Ch
 
       switch (config.particleStyle) {
         case 'fire':
-          p.vx = Math.cos(angle) * (Math.random() * 0.6 + 0.2)
-          p.vy = Math.sin(angle) * (Math.random() * 0.6 + 0.2) - 0.4
+          p.vx = Math.cos(angle) * (Math.random() * 0.3 + 0.1)
+          p.vy = Math.sin(angle) * (Math.random() * 0.3 + 0.1) - 0.2
+          p.decay = Math.random() * 0.008 + 0.003
           break
         case 'magic':
           p.vx = (Math.random() - 0.5) * 0.3
@@ -121,7 +128,7 @@ export function ChampSelectIconEffect({ winRate, width = 160, height = 160 }: Ch
           break
         case 'ash':
           p.vx = (Math.random() - 0.5) * 0.3
-          p.vy = Math.random() * 0.4 + 0.2
+          p.vy = Math.random() * 0.1 + 0.2
           break
         case 'void': {
           const spawnR = avatarRadius + 15
@@ -140,8 +147,9 @@ export function ChampSelectIconEffect({ winRate, width = 160, height = 160 }: Ch
     function render() {
       ctx.clearRect(0, 0, width, height)
 
-      const spawnRate = config.particleStyle === 'fire' ? 3 : 1
-      const spawnThreshold = config.particleStyle === 'ambient' ? 0.85 : 0.3
+      const spawnRate = config.particleStyle === 'fire' ? 3 : 2
+      const spawnThreshold = config.particleStyle === 'ambient' ? 0.7 : 0.3
+
       for (let i = 0; i < spawnRate; i++) {
         if (Math.random() > spawnThreshold) particles.push(createParticle())
       }
@@ -159,8 +167,17 @@ export function ChampSelectIconEffect({ winRate, width = 160, height = 160 }: Ch
 
         ctx.beginPath()
         ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2)
-        ctx.globalAlpha = p.life
+
+        // 边缘渐出：根据离画布圆形边界的距离降低透明度
+        const dx = p.x - centerX
+        const dy = p.y - centerY
+        const dist = Math.sqrt(dx * dx + dy * dy)
+        const canvasRadius = Math.min(width, height) / 2
+        const edgeFade = Math.max(0, 1 - dist / canvasRadius)
+        ctx.globalAlpha = p.life * edgeFade
+
         ctx.fillStyle = p.color
+
 
         const style = config.particleStyle
         if (style === 'fire' || style === 'magic') {
@@ -200,6 +217,7 @@ export function ChampSelectIconEffect({ winRate, width = 160, height = 160 }: Ch
         transform: 'translate(-50%, -50%)',
         pointerEvents: 'none',
         zIndex: 0,
+        borderRadius: '50%',
         mixBlendMode: config.particleStyle === 'void' ? 'normal' : 'screen',
       }}
     />
