@@ -164,6 +164,12 @@ class LCUManager {
     return get<SummonerInfo>(`/lol-summoner/v2/summoners/puuid/${puuid}`)
   }
 
+  /** 通过 gameName + tagLine (Riot ID) 获取召唤师信息 */
+  getSummonerByRiotId(gameName: string, tagLine: string): Promise<SummonerInfo> {
+    return get<SummonerInfo>(`/lol-summoner/v1/alias/lookup?gameName=${encodeURIComponent(gameName)}&tagLine=${encodeURIComponent(tagLine)}`)
+  }
+
+
   /** 获取当前玩家的排位数据 */
   getCurrentRankedStats(): Promise<unknown> {
     return get('/lol-ranked/v1/current-ranked-stats')

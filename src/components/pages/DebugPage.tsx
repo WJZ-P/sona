@@ -12,6 +12,8 @@ export function DebugPage() {
   const [gameId, setGameId] = useState('')
   const [puuid, setPuuid] = useState('')
   const [chatMsg, setChatMsg] = useState('')
+  const [riotId, setRiotId] = useState('')
+
 
   const runAndLog = async (label: string, fn: () => Promise<unknown>) => {
     setOutput(`⏳ ${label}...`)
@@ -74,6 +76,25 @@ export function DebugPage() {
               {i + 1}
             </SonaButton>
           ))}
+        </div>
+      </SettingGroup>
+
+      <SettingGroup title="信息查询">
+        <div className="sona-debug-actions" style={{ alignItems: 'flex-end', gap: 8 }}>
+          <div style={{ flex: 1 }}>
+            <SonaInput
+              value={riotId}
+              onChange={setRiotId}
+              placeholder="名字#Tag (例: 疾风剑豪#77772)"
+            />
+          </div>
+          <SonaButton onClick={() => {
+            const parts = riotId.trim().split('#')
+            if (parts.length !== 2 || !parts[0] || !parts[1]) { setOutput('❌ 格式: 名字#Tag'); return }
+            runAndLog(`查询召唤师 ${riotId}`, () => lcu.getSummonerByRiotId(parts[0], parts[1]))
+          }}>
+            查询 PUUID
+          </SonaButton>
         </div>
       </SettingGroup>
 
