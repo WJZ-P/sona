@@ -488,7 +488,111 @@ function updateAnalyzeTeamPower(enabled: boolean) {
   }
 }
 
+// ==================== 全局粒子美化效果 ====================
+
+const GLOBAL_CANVAS_ID = 'sona-global-particle-canvas'
+
+function createGlobalParticleCanvas(): HTMLCanvasElement {
+  const canvas = document.createElement('canvas')
+  canvas.id = GLOBAL_CANVAS_ID
+  canvas.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:821;'
+  return canvas
+}
+
+let globalParticleCleanup: (() => void) | null = null
+
+function updateGlobalParticle(enabled: boolean) {
+  if (enabled && !globalParticleCleanup) {
+    const canvas = createGlobalParticleCanvas()
+    document.body.appendChild(canvas)
+
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+
+    let animId = 0
+    let initialized = false
+
+    const particles: Array<{
+      x: number; y: number; size: number
+      speedY: number; speedX: number; opacity: number; isGold: boolean
+    }> = []
+
+    const resize = () => {
+      canvas.width = window.innerWidth
+      canvas.height = window.innerHeight
+    }
+
+    const initParticles = () => {
+      if (initialized || canvas.width === 0) return
+      initialized = true
+      for (let i = 0; i < 200; i++) {
+        particles.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          size: Math.random() * 1.5 + 0.5,
+          speedY: Math.random() * 0.4 + 0.1,
+          speedX: (Math.random() - 0.5) * 0.2,
+          opacity: Math.random() * 0.3 + 0.1,
+          isGold: Math.random() > 0.7,
+        })
+      }
+    }
+
+    const render = () => {
+      if (!initialized) {
+        resize()
+        initParticles()
+      }
+      ctx.clearRect(0, 0, canvas.width, canvas.height)
+      for (const p of particles) {
+        p.y -= p.speedY
+        p.x += p.speedX
+        p.opacity += (Math.random() - 0.5) * 0.02
+        if (p.opacity < 0.1) p.opacity = 0.1
+        if (p.opacity > 0.5) p.opacity = 0.5
+        if (p.y < 0) {
+          p.y = canvas.height
+          p.x = Math.random() * canvas.width
+        }
+        if (p.isGold) {
+          ctx.shadowBlur = 4
+          ctx.shadowColor = `rgba(200, 170, 110, ${p.opacity})`
+        } else {
+          ctx.shadowBlur = 3
+          ctx.shadowColor = `rgba(0, 180, 255, ${p.opacity * 0.8})`
+        }
+        ctx.beginPath()
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2)
+        ctx.fillStyle = p.isGold
+          ? `rgba(220, 190, 130, ${p.opacity})`
+          : `rgba(80, 200, 255, ${p.opacity * 0.85})`
+        ctx.fill()
+      }
+      ctx.shadowBlur = 0
+      ctx.shadowColor = 'transparent'
+      animId = requestAnimationFrame(render)
+    }
+
+    resize()
+    window.addEventListener('resize', resize)
+    animId = requestAnimationFrame(render)
+
+    globalParticleCleanup = () => {
+      cancelAnimationFrame(animId)
+      window.removeEventListener('resize', resize)
+      canvas.remove()
+    }
+
+    logger.info('Global particle effect enabled ✓')
+  } else if (!enabled && globalParticleCleanup) {
+    globalParticleCleanup()
+    globalParticleCleanup = null
+    logger.info('Global particle effect disabled')
+  }
+}
+
 // ==================== 初始化 ====================
+
 
 /**
  * 初始化所有功能
@@ -512,6 +616,10 @@ export function initFeatures() {
 
   updateChampSelectAssist(store.get('champSelectAssist'))
   store.onChange('champSelectAssist', updateChampSelectAssist)
+
+  updateGlobalParticle(store.get('globalParticle'))
+  store.onChange('globalParticle', updateGlobalParticle)
+
 
   // 恢复窗口特效
   const savedEffect = store.get('windowEffect')

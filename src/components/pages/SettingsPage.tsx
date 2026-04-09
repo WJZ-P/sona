@@ -16,11 +16,13 @@ const hotkeyOptions = [
 export function SettingsPage() {
   const [developerMode, setDeveloperMode] = useState(store.get('developerMode'))
   const [hotkey, setHotkey] = useState(store.get('hotkey'))
+  const [globalParticle, setGlobalParticle] = useState(store.get('globalParticle'))
 
   useEffect(() => {
     const unsubs = [
       store.onChange('developerMode', setDeveloperMode),
       store.onChange('hotkey', setHotkey),
+      store.onChange('globalParticle', setGlobalParticle),
     ]
     return () => unsubs.forEach((fn) => fn())
   }, [])
@@ -40,7 +42,17 @@ export function SettingsPage() {
             onChange={(v) => { setHotkey(v); store.set('hotkey', v) }}
           />
         </SettingCard>
+        <SettingCard
+          title="全局粒子美化"
+          description="为客户端添加星光粒子背景效果 ✨"
+        >
+          <SonaSwitch
+            checked={globalParticle}
+            onChange={(v) => { setGlobalParticle(v); store.set('globalParticle', v) }}
+          />
+        </SettingCard>
       </SettingGroup>
+
 
       <SettingGroup title="高级选项">
         <SettingCard
