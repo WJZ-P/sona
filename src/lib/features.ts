@@ -285,12 +285,16 @@ const mountedRoots: { root: Root; container: HTMLDivElement }[] = []
 
 /** 注入任务：给选人头像附加粒子特效 */
 function tryInjectChampSelectTier(): boolean {
-  const wrappers = document.querySelectorAll('.party.visible .summoner-wrapper.visible')
+  //  这里选择wrapper要额外加一个left，因为对方玩家的信息是看不到的，处理不了
+  const wrappers = document.querySelectorAll('.party.visible .summoner-wrapper.visible.left')
   if (wrappers.length === 0 || floorWinRates.length === 0) return true
 
   wrappers.forEach((wrapper, i) => {
     const iconContainer = wrapper.querySelector('.champion-icon-container') as HTMLElement | null
-    if (!iconContainer || iconContainer.hasAttribute(SONA_TIER_ATTR)) return
+    if (!iconContainer) return
+
+    // 已有粒子画布，说明本局已注入，跳过
+    if (iconContainer.querySelector('[data-sona-particle]')) return
 
     const winRate = floorWinRates[i]
     if (winRate == null) return
@@ -314,7 +318,8 @@ function tryInjectChampSelectTier(): boolean {
     root.render(createElement(ChampSelectIconEffect, { winRate, width: size, height: size }))
     mountedRoots.push({ root, container: mountDiv })
 
-    logger.info('头像粒子特效 → %d楼 胜率%.1f%% → %s', i + 1, winRate, config.id)
+    logger.info('头像粒子特效 → %d楼 胜率%s%% → %s', i + 1, winRate.toFixed(1), config.id)
+
   })
 
   return true
