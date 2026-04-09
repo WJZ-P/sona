@@ -195,6 +195,196 @@ function updateBenchNoCooldown(enabled: boolean) {
   }
 }
 
+// ==================== 共享：查询队友胜率 ====================
+
+interface TeammateStats {
+  floor: number
+  summonerId: number
+  gameName: string
+  tagLine: string
+  winRate: number | null  // null = 查询失败或无战绩
+  wins: number
+  total: number
+  avgK: number
+  avgD: number
+  avgA: number
+  kdaNum: number
+}
+
+/**
+ * 查询当前选人阶段所有队友的近期战绩
+ * 返回 { isBlue, stats[] }
+ */
+async function fetchTeamStats(): Promise<{ isBlue: boolean; stats: TeammateStats[] }> {
+  const session = await lcu.getChampSelectSession()
+  const myTeam = session.myTeam.filter((p) => p.summonerId > 0)
+  const localPlayer = session.myTeam.find((p) => p.cellId === session.localPlayerCellId)
+  const isBlue = localPlayer ? localPlayer.cellId < 5 : true
+
+  const stats: TeammateStats[] = []
+
+  for (let i = 0; i < myTeam.length; i++) {
+    const player = myTeam[i]
+    try {
+      const summoner = await lcu.getSummonerById(player.summonerId)
+      const history = await lcu.getMatchHistory(summoner.puuid, 0, 19)
+      const games = history.games?.games ?? []
+
+      if (games.length === 0) {
+        stats.push({ floor: i + 1, summonerId: player.summonerId, gameName: summoner.gameName, tagLine: summoner.tagLine, winRate: null, wins: 0, total: 0, avgK: 0, avgD: 0, avgA: 0, kdaNum: 0 })
+        continue
+      }
+
+      let wins = 0, totalKills = 0, totalDeaths = 0, totalAssists = 0
+      for (const game of games) {
+        const identity = game.participantIdentities.find((id) => id.player.puuid === summoner.puuid)
+        if (!identity) continue
+        const participant = game.participants.find((p) => p.participantId === identity.participantId)
+        if (!participant) continue
+        if (participant.stats.win) wins++
+        totalKills += participant.stats.kills
+        totalDeaths += participant.stats.deaths
+        totalAssists += participant.stats.assists
+      }
+
+      const total = games.length
+      stats.push({
+        floor: i + 1,
+        summonerId: player.summonerId,
+        gameName: summoner.gameName,
+        tagLine: summoner.tagLine,
+        winRate: (wins / total) * 100,
+        wins,
+        total,
+        avgK: totalKills / total,
+        avgD: totalDeaths / total,
+        avgA: totalAssists / total,
+        kdaNum: totalDeaths === 0 ? 99 : (totalKills + totalAssists) / totalDeaths,
+      })
+    } catch {
+      stats.push({ floor: i + 1, summonerId: player.summonerId, gameName: '?', tagLine: '', winRate: null, wins: 0, total: 0, avgK: 0, avgD: 0, avgA: 0, kdaNum: 0 })
+    }
+  }
+
+  return { isBlue, stats }
+}
+
+// ==================== 选人阶段头像胜率特效 (champSelectAssist) ====================
+
+import { createElement } from 'react'
+import { createRoot, type Root } from 'react-dom/client'
+import { ChampSelectIconEffect, getTierConfig } from '@/components/ui/ChampSelectIconEffect'
+
+const SONA_TIER_ATTR = 'data-sona-tier'
+
+/** 每个楼层的胜率缓存 */
+let floorWinRates: (number | null)[] = []
+
+/** 已挂载的 React root */
+const mountedRoots: { root: Root; container: HTMLDivElement }[] = []
+
+/** 注入任务：给选人头像附加粒子特效 */
+function tryInjectChampSelectTier(): boolean {
+  const wrappers = document.querySelectorAll('.party.visible .summoner-wrapper.visible')
+  if (wrappers.length === 0 || floorWinRates.length === 0) return true
+
+  wrappers.forEach((wrapper, i) => {
+    const iconContainer = wrapper.querySelector('.champion-icon-container') as HTMLElement | null
+    if (!iconContainer || iconContainer.hasAttribute(SONA_TIER_ATTR)) return
+
+    const winRate = floorWinRates[i]
+    if (winRate == null) return
+
+    iconContainer.setAttribute(SONA_TIER_ATTR, String(winRate))
+    iconContainer.style.position = 'relative'
+    iconContainer.style.overflow = 'visible'
+
+    const config = getTierConfig(winRate)
+    if (config.filter) iconContainer.style.filter = config.filter
+    if (config.boxShadow) iconContainer.style.boxShadow = config.boxShadow
+
+    const mountDiv = document.createElement('div')
+    mountDiv.setAttribute('data-sona-particle', 'true')
+    iconContainer.appendChild(mountDiv)
+
+    const rect = iconContainer.getBoundingClientRect()
+    const size = Math.max(rect.width, rect.height) + 40
+
+    const root = createRoot(mountDiv)
+    root.render(createElement(ChampSelectIconEffect, { winRate, width: size, height: size }))
+    mountedRoots.push({ root, container: mountDiv })
+
+    logger.info('头像粒子特效 → %d楼 胜率%.1f%% → %s', i + 1, winRate, config.id)
+  })
+
+  return true
+}
+
+let tierInjectionRegistered = false
+
+function registerTierInjection() {
+  if (!tierInjectionRegistered) {
+    injector.register(tryInjectChampSelectTier)
+    tierInjectionRegistered = true
+  }
+}
+
+function unregisterTierInjection() {
+  if (tierInjectionRegistered) {
+    injector.unregister(tryInjectChampSelectTier)
+    tierInjectionRegistered = false
+  }
+  floorWinRates = []
+  mountedRoots.forEach(({ root, container }) => {
+    root.unmount()
+    container.remove()
+  })
+  mountedRoots.length = 0
+  document.querySelectorAll(`[${SONA_TIER_ATTR}]`).forEach((el) => {
+    const htmlEl = el as HTMLElement
+    htmlEl.style.filter = ''
+    htmlEl.style.boxShadow = ''
+    htmlEl.removeAttribute(SONA_TIER_ATTR)
+  })
+}
+
+/** 查询胜率并启动头像特效注入 */
+async function applyChampSelectIconEffects() {
+  try {
+    // 先清理上一局的残留
+    unregisterTierInjection()
+
+    const { stats } = await fetchTeamStats()
+    floorWinRates = stats.map((s) => s.winRate)
+    registerTierInjection()
+
+    logger.info('头像特效数据就绪，%d 位队友', stats.length)
+  } catch (err) {
+    logger.error('头像特效查询失败:', err)
+  }
+}
+
+let champSelectAssistUnsub: (() => void) | null = null
+
+function updateChampSelectAssist(enabled: boolean) {
+  if (enabled && !champSelectAssistUnsub) {
+    champSelectAssistUnsub = lcu.observe(LcuEventUri.GAMEFLOW_PHASE_CHANGE, (event: LCUEventMessage) => {
+      const phase = event.data as GameflowPhase
+      if (phase === 'ChampSelect') {
+        applyChampSelectIconEffects()
+      } else {
+        unregisterTierInjection()
+      }
+    })
+    logger.info('Champ select assist enabled ✓')
+  } else if (!enabled && champSelectAssistUnsub) {
+    champSelectAssistUnsub()
+    champSelectAssistUnsub = null
+    unregisterTierInjection()
+    logger.info('Champ select assist disabled')
+  }
+}
+
 // ==================== 选人阶段辅助信息 ====================
 
 /**
@@ -208,7 +398,7 @@ function getRating(winRate: number, kda: number): string {
   if (winRate >= 56) return '✨ 稳健老司机'
   if (winRate >= 52) return '🛡️ 上分好帮手'
   if (winRate >= 48) return '🎲 峡谷摇摆人'
-  if (winRate >= 45) return '🫠 尽力局局长'
+  if (winRate >= 45) return '🫠 默默抗压中'
   if (winRate >= 41) return '🍂 随缘在补位'
   if (winRate >= 37) return '💀 连败渡劫中'
   if (winRate >= 33) return '🤡 敌方突破口'
@@ -219,87 +409,52 @@ function getRating(winRate: number, kda: number): string {
 
 async function analyzeTeammates() {
   try {
-    const session = await lcu.getChampSelectSession()
-    const myTeam = session.myTeam.filter((p) => p.summonerId > 0)
-    const localPlayer = session.myTeam.find((p) => p.cellId === session.localPlayerCellId)
-
-    // 判断红蓝方：cellId 0-4 蓝方，5-9 红方
-    const isBlue = localPlayer ? localPlayer.cellId < 5 : true
+    const { isBlue, stats } = await fetchTeamStats()
     const sideText = isBlue ? '🔵 蓝方 (左下方)' : '🔴 红方 (右上方)'
 
     logger.info('┌─── 队友战绩分析 ───')
     logger.info('│ 阵营: %s', sideText)
 
-    const chatLines: string[] = [`Sona ♫ 本局${isBlue ? '🔵 蓝方 (左下方)' : '🔴 红方 (右上方)'} — 本局队友卡池一览:`]
+    const chatLines: string[] = [`Sona助手 ♫\n 本局${sideText} — 队友卡池一览:\n`]
 
-    for (let i = 0; i < myTeam.length; i++) {
-      const player = myTeam[i]
-      const floor = `${i + 1}楼`
-
-      try {
-        const summoner = await lcu.getSummonerById(player.summonerId)
-        const history = await lcu.getMatchHistory(summoner.puuid, 0, 19)
-        const games = history.games?.games ?? []
-
-        if (games.length === 0) {
-          logger.info('│ %s — %s#%s — 无近期战绩', floor, summoner.gameName, summoner.tagLine)
-          chatLines.push(`${floor}: 🆕 萌新上线 (无战绩)`)
-          continue
-        }
-
-        let wins = 0, totalKills = 0, totalDeaths = 0, totalAssists = 0
-
-        for (const game of games) {
-          const identity = game.participantIdentities.find((id) => id.player.puuid === summoner.puuid)
-          if (!identity) continue
-          const participant = game.participants.find((p) => p.participantId === identity.participantId)
-          if (!participant) continue
-
-          if (participant.stats.win) wins++
-          totalKills += participant.stats.kills
-          totalDeaths += participant.stats.deaths
-          totalAssists += participant.stats.assists
-        }
-
-        const total = games.length
-        const winRateNum = (wins / total) * 100
-        const winRate = winRateNum.toFixed(1)
-        const avgK = (totalKills / total).toFixed(1)
-        const avgD = (totalDeaths / total).toFixed(1)
-        const avgA = (totalAssists / total).toFixed(1)
-        const kdaNum = totalDeaths === 0 ? 99 : (totalKills + totalAssists) / totalDeaths
-        const kdaStr = totalDeaths === 0 ? 'Perfect' : kdaNum.toFixed(2)
-        const rating = getRating(winRateNum, kdaNum)
-
-        logger.info(
-          '│ %s — %s#%s — 近%d场 胜率: %s%% (%d胜%d负) | KDA: %s (%s/%s/%s) | %s',
-          floor, summoner.gameName, summoner.tagLine,
-          total, winRate, wins, total - wins,
-          kdaStr, avgK, avgD, avgA, rating,
-        )
-
-        chatLines.push(`${floor}: ${rating} | 胜率${winRate}% | KDA ${kdaStr}`)
-      } catch {
-        logger.warn('│ %s — 查询失败', floor)
-        chatLines.push(`${floor}: ❓ 查询失败`)
+    for (const s of stats) {
+      const floor = `${s.floor}楼`
+      if (s.winRate == null) {
+        logger.info('│ %s — %s#%s — 无近期战绩或查询失败', floor, s.gameName, s.tagLine)
+        chatLines.push(`${floor}: 🆕 萌新上线 (无战绩)`)
+        continue
       }
+
+      const winRate = s.winRate.toFixed(1)
+      const kdaStr = s.kdaNum >= 99 ? 'Perfect' : s.kdaNum.toFixed(2)
+      const rating = getRating(s.winRate, s.kdaNum)
+
+      logger.info(
+        '│ %s — %s#%s — 近%d场 胜率: %s%% (%d胜%d负) | KDA: %s (%.1f/%.1f/%.1f) | %s',
+        floor, s.gameName, s.tagLine,
+        s.total, winRate, s.wins, s.total - s.wins,
+        kdaStr, s.avgK, s.avgD, s.avgA, rating,
+      )
+
+      chatLines.push(`${floor}: ${rating} | 胜率${winRate}% | KDA ${kdaStr}`)
     }
 
     logger.info('└────────────────────')
 
-    // 等待聊天室就绪后发送（刚进选人阶段时聊天室可能还没初始化）
-    const msg = chatLines.join('\n')
-    for (let attempt = 0; attempt < 10; attempt++) {
-      try {
-        await lcu.sendChampSelectMessage(msg)
-        logger.info('队友分析已发送到聊天框 ✓')
-        break
-      } catch {
-        if (attempt < 9) {
-          logger.warn(`第${attempt + 1}次聊天发送失败，重试中...`)
-          await sleep(1000)
-        } else {
-          logger.warn('聊天发送失败，聊天室始终未就绪')
+    // 等待聊天室就绪后发送
+    if (store.get('analyzeTeamPower')) {
+      const msg = chatLines.join('\n')
+      for (let attempt = 0; attempt < 10; attempt++) {
+        try {
+          await lcu.sendChampSelectMessage(msg)
+          logger.info('队友分析已发送到聊天框 ✓')
+          break
+        } catch {
+          if (attempt < 9) {
+            await sleep(1000)
+          } else {
+            logger.warn('聊天发送失败，聊天室始终未就绪')
+          }
         }
       }
     }
@@ -348,7 +503,8 @@ export function initFeatures() {
   updateAnalyzeTeamPower(store.get('analyzeTeamPower'))
   store.onChange('analyzeTeamPower', updateAnalyzeTeamPower)
 
-  // TODO: champSelectAssist — 选人头像交互（未实现）
+  updateChampSelectAssist(store.get('champSelectAssist'))
+  store.onChange('champSelectAssist', updateChampSelectAssist)
 
   // 恢复窗口特效
   const savedEffect = store.get('windowEffect')

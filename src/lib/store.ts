@@ -41,7 +41,7 @@ export interface SonaConfig {
   hotkey: string
   /** 窗口视觉特效 */
   windowEffect: string
-  /** 友方头像交互（点击队友头像展示历史数据） */
+  /** 英雄选择玩家头像交互（点击队友头像展示历史数据） */
   champSelectAssist: boolean
   /** 分析友方战力（进入选人自动查战绩并发送到聊天框） */
   analyzeTeamPower: boolean

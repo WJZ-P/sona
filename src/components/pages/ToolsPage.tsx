@@ -104,8 +104,8 @@ export function ToolsPage() {
           />
         </SettingCard>
         <SettingCard
-          title="友方头像交互"
-          description="英雄选择时，点击队友头像展示其历史信息。"
+          title="选人头像特效"
+          description="英雄选择时，根据队友近期胜率在头像框上显示粒子特效。"
         >
           <SonaSwitch
             checked={champSelectAssist}
