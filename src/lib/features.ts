@@ -259,7 +259,7 @@ async function fetchTeamStats(): Promise<{ isBlue: boolean; stats: TeammateStats
         avgK: totalKills / total,
         avgD: totalDeaths / total,
         avgA: totalAssists / total,
-        kdaNum: totalDeaths === 0 ? 99 : (totalKills + totalAssists) / totalDeaths,
+        kdaNum: totalDeaths === 0 ? totalKills + totalAssists : (totalKills + totalAssists) / totalDeaths,
       })
     } catch {
       stats.push({ floor: i + 1, summonerId: player.summonerId, gameName: '?', tagLine: '', winRate: null, wins: 0, total: 0, avgK: 0, avgD: 0, avgA: 0, kdaNum: 0 })
@@ -276,56 +276,91 @@ import { createRoot, type Root } from 'react-dom/client'
 import { ChampSelectIconEffect, getTierConfig } from '@/components/ui/ChampSelectIconEffect'
 
 const SONA_TIER_ATTR = 'data-sona-tier'
+const SONA_STATS_ATTR = 'data-sona-stats'
 
-/** 每个楼层的胜率缓存 */
-let floorWinRates: (number | null)[] = []
+/** 每个楼层的完整战绩缓存 */
+let floorStats: TeammateStats[] = []
 
 /** 已挂载的 React root */
 const mountedRoots: { root: Root; container: HTMLDivElement }[] = []
 
-/** 注入任务：给选人头像附加粒子特效 */
+/** 注入任务：给选人头像附加粒子特效 + 右侧战绩信息 */
 function tryInjectChampSelectTier(): boolean {
   //  这里选择wrapper要额外加一个left，因为对方玩家的信息是看不到的，处理不了
   const wrappers = document.querySelectorAll('.party.visible .summoner-wrapper.visible.left')
-  if (wrappers.length === 0 || floorWinRates.length === 0) return true
+  if (wrappers.length === 0 || floorStats.length === 0) return true
 
   wrappers.forEach((wrapper, i) => {
     const iconContainer = wrapper.querySelector('.champion-icon-container') as HTMLElement | null
     if (!iconContainer) return
 
-    // 已有粒子画布，说明本局已注入，跳过
-    if (iconContainer.querySelector('[data-sona-particle]')) return
+    const stat = floorStats[i]
+    if (!stat || stat.winRate == null) return
+    const winRate = stat.winRate
 
-    const winRate = floorWinRates[i]
-    if (winRate == null) return
+    // ---- 粒子特效 ----
+    if (!iconContainer.querySelector('[data-sona-particle]')) {
+      iconContainer.setAttribute(SONA_TIER_ATTR, String(winRate))
+      iconContainer.style.position = 'relative'
+      iconContainer.style.overflow = 'visible'
+      iconContainer.style.borderRadius = '50%'
 
-    iconContainer.setAttribute(SONA_TIER_ATTR, String(winRate))
-    iconContainer.style.position = 'relative'
-    iconContainer.style.overflow = 'visible'
-    iconContainer.style.borderRadius = '50%'
+      const config = getTierConfig(winRate)
+      if (config.boxShadow) iconContainer.style.boxShadow = config.boxShadow
+
+      const mountDiv = document.createElement('div')
+      mountDiv.setAttribute('data-sona-particle', 'true')
+      iconContainer.prepend(mountDiv)
+
+      const rect = iconContainer.getBoundingClientRect()
+      const size = Math.max(rect.width, rect.height) + 40
+
+      const root = createRoot(mountDiv)
+      root.render(createElement(ChampSelectIconEffect, { winRate, width: size, height: size }))
+      mountedRoots.push({ root, container: mountDiv })
+
+      logger.info('头像粒子特效 → %d楼 胜率%s%% → %s', i + 1, winRate.toFixed(1), config.id)
+    }
+
+    // ---- player-details 下方战绩文字 ----
+    const playerDetails = wrapper.querySelector('.player-details') as HTMLElement | null
+    if (playerDetails && !playerDetails.querySelector(`[${SONA_STATS_ATTR}]`)) {
+      playerDetails.style.position = 'relative'
+      playerDetails.style.overflow = 'visible'
+      // 祖先也可能 overflow:hidden，一并打开
+      const summonerContainer = playerDetails.closest('.summoner-container') as HTMLElement | null
+      if (summonerContainer) summonerContainer.style.overflow = 'visible'
+
+      const kdaStr = stat.kdaNum >= 99 ? 'Perfect' : stat.kdaNum.toFixed(1)
+      const winColor = winRate >= 55 ? '#5bbd72' : winRate >= 45 ? '#c8aa6e' : '#e74c3c'
 
 
-    const config = getTierConfig(winRate)
-    if (config.filter) iconContainer.style.filter = config.filter
-    if (config.boxShadow) iconContainer.style.boxShadow = config.boxShadow
+      const statsDiv = document.createElement('div')
+      statsDiv.setAttribute(SONA_STATS_ATTR, 'true')
+      statsDiv.style.cssText = 'position:absolute;left:0;top:100%;display:flex;align-items:center;font-size:11px;line-height:1;white-space:nowrap;'
 
-    const mountDiv = document.createElement('div')
-    mountDiv.setAttribute('data-sona-particle', 'true')
-    iconContainer.appendChild(mountDiv)
+      // 胜率 + 胜负（固定宽度，避免位数不同导致 KDA 抖动）
+      const winSpan = document.createElement('span')
+      winSpan.style.cssText = `color:${winColor};font-weight:bold;display:inline-block;min-width:90px;`
+      winSpan.textContent = `${winRate.toFixed(0)}% (${stat.wins}W/${stat.total - stat.wins}L)`
 
-    const rect = iconContainer.getBoundingClientRect()
-    const size = Math.max(rect.width, rect.height) + 40
+      const kdaSpan = document.createElement('span')
+      kdaSpan.style.cssText = 'color:#a09b8c;margin-left:8px;'
+      kdaSpan.textContent = `KDA ${kdaStr}`
 
-    const root = createRoot(mountDiv)
-    root.render(createElement(ChampSelectIconEffect, { winRate, width: size, height: size }))
-    mountedRoots.push({ root, container: mountDiv })
+      statsDiv.appendChild(winSpan)
+      statsDiv.appendChild(kdaSpan)
 
-    logger.info('头像粒子特效 → %d楼 胜率%s%% → %s', i + 1, winRate.toFixed(1), config.id)
+      // 插入到 player-details 内部，绝对定位到其下方
+      playerDetails.appendChild(statsDiv)
 
+    }
   })
 
   return true
 }
+
+
 
 let tierInjectionRegistered = false
 
@@ -341,7 +376,7 @@ function unregisterTierInjection() {
     injector.unregister(tryInjectChampSelectTier)
     tierInjectionRegistered = false
   }
-  floorWinRates = []
+  floorStats = []
   mountedRoots.forEach(({ root, container }) => {
     root.unmount()
     container.remove()
@@ -353,7 +388,9 @@ function unregisterTierInjection() {
     htmlEl.style.boxShadow = ''
     htmlEl.removeAttribute(SONA_TIER_ATTR)
   })
+  document.querySelectorAll(`[${SONA_STATS_ATTR}]`).forEach((el) => el.remove())
 }
+
 
 /** 查询胜率并启动头像特效注入 */
 async function applyChampSelectIconEffects() {
@@ -362,8 +399,9 @@ async function applyChampSelectIconEffects() {
     unregisterTierInjection()
 
     const { stats } = await fetchTeamStats()
-    floorWinRates = stats.map((s) => s.winRate)
+    floorStats = stats
     registerTierInjection()
+
 
     logger.info('头像特效数据就绪，%d 位队友', stats.length)
   } catch (err) {
