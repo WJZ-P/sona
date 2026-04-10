@@ -34,6 +34,7 @@ export function ToolsPage() {
   const [windowEffect, setWindowEffect] = useState(store.get('windowEffect'))
   const [champSelectAssist, setChampSelectAssist] = useState(store.get('champSelectAssist'))
   const [analyzeTeamPower, setAnalyzeTeamPower] = useState(store.get('analyzeTeamPower'))
+  const [friendSmartGroup, setFriendSmartGroup] = useState(store.get('friendSmartGroup'))
 
   useEffect(() => {
     const unsubs = [
@@ -43,9 +44,11 @@ export function ToolsPage() {
       store.onChange('windowEffect', setWindowEffect),
       store.onChange('champSelectAssist', setChampSelectAssist),
       store.onChange('analyzeTeamPower', setAnalyzeTeamPower),
+      store.onChange('friendSmartGroup', setFriendSmartGroup),
     ]
     return () => unsubs.forEach((fn) => fn())
   }, [])
+
 
   const handleEffectChange = (value: string) => {
     setWindowEffect(value)
@@ -113,6 +116,19 @@ export function ToolsPage() {
           />
         </SettingCard>
       </SettingGroup>
+
+      <SettingGroup title="社交">
+        <SettingCard
+          title="开黑好友标记"
+          description="开黑中的好友用同样颜色标记，看看谁在偷偷开黑！"
+        >
+          <SonaSwitch
+            checked={friendSmartGroup}
+            onChange={(v) => { setFriendSmartGroup(v); store.set('friendSmartGroup', v) }}
+          />
+        </SettingCard>
+      </SettingGroup>
+
 
       <SettingGroup title="界面">
         <SettingCard

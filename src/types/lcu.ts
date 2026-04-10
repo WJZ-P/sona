@@ -151,7 +151,61 @@ export interface LobbyMember {
   teamId: number
 }
 
+// ==================== 好友相关 ====================
+
+/** /lol-chat/v1/friends 返回的好友对象 */
+export interface ChatFriend {
+  /** 好友 ID（聊天系统内部标识） */
+  id: string
+  /** 召唤师 ID */
+  summonerId: number
+  /** 玩家通用唯一标识 */
+  puuid: string
+  /** Riot ID 名称 */
+  gameName: string
+  /** Riot ID Tag */
+  gameTag: string
+  /** 旧版召唤师名 */
+  name: string
+  /** 头像 ID */
+  icon: number
+  /** 在线状态: 'chat' | 'away' | 'dnd' | 'offline' | 'mobile' */
+  availability: string
+  /** 当前所在产品: 'league_of_legends' | 'valorant' 等 */
+  product: string
+  /** 产品显示名 */
+  productName: string
+  /** 游戏状态: 'inGame' | 'inTeamBuilder' | 'championSelect' | 'outOfGame' 等 */
+  gameStatus: string
+  /** 当前对局 ID（不在游戏中时为 0） */
+  gameId: number
+  /** 队列类型（如 'RANKED_SOLO_5x5'） */
+  gameQueueType: string
+  /** 好友分组 ID */
+  groupId: number
+  /** 好友分组名 */
+  groupName: string
+  /** 备注 */
+  note: string
+  /** 个性签名 */
+  statusMessage: string
+  /** 上次在线时间（ISO 格式） */
+  lastSeenOnlineTimestamp: string
+  /** 是否为 P2P 通话好友 */
+  isP2PConversationMuted: boolean
+  /** LOL 特有的子状态（部分客户端版本） */
+  lol?: {
+    gameId?: number
+    gameStatus?: string
+    gameQueueType?: string
+    level?: string
+    rankedLeagueDivision?: string
+    rankedLeagueTier?: string
+  }
+}
+
 // ==================== 匹配相关 ====================
+
 
 /** 匹配搜索状态 */
 export type MatchSearchState = 'Invalid' | 'AbandonedLowPriorityQueue' | 'Canceled' | 'Searching' | 'Found' | 'Error'

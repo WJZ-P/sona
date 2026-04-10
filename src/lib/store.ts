@@ -47,7 +47,10 @@ export interface SonaConfig {
   analyzeTeamPower: boolean
   /** 全局粒子美化效果 */
   globalParticle: boolean
+  /** 好友智能分组（开黑好友用同样颜色的border-right展示） */
+  friendSmartGroup: boolean
 }
+
 
 
 /** 配置项默认值 */
@@ -64,7 +67,9 @@ const DEFAULT_CONFIG: SonaConfig = {
   champSelectAssist: false,
   analyzeTeamPower: false,
   globalParticle: false,
+  friendSmartGroup: false,
 }
+
 
 
 // ==================== Store 实现 ====================

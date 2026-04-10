@@ -28,10 +28,12 @@ import type {
   QueueId,
   LCUEventMessage,
   MatchHistoryResponse,
+  ChatFriend,
 } from '@/types/lcu'
 
 // Re-export types for convenience
-export type { SummonerInfo, LobbyConfig, Lobby, GameflowPhase, GameflowSession, LCUEventMessage, ChatConversation, ChatMessage, ChatMe, Availability, SendChatMessageBody, ReadyCheck, ChampSelectPlayerDetail, MatchHistoryResponse }
+export type { SummonerInfo, LobbyConfig, Lobby, GameflowPhase, GameflowSession, LCUEventMessage, ChatConversation, ChatMessage, ChatMe, Availability, SendChatMessageBody, ReadyCheck, ChampSelectPlayerDetail, MatchHistoryResponse, ChatFriend }
+
 export { LcuEventUri, QueueId } from '@/types/lcu'
 
 // ==================== 底层请求方法 ====================
@@ -515,7 +517,19 @@ class LCUManager {
     return get('/lol-match-history/v1/recently-played-summoners')
   }
 
+  // ==================== 好友 ====================
+
+  /**
+   * 获取好友列表
+   * 包含每个好友的在线状态、游戏状态、gameId 等
+   */
+  getFriends(): Promise<ChatFriend[]> {
+    return get<ChatFriend[]>('/lol-chat/v1/friends')
+  }
+
+
   // ==================== 通知 ====================
+
 
   /**
    * 发送客户端原生通知（右下角弹窗）

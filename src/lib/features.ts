@@ -530,104 +530,283 @@ function updateAnalyzeTeamPower(enabled: boolean) {
 
 const GLOBAL_CANVAS_ID = 'sona-global-particle-canvas'
 
-function createGlobalParticleCanvas(): HTMLCanvasElement {
+/** 全局粒子的动画清理函数 */
+let globalParticleAnimCleanup: (() => void) | null = null
+
+/**
+ * 注入任务：确保全局粒子 canvas 存在并运行
+ * 和 Sona 入口按钮同样的模式：不在就创建，在就跳过
+ */
+function tryInjectGlobalParticle(): boolean {
+  // 已存在且在 DOM 中，跳过
+  if (document.getElementById(GLOBAL_CANVAS_ID)?.isConnected) return true
+
+  // 有旧动画残留先清掉
+  if (globalParticleAnimCleanup) {
+    globalParticleAnimCleanup()
+    globalParticleAnimCleanup = null
+  }
+
+  // 创建并挂载 canvas
   const canvas = document.createElement('canvas')
   canvas.id = GLOBAL_CANVAS_ID
   canvas.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:821;'
-  return canvas
+  document.body.appendChild(canvas)
+
+  const ctx = canvas.getContext('2d')
+  if (!ctx) return false
+
+  let animId = 0
+  let initialized = false
+  const particles: Array<{
+    x: number; y: number; size: number
+    speedY: number; speedX: number; opacity: number; isGold: boolean
+  }> = []
+
+  const resize = () => {
+    canvas.width = window.innerWidth
+    canvas.height = window.innerHeight
+  }
+
+  const initParticles = () => {
+    if (initialized || canvas.width === 0) return
+    initialized = true
+    for (let i = 0; i < 200; i++) {
+      particles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        size: Math.random() * 1.5 + 0.5,
+        speedY: Math.random() * 0.4 + 0.1,
+        speedX: (Math.random() - 0.5) * 0.2,
+        opacity: Math.random() * 0.3 + 0.1,
+        isGold: Math.random() > 0.7,
+      })
+    }
+  }
+
+  const render = () => {
+    if (!initialized) { resize(); initParticles() }
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
+    for (const p of particles) {
+      p.y -= p.speedY
+      p.x += p.speedX
+      p.opacity += (Math.random() - 0.5) * 0.02
+      if (p.opacity < 0.1) p.opacity = 0.1
+      if (p.opacity > 0.5) p.opacity = 0.5
+      if (p.y < 0) { p.y = canvas.height; p.x = Math.random() * canvas.width }
+      if (p.isGold) { ctx.shadowBlur = 4; ctx.shadowColor = `rgba(200, 170, 110, ${p.opacity})` }
+      else { ctx.shadowBlur = 3; ctx.shadowColor = `rgba(0, 180, 255, ${p.opacity * 0.8})` }
+      ctx.beginPath()
+      ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2)
+      ctx.fillStyle = p.isGold ? `rgba(220, 190, 130, ${p.opacity})` : `rgba(80, 200, 255, ${p.opacity * 0.85})`
+      ctx.fill()
+    }
+    ctx.shadowBlur = 0
+    ctx.shadowColor = 'transparent'
+    animId = requestAnimationFrame(render)
+  }
+
+  resize()
+  window.addEventListener('resize', resize)
+  animId = requestAnimationFrame(render)
+
+  globalParticleAnimCleanup = () => {
+    cancelAnimationFrame(animId)
+    window.removeEventListener('resize', resize)
+    canvas.remove()
+  }
+
+  logger.info('Global particle canvas injected ✓')
+  return true
 }
 
-let globalParticleCleanup: (() => void) | null = null
+let globalParticleRegistered = false
 
 function updateGlobalParticle(enabled: boolean) {
-  if (enabled && !globalParticleCleanup) {
-    const canvas = createGlobalParticleCanvas()
-    document.body.appendChild(canvas)
-
-    const ctx = canvas.getContext('2d')
-    if (!ctx) return
-
-    let animId = 0
-    let initialized = false
-
-    const particles: Array<{
-      x: number; y: number; size: number
-      speedY: number; speedX: number; opacity: number; isGold: boolean
-    }> = []
-
-    const resize = () => {
-      canvas.width = window.innerWidth
-      canvas.height = window.innerHeight
-    }
-
-    const initParticles = () => {
-      if (initialized || canvas.width === 0) return
-      initialized = true
-      for (let i = 0; i < 200; i++) {
-        particles.push({
-          x: Math.random() * canvas.width,
-          y: Math.random() * canvas.height,
-          size: Math.random() * 1.5 + 0.5,
-          speedY: Math.random() * 0.4 + 0.1,
-          speedX: (Math.random() - 0.5) * 0.2,
-          opacity: Math.random() * 0.3 + 0.1,
-          isGold: Math.random() > 0.7,
-        })
-      }
-    }
-
-    const render = () => {
-      if (!initialized) {
-        resize()
-        initParticles()
-      }
-      ctx.clearRect(0, 0, canvas.width, canvas.height)
-      for (const p of particles) {
-        p.y -= p.speedY
-        p.x += p.speedX
-        p.opacity += (Math.random() - 0.5) * 0.02
-        if (p.opacity < 0.1) p.opacity = 0.1
-        if (p.opacity > 0.5) p.opacity = 0.5
-        if (p.y < 0) {
-          p.y = canvas.height
-          p.x = Math.random() * canvas.width
-        }
-        if (p.isGold) {
-          ctx.shadowBlur = 4
-          ctx.shadowColor = `rgba(200, 170, 110, ${p.opacity})`
-        } else {
-          ctx.shadowBlur = 3
-          ctx.shadowColor = `rgba(0, 180, 255, ${p.opacity * 0.8})`
-        }
-        ctx.beginPath()
-        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2)
-        ctx.fillStyle = p.isGold
-          ? `rgba(220, 190, 130, ${p.opacity})`
-          : `rgba(80, 200, 255, ${p.opacity * 0.85})`
-        ctx.fill()
-      }
-      ctx.shadowBlur = 0
-      ctx.shadowColor = 'transparent'
-      animId = requestAnimationFrame(render)
-    }
-
-    resize()
-    window.addEventListener('resize', resize)
-    animId = requestAnimationFrame(render)
-
-    globalParticleCleanup = () => {
-      cancelAnimationFrame(animId)
-      window.removeEventListener('resize', resize)
-      canvas.remove()
-    }
-
+  if (enabled && !globalParticleRegistered) {
+    injector.register(tryInjectGlobalParticle)
+    globalParticleRegistered = true
     logger.info('Global particle effect enabled ✓')
-  } else if (!enabled && globalParticleCleanup) {
-    globalParticleCleanup()
-    globalParticleCleanup = null
+  } else if (!enabled && globalParticleRegistered) {
+    injector.unregister(tryInjectGlobalParticle)
+    globalParticleRegistered = false
+    if (globalParticleAnimCleanup) {
+      globalParticleAnimCleanup()
+      globalParticleAnimCleanup = null
+    }
     logger.info('Global particle effect disabled')
   }
 }
+
+
+// ==================== 好友智能分组 ====================
+
+const SONA_FRIEND_GROUP_ATTR = 'data-sona-friend-group'
+const SONA_FRIEND_CHECKED_ATTR = 'data-sona-friend-checked'
+
+/** 用于给同一对局分配相同颜色 */
+const GAME_COLORS = [
+  '#e8a424', '#4a9eff', '#5bbd72', '#e74c3c', '#c084fc', '#f97316', '#14b8a6', '#ec4899',
+  '#8b5cf6', '#06b6d4', '#eab308', '#ef4444', '#22d3ee', '#a3e635', '#fb923c', '#f472b6',
+]
+
+
+/** gameId → 颜色 映射缓存 */
+let gameColorMap = new Map<string, string>()
+let colorIndex = 0
+
+/** 好友 name → { gameId, gameStatus } 映射缓存（由按需查询填充） */
+let friendInfoMap = new Map<string, { gameId: number; gameStatus: string }>()
+
+
+
+function getGameColor(gameId: string): string {
+  if (!gameColorMap.has(gameId)) {
+    gameColorMap.set(gameId, GAME_COLORS[colorIndex % GAME_COLORS.length])
+    colorIndex++
+  }
+  return gameColorMap.get(gameId)!
+}
+
+/** 异步查询所有好友的游戏状态，建立 name → gameInfo 映射 */
+async function refreshFriendInfoMap() {
+  try {
+    const friends = await lcu.getFriends()
+    const newMap = new Map<string, { gameId: number; gameStatus: string }>()
+
+    for (const f of friends) {
+      // 用 gameName 或 name 作为 key（和 DOM 中 .member-name 对应）
+      const name = f.gameName || f.name
+      if (!name) continue
+
+      const gameId = f.lol?.gameId ?? f.gameId
+      const gameStatus = f.lol?.gameStatus ?? f.gameStatus
+
+      if (gameId && gameId > 0 && gameStatus && gameStatus !== 'outOfGame') {
+        newMap.set(name, { gameId, gameStatus })
+      }
+    }
+
+    friendInfoMap = newMap
+    logger.info('[FriendGroup] 刷新好友游戏状态 → %d 人在游戏中', newMap.size)
+  } catch (err) {
+    logger.error('[FriendGroup] 查询好友状态失败:', err)
+  }
+}
+
+/**
+ * 注入任务：扫描好友列表，标记游戏中好友开黑好友用同样颜色的border-right展示
+ *
+ * DOM 结构：
+ * - 好友列表容器: .lol-social-lower-pane-container
+ * - 每个好友: lol-social-roster-member（离线时额外有 .offline）
+ *   - .member-name → 好友名字（不含 tag）
+ *   - span.status-message.game-status.dnd → 游戏中状态
+ *   - parentElement 是列表中可移动的 div
+ *
+ * 好友列表视觉从上到下 = DOM 从下到上（逆序）
+ * 所以"移动到底部" = 视觉上排在最前面
+ */
+function tryInjectFriendSmartGroup(): boolean {
+  const container = document.querySelector('.lol-social-lower-pane-container')
+  if (!container) return true
+
+  const allMembers = container.querySelectorAll('[class*="lol-social-roster-member"]')
+  if (allMembers.length === 0) return true
+
+  // 第一轮：收集 gameId → 好友元素列表
+  const gameIdToElements = new Map<string, HTMLElement[]>()
+
+  allMembers.forEach((member) => {
+    const el = member as HTMLElement
+
+    const isOffline = el.className.includes('offline')
+    const isInGame = !isOffline && !!el.querySelector('span.status-message.game-status.dnd')
+
+    if (!isInGame) {
+      // 不在游戏中或离线，清除旧标记
+      if (el.hasAttribute(SONA_FRIEND_GROUP_ATTR)) {
+        el.removeAttribute(SONA_FRIEND_GROUP_ATTR)
+        el.style.borderRight = ''
+      }
+      el.removeAttribute(SONA_FRIEND_CHECKED_ATTR)
+      return
+    }
+
+    // 从 DOM 获取好友名字
+    const nameEl = el.querySelector('.member-name')
+    const memberName = nameEl?.textContent?.trim() ?? ''
+    if (!memberName) return
+
+    // 从缓存中匹配 gameId
+    const info = friendInfoMap.get(memberName)
+    const gameId = info ? String(info.gameId) : undefined
+
+    if (gameId) {
+      if (!gameIdToElements.has(gameId)) gameIdToElements.set(gameId, [])
+      gameIdToElements.get(gameId)!.push(el)
+    } else {
+      // 没有 gameId（选人中等），清除可能的旧标记
+      if (el.hasAttribute(SONA_FRIEND_GROUP_ATTR)) {
+        el.removeAttribute(SONA_FRIEND_GROUP_ATTR)
+        el.style.borderRight = ''
+      }
+    }
+  })
+
+  // 第二轮：只对同一 gameId 有 2+ 好友的组（真正开黑）加颜色标记
+  gameIdToElements.forEach((elements, gameId) => {
+    if (elements.length < 2) {
+      // 独自玩的，清除可能的旧标记
+      elements.forEach((el) => {
+        if (el.hasAttribute(SONA_FRIEND_GROUP_ATTR)) {
+          el.removeAttribute(SONA_FRIEND_GROUP_ATTR)
+          el.style.borderRight = ''
+        }
+      })
+      return
+    }
+
+    const color = getGameColor(gameId)
+    elements.forEach((el) => {
+      el.setAttribute(SONA_FRIEND_GROUP_ATTR, gameId)
+      el.style.borderRight = `4px solid ${color}`
+    })
+  })
+
+
+  return true
+}
+
+
+let friendSmartGroupRegistered = false
+
+function updateFriendSmartGroup(enabled: boolean) {
+  if (enabled && !friendSmartGroupRegistered) {
+    // 拉一次初始数据，后续靠 DOM 变化按需刷新
+    refreshFriendInfoMap()
+
+    injector.register(tryInjectFriendSmartGroup)
+    friendSmartGroupRegistered = true
+    logger.info('Friend smart group enabled ✓')
+  } else if (!enabled && friendSmartGroupRegistered) {
+    injector.unregister(tryInjectFriendSmartGroup)
+    friendSmartGroupRegistered = false
+    friendInfoMap.clear()
+
+    gameColorMap.clear()
+
+    colorIndex = 0
+    document.querySelectorAll(`[${SONA_FRIEND_GROUP_ATTR}]`).forEach((el) => {
+      const htmlEl = el as HTMLElement
+      htmlEl.removeAttribute(SONA_FRIEND_GROUP_ATTR)
+      htmlEl.removeAttribute(SONA_FRIEND_CHECKED_ATTR)
+      htmlEl.style.borderRight = ''
+    })
+    logger.info('Friend smart group disabled')
+  }
+}
+
 
 // ==================== 初始化 ====================
 
@@ -657,6 +836,10 @@ export function initFeatures() {
 
   updateGlobalParticle(store.get('globalParticle'))
   store.onChange('globalParticle', updateGlobalParticle)
+
+  updateFriendSmartGroup(store.get('friendSmartGroup'))
+  store.onChange('friendSmartGroup', updateFriendSmartGroup)
+
 
 
   // 恢复窗口特效
