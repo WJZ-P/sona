@@ -215,7 +215,7 @@ interface TeammateStats {
  * 查询当前选人阶段所有队友的近期战绩
  * 返回 { isBlue, stats[] }
  */
-async function fetchTeamStats(): Promise<{ isBlue: boolean; stats: TeammateStats[] }> {
+async function fetchTeamStats(): Promise<{ isBlue: boolean; gameId: number; stats: TeammateStats[] }> {
   const session = await lcu.getChampSelectSession()
   const myTeam = session.myTeam.filter((p) => p.summonerId > 0)
   const localPlayer = session.myTeam.find((p) => p.cellId === session.localPlayerCellId)
@@ -266,7 +266,7 @@ async function fetchTeamStats(): Promise<{ isBlue: boolean; stats: TeammateStats
     }
   }
 
-  return { isBlue, stats }
+  return { isBlue, gameId: session.gameId, stats }
 }
 
 // ==================== 选人阶段头像胜率特效 (champSelectAssist) ====================
@@ -280,6 +280,8 @@ const SONA_STATS_ATTR = 'data-sona-stats'
 
 /** 每个楼层的完整战绩缓存 */
 let floorStats: TeammateStats[] = []
+/** 当前对局 ID，用于判断 DOM 上的数据是否属于本局 */
+let currentGameId = 0
 
 /** 已挂载的 React root */
 const mountedRoots: { root: Root; container: HTMLDivElement }[] = []
@@ -297,10 +299,18 @@ function tryInjectChampSelectTier(): boolean {
     const stat = floorStats[i]
     if (!stat || stat.winRate == null) return
     const winRate = stat.winRate
+    const injectKey = `${currentGameId}-${i}`
 
     // ---- 粒子特效 ----
+    const existingParticle = iconContainer.querySelector('[data-sona-particle]')
+    if (existingParticle && iconContainer.getAttribute(SONA_TIER_ATTR) !== injectKey) {
+      const idx = mountedRoots.findIndex((r) => r.container === existingParticle)
+      if (idx >= 0) { mountedRoots[idx].root.unmount(); mountedRoots.splice(idx, 1) }
+      existingParticle.remove()
+      iconContainer.removeAttribute(SONA_TIER_ATTR)
+    }
     if (!iconContainer.querySelector('[data-sona-particle]')) {
-      iconContainer.setAttribute(SONA_TIER_ATTR, String(winRate))
+      iconContainer.setAttribute(SONA_TIER_ATTR, injectKey)
       iconContainer.style.position = 'relative'
       iconContainer.style.overflow = 'visible'
       iconContainer.style.borderRadius = '50%'
@@ -324,36 +334,38 @@ function tryInjectChampSelectTier(): boolean {
 
     // ---- player-details 下方战绩文字 ----
     const playerDetails = wrapper.querySelector('.player-details') as HTMLElement | null
-    if (playerDetails && !playerDetails.querySelector(`[${SONA_STATS_ATTR}]`)) {
-      playerDetails.style.position = 'relative'
-      playerDetails.style.overflow = 'visible'
-      // 祖先也可能 overflow:hidden，一并打开
-      const summonerContainer = playerDetails.closest('.summoner-container') as HTMLElement | null
-      if (summonerContainer) summonerContainer.style.overflow = 'visible'
+    if (playerDetails) {
+      const existingStats = playerDetails.querySelector(`[${SONA_STATS_ATTR}]`)
+      if (existingStats && existingStats.getAttribute(SONA_STATS_ATTR) !== injectKey) {
+        existingStats.remove()
+      }
 
-      const kdaStr = stat.kdaNum >= 99 ? 'Perfect' : stat.kdaNum.toFixed(1)
-      const winColor = winRate >= 55 ? '#5bbd72' : winRate >= 45 ? '#c8aa6e' : '#e74c3c'
+      if (!playerDetails.querySelector(`[${SONA_STATS_ATTR}]`)) {
+        playerDetails.style.position = 'relative'
+        playerDetails.style.overflow = 'visible'
+        const summonerContainer = playerDetails.closest('.summoner-container') as HTMLElement | null
+        if (summonerContainer) summonerContainer.style.overflow = 'visible'
 
+        const kdaStr = stat.kdaNum >= 99 ? 'Perfect' : stat.kdaNum.toFixed(1)
+        const winColor = winRate >= 55 ? '#5bbd72' : winRate >= 45 ? '#c8aa6e' : '#e74c3c'
 
-      const statsDiv = document.createElement('div')
-      statsDiv.setAttribute(SONA_STATS_ATTR, 'true')
-      statsDiv.style.cssText = 'position:absolute;left:0;top:100%;display:flex;align-items:center;font-size:11px;line-height:1;white-space:nowrap;'
+        const statsDiv = document.createElement('div')
+        statsDiv.setAttribute(SONA_STATS_ATTR, injectKey)
+        statsDiv.style.cssText = 'position:absolute;left:0;top:100%;display:flex;align-items:center;font-size:11px;line-height:1;white-space:nowrap;margin-top:2px;'
 
-      // 胜率 + 胜负（固定宽度，避免位数不同导致 KDA 抖动）
-      const winSpan = document.createElement('span')
-      winSpan.style.cssText = `color:${winColor};font-weight:bold;display:inline-block;min-width:90px;`
-      winSpan.textContent = `${winRate.toFixed(0)}% (${stat.wins}W/${stat.total - stat.wins}L)`
+        const winSpan = document.createElement('span')
+        winSpan.style.cssText = `color:${winColor};font-weight:bold;display:inline-block;min-width:90px;`
+        winSpan.textContent = `${winRate.toFixed(0)}% (${stat.wins}W/${stat.total - stat.wins}L)`
 
-      const kdaSpan = document.createElement('span')
-      kdaSpan.style.cssText = 'color:#a09b8c;margin-left:8px;'
-      kdaSpan.textContent = `KDA ${kdaStr}`
+        const kdaColor = stat.kdaNum >= 5 ? '#5bbd72' : stat.kdaNum >= 3 ? '#c8aa6e' : '#e74c3c'
+        const kdaSpan = document.createElement('span')
+        kdaSpan.style.cssText = `color:${kdaColor};margin-left:8px;font-weight:bold;text-shadow:0 0 4px rgba(200,170,110,0.6);`
+        kdaSpan.textContent = `KDA ${kdaStr}`
 
-      statsDiv.appendChild(winSpan)
-      statsDiv.appendChild(kdaSpan)
-
-      // 插入到 player-details 内部，绝对定位到其下方
-      playerDetails.appendChild(statsDiv)
-
+        statsDiv.appendChild(winSpan)
+        statsDiv.appendChild(kdaSpan)
+        playerDetails.appendChild(statsDiv)
+      }
     }
   })
 
@@ -377,6 +389,7 @@ function unregisterTierInjection() {
     tierInjectionRegistered = false
   }
   floorStats = []
+  currentGameId = 0
   mountedRoots.forEach(({ root, container }) => {
     root.unmount()
     container.remove()
@@ -398,7 +411,8 @@ async function applyChampSelectIconEffects() {
     // 先清理上一局的残留
     unregisterTierInjection()
 
-    const { stats } = await fetchTeamStats()
+    const { gameId, stats } = await fetchTeamStats()
+    currentGameId = gameId
     floorStats = stats
     registerTierInjection()
 
@@ -533,28 +547,38 @@ const GLOBAL_CANVAS_ID = 'sona-global-particle-canvas'
 /** 全局粒子的动画清理函数 */
 let globalParticleAnimCleanup: (() => void) | null = null
 
+/** 获取客户端主视图宿主，粒子必须挂载在这里才能正确显示 */
+function getGlobalParticleHost(): HTMLElement | null {
+  return document.getElementById('rcp-fe-viewport-root')
+    ?? null
+}
+
 /**
  * 注入任务：确保全局粒子 canvas 存在并运行
- * 和 Sona 入口按钮同样的模式：不在就创建，在就跳过
+ * 必须等待客户端主视图宿主就绪后才挂载，避免首启时被 loading/iframe 层遮挡
  */
 function tryInjectGlobalParticle(): boolean {
-  // 已存在且在 DOM 中，跳过
-  if (document.getElementById(GLOBAL_CANVAS_ID)?.isConnected) return true
+  const host = getGlobalParticleHost()
+  if (!host) return false
 
+  const existing = document.getElementById(GLOBAL_CANVAS_ID)
+  if (existing instanceof HTMLCanvasElement && existing.isConnected) return true
+  
   // 有旧动画残留先清掉
   if (globalParticleAnimCleanup) {
     globalParticleAnimCleanup()
     globalParticleAnimCleanup = null
   }
 
-  // 创建并挂载 canvas
+  // 创建并挂载 canvas 到主视图宿主
   const canvas = document.createElement('canvas')
   canvas.id = GLOBAL_CANVAS_ID
   canvas.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:821;'
-  document.body.appendChild(canvas)
+  host.appendChild(canvas)
 
   const ctx = canvas.getContext('2d')
   if (!ctx) return false
+
 
   let animId = 0
   let initialized = false
@@ -571,7 +595,7 @@ function tryInjectGlobalParticle(): boolean {
   const initParticles = () => {
     if (initialized || canvas.width === 0) return
     initialized = true
-    for (let i = 0; i < 200; i++) {
+    for (let i = 0; i < 300; i++) {
       particles.push({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
@@ -619,6 +643,7 @@ function tryInjectGlobalParticle(): boolean {
   logger.info('Global particle canvas injected ✓')
   return true
 }
+
 
 let globalParticleRegistered = false
 

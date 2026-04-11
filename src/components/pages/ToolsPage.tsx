@@ -107,8 +107,8 @@ export function ToolsPage() {
           />
         </SettingCard>
         <SettingCard
-          title="选人头像特效"
-          description="英雄选择时，根据队友近期胜率在头像框上显示粒子特效。"
+          title="英雄选择阶段增强"
+          description="英雄选择时显示粒子特效，底部自动显示近20场胜率和KDA，点击队友头像可查询近期战绩。"
         >
           <SonaSwitch
             checked={champSelectAssist}
