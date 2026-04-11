@@ -29,6 +29,9 @@ import type {
   LCUEventMessage,
   MatchHistoryResponse,
   ChatFriend,
+  SummonerSpellData,
+  ChampionSummaryData,
+  GameQueue,
 } from '@/types/lcu'
 
 // Re-export types for convenience
@@ -471,14 +474,24 @@ class LCUManager {
 
   // ==================== 队列信息 ====================
 
-  /** 获取所有可用队列 */
-  getQueues(): Promise<unknown[]> {
-    return get<unknown[]>('/lol-game-queues/v1/queues')
+  /** 获取所有可用队列（含中文名、游戏模式、地图等） */
+  getQueues(): Promise<GameQueue[]> {
+    return get<GameQueue[]>('/lol-game-queues/v1/queues')
   }
 
   /** 获取当前游戏模式信息 */
   getCurrentGamemode(): Promise<unknown> {
     return get('/lol-lobby/v1/parties/gamemode')
+  }
+
+  /** 获取所有游戏模式 */
+  getGameModes(): Promise<unknown[]> {
+    return get<unknown[]>('/lol-game-queues/v1/game-type-config')
+  }
+
+  /** 获取所有地图信息 */
+  getMaps(): Promise<unknown[]> {
+    return get<unknown[]>('/lol-maps/v1/maps')
   }
 
   // ==================== 战绩 ====================
@@ -525,6 +538,23 @@ class LCUManager {
    */
   getFriends(): Promise<ChatFriend[]> {
     return get<ChatFriend[]>('/lol-chat/v1/friends')
+  }
+
+  // ==================== 游戏资源 ====================
+
+  /** 获取所有物品数据（含 iconPath） */
+  getItems(): Promise<Array<{ id: number; iconPath: string; name: string }>> {
+    return get('/lol-game-data/assets/v1/items.json')
+  }
+
+  /** 获取所有召唤师技能数据（含 iconPath） */
+  getSummonerSpells(): Promise<SummonerSpellData[]> {
+    return get('/lol-game-data/assets/v1/summoner-spells.json')
+  }
+
+  /** 获取所有英雄摘要数据（含 squarePortraitPath） */
+  getChampionSummary(): Promise<ChampionSummaryData[]> {
+    return get('/lol-game-data/assets/v1/champion-summary.json')
   }
 
 

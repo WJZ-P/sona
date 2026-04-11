@@ -180,6 +180,31 @@ export function DebugPage() {
         </div>
       </SettingGroup>
 
+      <SettingGroup title="游戏资源">
+        <div className="sona-debug-actions">
+          <SonaButton onClick={() => runAndLog('物品列表 (items.json)', () => lcu.getItems())}>
+            物品图标
+          </SonaButton>
+          <SonaButton onClick={() => runAndLog('召唤师技能 (summoner-spells.json)', () => lcu.getSummonerSpells())}>
+            技能图标
+          </SonaButton>
+          <SonaButton onClick={() => runAndLog('英雄摘要 (champion-summary.json)', () => lcu.getChampionSummary())}>
+            英雄图标
+          </SonaButton>
+        </div>
+        <div className="sona-debug-actions" style={{ marginTop: 8 }}>
+          <SonaButton onClick={() => runAndLog('队列列表 (queues)', () => lcu.getQueues())}>
+            队列列表
+          </SonaButton>
+          <SonaButton onClick={() => runAndLog('游戏模式 (game-type-config)', () => lcu.getGameModes())}>
+            游戏模式
+          </SonaButton>
+          <SonaButton onClick={() => runAndLog('地图信息 (maps)', () => lcu.getMaps())}>
+            地图信息
+          </SonaButton>
+        </div>
+      </SettingGroup>
+
       <SettingGroup title="Store 调试">
         <SettingCard title="当前配置快照" description="查看所有持久化配置的当前值">
           <SonaButton onClick={() => setOutput(JSON.stringify(store.getAll(), null, 2))}>

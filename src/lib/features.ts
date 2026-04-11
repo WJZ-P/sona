@@ -200,6 +200,7 @@ function updateBenchNoCooldown(enabled: boolean) {
 interface TeammateStats {
   floor: number
   summonerId: number
+  puuid: string
   gameName: string
   tagLine: string
   winRate: number | null  // null = 查询失败或无战绩
@@ -231,7 +232,7 @@ async function fetchTeamStats(): Promise<{ isBlue: boolean; gameId: number; stat
       const games = history.games?.games ?? []
 
       if (games.length === 0) {
-        stats.push({ floor: i + 1, summonerId: player.summonerId, gameName: summoner.gameName, tagLine: summoner.tagLine, winRate: null, wins: 0, total: 0, avgK: 0, avgD: 0, avgA: 0, kdaNum: 0 })
+        stats.push({ floor: i + 1, summonerId: player.summonerId, puuid: summoner.puuid, gameName: summoner.gameName, tagLine: summoner.tagLine, winRate: null, wins: 0, total: 0, avgK: 0, avgD: 0, avgA: 0, kdaNum: 0 })
         continue
       }
 
@@ -251,6 +252,7 @@ async function fetchTeamStats(): Promise<{ isBlue: boolean; gameId: number; stat
       stats.push({
         floor: i + 1,
         summonerId: player.summonerId,
+        puuid: summoner.puuid,
         gameName: summoner.gameName,
         tagLine: summoner.tagLine,
         winRate: (wins / total) * 100,
@@ -262,7 +264,7 @@ async function fetchTeamStats(): Promise<{ isBlue: boolean; gameId: number; stat
         kdaNum: totalDeaths === 0 ? totalKills + totalAssists : (totalKills + totalAssists) / totalDeaths,
       })
     } catch {
-      stats.push({ floor: i + 1, summonerId: player.summonerId, gameName: '?', tagLine: '', winRate: null, wins: 0, total: 0, avgK: 0, avgD: 0, avgA: 0, kdaNum: 0 })
+      stats.push({ floor: i + 1, summonerId: player.summonerId, puuid: '', gameName: '?', tagLine: '', winRate: null, wins: 0, total: 0, avgK: 0, avgD: 0, avgA: 0, kdaNum: 0 })
     }
   }
 
@@ -274,14 +276,50 @@ async function fetchTeamStats(): Promise<{ isBlue: boolean; gameId: number; stat
 import { createElement } from 'react'
 import { createRoot, type Root } from 'react-dom/client'
 import { ChampSelectIconEffect, getTierConfig } from '@/components/ui/ChampSelectIconEffect'
+import { MatchHistoryModal } from '@/components/ui/MatchHistoryModal'
 
 const SONA_TIER_ATTR = 'data-sona-tier'
 const SONA_STATS_ATTR = 'data-sona-stats'
+const SONA_CLICK_ATTR = 'data-sona-click'
 
 /** 每个楼层的完整战绩缓存 */
 let floorStats: TeammateStats[] = []
 /** 当前对局 ID，用于判断 DOM 上的数据是否属于本局 */
 let currentGameId = 0
+
+/** 战绩弹窗的独立 React root */
+let matchModalRoot: Root | null = null
+let matchModalContainer: HTMLDivElement | null = null
+
+function showMatchHistoryModal(puuid: string, playerName: string) {
+  if (!matchModalContainer) {
+    matchModalContainer = document.createElement('div')
+    matchModalContainer.id = 'sona-match-history-modal-root'
+    document.body.appendChild(matchModalContainer)
+    matchModalRoot = createRoot(matchModalContainer)
+  }
+
+  const close = () => {
+    matchModalRoot?.render(
+      createElement(MatchHistoryModal, { open: false, onClose: close, puuid: '', playerName: '' }),
+    )
+  }
+
+  matchModalRoot!.render(
+    createElement(MatchHistoryModal, { open: true, onClose: close, puuid, playerName }),
+  )
+}
+
+function cleanupMatchModal() {
+  if (matchModalRoot) {
+    matchModalRoot.unmount()
+    matchModalRoot = null
+  }
+  if (matchModalContainer) {
+    matchModalContainer.remove()
+    matchModalContainer = null
+  }
+}
 
 /** 已挂载的 React root */
 const mountedRoots: { root: Root; container: HTMLDivElement }[] = []
@@ -330,6 +368,17 @@ function tryInjectChampSelectTier(): boolean {
       mountedRoots.push({ root, container: mountDiv })
 
       logger.info('头像粒子特效 → %d楼 胜率%s%% → %s', i + 1, winRate.toFixed(1), config.id)
+    }
+
+    // ---- 头像点击 → 弹出战绩弹窗 ----
+    if (!iconContainer.hasAttribute(SONA_CLICK_ATTR) && stat.puuid) {
+      iconContainer.setAttribute(SONA_CLICK_ATTR, 'true')
+      iconContainer.style.cursor = 'pointer'
+      iconContainer.addEventListener('click', (e) => {
+        e.stopPropagation()
+        e.preventDefault()
+        showMatchHistoryModal(stat.puuid, `${stat.gameName}#${stat.tagLine}`)
+      }, true)
     }
 
     // ---- player-details 下方战绩文字 ----
@@ -402,6 +451,11 @@ function unregisterTierInjection() {
     htmlEl.removeAttribute(SONA_TIER_ATTR)
   })
   document.querySelectorAll(`[${SONA_STATS_ATTR}]`).forEach((el) => el.remove())
+  document.querySelectorAll(`[${SONA_CLICK_ATTR}]`).forEach((el) => {
+    el.removeAttribute(SONA_CLICK_ATTR)
+    ;(el as HTMLElement).style.cursor = ''
+  })
+  cleanupMatchModal()
 }
 
 

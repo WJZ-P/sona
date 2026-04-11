@@ -7,6 +7,7 @@ import { createLogger } from '@/lib/logger'
 import { registerAllInjections } from '@/lib/injections'
 import { initFeatures } from '@/lib/features'
 import { registerHotkey } from '@/lib/modal'
+import { initAssets } from '@/lib/assets'
 import { injector } from '@/lib/InjectorManager'
 import { lcu } from '@/lib/lcu'
 import '@/styles/index.css'
@@ -81,6 +82,7 @@ export function load() {
   registerAllInjections()  //  注册所有 DOM 注入点并启动守护
   initFeatures()           //  初始化功能监听（自动接受、解锁签名等）
   registerHotkey()         //  注册 F1 快捷键
+  initAssets()             //  初始化装备/技能资源映射（异步，不阻塞）
   mountApp()
 }
 

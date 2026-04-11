@@ -447,18 +447,42 @@ export interface MatchHistoryResponse {
 
 /** 单场对局 */
 export interface MatchGame {
+  endOfGameResult: string
   gameCreation: number
   gameCreationDate: string
   gameDuration: number
   gameId: number
   gameMode: string
+  gameModeMutators: unknown[]
   gameType: string
   gameVersion: string
   mapId: number
   participantIdentities: ParticipantIdentity[]
   participants: Participant[]
+  platformId: string
   queueId: number
   seasonId: number
+  teams: MatchTeam[]
+}
+
+/** 对局队伍数据 */
+export interface MatchTeam {
+  bans: unknown[]
+  baronKills: number
+  dominionVictoryScore: number
+  dragonKills: number
+  firstBaron: boolean
+  firstBlood: boolean
+  firstDargon: boolean
+  firstInhibitor: boolean
+  firstTower: boolean
+  hordeKills: number
+  inhibitorKills: number
+  riftHeraldKills: number
+  teamId: number
+  towerKills: number
+  vilemawKills: number
+  win: string
 }
 
 /** 参与者身份 */
@@ -482,6 +506,7 @@ export interface ParticipantIdentity {
 /** 参与者数据 */
 export interface Participant {
   championId: number
+  highestAchievedSeasonTier: string
   participantId: number
   spell1Id: number
   spell2Id: number
@@ -495,6 +520,7 @@ export interface ParticipantStats {
   assists: number
   causedEarlySurrender: boolean
   champLevel: number
+  combatPlayerScore: number
   damageDealtToObjectives: number
   damageDealtToTurrets: number
   damageSelfMitigated: number
@@ -503,8 +529,15 @@ export interface ParticipantStats {
   earlySurrenderAccomplice: boolean
   firstBloodAssist: boolean
   firstBloodKill: boolean
+  firstInhibitorAssist: boolean
+  firstInhibitorKill: boolean
+  firstTowerAssist: boolean
+  firstTowerKill: boolean
+  gameEndedInEarlySurrender: boolean
+  gameEndedInSurrender: boolean
   goldEarned: number
   goldSpent: number
+  inhibitorKills: number
   item0: number
   item1: number
   item2: number
@@ -512,30 +545,200 @@ export interface ParticipantStats {
   item4: number
   item5: number
   item6: number
+  killingSprees: number
   kills: number
+  largestCriticalStrike: number
   largestKillingSpree: number
   largestMultiKill: number
+  longestTimeSpentLiving: number
   magicDamageDealt: number
   magicDamageDealtToChampions: number
-  magicDamageTaken: number
+  magicalDamageTaken: number
   neutralMinionsKilled: number
+  neutralMinionsKilledEnemyJungle: number
+  neutralMinionsKilledTeamJungle: number
+  objectivePlayerScore: number
+  participantId: number
   pentaKills: number
+  perk0: number
+  perk0Var1: number
+  perk0Var2: number
+  perk0Var3: number
+  perk1: number
+  perk1Var1: number
+  perk1Var2: number
+  perk1Var3: number
+  perk2: number
+  perk2Var1: number
+  perk2Var2: number
+  perk2Var3: number
+  perk3: number
+  perk3Var1: number
+  perk3Var2: number
+  perk3Var3: number
+  perk4: number
+  perk4Var1: number
+  perk4Var2: number
+  perk4Var3: number
+  perk5: number
+  perk5Var1: number
+  perk5Var2: number
+  perk5Var3: number
+  perkPrimaryStyle: number
+  perkSubStyle: number
   physicalDamageDealt: number
   physicalDamageDealtToChampions: number
   physicalDamageTaken: number
+  playerAugment1: number
+  playerAugment2: number
+  playerAugment3: number
+  playerAugment4: number
+  playerAugment5: number
+  playerAugment6: number
+  playerScore0: number
+  playerScore1: number
+  playerScore2: number
+  playerScore3: number
+  playerScore4: number
+  playerScore5: number
+  playerScore6: number
+  playerScore7: number
+  playerScore8: number
+  playerScore9: number
+  playerSubteamId: number
   quadraKills: number
+  roleBoundItem: number
+  sightWardsBoughtInGame: number
+  subteamPlacement: number
+  teamEarlySurrendered: boolean
+  timeCCingOthers: number
   totalDamageDealt: number
   totalDamageDealtToChampions: number
   totalDamageTaken: number
   totalHeal: number
   totalMinionsKilled: number
+  totalPlayerScore: number
+  totalScoreRank: number
+  totalTimeCrowdControlDealt: number
+  totalUnitsHealed: number
   tripleKills: number
+  trueDamageDealt: number
+  trueDamageDealtToChampions: number
+  trueDamageTaken: number
   turretKills: number
+  unrealKills: number
   visionScore: number
   visionWardsBoughtInGame: number
   wardsKilled: number
   wardsPlaced: number
   win: boolean
+}
+
+// ==================== 队列相关（详细） ====================
+
+/** 队列游戏类型配置 */
+export interface GameTypeConfig {
+  advancedLearningQuests: boolean
+  allowTrades: boolean
+  banMode: string
+  banTimerDuration: number
+  battleBoost: boolean
+  crossTeamChampionPool: boolean
+  deathMatch: boolean
+  doNotRemove: boolean
+  duplicatePick: boolean
+  exclusivePick: boolean
+  gameModeOverride: string | null
+  id: number
+  learningQuests: boolean
+  mainPickTimerDuration: number
+  maxAllowableBans: number
+  name: string
+  numPlayersPerTeamOverride: number | null
+  onboardCoopBeginner: boolean
+  pickMode: string
+  postPickTimerDuration: number
+  reroll: boolean
+  teamChampionPool: boolean
+}
+
+/** 队列奖励配置 */
+export interface QueueRewards {
+  isChampionPointsEnabled: boolean
+  isIpEnabled: boolean
+  isXpEnabled: boolean
+  partySizeIpRewards: unknown[]
+}
+
+/** 队列数据 — GET /lol-game-queues/v1/queues */
+export interface GameQueue {
+  allowablePremadeSizes: number[]
+  areFreeChampionsAllowed: boolean
+  assetMutator: string
+  category: string
+  championsRequiredToPlay: number
+  description: string
+  detailedDescription: string
+  gameMode: string
+  gameSelectCategory: string
+  gameSelectModeGroup: string
+  gameSelectPriority: number
+  gameTypeConfig: GameTypeConfig
+  hidePlayerPosition: boolean
+  id: number
+  isBotHonoringAllowed: boolean
+  isCustom: boolean
+  isEnabled: boolean
+  isLimitedTimeQueue: boolean
+  isRanked: boolean
+  isSkillTreeQueue: boolean
+  isTeamBuilderManaged: boolean
+  isVisible: boolean
+  lastToggledOffTime: number
+  lastToggledOnTime: number
+  mapId: number
+  maxDivisionForPremadeSize2: string
+  maxLobbySpectatorCount: number
+  maxTierForPremadeSize2: string
+  maximumParticipantListSize: number
+  minLevel: number
+  minimumParticipantListSize: number
+  name: string
+  numPlayersPerTeam: number
+  numberOfTeamsInLobby: number
+  queueAvailability: string
+  queueRewards: QueueRewards
+  removalFromGameAllowed: boolean
+  removalFromGameDelayMinutes: number
+  shortName: string
+  showPositionSelector: boolean
+  showQuickPlaySlotSelection: boolean
+  spectatorEnabled: boolean
+  type: string
+}
+
+// ==================== 游戏资源相关 ====================
+
+/** 召唤师技能数据 — GET /lol-game-data/assets/v1/summoner-spells.json */
+export interface SummonerSpellData {
+  id: number
+  name: string
+  description: string
+  summonerLevel: number
+  cooldown: number
+  gameModes: string[]
+  iconPath: string
+}
+
+/** 英雄摘要数据 — GET /lol-game-data/assets/v1/champion-summary.json */
+export interface ChampionSummaryData {
+  id: number
+  name: string
+  alias: string
+  description: string
+  contentId: string
+  roles: string[]
+  squarePortraitPath: string
 }
 
 // ==================== WebSocket 事件相关 ====================
