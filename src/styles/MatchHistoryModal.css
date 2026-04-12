@@ -68,7 +68,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  width: 180px;
+  width: 170px;
   flex-shrink: 0;
 }
 
@@ -199,11 +199,11 @@
   display: block;
 }
 
-.smh-kda-line {
+.smh-stats-line {
   display: flex;
   align-items: center;
   gap: 12px;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
   color: #a09b8c;
   white-space: nowrap;
@@ -215,11 +215,39 @@
   display: inline-block;
   width: 16px;
   height: 16px;
-  background-size: 100% 200%;
-  background-position: bottom center;
-  background-repeat: no-repeat;
+  -webkit-mask-size: 100% 200%;
+  mask-size: 100% 200%;
+  -webkit-mask-position: bottom center;
+  mask-position: bottom center;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  background-color: currentColor;
   flex-shrink: 0;
   opacity: 0.85;
+}
+
+.smh-sprite-icon {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  -webkit-mask-image: url('/fe/lol-match-history/icons.png');
+  mask-image: url('/fe/lol-match-history/icons.png');
+  -webkit-mask-size: 100% 700%;
+  mask-size: 100% 700%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  background-color: currentColor;
+  flex-shrink: 0;
+  opacity: 0.85;
+}
+
+.smh-kda {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  min-width: 80px;
+  font-size: 14px;
+  color: #b8c4d0;
 }
 
 .smh-cs {
@@ -227,6 +255,8 @@
   align-items: center;
   gap: 3px;
   color: #a09b8c;
+  min-width: 46px;
+  font-size: 13px;
 }
 
 .smh-gold {
@@ -234,6 +264,16 @@
   align-items: center;
   gap: 3px;
   color: #c8aa6e;
+  min-width: 50px;
+}
+
+.smh-damage {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  color: #e07060;
+  min-width: 50px;
+  font-size: 12px;
 }
 
 /* ---- 右侧 ---- */
@@ -244,21 +284,24 @@
   align-items: flex-end;
   width: 80px;
   flex-shrink: 0;
+  gap: 2px;
+  color:#a09b8c
 }
 
 .smh-mapname {
   color: #a09b8c;
-  font-size: 11px;
+  font-size: 13px;
+  font-weight: bold;
 }
 
 .smh-duration {
   color: #a09b8c;
-  font-size: 12px;
+  font-size: 13px;
+  font-weight: bold;
   font-family: monospace;
 }
 
 .smh-date {
-  color: #785a28;
-  font-size: 11px;
-  margin-top: 2px;
+  color: #a09b8c;
+  font-size: 12px;
 }

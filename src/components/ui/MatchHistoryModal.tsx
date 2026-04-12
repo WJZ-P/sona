@@ -13,8 +13,26 @@ function formatDuration(seconds: number): string {
   return `${m}:${s.toString().padStart(2, '0')}`
 }
 
-function formatGold(gold: number): string {
-  return gold >= 1000 ? `${(gold / 1000).toFixed(1)}k` : String(gold)
+function formatK(value: number): string {
+  return value >= 1000 ? `${(value / 1000).toFixed(1)}k` : String(value)
+}
+
+/** 将 UTC 时间戳格式化为本地友好格式：今天/昨天/前天 HH:MM，更远则显示日期 */
+function formatDate(timestamp: number): string {
+  const date = new Date(timestamp)
+  const now = new Date()
+
+  // 取本地日期的零点，用于比较天数差
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+  const target = new Date(date.getFullYear(), date.getMonth(), date.getDate())
+  const diffDays = Math.round((today.getTime() - target.getTime()) / (1000 * 60 * 60 * 24))
+
+  const time = date.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit', hour12: false })
+
+  if (diffDays === 0) return `今天 ${time}`
+  if (diffDays === 1) return `昨天 ${time}`
+  if (diffDays === 2) return `前天 ${time}`
+  return date.toLocaleDateString(undefined, { month: '2-digit', day: '2-digit' }) + ' ' + time
 }
 
 interface MatchRowData {
@@ -27,6 +45,7 @@ interface MatchRowData {
   assists: number
   cs: number
   gold: number
+  damage: number
   duration: number
   queueName: string
   mapName: string
@@ -35,7 +54,7 @@ interface MatchRowData {
   perk0: number
   perkSubStyle: number
   items: number[]
-  date: string
+  gameCreation: number
 }
 
 function parseMatch(game: MatchGame, puuid: string): MatchRowData | null {
@@ -65,6 +84,7 @@ function parseMatch(game: MatchGame, puuid: string): MatchRowData | null {
     assists: s.assists,
     cs: s.totalMinionsKilled + s.neutralMinionsKilled,
     gold: s.goldEarned,
+    damage: s.totalDamageDealtToChampions,
     duration: game.gameDuration,
     queueName: getQueueName(game.queueId),
     mapName,
@@ -73,7 +93,7 @@ function parseMatch(game: MatchGame, puuid: string): MatchRowData | null {
     perk0: s.perk0,
     perkSubStyle: s.perkSubStyle,
     items: [s.item0, s.item1, s.item2, s.item3, s.item4, s.item5, s.item6],
-    date: new Date(game.gameCreation).toLocaleDateString(),
+    gameCreation: game.gameCreation,
   }
 }
 
@@ -118,25 +138,28 @@ function MatchRow({ match }: { match: MatchRowData }) {
             </div>
           ))}
         </div>
-        <div className="smh-kda-line">
+        <div className="smh-stats-line">
           <span className="smh-kda">
+            <span className="smh-sprite-icon" style={{ WebkitMaskPositionY: '0%', width: '22px', height: '22px'}} />
             {match.kills} / <span className="smh-deaths">{match.deaths}</span> / {match.assists}
           </span>
           <span className="smh-cs">
-            <span className="smh-stat-icon" style={{ backgroundImage: 'url(/fe/lol-match-history/icon_minions.png)' }} />
+            <span className="smh-stat-icon" style={{ WebkitMaskImage: 'url(/fe/lol-match-history/icon_minions.png)' }} />
             {match.cs}
           </span>
           <span className="smh-gold">
-            <span className="smh-stat-icon" style={{ backgroundImage: 'url(/fe/lol-match-history/icon_gold.png)' }} />
-            {formatGold(match.gold)}
+            <span className="smh-stat-icon" style={{ WebkitMaskImage: 'url(/fe/lol-match-history/icon_gold.png)' }} />
+            {formatK(match.gold)}
+          </span>
+          <span className="smh-damage">
+            🗡️ {formatK(match.damage)}
           </span>
         </div>
       </div>
 
       <div className="smh-row-right">
         <span className="smh-mapname">{match.mapName}</span>
-        <span className="smh-duration">{formatDuration(match.duration)}</span>
-        <span className="smh-date">{match.date}</span>
+        <span className="smh-date">{formatDate(match.gameCreation)}</span>
       </div>
     </div>
   )
