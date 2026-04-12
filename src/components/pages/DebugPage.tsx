@@ -202,6 +202,9 @@ export function DebugPage() {
           <SonaButton onClick={() => runAndLog('地图信息 (maps)', () => lcu.getMaps())}>
             地图信息
           </SonaButton>
+          <SonaButton onClick={() => runAndLog('地图资源 (maps.json)', () => lcu.getMapAssets())}>
+            地图资源
+          </SonaButton>
         </div>
       </SettingGroup>
 

@@ -494,6 +494,11 @@ class LCUManager {
     return get<unknown[]>('/lol-maps/v1/maps')
   }
 
+  /** 获取地图资源数据（含地图皮肤/突变模式本地化名称） */
+  getMapAssets(): Promise<unknown[]> {
+    return get<unknown[]>('/lol-game-data/assets/v1/maps.json')
+  }
+
   // ==================== 战绩 ====================
 
   /**

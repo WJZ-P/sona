@@ -43,7 +43,7 @@
   align-items: center;
   justify-content: center;
   background: rgba(0, 0, 0, 0.25);
-  backdrop-filter: blur(4px);
+  backdrop-filter: blur(2px);
   animation: sona-modal-overlay-in 0.2s ease-out;
   pointer-events: auto;
 }

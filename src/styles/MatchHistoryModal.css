@@ -74,8 +74,8 @@
 
 .smh-champion {
   position: relative;
-  width: 44px;
-  height: 44px;
+  width: 56px;
+  height: 56px;
   flex-shrink: 0;
 }
 
@@ -195,6 +195,11 @@
   align-items: flex-end;
   width: 80px;
   flex-shrink: 0;
+}
+
+.smh-mapname {
+  color: #a09b8c;
+  font-size: 11px;
 }
 
 .smh-duration {
