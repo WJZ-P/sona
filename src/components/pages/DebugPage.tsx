@@ -219,6 +219,62 @@ export function DebugPage() {
         </div>
       </SettingGroup>
 
+      <SettingGroup title="头像框 & Regalia">
+        <div className="sona-debug-actions">
+          <SonaButton onClick={() => runAndLog('Regalia v2', async () => {
+            const res = await fetch('/lol-regalia/v2/current-summoner/regalia'); return res.json()
+          })}>
+            查看 Regalia
+          </SonaButton>
+          <SonaButton variant="secondary" onClick={() => runAndLog('去掉头像框 (crest=0)', async () => {
+            const res = await fetch('/lol-regalia/v2/current-summoner/regalia', {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ preferredCrestType: 'prestige', preferredBannerType: 'blank', selectedPrestigeCrest: 0 }),
+            }); return res.json()
+          })}>
+            去掉头像框
+          </SonaButton>
+        </div>
+      </SettingGroup>
+
+      <SettingGroup title="区域 & 炫彩">
+        <div className="sona-debug-actions">
+          <SonaButton onClick={() => runAndLog('区域语言', async () => {
+            const res = await fetch('/riotclient/region-locale'); return res.json()
+          })}>
+            区域语言
+          </SonaButton>
+          <SonaButton onClick={() => runAndLog('炫彩目录', async () => {
+            const res = await fetch('/lol-store/v1/catalog?inventoryType=CHROMA'); return res.json()
+          })}>
+            炫彩目录
+          </SonaButton>
+          <SonaButton onClick={() => runAndLog('功能开关', async () => {
+            const res = await fetch('/lol-platform-config/v3/namespaces/FeatureToggles'); return res.json()
+          })}>
+            功能开关
+          </SonaButton>
+        </div>
+        <div className="sona-debug-actions" style={{ marginTop: 8 }}>
+          <SonaButton onClick={() => runAndLog('配置命名空间', async () => {
+            const res = await fetch('/lol-platform-config/v3/namespaces'); return res.json()
+          })}>
+            配置命名空间
+          </SonaButton>
+          <SonaButton onClick={() => runAndLog('Chromas 配置', async () => {
+            const res = await fetch('/lol-platform-config/v3/namespaces/Chromas'); return res.json()
+          })}>
+            Chromas 配置
+          </SonaButton>
+          <SonaButton onClick={() => runAndLog('商店配置', async () => {
+            const res = await fetch('/lol-platform-config/v3/namespaces/LcuStore'); return res.json()
+          })}>
+            商店配置
+          </SonaButton>
+        </div>
+      </SettingGroup>
+
       <SettingGroup title="Store 调试">
         <SettingCard title="当前配置快照" description="查看所有持久化配置的当前值">
           <SonaButton onClick={() => setOutput(JSON.stringify(store.getAll(), null, 2))}>

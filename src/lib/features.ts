@@ -374,10 +374,14 @@ function tryInjectChampSelectTier(): boolean {
     if (!iconContainer.hasAttribute(SONA_CLICK_ATTR) && stat.puuid) {
       iconContainer.setAttribute(SONA_CLICK_ATTR, 'true')
       iconContainer.style.cursor = 'pointer'
+      const floorIndex = i
       iconContainer.addEventListener('click', (e) => {
         e.stopPropagation()
         e.preventDefault()
-        showMatchHistoryModal(stat.puuid, `${stat.gameName}#${stat.tagLine}`)
+        const current = floorStats[floorIndex]
+        if (current?.puuid) {
+          showMatchHistoryModal(current.puuid, `${current.gameName}#${current.tagLine}`)
+        }
       }, true)
     }
 
