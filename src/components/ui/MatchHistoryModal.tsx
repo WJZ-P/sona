@@ -83,7 +83,9 @@ function MatchRow({ match }: { match: MatchRowData }) {
     <div className={`smh-row ${statusClass}`}>
       <div className="smh-row-left">
         <div className="smh-champion">
-          <img className="smh-champion-icon" src={getChampIcon(match.championId)} alt="" />
+          <div className="smh-champion-mask">
+            <img className="smh-champion-icon" src={getChampIcon(match.championId)} alt="" />
+          </div>
           <span className="smh-champion-level">{match.level}</span>
         </div>
         <div className="smh-row-info">
@@ -108,8 +110,14 @@ function MatchRow({ match }: { match: MatchRowData }) {
           <span className="smh-kda">
             {match.kills} / <span className="smh-deaths">{match.deaths}</span> / {match.assists}
           </span>
-          <span className="smh-cs">{match.cs} CS</span>
-          <span className="smh-gold">{formatGold(match.gold)}</span>
+          <span className="smh-cs">
+            <span className="smh-stat-icon" style={{ backgroundImage: 'url(/fe/lol-match-history/icon_minions.png)' }} />
+            {match.cs}
+          </span>
+          <span className="smh-gold">
+            <span className="smh-stat-icon" style={{ backgroundImage: 'url(/fe/lol-match-history/icon_gold.png)' }} />
+            {formatGold(match.gold)}
+          </span>
         </div>
       </div>
 

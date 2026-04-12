@@ -74,23 +74,33 @@
 
 .smh-champion {
   position: relative;
-  width: 56px;
-  height: 56px;
+  width: 62px;
+  height: 62px;
   flex-shrink: 0;
+}
+
+.smh-champion-mask {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid #c8aa6e;
+  background: #010a13;
 }
 
 .smh-champion-icon {
   width: 100%;
   height: 100%;
-  border-radius: 50%;
-  border: 1.5px solid rgba(160, 155, 140, 0.5);
   object-fit: cover;
+  transform: scale(1.15);
+  transform-origin: center center;
 }
 
 .smh-champion-level {
   position: absolute;
   bottom: -2px;
   right: -4px;
+  z-index: 2;
   background: #010a13;
   border: 1.5px solid rgba(160, 155, 140, 0.5);
   color: #f0e6d2;
@@ -143,10 +153,10 @@
 
 .smh-row-center {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
   flex: 1;
-  gap: 4px;
+  gap: 14px;
 }
 
 .smh-items {
@@ -157,8 +167,8 @@
 }
 
 .smh-item-slot {
-  width: 26px;
-  height: 26px;
+  width: 30px;
+  height: 30px;
   background: rgba(30, 35, 40, 0.5);
   border-right: 1px solid #1e2328;
 }
@@ -179,13 +189,35 @@
   font-size: 12px;
   font-weight: 600;
   color: #a09b8c;
+  white-space: nowrap;
 }
 
 .smh-deaths { color: #e84057; }
 
-.smh-cs { color: #a09b8c; }
+.smh-stat-icon {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  background-size: 100% 200%;
+  background-position: bottom center;
+  background-repeat: no-repeat;
+  flex-shrink: 0;
+  opacity: 0.85;
+}
 
-.smh-gold { color: #c8aa6e; }
+.smh-cs {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  color: #a09b8c;
+}
+
+.smh-gold {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  color: #c8aa6e;
+}
 
 /* ---- 右侧 ---- */
 
