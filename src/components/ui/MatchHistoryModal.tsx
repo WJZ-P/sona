@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { Modal } from '@/components/ui/Modal'
 import { lcu } from '@/lib/lcu'
-import { getChampIcon, getItemIcon, getSpellIcon, getQueueName, getMapName } from '@/lib/assets'
+import { getChampIcon, getItemIcon, getSpellIcon, getPerkStyleIcon, getQueueName, getMapName } from '@/lib/assets'
 import type { MatchGame } from '@/types/lcu'
 import '@/styles/MatchHistoryModal.css'
 
@@ -32,6 +32,8 @@ interface MatchRowData {
   mapName: string
   spell1Id: number
   spell2Id: number
+  perkPrimaryStyle: number
+  perkSubStyle: number
   items: number[]
   date: string
 }
@@ -68,6 +70,8 @@ function parseMatch(game: MatchGame, puuid: string): MatchRowData | null {
     mapName,
     spell1Id: participant.spell1Id,
     spell2Id: participant.spell2Id,
+    perkPrimaryStyle: s.perkPrimaryStyle,
+    perkSubStyle: s.perkSubStyle,
     items: [s.item0, s.item1, s.item2, s.item3, s.item4, s.item5, s.item6],
     date: new Date(game.gameCreation).toLocaleDateString(),
   }
@@ -94,6 +98,14 @@ function MatchRow({ match }: { match: MatchRowData }) {
           <div className="smh-spells">
             <img className="smh-spell" src={getSpellIcon(match.spell1Id)} alt="" />
             <img className="smh-spell" src={getSpellIcon(match.spell2Id)} alt="" />
+            {match.perkPrimaryStyle > 0 && getPerkStyleIcon(match.perkPrimaryStyle) && (
+              <>
+                <img className="smh-perk smh-perk-primary" src={getPerkStyleIcon(match.perkPrimaryStyle)} alt="" />
+                {match.perkSubStyle > 0 && getPerkStyleIcon(match.perkSubStyle) && (
+                  <img className="smh-perk smh-perk-sub" src={getPerkStyleIcon(match.perkSubStyle)} alt="" />
+                )}
+              </>
+            )}
           </div>
         </div>
       </div>

@@ -122,7 +122,7 @@
 }
 
 .smh-status {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   letter-spacing: 1px;
 }
@@ -132,7 +132,7 @@
 
 .smh-gamemode {
   color: #a09b8c;
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .smh-spells {
@@ -142,11 +142,28 @@
 }
 
 .smh-spell {
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
   border-radius: 2px;
   border: 1px solid #1e2328;
   object-fit: cover;
+}
+
+.smh-perk {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  object-fit: contain;
+}
+
+.smh-perk-primary {
+  background: rgba(30, 35, 40, 0.6);
+}
+
+.smh-perk-sub {
+  width: 16px;
+  height: 16px;
+  opacity: 0.75;
 }
 
 /* ---- 中间 ---- */
@@ -167,8 +184,8 @@
 }
 
 .smh-item-slot {
-  width: 30px;
-  height: 30px;
+  width: 36px;
+  height: 36px;
   background: rgba(30, 35, 40, 0.5);
   border-right: 1px solid #1e2328;
 }

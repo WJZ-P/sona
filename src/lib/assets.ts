@@ -22,6 +22,8 @@ function normalizePath(raw: string): string {
 
 const itemMap = new Map<number, string>()
 const spellMap = new Map<number, string>()
+const perkMap = new Map<number, string>()
+const perkStyleMap = new Map<number, string>()
 const queueMap = new Map<number, GameQueue>()
 const mapDataMap = new Map<number, { id: number; name: string; gameModeName: string; [key: string]: unknown }>()
 
@@ -36,11 +38,13 @@ let initialized = false
 export async function initAssets() {
   if (initialized) return
   try {
-    const [items, spells, queues, maps] = await Promise.all([
+    const [items, spells, queues, maps, perks, perkStyles] = await Promise.all([
       lcu.getItems(),
       lcu.getSummonerSpells(),
       lcu.getQueues(),
       lcu.getMapAssets().catch(() => []),
+      lcu.getPerks().catch(() => []),
+      lcu.getPerkStyles().catch(() => ({ styles: [] })),
     ])
 
     for (const item of items) {
@@ -65,10 +69,22 @@ export async function initAssets() {
       }
     }
 
+    for (const perk of perks) {
+      if (perk.id > 0 && perk.iconPath) {
+        perkMap.set(perk.id, normalizePath(perk.iconPath))
+      }
+    }
+
+    for (const style of perkStyles.styles) {
+      if (style.id > 0 && style.iconPath) {
+        perkStyleMap.set(style.id, normalizePath(style.iconPath))
+      }
+    }
+
     initialized = true
     logger.info(
-      '[Assets] 资源映射初始化完成 → 装备 %d, 技能 %d, 队列 %d, 地图 %d',
-      itemMap.size, spellMap.size, queueMap.size, mapDataMap.size,
+      '[Assets] 资源映射初始化完成 → 装备 %d, 技能 %d, 符文 %d, 符文系 %d, 队列 %d, 地图 %d',
+      itemMap.size, spellMap.size, perkMap.size, perkStyleMap.size, queueMap.size, mapDataMap.size,
     )
   } catch (err) {
     logger.error('[Assets] 资源映射初始化失败:', err)
@@ -90,6 +106,16 @@ export function getItemIcon(id: number): string {
 /** 获取召唤师技能图标路径 */
 export function getSpellIcon(id: number): string {
   return spellMap.get(id) ?? ''
+}
+
+/** 获取单个符文图标路径（基石符文等） */
+export function getPerkIcon(id: number): string {
+  return perkMap.get(id) ?? ''
+}
+
+/** 获取符文系图标路径（主系/副系） */
+export function getPerkStyleIcon(id: number): string {
+  return perkStyleMap.get(id) ?? ''
 }
 
 /** 通过 queueId 获取队列名称（中文），如 "极地大乱斗"、"排位赛 单排/双排" */

@@ -562,6 +562,16 @@ class LCUManager {
     return get('/lol-game-data/assets/v1/champion-summary.json')
   }
 
+  /** 获取所有符文数据（含 iconPath，对应单个符文 ID） */
+  getPerks(): Promise<Array<{ id: number; iconPath: string; name: string }>> {
+    return get('/lol-game-data/assets/v1/perks.json')
+  }
+
+  /** 获取所有符文系样式（对应 perkPrimaryStyle / perkSubStyle） */
+  getPerkStyles(): Promise<{ styles: Array<{ id: number; iconPath: string; name: string }> }> {
+    return get('/lol-game-data/assets/v1/perkstyles.json')
+  }
+
 
   // ==================== 通知 ====================
 

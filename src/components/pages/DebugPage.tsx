@@ -193,6 +193,17 @@ export function DebugPage() {
           </SonaButton>
         </div>
         <div className="sona-debug-actions" style={{ marginTop: 8 }}>
+          <SonaButton onClick={() => runAndLog('符文列表 (perks.json)', () => lcu.getPerks())}>
+            符文列表
+          </SonaButton>
+          <SonaButton onClick={() => runAndLog('符文系 (perkstyles.json)', () => lcu.getPerkStyles())}>
+            符文系
+          </SonaButton>
+          <SonaButton onClick={() => runAndLog('好友列表 (friends)', () => lcu.getFriends())}>
+            好友列表
+          </SonaButton>
+        </div>
+        <div className="sona-debug-actions" style={{ marginTop: 8 }}>
           <SonaButton onClick={() => runAndLog('队列列表 (queues)', () => lcu.getQueues())}>
             队列列表
           </SonaButton>
