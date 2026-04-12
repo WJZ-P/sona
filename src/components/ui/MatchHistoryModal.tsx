@@ -7,12 +7,6 @@ import '@/styles/MatchHistoryModal.css'
 
 // ==================== 数据解析 ====================
 
-function formatDuration(seconds: number): string {
-  const m = Math.floor(seconds / 60)
-  const s = seconds % 60
-  return `${m}:${s.toString().padStart(2, '0')}`
-}
-
 function formatK(value: number): string {
   return value >= 1000 ? `${(value / 1000).toFixed(1)}k` : String(value)
 }
@@ -46,7 +40,6 @@ interface MatchRowData {
   cs: number
   gold: number
   damage: number
-  duration: number
   queueName: string
   mapName: string
   spell1Id: number
@@ -85,7 +78,6 @@ function parseMatch(game: MatchGame, puuid: string): MatchRowData | null {
     cs: s.totalMinionsKilled + s.neutralMinionsKilled,
     gold: s.goldEarned,
     damage: s.totalDamageDealtToChampions,
-    duration: game.gameDuration,
     queueName: getQueueName(game.queueId),
     mapName,
     spell1Id: participant.spell1Id,
@@ -141,7 +133,11 @@ function MatchRow({ match }: { match: MatchRowData }) {
         <div className="smh-stats-line">
           <span className="smh-kda">
             <span className="smh-sprite-icon" style={{ WebkitMaskPositionY: '0%', width: '22px', height: '22px'}} />
-            {match.kills} / <span className="smh-deaths">{match.deaths}</span> / {match.assists}
+            <span className="smh-kda-num">{match.kills}</span>
+            {' / '}
+            <span className="smh-kda-num smh-deaths">{match.deaths}</span>
+            {' / '}
+            <span className="smh-kda-num">{match.assists}</span>
           </span>
           <span className="smh-cs">
             <span className="smh-stat-icon" style={{ WebkitMaskImage: 'url(/fe/lol-match-history/icon_minions.png)' }} />
