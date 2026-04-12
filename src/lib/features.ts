@@ -484,6 +484,8 @@ function updateChampSelectAssist(enabled: boolean) {
     champSelectAssistUnsub = lcu.observe(LcuEventUri.GAMEFLOW_PHASE_CHANGE, (event: LCUEventMessage) => {
       const phase = event.data as GameflowPhase
       if (phase === 'ChampSelect') {
+        // 立即清理上一局残留，确保新局开始时是干净的
+        unregisterTierInjection()
         applyChampSelectIconEffects()
       } else {
         unregisterTierInjection()
