@@ -747,29 +747,36 @@ function getGameColor(gameId: string): string {
   return gameColorMap.get(gameId)!
 }
 
-/** 异步查询所有好友的游戏状态，建立 name → gameInfo 映射 */
-async function refreshFriendInfoMap() {
-  try {
-    const friends = await lcu.getFriends()
-    const newMap = new Map<string, { gameId: number; gameStatus: string }>()
+/** 异步查询所有好友的游戏状态，建立 name → gameInfo 映射（带重试） */
+async function refreshFriendInfoMap(retries = 5) {
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      const friends = await lcu.getFriends()
+      const newMap = new Map<string, { gameId: number; gameStatus: string }>()
 
-    for (const f of friends) {
-      // 用 gameName 或 name 作为 key（和 DOM 中 .member-name 对应）
-      const name = f.gameName || f.name
-      if (!name) continue
+      for (const f of friends) {
+        const name = f.gameName || f.name
+        if (!name) continue
 
-      const gameId = f.lol?.gameId ?? f.gameId
-      const gameStatus = f.lol?.gameStatus ?? f.gameStatus
+        const gameId = f.lol?.gameId ?? f.gameId
+        const gameStatus = f.lol?.gameStatus ?? f.gameStatus
 
-      if (gameId && gameId > 0 && gameStatus && gameStatus !== 'outOfGame') {
-        newMap.set(name, { gameId, gameStatus })
+        if (gameId && gameId > 0 && gameStatus && gameStatus !== 'outOfGame') {
+          newMap.set(name, { gameId, gameStatus })
+        }
+      }
+
+      friendInfoMap = newMap
+      logger.info('[FriendGroup] 刷新好友游戏状态 → %d 人在游戏中 (attempt %d)', newMap.size, attempt)
+      return
+    } catch (err) {
+      if (attempt < retries) {
+        logger.debug('[FriendGroup] 好友接口未就绪，%ds 后重试 (%d/%d)', 2, attempt + 1, retries)
+        await sleep(2000)
+      } else {
+        logger.error('[FriendGroup] 查询好友状态失败:', err)
       }
     }
-
-    friendInfoMap = newMap
-    logger.info('[FriendGroup] 刷新好友游戏状态 → %d 人在游戏中', newMap.size)
-  } catch (err) {
-    logger.error('[FriendGroup] 查询好友状态失败:', err)
   }
 }
 
@@ -862,12 +869,14 @@ let friendSmartGroupRegistered = false
 
 function updateFriendSmartGroup(enabled: boolean) {
   if (enabled && !friendSmartGroupRegistered) {
-    // 拉一次初始数据，后续靠 DOM 变化按需刷新
-    refreshFriendInfoMap()
-
-    injector.register(tryInjectFriendSmartGroup)
     friendSmartGroupRegistered = true
-    logger.info('Friend smart group enabled ✓')
+    // 先拉好友数据，就绪后再注册注入
+    refreshFriendInfoMap().then(() => {
+      if (friendSmartGroupRegistered) {
+        injector.register(tryInjectFriendSmartGroup)
+        logger.info('Friend smart group enabled ✓')
+      }
+    })
   } else if (!enabled && friendSmartGroupRegistered) {
     injector.unregister(tryInjectFriendSmartGroup)
     friendSmartGroupRegistered = false
