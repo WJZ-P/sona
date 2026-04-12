@@ -219,6 +219,26 @@ export function DebugPage() {
         </div>
       </SettingGroup>
 
+      <SettingGroup title="房间 & 组队">
+        <div className="sona-debug-actions">
+          <SonaButton onClick={() => runAndLog('房间信息 (lobby)', async () => {
+            const res = await fetch('/lol-lobby/v2/lobby'); return res.json()
+          })}>
+            房间信息
+          </SonaButton>
+          <SonaButton onClick={() => runAndLog('房间成员 (members)', async () => {
+            const res = await fetch('/lol-lobby/v2/lobby/members'); return res.json()
+          })}>
+            成员列表
+          </SonaButton>
+          <SonaButton onClick={() => runAndLog('邀请列表 (invitations)', async () => {
+            const res = await fetch('/lol-lobby/v2/lobby/invitations'); return res.json()
+          })}>
+            邀请列表
+          </SonaButton>
+        </div>
+      </SettingGroup>
+
       <SettingGroup title="头像框 & Regalia">
         <div className="sona-debug-actions">
           <SonaButton onClick={() => runAndLog('Regalia v2', async () => {
