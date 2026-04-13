@@ -21,43 +21,24 @@
   letter-spacing: 2px;
 }
 
-/* ---- 提示条 ---- */
-
-.spbg-notice {
-  margin: 12px 20px 0;
-  padding: 8px 14px;
-  border: 1px solid rgba(200, 170, 110, 0.4);
-  background: rgba(200, 170, 110, 0.08);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: #c8aa6e;
-  font-size: 12px;
-  font-weight: 600;
-}
-
-.spbg-notice-icon {
-  font-size: 14px;
-  flex-shrink: 0;
-}
-
 /* ---- 搜索栏 ---- */
 
 .spbg-toolbar {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 10px 20px;
+  gap: 14px;
+  padding: 14px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .spbg-search {
   flex: 1;
-  max-width: 280px;
+  max-width: 320px;
   background: #010a13;
   border: 1px solid #3c2e16;
   color: #f0e6d2;
-  font-size: 13px;
-  padding: 5px 10px;
+  font-size: 14px;
+  padding: 8px 12px;
   outline: none;
   transition: border-color 0.2s;
 }
@@ -71,9 +52,18 @@
 }
 
 .spbg-count {
-  color: #5c6b73;
-  font-size: 12px;
+  color: #c8aa6e;
+  font-size: 14px;
+  font-weight: bold;
   white-space: nowrap;
+}
+
+.spbg-status {
+  color: #c8aa6e;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  margin-left: auto;
 }
 
 /* ---- 网格容器 ---- */
@@ -103,8 +93,9 @@
 
 .spbg-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(auto-fill, 200px);
   gap: 12px 14px;
+  justify-content: center;
 }
 
 .spbg-empty {
@@ -120,12 +111,13 @@
   display: flex;
   flex-direction: column;
   cursor: pointer;
+  width: 200px;
 }
 
 .spbg-card-img-wrap {
   position: relative;
-  width: 100%;
-  aspect-ratio: 1 / 1;
+  width: 200px;
+  height: 200px;
   overflow: hidden;
   border: 2px solid #1e2328;
   transition: border-color 0.2s, box-shadow 0.2s;

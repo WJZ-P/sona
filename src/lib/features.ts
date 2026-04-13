@@ -906,51 +906,63 @@ import { ProfileBackgroundPicker } from '@/components/ui/ProfileBackgroundPicker
 
 // ==================== 生涯背景自定义 ====================
 
-const SONA_PROFILE_BG_ATTR = 'data-sona-profile-bg'
+const SONA_PROFILE_BG_ATTR = 'data-sona-profile-bg-hijacked'
 
-/** 已挂载的生涯背景 React root */
+/** 生涯背景弹窗的独立 React root */
 let profileBgRoot: Root | null = null
-let profileBgMountDiv: HTMLDivElement | null = null
+let profileBgContainer: HTMLDivElement | null = null
+
+function showProfileBgPicker() {
+  if (!profileBgContainer) {
+    profileBgContainer = document.createElement('div')
+    profileBgContainer.id = 'sona-profile-bg-root'
+    document.body.appendChild(profileBgContainer)
+    profileBgRoot = createRoot(profileBgContainer)
+  }
+
+  const close = () => {
+    profileBgRoot?.render(
+      createElement(ProfileBackgroundPicker, { open: false, onClose: close }),
+    )
+  }
+
+  profileBgRoot!.render(
+    createElement(ProfileBackgroundPicker, { open: true, onClose: close }),
+  )
+}
 
 function cleanupProfileBg() {
   if (profileBgRoot) {
     profileBgRoot.unmount()
     profileBgRoot = null
   }
-  if (profileBgMountDiv) {
-    profileBgMountDiv.remove()
-    profileBgMountDiv = null
+  if (profileBgContainer) {
+    profileBgContainer.remove()
+    profileBgContainer = null
   }
 }
 
 /**
- * 注入任务：在生涯皮肤展示弹窗中直接嵌入背景选择组件
- * 前置判断：dialog-content → skins-grid → flyout-title
+ * 注入任务：在生涯界面接管原生皮肤选择按钮的点击事件
+ * 检测 style-profile-skin-picker-button，拦截点击后拉起自定义 Modal
  */
-function tryInjectProfileBgPicker(): boolean {
-  const dialog = document.querySelector('.dialog-content')
-  if (!dialog) {
-    // 离开了弹窗页面，清理
-    if (profileBgRoot) cleanupProfileBg()
-    return true
-  }
+function tryHijackProfileSkinButton(): boolean {
+  const btn = document.querySelector('.style-profile-skin-picker-button') as HTMLElement | null
+  if (!btn) return true
 
-  const skinsGrid = dialog.querySelector('.skins-grid')
-  if (!skinsGrid) return true
+  if (btn.hasAttribute(SONA_PROFILE_BG_ATTR)) return true
 
-  if (dialog.querySelector(`[${SONA_PROFILE_BG_ATTR}]`)) return true
+  btn.setAttribute(SONA_PROFILE_BG_ATTR, 'true')
 
-  const flyoutTitle = dialog.querySelector('.flyout-title')
-  if (!flyoutTitle) return true
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation()
+    e.stopImmediatePropagation()
+    e.preventDefault()
+    showProfileBgPicker()
+    logger.info('[ProfileBg] 拦截原生按钮点击，打开自定义弹窗')
+  }, true)
 
-  profileBgMountDiv = document.createElement('div')
-  profileBgMountDiv.setAttribute(SONA_PROFILE_BG_ATTR, 'true')
-  flyoutTitle.insertAdjacentElement('afterend', profileBgMountDiv)
-
-  profileBgRoot = createRoot(profileBgMountDiv)
-  profileBgRoot.render(createElement(ProfileBackgroundPicker))
-  logger.info('[ProfileBg] 背景选择组件已嵌入 ✓')
-
+  logger.info('[ProfileBg] 已接管皮肤选择按钮 ✓')
   return true
 }
 
@@ -958,13 +970,17 @@ let profileBgRegistered = false
 
 function updateCustomProfileBg(enabled: boolean) {
   if (enabled && !profileBgRegistered) {
-    injector.register(tryInjectProfileBgPicker)
+    injector.register(tryHijackProfileSkinButton)
     profileBgRegistered = true
     logger.info('Custom profile background enabled ✓')
   } else if (!enabled && profileBgRegistered) {
-    injector.unregister(tryInjectProfileBgPicker)
+    injector.unregister(tryHijackProfileSkinButton)
     profileBgRegistered = false
     cleanupProfileBg()
+    // 清除接管标记，让原生行为恢复
+    document.querySelectorAll(`[${SONA_PROFILE_BG_ATTR}]`).forEach((el) => {
+      el.removeAttribute(SONA_PROFILE_BG_ATTR)
+    })
     logger.info('Custom profile background disabled')
   }
 }
