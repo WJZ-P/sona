@@ -133,11 +133,11 @@ function MatchRow({ match }: { match: MatchRowData }) {
         <div className="smh-stats-line">
           <span className="smh-kda">
             <span className="smh-sprite-icon" style={{ WebkitMaskPositionY: '0%', width: '22px', height: '22px'}} />
-            <span className="smh-kda-num">{match.kills}</span>
+            <span className={`smh-kda-num${match.kills >= match.deaths && match.kills >= match.assists ? ' smh-kda-highlight' : ''}`}>{match.kills}</span>
             {' / '}
-            <span className="smh-kda-num smh-deaths">{match.deaths}</span>
+            <span className={`smh-kda-num${match.deaths > match.kills && match.deaths > match.assists ? ' smh-kda-highlight' : ''}`}>{match.deaths}</span>
             {' / '}
-            <span className="smh-kda-num">{match.assists}</span>
+            <span className={`smh-kda-num${match.assists > match.kills && match.assists > match.deaths ? ' smh-kda-highlight' : ''}`}>{match.assists}</span>
           </span>
           <span className="smh-cs">
             <span className="smh-stat-icon" style={{ WebkitMaskImage: 'url(/fe/lol-match-history/icon_minions.png)' }} />

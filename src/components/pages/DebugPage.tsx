@@ -264,6 +264,7 @@ export function DebugPage() {
         </div>
       </SettingGroup>
 
+
       <SettingGroup title="生涯背景">
         <div className="sona-debug-actions">
           <SonaButton onClick={() => runAndLog('summoner-profile', async () => {

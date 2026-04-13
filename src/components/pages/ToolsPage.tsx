@@ -4,19 +4,8 @@ import { SonaButton } from '@/components/ui/SonaButton'
 import { SonaSwitch } from '@/components/ui/SonaSwitch'
 import { SonaSelect } from '@/components/ui/SonaSelect'
 import { logger } from '@/index'
-import { lcu } from '@/lib/lcu'
 import { store } from '@/lib/store'
 import '@/styles/SettingsPage.css'
-
-/** 执行操作并只打印到控制台 */
-async function run(label: string, fn: () => Promise<unknown>) {
-  try {
-    const result = await fn()
-    logger.info('%s → %o', label, result)
-  } catch (err) {
-    logger.error('%s → %o', label, err)
-  }
-}
 
 const effectOptions = [
   { value: 'none', label: '无（默认）' },
@@ -36,6 +25,9 @@ export function ToolsPage() {
   const [analyzeTeamPower, setAnalyzeTeamPower] = useState(store.get('analyzeTeamPower'))
   const [friendSmartGroup, setFriendSmartGroup] = useState(store.get('friendSmartGroup'))
   const [customProfileBg, setCustomProfileBg] = useState(store.get('customProfileBg'))
+  const [rankQueue, setRankQueue] = useState('RANKED_SOLO_5x5')
+  const [rankTier, setRankTier] = useState('CHALLENGER')
+  const [rankDivision, setRankDivision] = useState('I')
 
   useEffect(() => {
     const unsubs = [
@@ -108,6 +100,105 @@ export function ToolsPage() {
         </SettingCard>
       </SettingGroup>
 
+      <SettingGroup title="段位伪装">
+        <p className="sona-subtitle" style={{ marginBottom: 10 }}>伪装好友列表中显示的段位信息，仅影响聊天名片展示。</p>
+        <div className="sona-debug-actions" style={{ alignItems: 'center' }}>
+          <div style={{ minWidth: 140 }}>
+            <SonaSelect
+              options={[
+                { value: 'RANKED_SOLO_5x5', label: '单排/双排' },
+                { value: 'RANKED_FLEX_SR', label: '灵活组排' },
+                { value: 'RANKED_TFT', label: '云顶之弈' },
+                { value: 'RANKED_TFT_DOUBLE_UP', label: '云顶双人' },
+                { value: 'RANKED_TFT_TURBO', label: '云顶激斗' },
+              ]}
+              value={rankQueue}
+              onChange={setRankQueue}
+            />
+          </div>
+          <div style={{ minWidth: 130 }}>
+            <SonaSelect
+              options={[
+                { value: 'CHALLENGER', label: '最强王者' },
+                { value: 'GRANDMASTER', label: '傲世宗师' },
+                { value: 'MASTER', label: '超凡大师' },
+                { value: 'DIAMOND', label: '璀璨钻石' },
+                { value: 'EMERALD', label: '流光翡翠' },
+                { value: 'PLATINUM', label: '华贵铂金' },
+                { value: 'GOLD', label: '荣耀黄金' },
+                { value: 'SILVER', label: '不屈白银' },
+                { value: 'BRONZE', label: '英勇青铜' },
+                { value: 'IRON', label: '坚韧黑铁' },
+              ]}
+              value={rankTier}
+              onChange={setRankTier}
+            />
+          </div>
+          <div style={{ minWidth: 80 }}>
+            <SonaSelect
+              options={[
+                { value: 'I', label: 'I' },
+                { value: 'II', label: 'II' },
+                { value: 'III', label: 'III' },
+                { value: 'IV', label: 'IV' },
+              ]}
+              value={rankDivision}
+              onChange={setRankDivision}
+            />
+          </div>
+          <SonaButton onClick={async () => {
+            try {
+              const res = await fetch('/lol-chat/v1/me')
+              if (!res.ok) { logger.error('获取聊天状态失败'); return }
+              const me = await res.json()
+              me.lol.rankedLeagueTier = rankTier
+              me.lol.rankedLeagueDivision = rankDivision
+              me.lol.rankedLeagueQueue = rankQueue
+              const putRes = await fetch('/lol-chat/v1/me', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(me),
+              })
+              if (putRes.ok) logger.info('段位伪装已应用 ✓ %s %s %s', rankQueue, rankTier, rankDivision)
+              else logger.error('段位伪装失败:', await putRes.text())
+            } catch (err) {
+              logger.error('段位伪装失败:', err)
+            }
+          }}>
+            应用
+          </SonaButton>
+          <SonaButton variant="primary" onClick={async () => {
+            try {
+              const res = await fetch('/lol-chat/v1/me')
+              if (!res.ok) { logger.error('获取聊天状态失败'); return }
+              const me = await res.json()
+              let lol = typeof me.lol === 'string' ? JSON.parse(me.lol) : (me.lol || {})
+
+              // 🚨 核心修复：不要 delete，而是显式地赋空字符串！
+              // 这样会强迫服务器清空缓存的伪装数据
+              lol.rankedLeagueTier = ""
+              lol.rankedLeagueDivision = ""
+              lol.rankedLeagueQueue = ""
+              lol.rankedWins = ""
+              lol.rankedLosses = ""
+              lol.regalia = ""
+
+              const putRes = await fetch('/lol-chat/v1/me', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(me),
+              })
+              if (putRes.ok) logger.info('已恢复真实段位 ✓')
+              else logger.error('恢复段位失败:', await putRes.text())
+            } catch (err) {
+              logger.error('恢复段位失败:', err)
+            }
+          }}>
+            恢复
+          </SonaButton>
+        </div>
+      </SettingGroup>
+
       <SettingGroup title="对局相关">
         <SettingCard
           title="自动接受对局"
@@ -173,37 +264,6 @@ export function ToolsPage() {
             />
           </div>
         </SettingCard>
-      </SettingGroup>
-
-      <SettingGroup title="对局">
-        <div className="sona-debug-actions">
-          <SonaButton onClick={() => run('开始匹配', () => lcu.startMatchmaking())}>
-            开始匹配
-          </SonaButton>
-          <SonaButton onClick={() => run('停止匹配', () => lcu.stopMatchmaking())}>
-            停止匹配
-          </SonaButton>
-          <SonaButton onClick={() => run('接受对局', () => lcu.acceptMatch())}>
-            接受对局
-          </SonaButton>
-          <SonaButton onClick={() => run('拒绝对局', () => lcu.declineMatch())}>
-            拒绝对局
-          </SonaButton>
-        </div>
-      </SettingGroup>
-
-      <SettingGroup title="房间">
-        <div className="sona-debug-actions">
-          <SonaButton onClick={() => run('创建大乱斗', () => lcu.createLobby(450))}>
-            创建大乱斗
-          </SonaButton>
-          <SonaButton onClick={() => run('创建单双排', () => lcu.createLobby(420))}>
-            创建单双排
-          </SonaButton>
-          <SonaButton variant="secondary" onClick={() => run('退出房间', () => lcu.leaveLobby())}>
-            退出房间
-          </SonaButton>
-        </div>
       </SettingGroup>
     </div>
   )

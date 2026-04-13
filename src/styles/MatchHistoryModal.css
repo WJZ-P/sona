@@ -209,7 +209,7 @@
   white-space: nowrap;
 }
 
-.smh-deaths { color: #e84057; }
+.smh-kda-highlight { color: #e84057; }
 
 .smh-stat-icon {
   display: inline-block;

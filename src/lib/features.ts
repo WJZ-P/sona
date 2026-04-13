@@ -376,6 +376,10 @@ function tryInjectChampSelectTier(): boolean {
       iconContainer.style.cursor = 'pointer'
       const floorIndex = i
       iconContainer.addEventListener('click', (e) => {
+        // 放行 swap 按钮等内部交互元素的点击
+        const target = e.target as HTMLElement
+        if (target.closest('.swap-button-component, .swap-button-btn')) return
+
         e.stopPropagation()
         e.preventDefault()
         const current = floorStats[floorIndex]
@@ -534,7 +538,7 @@ async function analyzeTeammates() {
     logger.info('┌─── 队友战绩分析 ───')
     logger.info('│ 阵营: %s', sideText)
 
-    const chatLines: string[] = [`Sona助手 ♫\n 本局${sideText} — 队友卡池一览:\n`]
+    const chatLines: string[] = [`Sona助手 ♫\n 本局${sideText} — 队友卡池一览(近20局):\n`]
 
     for (const s of stats) {
       const floor = `${s.floor}楼`
