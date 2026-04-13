@@ -49,6 +49,8 @@ export interface SonaConfig {
   globalParticle: boolean
   /** 好友智能分组（开黑好友用同样颜色的border-right展示） */
   friendSmartGroup: boolean
+  /** 自定义生涯背景 */
+  customProfileBg: boolean
 }
 
 
@@ -68,6 +70,7 @@ const DEFAULT_CONFIG: SonaConfig = {
   analyzeTeamPower: false,
   globalParticle: false,
   friendSmartGroup: false,
+  customProfileBg: false,
 }
 
 

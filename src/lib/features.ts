@@ -902,6 +902,74 @@ function updateFriendSmartGroup(enabled: boolean) {
 }
 
 
+import { ProfileBackgroundPicker } from '@/components/ui/ProfileBackgroundPicker'
+
+// ==================== 生涯背景自定义 ====================
+
+const SONA_PROFILE_BG_ATTR = 'data-sona-profile-bg'
+
+/** 已挂载的生涯背景 React root */
+let profileBgRoot: Root | null = null
+let profileBgMountDiv: HTMLDivElement | null = null
+
+function cleanupProfileBg() {
+  if (profileBgRoot) {
+    profileBgRoot.unmount()
+    profileBgRoot = null
+  }
+  if (profileBgMountDiv) {
+    profileBgMountDiv.remove()
+    profileBgMountDiv = null
+  }
+}
+
+/**
+ * 注入任务：在生涯皮肤展示弹窗中直接嵌入背景选择组件
+ * 前置判断：dialog-content → skins-grid → flyout-title
+ */
+function tryInjectProfileBgPicker(): boolean {
+  const dialog = document.querySelector('.dialog-content')
+  if (!dialog) {
+    // 离开了弹窗页面，清理
+    if (profileBgRoot) cleanupProfileBg()
+    return true
+  }
+
+  const skinsGrid = dialog.querySelector('.skins-grid')
+  if (!skinsGrid) return true
+
+  if (dialog.querySelector(`[${SONA_PROFILE_BG_ATTR}]`)) return true
+
+  const flyoutTitle = dialog.querySelector('.flyout-title')
+  if (!flyoutTitle) return true
+
+  profileBgMountDiv = document.createElement('div')
+  profileBgMountDiv.setAttribute(SONA_PROFILE_BG_ATTR, 'true')
+  flyoutTitle.insertAdjacentElement('afterend', profileBgMountDiv)
+
+  profileBgRoot = createRoot(profileBgMountDiv)
+  profileBgRoot.render(createElement(ProfileBackgroundPicker))
+  logger.info('[ProfileBg] 背景选择组件已嵌入 ✓')
+
+  return true
+}
+
+let profileBgRegistered = false
+
+function updateCustomProfileBg(enabled: boolean) {
+  if (enabled && !profileBgRegistered) {
+    injector.register(tryInjectProfileBgPicker)
+    profileBgRegistered = true
+    logger.info('Custom profile background enabled ✓')
+  } else if (!enabled && profileBgRegistered) {
+    injector.unregister(tryInjectProfileBgPicker)
+    profileBgRegistered = false
+    cleanupProfileBg()
+    logger.info('Custom profile background disabled')
+  }
+}
+
+
 // ==================== 初始化 ====================
 
 
@@ -933,6 +1001,9 @@ export function initFeatures() {
 
   updateFriendSmartGroup(store.get('friendSmartGroup'))
   store.onChange('friendSmartGroup', updateFriendSmartGroup)
+
+  updateCustomProfileBg(store.get('customProfileBg'))
+  store.onChange('customProfileBg', updateCustomProfileBg)
 
 
 

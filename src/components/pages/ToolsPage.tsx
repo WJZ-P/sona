@@ -35,6 +35,7 @@ export function ToolsPage() {
   const [champSelectAssist, setChampSelectAssist] = useState(store.get('champSelectAssist'))
   const [analyzeTeamPower, setAnalyzeTeamPower] = useState(store.get('analyzeTeamPower'))
   const [friendSmartGroup, setFriendSmartGroup] = useState(store.get('friendSmartGroup'))
+  const [customProfileBg, setCustomProfileBg] = useState(store.get('customProfileBg'))
 
   useEffect(() => {
     const unsubs = [
@@ -45,6 +46,7 @@ export function ToolsPage() {
       store.onChange('champSelectAssist', setChampSelectAssist),
       store.onChange('analyzeTeamPower', setAnalyzeTeamPower),
       store.onChange('friendSmartGroup', setFriendSmartGroup),
+      store.onChange('customProfileBg', setCustomProfileBg),
     ]
     return () => unsubs.forEach((fn) => fn())
   }, [])
@@ -74,6 +76,34 @@ export function ToolsPage() {
           <SonaSwitch
             checked={unlockStatus}
             onChange={(v) => { setUnlockStatus(v); store.set('unlockStatus', v) }}
+          />
+        </SettingCard>
+        <SettingCard
+          title="卸下头像边框"
+          description="移除头像框装饰，恢复干净的头像展示。"
+        >
+          <SonaButton onClick={async () => {
+            try {
+              await fetch('/lol-regalia/v2/current-summoner/regalia', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ preferredCrestType: 'prestige', preferredBannerType: 'blank', selectedPrestigeCrest: 0 }),
+              })
+              logger.info('头像边框已卸下 ✓')
+            } catch (err) {
+              logger.error('卸下头像边框失败:', err)
+            }
+          }}>
+            卸下
+          </SonaButton>
+        </SettingCard>
+        <SettingCard
+          title="自定义生涯背景"
+          description="增强生涯背景弹窗，可以选择任意皮肤作为生涯背景。"
+        >
+          <SonaSwitch
+            checked={customProfileBg}
+            onChange={(v) => { setCustomProfileBg(v); store.set('customProfileBg', v) }}
           />
         </SettingCard>
       </SettingGroup>

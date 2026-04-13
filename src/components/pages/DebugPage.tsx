@@ -13,6 +13,7 @@ export function DebugPage() {
   const [puuid, setPuuid] = useState('')
   const [chatMsg, setChatMsg] = useState('')
   const [riotId, setRiotId] = useState('')
+  const [skinId, setSkinId] = useState('')
 
 
   const runAndLog = async (label: string, fn: () => Promise<unknown>) => {
@@ -239,21 +240,76 @@ export function DebugPage() {
         </div>
       </SettingGroup>
 
-      <SettingGroup title="头像框 & Regalia">
+      <SettingGroup title="头像框 & 头像">
         <div className="sona-debug-actions">
           <SonaButton onClick={() => runAndLog('Regalia v2', async () => {
             const res = await fetch('/lol-regalia/v2/current-summoner/regalia'); return res.json()
           })}>
             查看 Regalia
           </SonaButton>
-          <SonaButton variant="secondary" onClick={() => runAndLog('去掉头像框 (crest=0)', async () => {
-            const res = await fetch('/lol-regalia/v2/current-summoner/regalia', {
+          <SonaButton onClick={() => runAndLog('当前头像', async () => {
+            const res = await fetch('/lol-summoner/v1/current-summoner'); return res.json()
+          })}>
+            当前召唤师
+          </SonaButton>
+          <SonaButton variant="primary" onClick={() => runAndLog('恢复默认头像 (id=29)', async () => {
+            const res = await fetch('/lol-summoner/v1/current-summoner/icon', {
               method: 'PUT',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ preferredCrestType: 'prestige', preferredBannerType: 'blank', selectedPrestigeCrest: 0 }),
+              body: JSON.stringify({ profileIconId: 29 }),
             }); return res.json()
           })}>
-            去掉头像框
+            恢复默认头像
+          </SonaButton>
+        </div>
+      </SettingGroup>
+
+      <SettingGroup title="生涯背景">
+        <div className="sona-debug-actions">
+          <SonaButton onClick={() => runAndLog('summoner-profile', async () => {
+            const res = await fetch('/lol-summoner/v1/current-summoner/summoner-profile'); return res.json()
+          })}>
+            当前 Profile
+          </SonaButton>
+          <SonaButton onClick={() => runAndLog('backdrop', async () => {
+            const res = await fetch('/lol-collections/v1/inventories/local/backdrop'); return res.json()
+          })}>
+            Backdrop
+          </SonaButton>
+          <SonaButton onClick={() => runAndLog('获取皮肤库存', async () => {
+            const meRes = await fetch('/lol-summoner/v1/current-summoner')
+            if (!meRes.ok) return '❌ 获取个人信息失败'
+            const me = await meRes.json()
+            const skinsRes = await fetch(`/lol-champions/v1/inventories/${me.summonerId}/skins-minimal`)
+            if (!skinsRes.ok) return `❌ ${skinsRes.status} 获取皮肤失败`
+            const skins = await skinsRes.json()
+            const ownedSkins = skins.filter((s: { ownership?: { owned?: boolean } }) => s.ownership?.owned)
+            return ownedSkins
+          })}>
+            皮肤库存
+          </SonaButton>
+        </div>
+        <div className="sona-debug-actions" style={{ marginTop: 8, alignItems: 'flex-end', gap: 8 }}>
+          <div style={{ flex: 1 }}>
+            <SonaInput
+              value={skinId}
+              onChange={setSkinId}
+              placeholder="输入皮肤 ID (如 777058)"
+            />
+          </div>
+          <SonaButton variant="primary" onClick={() => {
+            const id = Number(skinId)
+            if (!id && id !== 0) { setOutput('❌ 请输入有效的皮肤 ID'); return }
+            runAndLog(`设置生涯背景 skinId=${id}`, async () => {
+              const postRes = await fetch('/lol-summoner/v1/current-summoner/summoner-profile', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ key: 'backgroundSkinId', value: id }),
+              })
+              return postRes.ok ? `✅ 背景已设置为 ${id}` : `❌ ${postRes.status} ${await postRes.text()}`
+            })
+          }}>
+            设置背景
           </SonaButton>
         </div>
       </SettingGroup>

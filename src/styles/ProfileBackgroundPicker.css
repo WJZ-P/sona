@@ -1,0 +1,213 @@
+/* ==================== 生涯背景选择器 ==================== */
+
+.spbg-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* ---- 标题 ---- */
+
+.spbg-header {
+  padding: 12px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.spbg-title {
+  color: #f0e6d2;
+  font-size: 15px;
+  font-weight: bold;
+  letter-spacing: 2px;
+}
+
+/* ---- 提示条 ---- */
+
+.spbg-notice {
+  margin: 12px 20px 0;
+  padding: 8px 14px;
+  border: 1px solid rgba(200, 170, 110, 0.4);
+  background: rgba(200, 170, 110, 0.08);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #c8aa6e;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.spbg-notice-icon {
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+/* ---- 搜索栏 ---- */
+
+.spbg-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 20px;
+}
+
+.spbg-search {
+  flex: 1;
+  max-width: 280px;
+  background: #010a13;
+  border: 1px solid #3c2e16;
+  color: #f0e6d2;
+  font-size: 13px;
+  padding: 5px 10px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.spbg-search::placeholder {
+  color: #5c6b73;
+}
+
+.spbg-search:focus {
+  border-color: #c8aa6e;
+}
+
+.spbg-count {
+  color: #5c6b73;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+/* ---- 网格容器 ---- */
+
+.spbg-grid-wrap {
+  flex: 1;
+  overflow-y: auto;
+  padding: 4px 20px 16px;
+}
+
+.spbg-grid-wrap::-webkit-scrollbar {
+  width: 4px;
+}
+
+.spbg-grid-wrap::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.spbg-grid-wrap::-webkit-scrollbar-thumb {
+  background: #3c2e16;
+  border-radius: 2px;
+}
+
+.spbg-grid-wrap::-webkit-scrollbar-thumb:hover {
+  background: #c8aa6e;
+}
+
+.spbg-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px 14px;
+}
+
+.spbg-empty {
+  text-align: center;
+  color: #5c6b73;
+  font-size: 13px;
+  padding: 60px 0;
+}
+
+/* ---- 卡片 ---- */
+
+.spbg-card {
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+}
+
+.spbg-card-img-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  border: 2px solid #1e2328;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.spbg-card:hover .spbg-card-img-wrap {
+  border-color: #c8aa6e;
+}
+
+.spbg-applied .spbg-card-img-wrap {
+  border-color: #00e5ff;
+  box-shadow: 0 0 12px rgba(0, 229, 255, 0.3);
+}
+
+.spbg-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top;
+  filter: brightness(0.85);
+  transition: filter 0.2s, transform 0.3s;
+}
+
+.spbg-card:hover .spbg-card-img {
+  filter: brightness(1.1);
+  transform: scale(1.05);
+}
+
+/* ---- hover 遮罩 "点击应用" ---- */
+
+.spbg-card-hover {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.5);
+  color: #f0e6d2;
+  font-size: 13px;
+  font-weight: bold;
+  letter-spacing: 2px;
+  opacity: 0;
+  transition: opacity 0.2s;
+  pointer-events: none;
+}
+
+.spbg-card:hover .spbg-card-hover {
+  opacity: 1;
+}
+
+/* ---- 使用中角标 ---- */
+
+.spbg-card-badge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: #00e5ff;
+  color: #010a13;
+  font-size: 10px;
+  font-weight: bold;
+  padding: 1px 6px;
+}
+
+/* ---- 皮肤名 ---- */
+
+.spbg-card-name {
+  margin-top: 6px;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: #a09b8c;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 0 2px;
+  transition: color 0.2s;
+}
+
+.spbg-card:hover .spbg-card-name {
+  color: #f0e6d2;
+}
+
+.spbg-applied .spbg-card-name {
+  color: #f0e6d2;
+}
