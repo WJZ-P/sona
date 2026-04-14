@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { SettingCard, SettingGroup } from '@/components/ui/SettingCard'
 import { SonaButton } from '@/components/ui/SonaButton'
+import { SonaInput } from '@/components/ui/SonaInput'
 import { SonaSwitch } from '@/components/ui/SonaSwitch'
 import { SonaSelect } from '@/components/ui/SonaSelect'
 import { logger } from '@/index'
@@ -29,6 +30,8 @@ export function ToolsPage() {
   const [rankTier, setRankTier] = useState(store.get('rankTier'))
   const [rankDivision, setRankDivision] = useState(store.get('rankDivision'))
   const [autoHonor, setAutoHonor] = useState(store.get('autoHonor'))
+  const [replayGameId, setReplayGameId] = useState('')
+  const [replayState, setReplayState] = useState<'idle' | 'downloading' | 'ready' | 'launching' | 'error'>('idle')
 
   useEffect(() => {
     const unsubs = [
@@ -65,7 +68,7 @@ export function ToolsPage() {
     <div className="sona-settings">
       <h2 className="sona-settings-title">工具</h2>
 
-      <SettingGroup title="客户端功能">
+      <SettingGroup title="社交">
         <SettingCard
           title="解锁自定义签名"
           description="移除客户端对签名编辑的禁用限制，可自由修改个人签名。"
@@ -103,10 +106,19 @@ export function ToolsPage() {
             onChange={(v) => { setCustomProfileBg(v); store.set('customProfileBg', v) }}
           />
         </SettingCard>
+        <SettingCard
+          title="开黑好友标记"
+          description="开黑中的好友用同样颜色标记，看看谁在偷偷开黑！"
+        >
+          <SonaSwitch
+            checked={friendSmartGroup}
+            onChange={(v) => { setFriendSmartGroup(v); store.set('friendSmartGroup', v) }}
+          />
+        </SettingCard>
       </SettingGroup>
 
       <SettingGroup title="段位伪装">
-        <p className="sona-subtitle" style={{ marginBottom: 10 }}>伪装好友列表中显示的段位信息，仅影响聊天名片展示。应用后每次启动客户端自动生效。</p>
+        <p className="sona-subtitle" style={{ marginBottom: 10 }}>伪装好友列表中显示的段位信息，仅影响聊天名片展示，不影响生涯页面。</p>
         <div className="sona-debug-actions" style={{ alignItems: 'center' }}>
           <div style={{ minWidth: 140 }}>
             <SonaSelect
@@ -206,7 +218,7 @@ export function ToolsPage() {
         </SettingCard>
         <SettingCard
           title="对局结束自动点赞"
-          description="对局结束后自动随机给一位队友点赞，再也不用手动操作。"
+          description="对局结束后，随机给队友点赞，再也不用手点啦。"
         >
           <SonaSwitch
             checked={autoHonor}
@@ -215,16 +227,87 @@ export function ToolsPage() {
         </SettingCard>
       </SettingGroup>
 
-      <SettingGroup title="社交">
-        <SettingCard
-          title="开黑好友标记"
-          description="开黑中的好友用同样颜色标记，看看谁在偷偷开黑！"
-        >
-          <SonaSwitch
-            checked={friendSmartGroup}
-            onChange={(v) => { setFriendSmartGroup(v); store.set('friendSmartGroup', v) }}
-          />
-        </SettingCard>
+      <SettingGroup title="回放">
+        <p className="sona-subtitle" style={{ marginBottom: 10 }}>输入 Game ID 下载并观看对局回放。可从战绩面板复制 Game ID。</p>
+        <div className="sona-debug-actions" style={{ alignItems: 'flex-end', gap: 8 }}>
+          <div style={{ flex: 1 }}>
+            <SonaInput
+              value={replayGameId}
+              onChange={(v) => { setReplayGameId(v); setReplayState('idle') }}
+              placeholder="输入 Game ID..."
+            />
+          </div>
+          <SonaButton
+            onClick={async () => {
+              const id = Number(replayGameId)
+              if (!id) return
+
+              setReplayState('downloading')
+              try {
+                // 1. 查元数据
+                const metaRes = await fetch(`/lol-replays/v1/metadata/${id}`)
+                if (!metaRes.ok) {
+                  logger.error('[Replay] 获取元数据失败:', metaRes.status)
+                  setReplayState('error')
+                  return
+                }
+                const meta = await metaRes.json() as { state: string; downloadProgress: number; gameId: number }
+
+                // 2. 已就绪 → 直接观看
+                if (meta.state === 'watch') {
+                  setReplayState('launching')
+                  const res = await fetch(`/lol-replays/v1/rofls/${id}/watch`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ componentType: 'replay', contextData: 'match-history' }),
+                  })
+                  setReplayState(res.ok ? 'ready' : 'error')
+                  if (res.ok) logger.info('[Replay] 开始播放 #%d ✓', id)
+                  else logger.error('[Replay] 播放失败:', await res.text())
+                  return
+                }
+
+                // 3. 未下载 → 触发下载
+                if (meta.state !== 'downloading') {
+                  await fetch(`/lol-replays/v1/rofls/${id}/download`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ componentType: 'replay', contextData: 'match-history' }),
+                  })
+                }
+
+                // 4. 轮询 metadata 等待下载完成
+                for (let i = 0; i < 30; i++) {
+                  await new Promise((r) => setTimeout(r, 2000))
+                  const checkRes = await fetch(`/lol-replays/v1/metadata/${id}`)
+                  if (!checkRes.ok) continue
+                  const checkMeta = await checkRes.json() as { state: string; downloadProgress: number }
+                  logger.info('[Replay] 下载中... %d%%', checkMeta.downloadProgress)
+
+                  if (checkMeta.state === 'watch') {
+                    setReplayState('launching')
+                    const res = await fetch(`/lol-replays/v1/rofls/${id}/watch`, {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ componentType: 'replay', contextData: 'match-history' }),
+                    })
+                    setReplayState(res.ok ? 'ready' : 'error')
+                    if (res.ok) logger.info('[Replay] 下载完成，开始播放 #%d ✓', id)
+                    else logger.error('[Replay] 播放失败:', await res.text())
+                    return
+                  }
+                }
+                logger.warn('[Replay] 等待超时')
+                setReplayState('error')
+              } catch (err) {
+                logger.error('[Replay] 异常:', err)
+                setReplayState('error')
+              }
+            }}
+          >
+            {{ idle: '▶ 观看回放', downloading: '⏳ 下载中...', ready: '✓ 已启动', launching: '🚀 启动中...', error: '✗ 重试' }[replayState]}
+          </SonaButton>
+        </div>
       </SettingGroup>
 
 

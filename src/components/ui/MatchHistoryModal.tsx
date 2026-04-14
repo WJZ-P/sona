@@ -94,6 +94,14 @@ function parseMatch(game: MatchGame, puuid: string): MatchRowData | null {
 function MatchRow({ match }: { match: MatchRowData }) {
   const statusClass = match.win ? 'smh-win' : 'smh-loss'
   const statusText = match.win ? '胜利' : '失败'
+  const [copied, setCopied] = useState(false)
+
+  const handleCopyGameId = () => {
+    navigator.clipboard.writeText(String(match.gameId)).then(() => {
+      setCopied(true)
+      setTimeout(() => setCopied(false), 1500)
+    })
+  }
 
   return (
     <div className={`smh-row ${statusClass}`}>
@@ -156,6 +164,10 @@ function MatchRow({ match }: { match: MatchRowData }) {
       <div className="smh-row-right">
         <span className="smh-mapname">{match.mapName}</span>
         <span className="smh-date">{formatDate(match.gameCreation)}</span>
+        <span className="smh-gameid" onClick={handleCopyGameId}>
+          ID:{match.gameId}
+          <span className={`smh-copy-icon ${copied ? 'smh-copied' : ''}`} />
+        </span>
       </div>
     </div>
   )

@@ -311,3 +311,39 @@
   color: #a09b8c;
   font-size: 12px;
 }
+
+.smh-gameid {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: #5c5b57;
+  font-size: 13px;
+  font-weight: bold;
+  font-family: monospace;
+  cursor: pointer;
+  transition: color 0.2s;
+  user-select: none;
+}
+
+.smh-gameid:hover {
+  color: #c8aa6e;
+}
+
+.smh-copy-icon {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  -webkit-mask-image: url('/fe/lol-static-assets/images/game-id-clipboard-copy.svg');
+  mask-image: url('/fe/lol-static-assets/images/game-id-clipboard-copy.svg');
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  background-color: currentColor;
+  flex-shrink: 0;
+  transition: background-color 0.2s;
+}
+
+.smh-copy-icon.smh-copied {
+  background-color: #5bbd72;
+}

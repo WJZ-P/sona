@@ -8,10 +8,7 @@
   flex-direction: column;
 }
 
-.sona-about::-webkit-scrollbar {
-  width: 6px;
-}
-
+.sona-about::-webkit-scrollbar { width: 6px; }
 .sona-about::-webkit-scrollbar-thumb {
   background: rgba(200, 170, 110, 0.2);
   border-radius: 3px;
@@ -40,12 +37,73 @@
 }
 
 .sona-about-desc {
-  margin: 0 0 28px 0;
+  margin: 0 0 24px 0;
   font-size: 13px;
   color: #a09b8c;
   line-height: 1.7;
 }
 
+/* ---- 信息卡片 ---- */
+.sona-about-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
+/* ---- Hex Card (InfoCard) ---- */
+.sona-hex-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  background: linear-gradient(135deg, rgba(200, 170, 110, 0.08) 0%, rgba(30, 35, 40, 0.6) 100%);
+  border: 1px solid rgba(200, 170, 110, 0.15);
+  transition: border-color 0.3s ease, background 0.3s ease;
+}
+
+.sona-hex-card:hover {
+  border-color: rgba(200, 170, 110, 0.35);
+  background: linear-gradient(135deg, rgba(200, 170, 110, 0.12) 0%, rgba(30, 35, 40, 0.7) 100%);
+}
+
+.sona-hex-card-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  color: #c8aa6e;
+  opacity: 0.8;
+}
+
+.sona-hex-card-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.sona-hex-card-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sona-hex-card-label {
+  font-size: 11px;
+  color: #785a28;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.sona-hex-card-value {
+  font-size: 14px;
+  color: #f0e6d2;
+  font-weight: 500;
+}
+
+/* ---- Section ---- */
 .sona-about-section {
   margin-bottom: 24px;
 }

@@ -220,6 +220,55 @@ export function DebugPage() {
         </div>
       </SettingGroup>
 
+      <SettingGroup title="回放调试">
+        <div className="sona-debug-actions" style={{ alignItems: 'flex-end', gap: 8 }}>
+          <div style={{ flex: 1 }}>
+            <SonaInput
+              value={gameId}
+              onChange={setGameId}
+              placeholder="输入 Game ID..."
+            />
+          </div>
+          <SonaButton onClick={() => {
+            const id = Number(gameId)
+            if (!id) { setOutput('❌ 请输入 Game ID'); return }
+            runAndLog(`回放元数据 #${id}`, async () => {
+              const res = await fetch(`/lol-replays/v1/metadata/${id}`); return res.ok ? res.json() : `❌ ${res.status} ${await res.text()}`
+            })
+          }}>
+            查状态
+          </SonaButton>
+          <SonaButton onClick={() => {
+            const id = Number(gameId)
+            if (!id) { setOutput('❌ 请输入 Game ID'); return }
+            runAndLog(`直接观看 #${id} (不下载)`, async () => {
+              const res = await fetch(`/lol-replays/v1/rofls/${id}/watch`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ componentType: 'replay', contextData: 'match-history' }),
+              })
+              return res.ok ? '✅ 已发送观看请求' : `❌ ${res.status} ${await res.text()}`
+            })
+          }}>
+            直接观看
+          </SonaButton>
+          <SonaButton variant="secondary" onClick={() => {
+            const id = Number(gameId)
+            if (!id) { setOutput('❌ 请输入 Game ID'); return }
+            runAndLog(`下载回放 #${id}`, async () => {
+              const res = await fetch(`/lol-replays/v1/rofls/${id}/download`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ componentType: 'replay', contextData: 'match-history' }),
+              })
+              return res.ok ? '✅ 已发送下载请求' : `❌ ${res.status} ${await res.text()}`
+            })
+          }}>
+            下载
+          </SonaButton>
+        </div>
+      </SettingGroup>
+
       <SettingGroup title="荣誉 & 点赞">
         <div className="sona-debug-actions">
           <SonaButton onClick={() => runAndLog('荣誉选票 (ballot)', async () => {
