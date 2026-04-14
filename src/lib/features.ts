@@ -941,8 +941,6 @@ interface HonorBallot {
 
 async function autoHonorTeammate() {
   try {
-    await sleep(1000) // 等待荣誉界面就绪
-
     const ballotRes = await fetch('/lol-honor-v2/v1/ballot')
     if (!ballotRes.ok) {
       logger.info('[AutoHonor] 当前没有待点赞的对局')

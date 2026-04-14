@@ -43,12 +43,27 @@
   line-height: 1.7;
 }
 
-/* ---- 信息卡片 ---- */
+/* ---- 并排行：卡片 + 技术栈 ---- */
+.sona-about-row {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+/* ---- 信息卡片（左半） ---- */
 .sona-about-cards {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  margin-bottom: 24px;
+  flex: 1;
+  min-width: 0;
+}
+
+/* ---- 技术栈（右半） ---- */
+.sona-about-tech {
+  flex: 1;
+  min-width: 0;
+  margin-bottom: 0;
 }
 
 /* ---- Hex Card (InfoCard) ---- */
@@ -59,12 +74,13 @@
   padding: 14px 18px;
   background: linear-gradient(135deg, rgba(200, 170, 110, 0.08) 0%, rgba(30, 35, 40, 0.6) 100%);
   border: 1px solid rgba(200, 170, 110, 0.15);
-  transition: border-color 0.3s ease, background 0.3s ease;
+  transition: border-color 0.3s ease, background 0.3s ease, transform 0.3s ease;
 }
 
 .sona-hex-card:hover {
   border-color: rgba(200, 170, 110, 0.35);
   background: linear-gradient(135deg, rgba(200, 170, 110, 0.12) 0%, rgba(30, 35, 40, 0.7) 100%);
+  transform: translateX(4px);
 }
 
 .sona-hex-card-icon {
@@ -101,6 +117,17 @@
   font-size: 14px;
   color: #f0e6d2;
   font-weight: 500;
+}
+
+/* ---- 可点击链接卡片 ---- */
+.sona-hex-card-link {
+  margin-top: 12px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.sona-hex-card-link:hover .sona-hex-card-value {
+  color: #c8aa6e;
 }
 
 /* ---- Section ---- */

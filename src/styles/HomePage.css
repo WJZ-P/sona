@@ -15,30 +15,43 @@
 /* ---- 头像区域 ---- */
 .sona-home-avatar-wrap {
   position: relative;
-  width: 180px;
-  height: 180px;
+  width: 140px;
+  height: 140px;
   margin-bottom: 28px;
   flex-shrink: 0;
 }
 
 .sona-home-avatar {
-  width: 180px;
-  height: 180px;
+  width: 140px;
+  height: 140px;
   border-radius: 50%;
   object-fit: cover;
   border: 3px solid #c8aa6e;
   position: relative;
   z-index: 2;
-  transition: transform 0.4s ease, box-shadow 0.4s ease;
   cursor: pointer;
   user-select: none;
+  animation: sona-avatar-breathe 4s ease-in-out infinite;
 }
 
 .sona-home-avatar-wrap:hover .sona-home-avatar {
+  animation: none;
   transform: scale(1.12);
   box-shadow:
     0 0 30px rgba(200, 170, 110, 0.6),
     0 0 60px rgba(200, 170, 110, 0.3);
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+
+@keyframes sona-avatar-breathe {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 12px rgba(200, 170, 110, 0.2);
+  }
+  50% {
+    transform: scale(1.06);
+    box-shadow: 0 0 24px rgba(200, 170, 110, 0.45);
+  }
 }
 
 /* 呼吸光晕 */
