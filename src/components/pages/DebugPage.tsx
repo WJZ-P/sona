@@ -220,6 +220,49 @@ export function DebugPage() {
         </div>
       </SettingGroup>
 
+      <SettingGroup title="荣誉 & 点赞">
+        <div className="sona-debug-actions">
+          <SonaButton onClick={() => runAndLog('荣誉选票 (ballot)', async () => {
+            const res = await fetch('/lol-honor-v2/v1/ballot'); return res.json()
+          })}>
+            查看选票
+          </SonaButton>
+          <SonaButton onClick={() => runAndLog('荣誉配置', async () => {
+            const res = await fetch('/lol-honor-v2/v1/config'); return res.json()
+          })}>
+            荣誉配置
+          </SonaButton>
+          <SonaButton onClick={() => runAndLog('最近荣誉', async () => {
+            const res = await fetch('/lol-honor-v2/v1/latest-eligible-game'); return res.json()
+          })}>
+            最近可荣誉
+          </SonaButton>
+          <SonaButton variant="primary" onClick={() => runAndLog('随机点赞全部票数', async () => {
+            const ballotRes = await fetch('/lol-honor-v2/v1/ballot')
+            if (!ballotRes.ok) return `❌ 当前没有待点赞对局 ${ballotRes.status}`
+            const ballot = await ballotRes.json()
+            const allies = ballot.eligibleAllies || []
+            if (allies.length === 0) return '⚠️ 没有可点赞的队友'
+            const votes = ballot.votePool?.votes ?? 1
+            const cats = ['HEART', 'COOL', 'SHOTCALLER']
+            const results: string[] = []
+            for (let i = 0; i < votes; i++) {
+              const lucky = allies[Math.floor(Math.random() * allies.length)]
+              const cat = cats[Math.floor(Math.random() * cats.length)]
+              const res = await fetch('/lol-honor-v2/v1/honor-player', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ puuid: lucky.puuid, summonerId: lucky.summonerId, gameId: ballot.gameId, honorCategory: cat }),
+              })
+              results.push(res.ok ? `✅ [${cat}] → ${lucky.championName}` : `❌ ${res.status}`)
+            }
+            return results.join('\n')
+          })}>
+            随机点赞
+          </SonaButton>
+        </div>
+      </SettingGroup>
+
       <SettingGroup title="房间 & 组队">
         <div className="sona-debug-actions">
           <SonaButton onClick={() => runAndLog('房间信息 (lobby)', async () => {

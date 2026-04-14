@@ -51,6 +51,16 @@ export interface SonaConfig {
   friendSmartGroup: boolean
   /** 自定义生涯背景 */
   customProfileBg: boolean
+  /** 对局结束自动点赞 */
+  autoHonor: boolean
+  /** 段位伪装开关 */
+  rankDisguise: boolean
+  /** 伪装队列 */
+  rankQueue: string
+  /** 伪装段位 */
+  rankTier: string
+  /** 伪装子段位 */
+  rankDivision: string
 }
 
 
@@ -71,6 +81,11 @@ const DEFAULT_CONFIG: SonaConfig = {
   globalParticle: false,
   friendSmartGroup: false,
   customProfileBg: false,
+  autoHonor: false,
+  rankDisguise: false,
+  rankQueue: 'RANKED_SOLO_5x5',
+  rankTier: 'CHALLENGER',
+  rankDivision: 'I',
 }
 
 

@@ -25,9 +25,10 @@ export function ToolsPage() {
   const [analyzeTeamPower, setAnalyzeTeamPower] = useState(store.get('analyzeTeamPower'))
   const [friendSmartGroup, setFriendSmartGroup] = useState(store.get('friendSmartGroup'))
   const [customProfileBg, setCustomProfileBg] = useState(store.get('customProfileBg'))
-  const [rankQueue, setRankQueue] = useState('RANKED_SOLO_5x5')
-  const [rankTier, setRankTier] = useState('CHALLENGER')
-  const [rankDivision, setRankDivision] = useState('I')
+  const [rankQueue, setRankQueue] = useState(store.get('rankQueue'))
+  const [rankTier, setRankTier] = useState(store.get('rankTier'))
+  const [rankDivision, setRankDivision] = useState(store.get('rankDivision'))
+  const [autoHonor, setAutoHonor] = useState(store.get('autoHonor'))
 
   useEffect(() => {
     const unsubs = [
@@ -39,6 +40,10 @@ export function ToolsPage() {
       store.onChange('analyzeTeamPower', setAnalyzeTeamPower),
       store.onChange('friendSmartGroup', setFriendSmartGroup),
       store.onChange('customProfileBg', setCustomProfileBg),
+      store.onChange('autoHonor', setAutoHonor),
+      store.onChange('rankQueue', setRankQueue),
+      store.onChange('rankTier', setRankTier),
+      store.onChange('rankDivision', setRankDivision),
     ]
     return () => unsubs.forEach((fn) => fn())
   }, [])
@@ -101,7 +106,7 @@ export function ToolsPage() {
       </SettingGroup>
 
       <SettingGroup title="段位伪装">
-        <p className="sona-subtitle" style={{ marginBottom: 10 }}>伪装好友列表中显示的段位信息，仅影响聊天名片展示。</p>
+        <p className="sona-subtitle" style={{ marginBottom: 10 }}>伪装好友列表中显示的段位信息，仅影响聊天名片展示。应用后每次启动客户端自动生效。</p>
         <div className="sona-debug-actions" style={{ alignItems: 'center' }}>
           <div style={{ minWidth: 140 }}>
             <SonaSelect
@@ -146,53 +151,16 @@ export function ToolsPage() {
               onChange={setRankDivision}
             />
           </div>
-          <SonaButton onClick={async () => {
-            try {
-              const res = await fetch('/lol-chat/v1/me')
-              if (!res.ok) { logger.error('获取聊天状态失败'); return }
-              const me = await res.json()
-              me.lol.rankedLeagueTier = rankTier
-              me.lol.rankedLeagueDivision = rankDivision
-              me.lol.rankedLeagueQueue = rankQueue
-              const putRes = await fetch('/lol-chat/v1/me', {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(me),
-              })
-              if (putRes.ok) logger.info('段位伪装已应用 ✓ %s %s %s', rankQueue, rankTier, rankDivision)
-              else logger.error('段位伪装失败:', await putRes.text())
-            } catch (err) {
-              logger.error('段位伪装失败:', err)
-            }
+          <SonaButton onClick={() => {
+            store.set('rankQueue', rankQueue)
+            store.set('rankTier', rankTier)
+            store.set('rankDivision', rankDivision)
+            store.set('rankDisguise', true)
           }}>
             应用
           </SonaButton>
-          <SonaButton variant="primary" onClick={async () => {
-            try {
-              const res = await fetch('/lol-chat/v1/me')
-              if (!res.ok) { logger.error('获取聊天状态失败'); return }
-              const me = await res.json()
-              let lol = typeof me.lol === 'string' ? JSON.parse(me.lol) : (me.lol || {})
-
-              // 🚨 核心修复：不要 delete，而是显式地赋空字符串！
-              // 这样会强迫服务器清空缓存的伪装数据
-              lol.rankedLeagueTier = ""
-              lol.rankedLeagueDivision = ""
-              lol.rankedLeagueQueue = ""
-              lol.rankedWins = ""
-              lol.rankedLosses = ""
-              lol.regalia = ""
-
-              const putRes = await fetch('/lol-chat/v1/me', {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(me),
-              })
-              if (putRes.ok) logger.info('已恢复真实段位 ✓')
-              else logger.error('恢复段位失败:', await putRes.text())
-            } catch (err) {
-              logger.error('恢复段位失败:', err)
-            }
+          <SonaButton onClick={() => {
+            store.set('rankDisguise', false)
           }}>
             恢复
           </SonaButton>
@@ -234,6 +202,15 @@ export function ToolsPage() {
           <SonaSwitch
             checked={champSelectAssist}
             onChange={(v) => { setChampSelectAssist(v); store.set('champSelectAssist', v) }}
+          />
+        </SettingCard>
+        <SettingCard
+          title="对局结束自动点赞"
+          description="对局结束后自动随机给一位队友点赞，再也不用手动操作。"
+        >
+          <SonaSwitch
+            checked={autoHonor}
+            onChange={(v) => { setAutoHonor(v); store.set('autoHonor', v) }}
           />
         </SettingCard>
       </SettingGroup>
