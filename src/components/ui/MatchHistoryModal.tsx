@@ -183,35 +183,74 @@ export interface MatchHistoryModalProps {
 export function MatchHistoryModal({ open, onClose, puuid, playerName }: MatchHistoryModalProps) {
   const [matches, setMatches] = useState<MatchRowData[]>([])
   const [loading, setLoading] = useState(false)
+  const [loadingMore, setLoadingMore] = useState(false)
   const [error, setError] = useState('')
+  const [hasMore, setHasMore] = useState(true)
   const loadedPuuid = useRef('')
+  const listRef = useRef<HTMLDivElement>(null)
+  const PAGE_SIZE = 20
 
+  // 加载指定页
+  const loadPage = async (begIndex: number, isInitial: boolean) => {
+    if (isInitial) {
+      setLoading(true)
+      setError('')
+      setMatches([])
+      setHasMore(true)
+    } else {
+      setLoadingMore(true)
+    }
+
+    try {
+      const resp = await lcu.getMatchHistory(puuid, begIndex, begIndex + PAGE_SIZE)
+      const games = resp.games?.games ?? []
+      const parsed = games
+        .map((g) => parseMatch(g, puuid))
+        .filter((m): m is MatchRowData => m !== null)
+
+      if (games.length < PAGE_SIZE) setHasMore(false)
+
+      if (isInitial) {
+        setMatches(parsed)
+      } else {
+        setMatches(prev => [...prev, ...parsed])
+      }
+    } catch {
+      if (isInitial) setError('查询战绩失败')
+      setHasMore(false)
+    } finally {
+      setLoading(false)
+      setLoadingMore(false)
+    }
+  }
+
+  // 初始加载
   useEffect(() => {
     if (!open || !puuid || puuid === loadedPuuid.current) return
     loadedPuuid.current = puuid
-    setLoading(true)
-    setError('')
-    setMatches([])
-
-    ;(async () => {
-      try {
-        const resp = await lcu.getMatchHistory(puuid, 0, 19)
-        const games = resp.games?.games ?? []
-        const parsed = games
-          .map((g) => parseMatch(g, puuid))
-          .filter((m): m is MatchRowData => m !== null)
-        setMatches(parsed)
-      } catch {
-        setError('查询战绩失败')
-      } finally {
-        setLoading(false)
-      }
-    })()
+    loadPage(0, true)
   }, [open, puuid])
 
   useEffect(() => {
     if (!open) loadedPuuid.current = ''
   }, [open])
+
+  // 滚动到底部加载更多
+  useEffect(() => {
+    const el = listRef.current
+    if (!el) return
+
+    const handleScroll = () => {
+      if (loadingMore || !hasMore) return
+      // 距离底部不足 80px 时触发
+      if (el.scrollHeight - el.scrollTop - el.clientHeight < 80) {
+        loadPage(matches.length, false)
+      }
+    }
+
+    el.addEventListener('scroll', handleScroll)
+    return () => el.removeEventListener('scroll', handleScroll)
+  }, [matches.length, loadingMore, hasMore])
 
   return (
     <Modal open={open} onClose={onClose} width={860} height={620}>
@@ -219,7 +258,7 @@ export function MatchHistoryModal({ open, onClose, puuid, playerName }: MatchHis
         <div className="smh-header">
           <span className="smh-title">❖ {playerName} 的近期战报</span>
         </div>
-        <div className="smh-list">
+        <div className="smh-list" ref={listRef}>
           {loading && <div className="smh-empty">加载中...</div>}
           {error && <div className="smh-empty smh-error">{error}</div>}
           {!loading && !error && matches.length === 0 && (
@@ -228,6 +267,12 @@ export function MatchHistoryModal({ open, onClose, puuid, playerName }: MatchHis
           {matches.map((m) => (
             <MatchRow key={m.gameId} match={m} />
           ))}
+          {loadingMore && (
+            <div className="smh-empty smh-loading-more">加载更多...</div>
+          )}
+          {!loading && !hasMore && matches.length > 0 && (
+            <div className="smh-empty smh-no-more">— 没有更多战绩了 —</div>
+          )}
         </div>
       </div>
     </Modal>

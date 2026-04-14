@@ -101,8 +101,32 @@ export function DebugPage() {
 
       <SettingGroup title="战绩查询">
         <div className="sona-debug-actions">
-          <SonaButton onClick={() => runAndLog('获取战绩列表', () => lcu.getMatchHistory())}>
-            我的战绩
+          <SonaButton variant="primary" onClick={() => runAndLog('深度拉取 100 条战绩', async () => {
+            const me = await lcu.getSummonerInfo()
+            const puuid = me.puuid
+            if (!puuid) return '❌ 无法获取 PUUID'
+
+            const allGames: unknown[] = []
+            const pageSize = 20
+            const target = 100
+
+            while (allGames.length < target) {
+              const beg = allGames.length
+              const end = beg + pageSize
+              logger.info(`[战绩爬虫] 拉取第 ${beg}~${end} 条...`)
+              const page = await lcu.getMatchHistory(puuid, beg, end)
+              const chunk = page.games?.games || []
+              if (chunk.length === 0) {
+                logger.info('[战绩爬虫] 已触底，没有更多战绩')
+                break
+              }
+              allGames.push(...chunk)
+            }
+
+            const result = allGames.slice(0, target)
+            return { total: result.length, games: result }
+          })}>
+            深度拉取战绩 (100场)
           </SonaButton>
           <SonaButton onClick={() => runAndLog('最近一起玩的人', () => lcu.getRecentlyPlayedSummoners())}>
             最近队友

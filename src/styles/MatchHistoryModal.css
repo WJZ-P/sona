@@ -46,6 +46,14 @@
 
 .smh-error { color: #e74c3c; }
 
+.smh-loading-more,
+.smh-no-more {
+  height: auto;
+  padding: 14px 0;
+  font-size: 12px;
+  opacity: 0.6;
+}
+
 /* ==================== 单局横条 ==================== */
 
 .smh-row {
