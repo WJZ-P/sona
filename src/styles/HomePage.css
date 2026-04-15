@@ -25,8 +25,8 @@
 /* ---- SONA 品牌标题 ---- */
 .sona-home-brand {
   position: relative;
-  z-index: 1;
-  margin: 0 0 20px 0;
+  z-index: 5;
+  margin: 0 0 50px 0;
   text-align: center;
 }
 
@@ -70,6 +70,17 @@
   height: 130px;
   margin-bottom: 24px;
   flex-shrink: 0;
+  overflow: visible;
+}
+
+/* 粒子 Canvas（头像周围） */
+.sona-home-particle-canvas {
+  position: absolute;
+  inset: -60px;
+  width: calc(100% + 120px);
+  height: calc(100% + 120px);
+  pointer-events: none;
+  z-index: 0;
 }
 
 .sona-home-avatar {
@@ -123,6 +134,7 @@
 
 /* ---- 欢迎区域 ---- */
 .sona-home-welcome {
+  margin-top: 10px;
   position: relative;
   z-index: 1;
   text-align: center;

@@ -31,18 +31,19 @@ function ParticleCanvas() {
     const spawn = () => {
       const cx = canvas.width / 2
       const cy = canvas.height / 2
-      const angle = Math.random() * Math.PI * 2
-      const speed = Math.random() * 0.6 + 0.2
       const isGold = Math.random() > 0.35
+      // 在头像圆形边缘附近生成
+      const angle = Math.random() * Math.PI * 2
+      const radius = 30 + Math.random() * 20
       particles.push({
-        x: cx + (Math.random() - 0.5) * 20,
-        y: cy + (Math.random() - 0.5) * 20,
-        vx: Math.cos(angle) * speed,
-        vy: Math.sin(angle) * speed,
+        x: cx + Math.cos(angle) * radius,
+        y: cy + Math.sin(angle) * radius,
+        vx: (Math.random() - 0.5) * 0.3,
+        vy: -(Math.random() * 0.12 + 0.05),
         size: Math.random() * 1.8 + 0.5,
         opacity: 0,
         life: 0,
-        maxLife: 120 + Math.random() * 80,
+        maxLife: 50 + Math.random() * 50,
         isGold,
       })
     }
@@ -50,11 +51,9 @@ function ParticleCanvas() {
     const render = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height)
 
-      // 每帧生成 2~3 个粒子
-      if (particles.length < 200) {
+      // 每帧生成 1 个粒子
+      if (particles.length < 80) {
         spawn()
-        spawn()
-        if (Math.random() > 0.3) spawn()
       }
 
       for (let i = particles.length - 1; i >= 0; i--) {
@@ -62,9 +61,10 @@ function ParticleCanvas() {
         p.life++
         p.x += p.vx
         p.y += p.vy
-        // 轻微减速
-        p.vx *= 0.998
-        p.vy *= 0.998
+        // 水平微微飘动
+        p.vx += (Math.random() - 0.5) * 0.01
+        // 向上的轻微加速（负重力，越飘越轻）
+        p.vy -= 0.001
 
         // 前 20% 淡入，后 30% 淡出
         const progress = p.life / p.maxLife
@@ -114,15 +114,14 @@ function ParticleCanvas() {
 export function HomePage() {
   return (
     <div className="sona-home">
-      <ParticleCanvas />
-
       {/* SONA 标题 */}
       <h1 className="sona-home-brand">
         <span className="sona-home-brand-text">SONA</span>
       </h1>
 
-      {/* 头像 */}
+      {/* 头像 + 粒子 */}
       <div className="sona-home-avatar-wrap">
+        <ParticleCanvas />
         <div className="sona-home-avatar-glow" />
         <img
           className="sona-home-avatar"
