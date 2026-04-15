@@ -12,35 +12,76 @@
   z-index: 1;
 }
 
+/* ---- 粒子 Canvas 背景 ---- */
+.sona-home-particle-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ---- SONA 品牌标题 ---- */
+.sona-home-brand {
+  position: relative;
+  z-index: 1;
+  margin: 0 0 20px 0;
+  text-align: center;
+}
+
+.sona-home-brand-text {
+  font-size: 46px;
+  font-weight: 800;
+  letter-spacing: 12px;
+  color: transparent;
+  background: linear-gradient(
+    180deg,
+    #f0e6d2 0%,
+    #c8aa6e 40%,
+    #785a28 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  filter: drop-shadow(0 0 16px rgba(200, 170, 110, 0.5));
+  animation: sona-brand-glow 3s ease-in-out infinite;
+  user-select: none;
+}
+
+@keyframes sona-brand-glow {
+  0%, 100% {
+    filter:
+      drop-shadow(0 0 16px rgba(200, 170, 110, 0.5))
+      drop-shadow(0 0 40px rgba(200, 170, 110, 0.15));
+  }
+  50% {
+    filter:
+      drop-shadow(0 0 24px rgba(200, 170, 110, 0.7))
+      drop-shadow(0 0 60px rgba(200, 170, 110, 0.3))
+      drop-shadow(0 0 4px rgba(0, 180, 255, 0.25));
+  }
+}
+
 /* ---- 头像区域 ---- */
 .sona-home-avatar-wrap {
   position: relative;
-  width: 140px;
-  height: 140px;
-  margin-bottom: 28px;
+  z-index: 1;
+  width: 130px;
+  height: 130px;
+  margin-bottom: 24px;
   flex-shrink: 0;
 }
 
 .sona-home-avatar {
-  width: 140px;
-  height: 140px;
+  width: 130px;
+  height: 130px;
   border-radius: 50%;
   object-fit: cover;
   border: 3px solid #c8aa6e;
   position: relative;
   z-index: 2;
-  cursor: pointer;
   user-select: none;
   animation: sona-avatar-breathe 4s ease-in-out infinite;
-}
-
-.sona-home-avatar-wrap:hover .sona-home-avatar {
-  animation: none;
-  transform: scale(1.12);
-  box-shadow:
-    0 0 30px rgba(200, 170, 110, 0.6),
-    0 0 60px rgba(200, 170, 110, 0.3);
-  transition: transform 0.4s ease, box-shadow 0.4s ease;
 }
 
 @keyframes sona-avatar-breathe {
@@ -49,7 +90,7 @@
     box-shadow: 0 0 12px rgba(200, 170, 110, 0.2);
   }
   50% {
-    transform: scale(1.06);
+    transform: scale(1.05);
     box-shadow: 0 0 24px rgba(200, 170, 110, 0.45);
   }
 }
@@ -82,13 +123,15 @@
 
 /* ---- 欢迎区域 ---- */
 .sona-home-welcome {
+  position: relative;
+  z-index: 1;
   text-align: center;
-  margin-bottom: 24px;
+  margin-bottom: 20px;
 }
 
 .sona-home-heading {
   margin: 0 0 8px 0;
-  font-size: 28px;
+  font-size: 20px;
   font-weight: 700;
   color: #f0e6d2;
   letter-spacing: 3px;
@@ -97,15 +140,17 @@
 
 .sona-home-subtitle {
   margin: 0;
-  font-size: 14px;
+  font-size: 13px;
   color: #a09b8c;
   letter-spacing: 1px;
 }
 
 /* ---- 语录 ---- */
 .sona-home-quote {
+  position: relative;
+  z-index: 1;
   margin: 0;
-  font-size: 13px;
+  font-size: 12px;
   color: #c8aa6e;
   font-style: italic;
   opacity: 0.7;

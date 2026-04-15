@@ -230,7 +230,7 @@ export function MatchHistoryModal({ open, onClose, puuid, playerName, queueId: d
     }
 
     try {
-      const resp = await lcu.getMatchHistory(puuid, begIndex, begIndex + PAGE_SIZE)
+      const resp = await lcu.getMatchHistory(puuid, begIndex, begIndex + PAGE_SIZE - 1)
       const games = resp.games?.games ?? []
       const parsed = games
         .map((g) => parseMatch(g, puuid))

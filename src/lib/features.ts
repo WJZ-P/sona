@@ -251,7 +251,7 @@ async function fetchTeamStats(): Promise<{ isBlue: boolean; gameId: number; stat
       let rawSinceLastMatch = 0
 
       while (filteredGames.length < TARGET_SAMPLE) {
-        const history = await lcu.getMatchHistory(summoner.puuid, cursor, cursor + PAGE_SIZE)
+        const history = await lcu.getMatchHistory(summoner.puuid, cursor, cursor + PAGE_SIZE - 1)
         const chunk = history.games?.games ?? []
 
         if (chunk.length === 0) {

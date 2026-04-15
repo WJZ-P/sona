@@ -127,7 +127,7 @@ export function DebugPage() {
 
             while (allGames.length < target) {
               const beg = allGames.length
-              const end = beg + pageSize
+              const end = beg + pageSize - 1
               logger.info(`[战绩爬虫] 拉取第 ${beg}~${end} 条...`)
               const page = await lcu.getMatchHistory(puuid, beg, end)
               const chunk = page.games?.games || []
