@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
+import { createPortal } from 'react-dom'
 import '@/styles/Modal.css'
 
 export interface ModalProps {
@@ -182,7 +183,7 @@ export function Modal({
   const overlayClass = `sona-modal-overlay${closing ? ' sona-modal-closing' : ''}`
   const dialogClass = `sona-modal-dialog${closing ? ' sona-modal-closing' : ''}`
 
-  return (
+  return createPortal(
     <div
       ref={overlayRef}
       className={overlayClass}
@@ -214,6 +215,7 @@ export function Modal({
           {children}
         </div>
       </div>
-    </div>
+    </div>,
+    document.getElementById('sona-root') || document.body,
   )
 }

@@ -1,9 +1,12 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { SettingCard, SettingGroup } from '@/components/ui/SettingCard'
 import { SonaButton } from '@/components/ui/SonaButton'
 import { SonaInput } from '@/components/ui/SonaInput'
 import { SonaSwitch } from '@/components/ui/SonaSwitch'
 import { SonaSelect } from '@/components/ui/SonaSelect'
+import { MatchHistoryModal } from '@/components/ui/MatchHistoryModal'
+import { searchChampions, getChampionById, type ChampionInfo } from '@/lib/assets'
+import { lcu } from '@/lib/lcu'
 import { logger } from '@/index'
 import { store } from '@/lib/store'
 import '@/styles/SettingsPage.css'
@@ -30,8 +33,26 @@ export function ToolsPage() {
   const [rankTier, setRankTier] = useState(store.get('rankTier'))
   const [rankDivision, setRankDivision] = useState(store.get('rankDivision'))
   const [autoHonor, setAutoHonor] = useState(store.get('autoHonor'))
+  const [autoLockChampion, setAutoLockChampion] = useState(store.get('autoLockChampion'))
+  const [champSearchText, setChampSearchText] = useState(() => {
+    const savedId = store.get('autoLockChampionId')
+    if (savedId > 0) {
+      const c = getChampionById(savedId)
+      return c ? `${c.title} ${c.name}` : String(savedId)
+    }
+    return ''
+  })
+  const [champSuggestions, setChampSuggestions] = useState<ChampionInfo[]>([])
+  const [showChampSuggestions, setShowChampSuggestions] = useState(false)
+  const [autoLockInstant, setAutoLockInstant] = useState(store.get('autoLockInstant'))
+  const champSuggestRef = useRef<HTMLDivElement>(null)
   const [replayGameId, setReplayGameId] = useState('')
   const [replayState, setReplayState] = useState<'idle' | 'downloading' | 'ready' | 'launching' | 'error'>('idle')
+  const [searchRiotId, setSearchRiotId] = useState('')
+  const [searchError, setSearchError] = useState('')
+  const [matchModalOpen, setMatchModalOpen] = useState(false)
+  const [matchModalPuuid, setMatchModalPuuid] = useState('')
+  const [matchModalName, setMatchModalName] = useState('')
 
   useEffect(() => {
     const unsubs = [
@@ -44,11 +65,23 @@ export function ToolsPage() {
       store.onChange('friendSmartGroup', setFriendSmartGroup),
       store.onChange('customProfileBg', setCustomProfileBg),
       store.onChange('autoHonor', setAutoHonor),
+      store.onChange('autoLockChampion', setAutoLockChampion),
       store.onChange('rankQueue', setRankQueue),
       store.onChange('rankTier', setRankTier),
       store.onChange('rankDivision', setRankDivision),
     ]
     return () => unsubs.forEach((fn) => fn())
+  }, [])
+
+  // 点击外部关闭英雄联想下拉
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (champSuggestRef.current && !champSuggestRef.current.contains(e.target as Node)) {
+        setShowChampSuggestions(false)
+      }
+    }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
   }, [])
 
 
@@ -64,9 +97,165 @@ export function ToolsPage() {
     }
   }
 
+  const handleSearchMatch = async () => {
+    const parts = searchRiotId.trim().split('#')
+    if (parts.length !== 2 || !parts[0] || !parts[1]) {
+      setSearchError('格式错误，请输入: 名字#Tag')
+      return
+    }
+    setSearchError('')
+    try {
+      const summoner = await lcu.getSummonerByRiotId(parts[0], parts[1])
+      if (!summoner?.puuid) {
+        setSearchError('未找到该召唤师')
+        return
+      }
+      setMatchModalPuuid(summoner.puuid)
+      setMatchModalName(`${parts[0]}#${parts[1]}`)
+      setMatchModalOpen(true)
+    } catch {
+      setSearchError('查询失败，请检查名字和Tag是否正确')
+    }
+  }
+
   return (
     <div className="sona-settings">
       <h2 className="sona-settings-title">工具</h2>
+
+      <SettingGroup title="战绩查询">
+        <p className="sona-subtitle" style={{ marginBottom: 10 }}>输入召唤师名#Tag 查询任意玩家的近期战绩。</p>
+        <div className="sona-debug-actions" style={{ alignItems: 'flex-end', gap: 8 }}>
+          <div style={{ flex: 1 }}>
+            <SonaInput
+              value={searchRiotId}
+              onChange={(v) => { setSearchRiotId(v); setSearchError('') }}
+              onKeyDown={(e) => { if (e.key === 'Enter') handleSearchMatch() }}
+              placeholder="名字#Tag (例:丨一疾风剑豪一丨#77772)"
+            />
+          </div>
+          <SonaButton variant="primary" onClick={handleSearchMatch}>
+            查询战绩
+          </SonaButton>
+        </div>
+        {searchError && <p className="sona-subtitle" style={{ color: '#e74c3c', marginTop: 6 }}>{searchError}</p>}
+      </SettingGroup>
+
+      <MatchHistoryModal
+        open={matchModalOpen}
+        onClose={() => setMatchModalOpen(false)}
+        puuid={matchModalPuuid}
+        playerName={matchModalName}
+      />
+
+      <SettingGroup title="对局相关">
+        <SettingCard
+          title="自动接受对局"
+          description="匹配到对局时自动点击接受，再也不会错过。"
+        >
+          <SonaSwitch
+            checked={autoAccept}
+            onChange={(v) => { setAutoAccept(v); store.set('autoAcceptMatch', v) }}
+          />
+        </SettingCard>
+        <SettingCard
+          title="大乱斗无CD换英雄"
+          description="移除共享池英雄的切换冷却限制，随时换取心仪英雄。"
+        >
+          <SonaSwitch
+            checked={benchNoCooldown}
+            onChange={(v) => { setBenchNoCooldown(v); store.set('benchNoCooldown', v) }}
+          />
+        </SettingCard>
+        <SettingCard
+          title="分析友方战力"
+          description="进入英雄选择时，自动分析队友近期战绩并发送到队伍聊天框。"
+        >
+          <SonaSwitch
+            checked={analyzeTeamPower}
+            onChange={(v) => { setAnalyzeTeamPower(v); store.set('analyzeTeamPower', v) }}
+          />
+        </SettingCard>
+        <SettingCard
+          title="英雄选择阶段增强"
+          description="英雄选择时显示粒子特效，底部自动显示近20场胜率和KDA，点击队友头像可查询近期战绩。"
+        >
+          <SonaSwitch
+            checked={champSelectAssist}
+            onChange={(v) => { setChampSelectAssist(v); store.set('champSelectAssist', v) }}
+          />
+        </SettingCard>
+        <SettingCard
+          title="对局结束自动点赞"
+          description="对局结束后，随机给队友点赞，再也不用手点啦。"
+        >
+          <SonaSwitch
+            checked={autoHonor}
+            onChange={(v) => { setAutoHonor(v); store.set('autoHonor', v) }}
+          />
+        </SettingCard>
+        <SettingCard
+          title="秒抢英雄"
+          description="进入可选英雄的模式时，轮到自己自动秒锁指定英雄。大乱斗等无需选人的模式不受影响。"
+        >
+          <SonaSwitch
+            checked={autoLockChampion}
+            onChange={(v) => { setAutoLockChampion(v); store.set('autoLockChampion', v) }}
+          />
+        </SettingCard>
+        {autoLockChampion && (
+          <div style={{ padding: '0 12px 12px', display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <div className="sona-debug-actions" style={{ alignItems: 'flex-start', gap: 8 }}>
+              <div style={{ flex: 1, position: 'relative' }} ref={champSuggestRef}>
+                <SonaInput
+                  value={champSearchText}
+                  onChange={(v) => {
+                    setChampSearchText(v)
+                    const results = searchChampions(v)
+                    setChampSuggestions(results)
+                    setShowChampSuggestions(results.length > 0)
+                  }}
+                  placeholder="输入英雄名/称号搜索 (如: 亚索)"
+                />
+                {showChampSuggestions && champSuggestions.length > 0 && (
+                  <div className="sona-champ-suggest">
+                    {champSuggestions.map((c) => (
+                      <button
+                        key={c.id}
+                        className="sona-champ-suggest-item"
+                        type="button"
+                        onClick={() => {
+                          setChampSearchText(`${c.title} ${c.name}`)
+                          store.set('autoLockChampionId', c.id)
+                          setShowChampSuggestions(false)
+                          logger.info('[AutoLock] 目标英雄已设置: %s %s (ID: %d)', c.title, c.name, c.id)
+                        }}
+                      >
+                        <img className="sona-champ-suggest-icon" src={`/lol-game-data/assets/v1/champion-icons/${c.id}.png`} alt="" />
+                        <span className="sona-champ-suggest-title">{c.title}</span>
+                        <span className="sona-champ-suggest-name">{c.name}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+            <div className="sona-debug-actions" style={{ gap: 8 }}>
+              <SonaButton
+                variant={autoLockInstant ? 'primary' : undefined}
+                onClick={() => { setAutoLockInstant(true); store.set('autoLockInstant', true) }}
+              >
+                秒选并锁定{autoLockInstant ? ' ✓' : ''}
+              </SonaButton>
+              <SonaButton
+                variant={!autoLockInstant ? 'primary' : undefined}
+                onClick={() => { setAutoLockInstant(false); store.set('autoLockInstant', false) }}
+              >
+                仅预选{!autoLockInstant ? ' ✓' : ''}
+              </SonaButton>
+            </div>
+          </div>
+        )}
+      </SettingGroup>
 
       <SettingGroup title="社交">
         <SettingCard
@@ -177,54 +366,6 @@ export function ToolsPage() {
             恢复
           </SonaButton>
         </div>
-      </SettingGroup>
-
-      <SettingGroup title="对局相关">
-        <SettingCard
-          title="自动接受对局"
-          description="匹配到对局时自动点击接受，再也不会错过。"
-        >
-          <SonaSwitch
-            checked={autoAccept}
-            onChange={(v) => { setAutoAccept(v); store.set('autoAcceptMatch', v) }}
-          />
-        </SettingCard>
-        <SettingCard
-          title="大乱斗无CD换英雄"
-          description="移除共享池英雄的切换冷却限制，随时换取心仪英雄。"
-        >
-          <SonaSwitch
-            checked={benchNoCooldown}
-            onChange={(v) => { setBenchNoCooldown(v); store.set('benchNoCooldown', v) }}
-          />
-        </SettingCard>
-        <SettingCard
-          title="分析友方战力"
-          description="进入英雄选择时，自动分析队友近期战绩并发送到队伍聊天框。"
-        >
-          <SonaSwitch
-            checked={analyzeTeamPower}
-            onChange={(v) => { setAnalyzeTeamPower(v); store.set('analyzeTeamPower', v) }}
-          />
-        </SettingCard>
-        <SettingCard
-          title="英雄选择阶段增强"
-          description="英雄选择时显示粒子特效，底部自动显示近20场胜率和KDA，点击队友头像可查询近期战绩。"
-        >
-          <SonaSwitch
-            checked={champSelectAssist}
-            onChange={(v) => { setChampSelectAssist(v); store.set('champSelectAssist', v) }}
-          />
-        </SettingCard>
-        <SettingCard
-          title="对局结束自动点赞"
-          description="对局结束后，随机给队友点赞，再也不用手点啦。"
-        >
-          <SonaSwitch
-            checked={autoHonor}
-            onChange={(v) => { setAutoHonor(v); store.set('autoHonor', v) }}
-          />
-        </SettingCard>
       </SettingGroup>
 
       <SettingGroup title="回放">

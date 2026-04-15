@@ -214,6 +214,8 @@ interface TeammateStats {
 
 /**
  * 查询当前选人阶段所有队友的近期战绩
+ * 按当前游戏模式（queueId）过滤，目标采样数 TARGET_SAMPLE 条同模式对局
+ * 每次拉 PAGE_SIZE 条，若连续 MAX_RAW 条原始对局都无匹配则放弃
  * 返回 { isBlue, stats[] }
  */
 async function fetchTeamStats(): Promise<{ isBlue: boolean; gameId: number; stats: TeammateStats[] }> {
@@ -222,33 +224,87 @@ async function fetchTeamStats(): Promise<{ isBlue: boolean; gameId: number; stat
   const localPlayer = session.myTeam.find((p) => p.cellId === session.localPlayerCellId)
   const isBlue = localPlayer ? localPlayer.cellId < 5 : true
 
+  // 获取当前队列 ID 用于过滤
+  let currentQueueId = 0
+  try {
+    const gfSession = await lcu.getGameflowSession()
+    currentQueueId = gfSession.gameData.queue.id
+    logger.info('[TeamStats] 当前队列 ID: %d (%s)', currentQueueId, gfSession.gameData.queue.name)
+  } catch {
+    logger.warn('[TeamStats] 无法获取队列 ID，将使用全部对局')
+  }
+
+  const PAGE_SIZE = 20
+  const TARGET_SAMPLE = 100  // 目标同模式采样数
+  const MAX_RAW = 100        // 连续无匹配的原始对局上限
+
   const stats: TeammateStats[] = []
 
   for (let i = 0; i < myTeam.length; i++) {
     const player = myTeam[i]
     try {
       const summoner = await lcu.getSummonerById(player.summonerId)
-      const history = await lcu.getMatchHistory(summoner.puuid, 0, 19)
-      const games = history.games?.games ?? []
 
-      if (games.length === 0) {
+      // 深度分页拉取 + 按模式过滤
+      const filteredGames: Array<{ kills: number; deaths: number; assists: number; win: boolean }> = []
+      let cursor = 0
+      let rawSinceLastMatch = 0
+
+      while (filteredGames.length < TARGET_SAMPLE) {
+        const history = await lcu.getMatchHistory(summoner.puuid, cursor, cursor + PAGE_SIZE)
+        const chunk = history.games?.games ?? []
+
+        if (chunk.length === 0) {
+          logger.info('[TeamStats] %s 战绩已触底 (cursor=%d)', summoner.gameName, cursor)
+          break
+        }
+
+        for (const game of chunk) {
+          // 按 queueId 过滤（如果获取到了当前队列 ID）
+          if (currentQueueId > 0 && game.queueId !== currentQueueId) {
+            rawSinceLastMatch++
+            continue
+          }
+
+          const identity = game.participantIdentities.find((id) => id.player.puuid === summoner.puuid)
+          if (!identity) continue
+          const participant = game.participants.find((p) => p.participantId === identity.participantId)
+          if (!participant) continue
+
+          filteredGames.push({
+            kills: participant.stats.kills,
+            deaths: participant.stats.deaths,
+            assists: participant.stats.assists,
+            win: participant.stats.win,
+          })
+          rawSinceLastMatch = 0
+        }
+
+        cursor += PAGE_SIZE
+
+        // 连续 MAX_RAW 条原始对局都没匹配到同模式，放弃继续
+        if (rawSinceLastMatch >= MAX_RAW) {
+          logger.info('[TeamStats] %s 连续 %d 条无匹配模式，停止深度拉取', summoner.gameName, rawSinceLastMatch)
+          break
+        }
+      }
+
+      if (filteredGames.length === 0) {
         stats.push({ floor: i + 1, summonerId: player.summonerId, puuid: summoner.puuid, gameName: summoner.gameName, tagLine: summoner.tagLine, winRate: null, wins: 0, total: 0, avgK: 0, avgD: 0, avgA: 0, kdaNum: 0 })
         continue
       }
 
       let wins = 0, totalKills = 0, totalDeaths = 0, totalAssists = 0
-      for (const game of games) {
-        const identity = game.participantIdentities.find((id) => id.player.puuid === summoner.puuid)
-        if (!identity) continue
-        const participant = game.participants.find((p) => p.participantId === identity.participantId)
-        if (!participant) continue
-        if (participant.stats.win) wins++
-        totalKills += participant.stats.kills
-        totalDeaths += participant.stats.deaths
-        totalAssists += participant.stats.assists
+      for (const g of filteredGames) {
+        if (g.win) wins++
+        totalKills += g.kills
+        totalDeaths += g.deaths
+        totalAssists += g.assists
       }
 
-      const total = games.length
+      const total = filteredGames.length
+      logger.info('[TeamStats] %s → 采样 %d 场同模式对局 (cursor到 %d)', summoner.gameName, total, cursor)
+
       stats.push({
         floor: i + 1,
         summonerId: player.summonerId,
@@ -286,12 +342,14 @@ const SONA_CLICK_ATTR = 'data-sona-click'
 let floorStats: TeammateStats[] = []
 /** 当前对局 ID，用于判断 DOM 上的数据是否属于本局 */
 let currentGameId = 0
+/** 当前选人阶段的队列 ID，用于打开战绩弹窗时自动过滤 */
+let currentChampSelectQueueId = 0
 
 /** 战绩弹窗的独立 React root */
 let matchModalRoot: Root | null = null
 let matchModalContainer: HTMLDivElement | null = null
 
-function showMatchHistoryModal(puuid: string, playerName: string) {
+function showMatchHistoryModal(puuid: string, playerName: string, queueId?: number) {
   if (!matchModalContainer) {
     matchModalContainer = document.createElement('div')
     matchModalContainer.id = 'sona-match-history-modal-root'
@@ -306,7 +364,7 @@ function showMatchHistoryModal(puuid: string, playerName: string) {
   }
 
   matchModalRoot!.render(
-    createElement(MatchHistoryModal, { open: true, onClose: close, puuid, playerName }),
+    createElement(MatchHistoryModal, { open: true, onClose: close, puuid, playerName, queueId }),
   )
 }
 
@@ -384,7 +442,7 @@ function tryInjectChampSelectTier(): boolean {
         e.preventDefault()
         const current = floorStats[floorIndex]
         if (current?.puuid) {
-          showMatchHistoryModal(current.puuid, `${current.gameName}#${current.tagLine}`)
+          showMatchHistoryModal(current.puuid, `${current.gameName}#${current.tagLine}`, currentChampSelectQueueId || undefined)
         }
       }, true)
     }
@@ -447,6 +505,7 @@ function unregisterTierInjection() {
   }
   floorStats = []
   currentGameId = 0
+  currentChampSelectQueueId = 0
   mountedRoots.forEach(({ root, container }) => {
     root.unmount()
     container.remove()
@@ -473,13 +532,20 @@ async function applyChampSelectIconEffects() {
     // 先清理上一局的残留
     unregisterTierInjection()
 
+    // 获取当前队列 ID，供战绩弹窗过滤
+    try {
+      const gfSession = await lcu.getGameflowSession()
+      currentChampSelectQueueId = gfSession.gameData.queue.id
+    } catch {
+      currentChampSelectQueueId = 0
+    }
+
     const { gameId, stats } = await fetchTeamStats()
     currentGameId = gameId
     floorStats = stats
     registerTierInjection()
 
-
-    logger.info('头像特效数据就绪，%d 位队友', stats.length)
+    logger.info('头像特效数据就绪，%d 位队友，队列 ID: %d', stats.length, currentChampSelectQueueId)
   } catch (err) {
     logger.error('头像特效查询失败:', err)
   }
@@ -538,7 +604,7 @@ async function analyzeTeammates() {
     logger.info('┌─── 队友战绩分析 ───')
     logger.info('│ 阵营: %s', sideText)
 
-    const chatLines: string[] = [`Sona助手 ♫\n 本局${sideText} — 队友卡池一览(近20局):\n`]
+    const chatLines: string[] = [`Sona助手 ♫\n 本局${sideText} — 队友卡池一览(本模式近100局):\n`]
 
     for (const s of stats) {
       const floor = `${s.floor}楼`
@@ -1021,6 +1087,126 @@ function updateAutoHonor(enabled: boolean) {
 }
 
 
+// ==================== 秒抢英雄 ====================
+
+/**
+ * 监听英雄选择的 actions 变化，当轮到自己的 pick action 处于 isInProgress 时秒锁
+ * 仅在有 pick 动作的模式生效（排位/匹配等），大乱斗等无 pick 的模式不受影响
+ */
+async function tryAutoLockChampion() {
+  const championId = store.get('autoLockChampionId')
+  if (!championId || championId <= 0) {
+    logger.warn('[AutoLock] 未设置目标英雄 ID')
+    return
+  }
+
+  // 排位赛 BP 可能长达 5 分钟，300 次 × 1s 轮询足够覆盖
+  for (let attempt = 0; attempt < 300; attempt++) {
+    try {
+      const session = await lcu.getChampSelectSession()
+
+      const allActions = session.actions.flat()
+      const myPickAction = allActions.find(
+        (a) => a.actorCellId === session.localPlayerCellId && a.type === 'pick' && !a.completed
+      )
+
+      if (!myPickAction) {
+        if (allActions.every((a) => a.type !== 'pick' || a.actorCellId !== session.localPlayerCellId)) {
+          logger.info('[AutoLock] 当前模式无需选人（大乱斗等），跳过')
+          return
+        }
+        await sleep(1000)
+        continue
+      }
+
+      if (myPickAction.isInProgress) {
+        // 关键：如果是 PLANNING（亮英雄）阶段，不能执行锁定，继续等待
+        if (session.timer.phase === 'PLANNING') {
+          await sleep(1000)
+          continue
+        }
+
+        const instant = store.get('autoLockInstant')
+        const actionUrl = `/lol-champ-select/v1/session/actions/${myPickAction.id}`
+
+        if (instant) {
+          logger.info('[AutoLock] 真正轮到选人了！秒锁英雄 ID: %d (actionId: %d)', championId, myPickAction.id)
+
+          // 方案：PATCH 带 completed:true 一步到位完成选择+锁定
+          const patchRes = await fetch(actionUrl, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              actorCellId: session.localPlayerCellId,
+              championId,
+              completed: true,
+              id: myPickAction.id,
+              isAllyAction: true,
+              type: 'pick',
+            }),
+          })
+
+          if (patchRes.ok) {
+            logger.info('[AutoLock] 秒锁成功 (PATCH completed:true) ✓')
+          } else {
+            // 备用方案：先 PATCH 选择，再 POST /select 锁定
+            logger.warn('[AutoLock] PATCH 方案失败，尝试备用方案 /select')
+            await fetch(actionUrl, {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ championId }),
+            })
+            await sleep(200)
+            const selectRes = await fetch(`${actionUrl}/select`, { method: 'POST' })
+            if (selectRes.ok) {
+              logger.info('[AutoLock] 秒锁成功 (select 备用) ✓')
+            } else {
+              logger.error('[AutoLock] 秒锁失败，可能英雄被抢或被 Ban')
+            }
+          }
+        } else {
+          logger.info('[AutoLock] 轮到选人，预选英雄 ID: %d（不锁定）', championId)
+          await fetch(actionUrl, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ championId }),
+          })
+          logger.info('[AutoLock] 预选成功 ✓')
+        }
+
+        return
+      }
+
+      await sleep(1000)
+    } catch {
+      // 轮询期间有人秒退（getChampSelectSession 会报 404），直接结束
+      logger.error('[AutoLock] 轮询中断 (可能有人秒退了房间)')
+      return
+    }
+  }
+
+  logger.warn('[AutoLock] 等待超时 (5分钟)，未能秒锁')
+}
+
+let autoLockChampionUnsub: (() => void) | null = null
+
+function updateAutoLockChampion(enabled: boolean) {
+  if (enabled && !autoLockChampionUnsub) {
+    autoLockChampionUnsub = lcu.observe(LcuEventUri.GAMEFLOW_PHASE_CHANGE, (event: LCUEventMessage) => {
+      const phase = event.data as GameflowPhase
+      if (phase === 'ChampSelect') {
+        tryAutoLockChampion()
+      }
+    })
+    logger.info('Auto lock champion enabled ✓')
+  } else if (!enabled && autoLockChampionUnsub) {
+    autoLockChampionUnsub()
+    autoLockChampionUnsub = null
+    logger.info('Auto lock champion disabled')
+  }
+}
+
+
 // ==================== 段位伪装 ====================
 
 async function applyRankDisguise() {
@@ -1210,7 +1396,8 @@ export function initFeatures() {
   store.onChange('rankTier', () => { if (store.get('rankDisguise')) applyRankDisguise() })
   store.onChange('rankDivision', () => { if (store.get('rankDisguise')) applyRankDisguise() })
 
-
+  updateAutoLockChampion(store.get('autoLockChampion'))
+  store.onChange('autoLockChampion', updateAutoLockChampion)
 
   // 恢复窗口特效
   const savedEffect = store.get('windowEffect')

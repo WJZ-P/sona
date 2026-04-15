@@ -27,6 +27,18 @@ const perkStyleMap = new Map<number, string>()
 const queueMap = new Map<number, GameQueue>()
 const mapDataMap = new Map<number, { id: number; name: string; gameModeName: string; [key: string]: unknown }>()
 
+/** 英雄信息：id → { id, name(英雄名), title(称号), alias(英文名) } */
+export interface ChampionInfo {
+  id: number
+  /** 英雄名字，如 "安妮" */
+  name: string
+  /** 英雄称号，如 "黑暗之女" */
+  title: string
+  /** 英文名，如 "Annie" */
+  alias: string
+}
+const championMap = new Map<number, ChampionInfo>()
+
 let initialized = false
 
 // ==================== 初始化 ====================
@@ -38,13 +50,14 @@ let initialized = false
 export async function initAssets() {
   if (initialized) return
   try {
-    const [items, spells, queues, maps, perks, perkStyles] = await Promise.all([
+    const [items, spells, queues, maps, perks, perkStyles, champions] = await Promise.all([
       lcu.getItems(),
       lcu.getSummonerSpells(),
       lcu.getQueues(),
       lcu.getMapAssets().catch(() => []),
       lcu.getPerks().catch(() => []),
       lcu.getPerkStyles().catch(() => ({ styles: [] })),
+      lcu.getChampionSummary().catch(() => []),
     ])
 
     for (const item of items) {
@@ -62,6 +75,14 @@ export async function initAssets() {
     for (const queue of queues) {
       queueMap.set(queue.id, queue)
     }
+
+    // Debug: 打印可玩队列完整对象
+    const playable = queues.filter(q =>
+      q.id > 0 && !q.isCustom && q.isEnabled
+      && q.queueAvailability === 'Available'
+      && q.gameMode !== 'TUTORIAL' && q.gameMode !== 'PRACTICETOOL'
+    )
+    logger.info('[Assets] 可玩队列完整对象 (%d 个):', playable.length, playable)
 
     for (const map of maps as Array<{ id: number; name: string; gameModeName: string }>) {
       if (map.id != null) {
@@ -81,10 +102,21 @@ export async function initAssets() {
       }
     }
 
+    for (const champ of champions) {
+      if (champ.id > 0) {
+        championMap.set(champ.id, {
+          id: champ.id,
+          name: champ.description || '',
+          title: champ.name || '',
+          alias: champ.alias,
+        })
+      }
+    }
+
     initialized = true
     logger.info(
-      '[Assets] 资源映射初始化完成 → 装备 %d, 技能 %d, 符文 %d, 符文系 %d, 队列 %d, 地图 %d',
-      itemMap.size, spellMap.size, perkMap.size, perkStyleMap.size, queueMap.size, mapDataMap.size,
+      '[Assets] 资源映射初始化完成 → 装备 %d, 技能 %d, 符文 %d, 符文系 %d, 队列 %d, 地图 %d, 英雄 %d',
+      itemMap.size, spellMap.size, perkMap.size, perkStyleMap.size, queueMap.size, mapDataMap.size, championMap.size,
     )
   } catch (err) {
     logger.error('[Assets] 资源映射初始化失败:', err)
@@ -141,4 +173,89 @@ export function getGameModeName(mapId: number): string {
 /** 资源映射是否已就绪 */
 export function isAssetsReady(): boolean {
   return initialized
+}
+
+/** 获取所有英雄列表 */
+export function getAllChampions(): ChampionInfo[] {
+  return Array.from(championMap.values()).filter(c => c.id > 0)
+}
+
+/** 通过 ID 获取英雄信息 */
+export function getChampionById(id: number): ChampionInfo | undefined {
+  return championMap.get(id)
+}
+
+/**
+ * 模糊搜索英雄（名字、称号、英文名）
+ * @param keyword 搜索关键词
+ * @param limit 最大返回数量，默认 8
+ */
+export function searchChampions(keyword: string, limit = 8): ChampionInfo[] {
+  if (!keyword.trim()) return []
+  const kw = keyword.trim().toLowerCase()
+  const results: ChampionInfo[] = []
+
+  championMap.forEach((c) => {
+    if (c.id <= 0) return
+    if (
+      c.name.toLowerCase().includes(kw) ||
+      c.title.toLowerCase().includes(kw) ||
+      c.alias.toLowerCase().includes(kw)
+    ) {
+      results.push(c)
+    }
+  })
+
+  // 精确匹配名字的排前面
+  results.sort((a, b) => {
+    const aExact = a.name.toLowerCase() === kw ? 0 : 1
+    const bExact = b.name.toLowerCase() === kw ? 0 : 1
+    return aExact - bExact
+  })
+
+  return results.slice(0, limit)
+}
+
+/**
+ * 获取当前可玩的队列列表（用于战绩模式过滤下拉框）
+ *
+ * 过滤条件：
+ * - 基础：id > 0、非自定义、isEnabled、queueAvailability = Available
+ * - 排除 gameMode:
+ *   - TUTORIAL         — 新手教程（通用）
+ *   - TUTORIAL_MODULE_1 — 新手教程 第一部分
+ *   - TUTORIAL_MODULE_2 — 新手教程 第二部分
+ *   - TUTORIAL_MODULE_3 — 新手教程 第三部分
+ *   - PRACTICETOOL     — 训练模式
+ *   - SWIFTPLAY        — 入门级人机
+ *   - TFT              — 云顶之弈（所有云顶模式）
+ * - 排除 type:
+ *   - CHERRY_UNRANKED  — 非排位斗魂竞技场（未公开队列）
+ */
+export function getPlayableQueues(): { id: number; name: string }[] {
+  const EXCLUDED_MODES = new Set([
+    'TUTORIAL',
+    'TUTORIAL_MODULE_1',
+    'TUTORIAL_MODULE_2',
+    'TUTORIAL_MODULE_3',
+    'PRACTICETOOL',
+    'SWIFTPLAY',
+    'TFT',
+  ])
+
+  const EXCLUDED_TYPES = new Set([
+    'CHERRY_UNRANKED',
+  ])
+
+  const result: { id: number; name: string }[] = []
+  queueMap.forEach((q) => {
+    if (q.id <= 0 || q.isCustom) return
+    if (!q.isEnabled || q.queueAvailability !== 'Available') return
+    if (EXCLUDED_MODES.has(q.gameMode)) return
+    if (EXCLUDED_TYPES.has(q.type)) return
+    result.push({ id: q.id, name: q.name || q.shortName || `队列${q.id}` })
+  })
+  // 按名称排序
+  result.sort((a, b) => a.name.localeCompare(b.name, 'zh'))
+  return result
 }

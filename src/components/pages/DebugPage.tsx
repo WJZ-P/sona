@@ -1,9 +1,10 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { SettingCard, SettingGroup } from '@/components/ui/SettingCard'
 import { SonaButton } from '@/components/ui/SonaButton'
 import { SonaInput } from '@/components/ui/SonaInput'
 import { store } from '@/lib/store'
 import { lcu } from '@/lib/lcu'
+import { searchChampions, type ChampionInfo } from '@/lib/assets'
 import { logger } from '@/index'
 import '@/styles/SettingsPage.css'
 
@@ -14,6 +15,20 @@ export function DebugPage() {
   const [chatMsg, setChatMsg] = useState('')
   const [riotId, setRiotId] = useState('')
   const [skinId, setSkinId] = useState('')
+  const [lobbyQueueId, setLobbyQueueId] = useState('')
+  const [champSearch, setChampSearch] = useState('')
+  const [champSuggestions, setChampSuggestions] = useState<ChampionInfo[]>([])
+  const [showChampSuggestions, setShowChampSuggestions] = useState(false)
+  const [selectedChampId, setSelectedChampId] = useState(0)
+  const champRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (champRef.current && !champRef.current.contains(e.target as Node)) setShowChampSuggestions(false)
+    }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [])
 
 
   const runAndLog = async (label: string, fn: () => Promise<unknown>) => {
@@ -86,7 +101,7 @@ export function DebugPage() {
             <SonaInput
               value={riotId}
               onChange={setRiotId}
-              placeholder="名字#Tag (例: 疾风剑豪#77772)"
+              placeholder="名字#Tag (例: 丨一疾风剑豪一丨#77772)"
             />
           </div>
           <SonaButton onClick={() => {
@@ -214,7 +229,49 @@ export function DebugPage() {
             技能图标
           </SonaButton>
           <SonaButton onClick={() => runAndLog('英雄摘要 (champion-summary.json)', () => lcu.getChampionSummary())}>
-            英雄图标
+            英雄摘要数据
+          </SonaButton>
+        </div>
+        <div className="sona-debug-actions" style={{ marginTop: 8, alignItems: 'flex-start', gap: 8 }}>
+          <div style={{ flex: 1, position: 'relative' }} ref={champRef}>
+            <SonaInput
+              value={champSearch}
+              onChange={(v) => {
+                setChampSearch(v)
+                const results = searchChampions(v)
+                setChampSuggestions(results)
+                setShowChampSuggestions(results.length > 0)
+              }}
+              placeholder="搜索英雄 (名字/称号/英文名)"
+            />
+            {showChampSuggestions && champSuggestions.length > 0 && (
+              <div className="sona-champ-suggest">
+                {champSuggestions.map((c) => (
+                  <button
+                    key={c.id}
+                    className="sona-champ-suggest-item"
+                    type="button"
+                    onClick={() => {
+                      setChampSearch(`${c.title} ${c.name}`)
+                      setSelectedChampId(c.id)
+                      setShowChampSuggestions(false)
+                    }}
+                  >
+                    <img className="sona-champ-suggest-icon" src={`/lol-game-data/assets/v1/champion-icons/${c.id}.png`} alt="" />
+                    <span className="sona-champ-suggest-title">{c.title}</span>
+                    <span className="sona-champ-suggest-name">{c.name}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+          <SonaButton onClick={() => {
+            if (!selectedChampId) { setOutput('❌ 请先选择一个英雄'); return }
+            runAndLog(`英雄完整数据 #${selectedChampId}`, async () => {
+              const res = await fetch(`/lol-game-data/assets/v1/champions/${selectedChampId}.json`); return res.json()
+            })
+          }}>
+            查询完整数据
           </SonaButton>
         </div>
         <div className="sona-debug-actions" style={{ marginTop: 8 }}>
@@ -352,6 +409,22 @@ export function DebugPage() {
             const res = await fetch('/lol-lobby/v2/lobby/invitations'); return res.json()
           })}>
             邀请列表
+          </SonaButton>
+        </div>
+        <div className="sona-debug-actions" style={{ marginTop: 8, alignItems: 'flex-end', gap: 8 }}>
+          <div style={{ flex: 1 }}>
+            <SonaInput
+              value={lobbyQueueId}
+              onChange={setLobbyQueueId}
+              placeholder="输入 Queue ID (如 450=大乱斗)"
+            />
+          </div>
+          <SonaButton variant="primary" onClick={() => {
+            const id = Number(lobbyQueueId)
+            if (!id) { setOutput('❌ 请输入有效的 Queue ID'); return }
+            runAndLog(`创建房间 queueId=${id}`, () => lcu.createLobby(id))
+          }}>
+            创建房间
           </SonaButton>
         </div>
       </SettingGroup>

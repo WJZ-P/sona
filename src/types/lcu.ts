@@ -733,8 +733,11 @@ export interface SummonerSpellData {
 /** 英雄摘要数据 — GET /lol-game-data/assets/v1/champion-summary.json */
 export interface ChampionSummaryData {
   id: number
+  /** 英雄称号，如 "黑暗之女" */
   name: string
+  /** 英文名，如 "Annie" */
   alias: string
+  /** 英雄名字，如 "安妮" */
   description: string
   contentId: string
   roles: string[]

@@ -7,9 +7,10 @@ export interface SonaInputProps {
   placeholder?: string
   icon?: ReactNode
   type?: string
+  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void
 }
 
-export function SonaInput({ value, onChange, placeholder, icon, type = 'text' }: SonaInputProps) {
+export function SonaInput({ value, onChange, placeholder, icon, type = 'text', onKeyDown }: SonaInputProps) {
   const [isFocused, setIsFocused] = useState(false)
 
   return (
@@ -19,6 +20,7 @@ export function SonaInput({ value, onChange, placeholder, icon, type = 'text' }:
         type={type}
         value={value}
         onChange={(e) => onChange(e.target.value)}
+        onKeyDown={onKeyDown}
         placeholder={placeholder}
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}

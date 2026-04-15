@@ -9,6 +9,7 @@
 .smh-header {
   display: flex;
   align-items: center;
+  gap: 14px;
   padding: 16px 20px;
   border-bottom: 1px solid #3c2e16;
 }
@@ -22,6 +23,83 @@
 
 .smh-title::first-letter {
   color: #c8aa6e;
+}
+
+/* ---- 模式过滤下拉框 ---- */
+.smh-filter {
+  position: relative;
+  margin-left: 0;
+}
+
+.smh-filter-trigger {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  background: rgba(30, 35, 40, 0.6);
+  border: 1px solid rgba(200, 170, 110, 0.2);
+  border-radius: 0;
+  color: #a09b8c;
+  font-size: 14px;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+  white-space: nowrap;
+}
+
+.smh-filter-trigger:hover,
+.smh-filter-trigger--open {
+  border-color: #c8aa6e;
+  color: #f0e6d2;
+}
+
+.smh-filter-arrow {
+  transition: transform 0.2s;
+  flex-shrink: 0;
+}
+
+.smh-filter-arrow--open {
+  transform: rotate(180deg);
+}
+
+.smh-filter-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  min-width: 160px;
+  max-height: 300px;
+  overflow-y: auto;
+  background: #1e2328;
+  border: 1px solid rgba(200, 170, 110, 0.25);
+  border-radius: 0;
+  z-index: 100;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+}
+
+.smh-filter-dropdown::-webkit-scrollbar { width: 4px; }
+.smh-filter-dropdown::-webkit-scrollbar-thumb { background: #3c2e16; border-radius: 2px; }
+
+.smh-filter-option {
+  display: block;
+  width: 100%;
+  padding: 7px 14px;
+  background: none;
+  border: none;
+  color: #a09b8c;
+  font-size: 12px;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  white-space: nowrap;
+}
+
+.smh-filter-option:hover {
+  background: rgba(200, 170, 110, 0.1);
+  color: #f0e6d2;
+}
+
+.smh-filter-option--active {
+  color: #c8aa6e;
+  font-weight: 600;
 }
 
 .smh-list {

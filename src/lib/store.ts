@@ -59,8 +59,14 @@ export interface SonaConfig {
   rankQueue: string
   /** 伪装段位 */
   rankTier: string
-  /** 伪装子段位 */
+  /** 段位伪装子段位 */
   rankDivision: string
+  /** 秒抢英雄开关 */
+  autoLockChampion: boolean
+  /** 秒抢目标英雄 ID */
+  autoLockChampionId: number
+  /** 秒抢时是否直接锁定（false 则只选择不锁定） */
+  autoLockInstant: boolean
 }
 
 
@@ -86,6 +92,9 @@ const DEFAULT_CONFIG: SonaConfig = {
   rankQueue: 'RANKED_SOLO_5x5',
   rankTier: 'CHALLENGER',
   rankDivision: 'I',
+  autoLockChampion: false,
+  autoLockChampionId: 0,
+  autoLockInstant: true,
 }
 
 

@@ -72,3 +72,57 @@
   word-break: break-all;
   line-height: 1.6;
 }
+
+/* ---- 英雄联想下拉 ---- */
+.sona-champ-suggest {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  max-height: 240px;
+  overflow-y: auto;
+  background: #1e2328;
+  border: 1px solid rgba(200, 170, 110, 0.25);
+  z-index: 100;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+}
+
+.sona-champ-suggest::-webkit-scrollbar { width: 4px; }
+.sona-champ-suggest::-webkit-scrollbar-thumb { background: #3c2e16; border-radius: 2px; }
+
+.sona-champ-suggest-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 12px;
+  background: none;
+  border: none;
+  color: #a09b8c;
+  font-size: 13px;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.sona-champ-suggest-item:hover {
+  background: rgba(200, 170, 110, 0.1);
+}
+
+.sona-champ-suggest-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid rgba(200, 170, 110, 0.3);
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.sona-champ-suggest-title {
+  color: #c8aa6e;
+  font-weight: 600;
+}
+
+.sona-champ-suggest-name {
+  color: #a09b8c;
+}

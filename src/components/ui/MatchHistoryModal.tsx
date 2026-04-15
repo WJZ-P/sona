@@ -1,7 +1,7 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { Modal } from '@/components/ui/Modal'
 import { lcu } from '@/lib/lcu'
-import { getChampIcon, getItemIcon, getSpellIcon, getPerkIcon, getPerkStyleIcon, getQueueName, getMapName } from '@/lib/assets'
+import { getChampIcon, getItemIcon, getSpellIcon, getPerkIcon, getPerkStyleIcon, getQueueName, getMapName, getPlayableQueues } from '@/lib/assets'
 import type { MatchGame } from '@/types/lcu'
 import '@/styles/MatchHistoryModal.css'
 
@@ -31,6 +31,7 @@ function formatDate(timestamp: number): string {
 
 interface MatchRowData {
   gameId: number
+  queueId: number
   win: boolean
   championId: number
   level: number
@@ -69,6 +70,7 @@ function parseMatch(game: MatchGame, puuid: string): MatchRowData | null {
 
   return {
     gameId: game.gameId,
+    queueId: game.queueId,
     win: s.win,
     championId: participant.championId,
     level: s.champLevel,
@@ -178,24 +180,50 @@ export interface MatchHistoryModalProps {
   onClose: () => void
   puuid: string
   playerName: string
+  /** 可选：默认过滤的队列 ID，不传则不过滤 */
+  queueId?: number
 }
 
-export function MatchHistoryModal({ open, onClose, puuid, playerName }: MatchHistoryModalProps) {
-  const [matches, setMatches] = useState<MatchRowData[]>([])
+export function MatchHistoryModal({ open, onClose, puuid, playerName, queueId: defaultQueueId }: MatchHistoryModalProps) {
+  const [allMatches, setAllMatches] = useState<MatchRowData[]>([])
   const [loading, setLoading] = useState(false)
   const [loadingMore, setLoadingMore] = useState(false)
   const [error, setError] = useState('')
   const [hasMore, setHasMore] = useState(true)
+  const [filterQueueId, setFilterQueueId] = useState<number>(defaultQueueId ?? 0)
+  const [filterOpen, setFilterOpen] = useState(false)
   const loadedPuuid = useRef('')
+  const loadedQueueRef = useRef<number>(0)
   const listRef = useRef<HTMLDivElement>(null)
+  const filterRef = useRef<HTMLDivElement>(null)
   const PAGE_SIZE = 20
 
+  // 可玩队列缓存
+  const [queueOptions, setQueueOptions] = useState<{ id: number; name: string }[]>([])
+  useEffect(() => {
+    setQueueOptions(getPlayableQueues())
+  }, [])
+
+  // 点击外部关闭下拉框
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (filterRef.current && !filterRef.current.contains(e.target as Node)) setFilterOpen(false)
+    }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [])
+
+  // 过滤后的列表
+  const matches = filterQueueId > 0
+    ? allMatches.filter((m) => m.queueId === filterQueueId)
+    : allMatches
+
   // 加载指定页
-  const loadPage = async (begIndex: number, isInitial: boolean) => {
+  const loadPage = useCallback(async (begIndex: number, isInitial: boolean) => {
     if (isInitial) {
       setLoading(true)
       setError('')
-      setMatches([])
+      setAllMatches([])
       setHasMore(true)
     } else {
       setLoadingMore(true)
@@ -211,9 +239,9 @@ export function MatchHistoryModal({ open, onClose, puuid, playerName }: MatchHis
       if (games.length < PAGE_SIZE) setHasMore(false)
 
       if (isInitial) {
-        setMatches(parsed)
+        setAllMatches(parsed)
       } else {
-        setMatches(prev => [...prev, ...parsed])
+        setAllMatches(prev => [...prev, ...parsed])
       }
     } catch {
       if (isInitial) setError('查询战绩失败')
@@ -222,14 +250,19 @@ export function MatchHistoryModal({ open, onClose, puuid, playerName }: MatchHis
       setLoading(false)
       setLoadingMore(false)
     }
-  }
+  }, [puuid])
 
-  // 初始加载
+  // 初始加载 / 当 puuid 变化时重新加载
   useEffect(() => {
-    if (!open || !puuid || puuid === loadedPuuid.current) return
-    loadedPuuid.current = puuid
+    if (!open || !puuid) return
+    // puuid 或默认 queueId 变化时重新加载
+    const key = `${puuid}-${defaultQueueId ?? 0}`
+    if (key === loadedPuuid.current) return
+    loadedPuuid.current = key
+    loadedQueueRef.current = defaultQueueId ?? 0
+    setFilterQueueId(defaultQueueId ?? 0)
     loadPage(0, true)
-  }, [open, puuid])
+  }, [open, puuid, defaultQueueId, loadPage])
 
   useEffect(() => {
     if (!open) loadedPuuid.current = ''
@@ -242,27 +275,63 @@ export function MatchHistoryModal({ open, onClose, puuid, playerName }: MatchHis
 
     const handleScroll = () => {
       if (loadingMore || !hasMore) return
-      // 距离底部不足 80px 时触发
       if (el.scrollHeight - el.scrollTop - el.clientHeight < 80) {
-        loadPage(matches.length, false)
+        loadPage(allMatches.length, false)
       }
     }
 
     el.addEventListener('scroll', handleScroll)
     return () => el.removeEventListener('scroll', handleScroll)
-  }, [matches.length, loadingMore, hasMore])
+  }, [allMatches.length, loadingMore, hasMore, loadPage])
+
+  const currentFilterLabel = filterQueueId > 0
+    ? (queueOptions.find(q => q.id === filterQueueId)?.name ?? getQueueName(filterQueueId))
+    : '全部模式'
 
   return (
     <Modal open={open} onClose={onClose} width={860} height={620}>
       <div className="smh-container">
         <div className="smh-header">
           <span className="smh-title">❖ {playerName} 的近期战报</span>
+          <div className="smh-filter" ref={filterRef}>
+            <button
+              className={`smh-filter-trigger${filterOpen ? ' smh-filter-trigger--open' : ''}`}
+              onClick={() => setFilterOpen(!filterOpen)}
+              type="button"
+            >
+              <span>{currentFilterLabel}</span>
+              <svg className={`smh-filter-arrow${filterOpen ? ' smh-filter-arrow--open' : ''}`} width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </button>
+            {filterOpen && (
+              <div className="smh-filter-dropdown">
+                <button
+                  className={`smh-filter-option${filterQueueId === 0 ? ' smh-filter-option--active' : ''}`}
+                  onClick={() => { setFilterQueueId(0); setFilterOpen(false) }}
+                  type="button"
+                >
+                  全部模式
+                </button>
+                {queueOptions.map((q) => (
+                  <button
+                    key={q.id}
+                    className={`smh-filter-option${filterQueueId === q.id ? ' smh-filter-option--active' : ''}`}
+                    onClick={() => { setFilterQueueId(q.id); setFilterOpen(false) }}
+                    type="button"
+                  >
+                    {q.name}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
         <div className="smh-list" ref={listRef}>
           {loading && <div className="smh-empty">加载中...</div>}
           {error && <div className="smh-empty smh-error">{error}</div>}
           {!loading && !error && matches.length === 0 && (
-            <div className="smh-empty">暂无战绩</div>
+            <div className="smh-empty">{filterQueueId > 0 ? '该模式暂无战绩，试试加载更多或切换模式' : '暂无战绩'}</div>
           )}
           {matches.map((m) => (
             <MatchRow key={m.gameId} match={m} />

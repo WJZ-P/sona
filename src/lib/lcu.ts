@@ -310,6 +310,28 @@ class LCUManager {
   }
 
   /**
+   * 仅选择英雄（不锁定）
+   * 只执行 PATCH 设置英雄，不执行 complete 锁定
+   */
+  async pickChampion(championId: number, actionId?: number): Promise<void> {
+    let targetActionId = actionId
+
+    if (targetActionId == null) {
+      const session = await this.getChampSelectSession()
+      const myAction = session.actions
+        .flat()
+        .find((a) => a.actorCellId === session.localPlayerCellId && a.isInProgress && !a.completed)
+
+      if (!myAction) {
+        throw new Error('[LCU] 找不到当前正在进行的选人动作')
+      }
+      targetActionId = myAction.id
+    }
+
+    await patch(`/lol-champ-select/v1/session/actions/${targetActionId}`, { championId })
+  }
+
+  /**
    * 修改自己的选人信息（皮肤、召唤师技能等）
    * @param selection 选择参数
    */
