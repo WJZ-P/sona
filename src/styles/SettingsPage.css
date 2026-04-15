@@ -126,3 +126,41 @@
 .sona-champ-suggest-name {
   color: #a09b8c;
 }
+
+/* ---- 设置备份列表 ---- */
+.sona-backup-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: rgba(30, 35, 40, 0.4);
+  border: 1px solid rgba(200, 170, 110, 0.1);
+  border-radius: 4px;
+  transition: border-color 0.2s;
+}
+
+.sona-backup-item:hover {
+  border-color: rgba(200, 170, 110, 0.25);
+}
+
+.sona-backup-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sona-backup-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #f0e6d2;
+}
+
+.sona-backup-time {
+  font-size: 11px;
+  color: #785a28;
+}
+
+.sona-backup-actions {
+  display: flex;
+  gap: 6px;
+}

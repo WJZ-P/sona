@@ -616,6 +616,115 @@ class LCUManager {
     })
   }
 
+  // ==================== 客户端设置备份/恢复 ====================
+
+  private async getPuuid(): Promise<string> {
+    const session = await get<{ puuid: string }>('/lol-login/v1/session')
+    if (!session.puuid) throw new Error('未获取到 PUUID')
+    return session.puuid
+  }
+
+  private loadAllBackups(puuid: string): Record<string, { general?: unknown; input?: unknown; timestamp: number }> {
+    const raw = localStorage.getItem(`sona_backups_${puuid}`)
+    if (!raw) return {}
+    try { return JSON.parse(raw) } catch { return {} }
+  }
+
+  private saveAllBackups(puuid: string, data: Record<string, unknown>) {
+    localStorage.setItem(`sona_backups_${puuid}`, JSON.stringify(data))
+  }
+
+  /** 获取常规游戏设置（画质、声音、HUD 等，对应 game.cfg） */
+  getGameSettings(): Promise<unknown> {
+    return get('/lol-game-settings/v1/game-settings')
+  }
+
+  /** 获取热键设置（对应 PersistedSettings.json 的热键部分） */
+  getInputSettings(): Promise<unknown> {
+    return get('/lol-game-settings/v1/input-settings')
+  }
+
+  /**
+   * 创建命名备份（同时拉取常规设置 + 热键设置）
+   * @param name 用户自定义的备份名称
+   */
+  async backupSettings(name: string): Promise<boolean> {
+    try {
+      const puuid = await this.getPuuid()
+      const [general, input] = await Promise.all([
+        this.getGameSettings(),
+        this.getInputSettings(),
+      ])
+      const all = this.loadAllBackups(puuid)
+      all[name] = { general, input, timestamp: Date.now() }
+      this.saveAllBackups(puuid, all)
+      return true
+    } catch {
+      return false
+    }
+  }
+
+  /**
+   * 恢复指定名称的备份并写入磁盘
+   * @param name 备份名称
+   */
+  async restoreSettings(name: string): Promise<boolean> {
+    try {
+      const puuid = await this.getPuuid()
+      const all = this.loadAllBackups(puuid)
+      const backup = all[name]
+      if (!backup) throw new Error(`备份 "${name}" 不存在`)
+
+      // 第 1 步：恢复常规设置 (game-settings)
+      if (backup.general) {
+        await patch('/lol-game-settings/v1/game-settings', backup.general)
+      }
+
+      // 第 2 步：恢复热键设置 (input-settings)
+      if (backup.input) {
+        await patch('/lol-game-settings/v1/input-settings', backup.input)
+      }
+
+      // 第 3 步：强制写入磁盘
+      await post('/lol-game-settings/v1/save')
+      return true
+    } catch {
+      return false
+    }
+  }
+
+  /**
+   * 删除指定名称的备份
+   * @param name 备份名称
+   */
+  async deleteBackup(name: string): Promise<boolean> {
+    try {
+      const puuid = await this.getPuuid()
+      const all = this.loadAllBackups(puuid)
+      if (!(name in all)) return false
+      delete all[name]
+      this.saveAllBackups(puuid, all)
+      return true
+    } catch {
+      return false
+    }
+  }
+
+  /**
+   * 获取所有备份列表（按时间倒序）
+   */
+  async listBackups(): Promise<{ name: string; timestamp: number }[]> {
+    try {
+      const puuid = await this.getPuuid()
+      const all = this.loadAllBackups(puuid)
+      return Object.entries(all)
+        .map(([name, data]) => ({ name, timestamp: data.timestamp ?? 0 }))
+        .sort((a, b) => b.timestamp - a.timestamp)
+    } catch {
+      return []
+    }
+  }
+
   // ==================== WebSocket 事件 ====================
 
   private observeUriOnSocket(uri: string) {

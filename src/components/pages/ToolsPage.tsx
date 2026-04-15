@@ -20,6 +20,83 @@ const effectOptions = [
   { value: 'transparent', label: '透明' },
 ]
 
+function BackupManager() {
+  const [backupName, setBackupName] = useState('')
+  const [backups, setBackups] = useState<{ name: string; timestamp: number }[]>([])
+  const [status, setStatus] = useState('')
+
+  const refreshList = async () => {
+    const list = await lcu.listBackups()
+    setBackups(list)
+  }
+
+  useEffect(() => { refreshList() }, [])
+
+  const handleBackup = async () => {
+    const name = backupName.trim()
+    if (!name) { setStatus('❌ 请输入备份名称'); return }
+    setStatus('⏳ 备份中...')
+    const ok = await lcu.backupSettings(name)
+    setStatus(ok ? '✅ 备份成功' : '❌ 备份失败')
+    if (ok) { setBackupName(''); refreshList() }
+  }
+
+  const handleRestore = async (name: string) => {
+    setStatus(`⏳ 恢复 "${name}" 中...`)
+    const ok = await lcu.restoreSettings(name)
+    setStatus(ok ? `✅ "${name}" 已恢复` : '❌ 恢复失败')
+  }
+
+  const handleDelete = async (name: string) => {
+    const ok = await lcu.deleteBackup(name)
+    if (ok) {
+      setStatus(`已删除 "${name}"`)
+      refreshList()
+    }
+  }
+
+  const formatTime = (ts: number) => {
+    if (!ts) return ''
+    const d = new Date(ts)
+    return d.toLocaleString(undefined, { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false })
+  }
+
+  return (
+    <>
+      <div className="sona-debug-actions" style={{ alignItems: 'flex-end', gap: 8 }}>
+        <div style={{ flex: 1 }}>
+          <SonaInput
+            value={backupName}
+            onChange={(v) => { setBackupName(v); setStatus('') }}
+            onKeyDown={(e) => { if (e.key === 'Enter') handleBackup() }}
+            placeholder="输入备份名称 (如: 排位设置)"
+          />
+        </div>
+        <SonaButton variant="primary" onClick={handleBackup}>
+          保存备份
+        </SonaButton>
+      </div>
+      {status && <p className="sona-subtitle" style={{ marginTop: 6 }}>{status}</p>}
+      {backups.length > 0 && (
+        <div style={{ marginTop: 10, display: 'flex', flexDirection: 'column', gap: 6 }}>
+          {backups.map((b) => (
+            <div key={b.name} className="sona-backup-item">
+              <div className="sona-backup-info">
+                <span className="sona-backup-name">{b.name}</span>
+                <span className="sona-backup-time">{formatTime(b.timestamp)}</span>
+              </div>
+              <div className="sona-backup-actions">
+                <SonaButton onClick={() => handleRestore(b.name)}>恢复</SonaButton>
+                <SonaButton onClick={() => handleDelete(b.name)}>删除</SonaButton>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </>
+  )
+}
+
 export function ToolsPage() {
   const [autoAccept, setAutoAccept] = useState(store.get('autoAcceptMatch'))
   const [unlockStatus, setUnlockStatus] = useState(store.get('unlockStatus'))
@@ -451,6 +528,10 @@ export function ToolsPage() {
         </div>
       </SettingGroup>
 
+      <SettingGroup title="设置备份">
+        <p className="sona-subtitle" style={{ marginBottom: 10 }}>备份当前客户端设置（快捷键、界面布局等），支持多个命名存档。</p>
+        <BackupManager />
+      </SettingGroup>
 
       <SettingGroup title="界面">
         <SettingCard

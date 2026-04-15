@@ -504,6 +504,17 @@ export function DebugPage() {
         </div>
       </SettingGroup>
 
+      <SettingGroup title="客户端配置">
+        <div className="sona-debug-actions">
+          <SonaButton onClick={() => runAndLog('常规设置 (game-settings)', () => lcu.getGameSettings())}>
+            常规设置
+          </SonaButton>
+          <SonaButton onClick={() => runAndLog('热键设置 (input-settings)', () => lcu.getInputSettings())}>
+            热键设置
+          </SonaButton>
+        </div>
+      </SettingGroup>
+
       <SettingGroup title="区域 & 炫彩">
         <div className="sona-debug-actions">
           <SonaButton onClick={() => runAndLog('区域语言', async () => {
