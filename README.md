@@ -31,7 +31,7 @@
 
 <p align="center">
   <a href="https://github.com/WJZ-P/sona/">
-    <img src="assets/Champie_Sona_profileicon.png" alt="Logo" width="200" height="200">
+    <img src="assets/Champie_Sona_profileicon.png" alt="Logo" width="200" height="200" style="border-radius: 4px;">
   </a>
 </p>
 
