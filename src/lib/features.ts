@@ -236,10 +236,8 @@ async function fetchTeamStats(): Promise<{ isBlue: boolean; gameId: number; stat
 
   const GREEDY_FETCH = 100  // 一次性贪婪拉取的对局数
 
-  const stats: TeammateStats[] = []
-
-  for (let i = 0; i < myTeam.length; i++) {
-    const player = myTeam[i]
+  // 并行查询所有队友的战绩
+  const stats = await Promise.all(myTeam.map(async (player, i) => {
     try {
       const summoner = await lcu.getSummonerById(player.summonerId)
 
@@ -266,8 +264,7 @@ async function fetchTeamStats(): Promise<{ isBlue: boolean; gameId: number; stat
       }
 
       if (filteredGames.length === 0) {
-        stats.push({ floor: i + 1, summonerId: player.summonerId, puuid: summoner.puuid, gameName: summoner.gameName, tagLine: summoner.tagLine, winRate: null, wins: 0, total: 0, avgK: 0, avgD: 0, avgA: 0, kdaNum: 0 })
-        continue
+        return { floor: i + 1, summonerId: player.summonerId, puuid: summoner.puuid, gameName: summoner.gameName, tagLine: summoner.tagLine, winRate: null, wins: 0, total: 0, avgK: 0, avgD: 0, avgA: 0, kdaNum: 0 } as TeammateStats
       }
 
       let wins = 0, totalKills = 0, totalDeaths = 0, totalAssists = 0
@@ -281,7 +278,7 @@ async function fetchTeamStats(): Promise<{ isBlue: boolean; gameId: number; stat
       const total = filteredGames.length
       logger.info('[TeamStats] %s → 拉取 %d 场，筛出 %d 场同模式', summoner.gameName, chunk.length, total)
 
-      stats.push({
+      return {
         floor: i + 1,
         summonerId: player.summonerId,
         puuid: summoner.puuid,
@@ -294,11 +291,11 @@ async function fetchTeamStats(): Promise<{ isBlue: boolean; gameId: number; stat
         avgD: totalDeaths / total,
         avgA: totalAssists / total,
         kdaNum: totalDeaths === 0 ? totalKills + totalAssists : (totalKills + totalAssists) / totalDeaths,
-      })
+      } as TeammateStats
     } catch {
-      stats.push({ floor: i + 1, summonerId: player.summonerId, puuid: '', gameName: '?', tagLine: '', winRate: null, wins: 0, total: 0, avgK: 0, avgD: 0, avgA: 0, kdaNum: 0 })
+      return { floor: i + 1, summonerId: player.summonerId, puuid: '', gameName: '?', tagLine: '', winRate: null, wins: 0, total: 0, avgK: 0, avgD: 0, avgA: 0, kdaNum: 0 } as TeammateStats
     }
-  }
+  }))
 
   return { isBlue, gameId: session.gameId, stats }
 }
