@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { lcuGet } from './lcu'
+import { lcu } from './lcu'
 
 /**
  * React hook for fetching LCU API data
@@ -16,7 +16,7 @@ export function useLcuData<T>(endpoint: string | null) {
     setError(null)
 
     try {
-      const result = await lcuGet<T>(endpoint)
+      const result = await lcu.get<T>(endpoint)
       setData(result)
     } catch (err) {
       setError(err instanceof Error ? err : new Error(String(err)))
