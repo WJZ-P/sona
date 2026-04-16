@@ -234,9 +234,7 @@ async function fetchTeamStats(): Promise<{ isBlue: boolean; gameId: number; stat
     logger.warn('[TeamStats] 无法获取队列 ID，将使用全部对局')
   }
 
-  const PAGE_SIZE = 20
-  const TARGET_SAMPLE = 100  // 目标同模式采样数
-  const MAX_RAW = 100        // 连续无匹配的原始对局上限
+  const GREEDY_FETCH = 100  // 一次性贪婪拉取的对局数
 
   const stats: TeammateStats[] = []
 
@@ -245,48 +243,26 @@ async function fetchTeamStats(): Promise<{ isBlue: boolean; gameId: number; stat
     try {
       const summoner = await lcu.getSummonerById(player.summonerId)
 
-      // 深度分页拉取 + 按模式过滤
+      // 一次性贪婪拉取 100 条，穿透 LCU 分页缓存
+      const history = await lcu.getMatchHistory(summoner.puuid, 0, GREEDY_FETCH - 1)
+      const chunk = history.games?.games ?? []
+
       const filteredGames: Array<{ kills: number; deaths: number; assists: number; win: boolean }> = []
-      let cursor = 0
-      let rawSinceLastMatch = 0
 
-      while (filteredGames.length < TARGET_SAMPLE) {
-        const history = await lcu.getMatchHistory(summoner.puuid, cursor, cursor + PAGE_SIZE - 1)
-        const chunk = history.games?.games ?? []
+      for (const game of chunk) {
+        if (currentQueueId > 0 && game.queueId !== currentQueueId) continue
 
-        if (chunk.length === 0) {
-          logger.info('[TeamStats] %s 战绩已触底 (cursor=%d)', summoner.gameName, cursor)
-          break
-        }
+        const identity = game.participantIdentities.find((id) => id.player.puuid === summoner.puuid)
+        if (!identity) continue
+        const participant = game.participants.find((p) => p.participantId === identity.participantId)
+        if (!participant) continue
 
-        for (const game of chunk) {
-          // 按 queueId 过滤（如果获取到了当前队列 ID）
-          if (currentQueueId > 0 && game.queueId !== currentQueueId) {
-            rawSinceLastMatch++
-            continue
-          }
-
-          const identity = game.participantIdentities.find((id) => id.player.puuid === summoner.puuid)
-          if (!identity) continue
-          const participant = game.participants.find((p) => p.participantId === identity.participantId)
-          if (!participant) continue
-
-          filteredGames.push({
-            kills: participant.stats.kills,
-            deaths: participant.stats.deaths,
-            assists: participant.stats.assists,
-            win: participant.stats.win,
-          })
-          rawSinceLastMatch = 0
-        }
-
-        cursor += PAGE_SIZE
-
-        // 连续 MAX_RAW 条原始对局都没匹配到同模式，放弃继续
-        if (rawSinceLastMatch >= MAX_RAW) {
-          logger.info('[TeamStats] %s 连续 %d 条无匹配模式，停止深度拉取', summoner.gameName, rawSinceLastMatch)
-          break
-        }
+        filteredGames.push({
+          kills: participant.stats.kills,
+          deaths: participant.stats.deaths,
+          assists: participant.stats.assists,
+          win: participant.stats.win,
+        })
       }
 
       if (filteredGames.length === 0) {
@@ -303,7 +279,7 @@ async function fetchTeamStats(): Promise<{ isBlue: boolean; gameId: number; stat
       }
 
       const total = filteredGames.length
-      logger.info('[TeamStats] %s → 采样 %d 场同模式对局 (cursor到 %d)', summoner.gameName, total, cursor)
+      logger.info('[TeamStats] %s → 拉取 %d 场，筛出 %d 场同模式', summoner.gameName, chunk.length, total)
 
       stats.push({
         floor: i + 1,
@@ -604,7 +580,7 @@ async function analyzeTeammates() {
     logger.info('┌─── 队友战绩分析 ───')
     logger.info('│ 阵营: %s', sideText)
 
-    const chatLines: string[] = [`Sona助手 ♫\n 本局${sideText} — 队友卡池一览(本模式近100局):\n`]
+    const chatLines: string[] = [`Sona助手 ♫\n 本局${sideText} — 队友卡池一览(近期战绩):\n`]
 
     for (const s of stats) {
       const floor = `${s.floor}楼`

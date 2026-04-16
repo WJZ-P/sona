@@ -187,16 +187,13 @@ export interface MatchHistoryModalProps {
 export function MatchHistoryModal({ open, onClose, puuid, playerName, queueId: defaultQueueId }: MatchHistoryModalProps) {
   const [allMatches, setAllMatches] = useState<MatchRowData[]>([])
   const [loading, setLoading] = useState(false)
-  const [loadingMore, setLoadingMore] = useState(false)
   const [error, setError] = useState('')
-  const [hasMore, setHasMore] = useState(true)
   const [filterQueueId, setFilterQueueId] = useState<number>(defaultQueueId ?? 0)
   const [filterOpen, setFilterOpen] = useState(false)
   const loadedPuuid = useRef('')
-  const loadedQueueRef = useRef<number>(0)
   const listRef = useRef<HTMLDivElement>(null)
   const filterRef = useRef<HTMLDivElement>(null)
-  const PAGE_SIZE = 20
+  const GREEDY_FETCH = 100
 
   // 可玩队列缓存
   const [queueOptions, setQueueOptions] = useState<{ id: number; name: string }[]>([])
@@ -218,71 +215,39 @@ export function MatchHistoryModal({ open, onClose, puuid, playerName, queueId: d
     ? allMatches.filter((m) => m.queueId === filterQueueId)
     : allMatches
 
-  // 加载指定页
-  const loadPage = useCallback(async (begIndex: number, isInitial: boolean) => {
-    if (isInitial) {
-      setLoading(true)
-      setError('')
-      setAllMatches([])
-      setHasMore(true)
-    } else {
-      setLoadingMore(true)
-    }
+  // 一次性贪婪拉取
+  const loadAll = useCallback(async () => {
+    setLoading(true)
+    setError('')
+    setAllMatches([])
 
     try {
-      const resp = await lcu.getMatchHistory(puuid, begIndex, begIndex + PAGE_SIZE - 1)
+      const resp = await lcu.getMatchHistory(puuid, 0, GREEDY_FETCH - 1)
       const games = resp.games?.games ?? []
       const parsed = games
         .map((g) => parseMatch(g, puuid))
         .filter((m): m is MatchRowData => m !== null)
-
-      if (games.length < PAGE_SIZE) setHasMore(false)
-
-      if (isInitial) {
-        setAllMatches(parsed)
-      } else {
-        setAllMatches(prev => [...prev, ...parsed])
-      }
+      setAllMatches(parsed)
     } catch {
-      if (isInitial) setError('查询战绩失败')
-      setHasMore(false)
+      setError('查询战绩失败')
     } finally {
       setLoading(false)
-      setLoadingMore(false)
     }
   }, [puuid])
 
   // 初始加载 / 当 puuid 变化时重新加载
   useEffect(() => {
     if (!open || !puuid) return
-    // puuid 或默认 queueId 变化时重新加载
     const key = `${puuid}-${defaultQueueId ?? 0}`
     if (key === loadedPuuid.current) return
     loadedPuuid.current = key
-    loadedQueueRef.current = defaultQueueId ?? 0
     setFilterQueueId(defaultQueueId ?? 0)
-    loadPage(0, true)
-  }, [open, puuid, defaultQueueId, loadPage])
+    loadAll()
+  }, [open, puuid, defaultQueueId, loadAll])
 
   useEffect(() => {
     if (!open) loadedPuuid.current = ''
   }, [open])
-
-  // 滚动到底部加载更多
-  useEffect(() => {
-    const el = listRef.current
-    if (!el) return
-
-    const handleScroll = () => {
-      if (loadingMore || !hasMore) return
-      if (el.scrollHeight - el.scrollTop - el.clientHeight < 80) {
-        loadPage(allMatches.length, false)
-      }
-    }
-
-    el.addEventListener('scroll', handleScroll)
-    return () => el.removeEventListener('scroll', handleScroll)
-  }, [allMatches.length, loadingMore, hasMore, loadPage])
 
   const currentFilterLabel = filterQueueId > 0
     ? (queueOptions.find(q => q.id === filterQueueId)?.name ?? getQueueName(filterQueueId))
@@ -331,16 +296,13 @@ export function MatchHistoryModal({ open, onClose, puuid, playerName, queueId: d
           {loading && <div className="smh-empty">加载中...</div>}
           {error && <div className="smh-empty smh-error">{error}</div>}
           {!loading && !error && matches.length === 0 && (
-            <div className="smh-empty">{filterQueueId > 0 ? '该模式暂无战绩，试试加载更多或切换模式' : '暂无战绩'}</div>
+            <div className="smh-empty">{filterQueueId > 0 ? '该模式暂无战绩，试试切换模式' : '暂无战绩'}</div>
           )}
           {matches.map((m) => (
             <MatchRow key={m.gameId} match={m} />
           ))}
-          {loadingMore && (
-            <div className="smh-empty smh-loading-more">加载更多...</div>
-          )}
-          {!loading && !hasMore && matches.length > 0 && (
-            <div className="smh-empty smh-no-more">— 没有更多战绩了 —</div>
+          {!loading && !error && matches.length > 0 && (
+            <div className="smh-empty smh-no-more">— 共 {matches.length} 条战绩 —</div>
           )}
         </div>
       </div>
