@@ -319,6 +319,12 @@ Made by **WJZ_P** with love ❤
 
 <br>
 
+## 🐧 LINUX DO
+
+本项目支持 [LINUX DO](https://linux.do) 社区
+
+<br>
+
 <h2 id="重要声明">📢 重要声明</h2>
 
 > 由于项目的特殊性，本项目 **不接受任何形式的赞助** ᕙ(⇀‸↼‶)ᕗ
