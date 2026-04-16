@@ -254,7 +254,11 @@ sona/
 │   │       ├── SonaCheckbox.tsx     # 复选框
 │   │       └── icons.tsx            # 图标集
 │   └── styles/                      # 18 个 CSS 文件
+├── .github/
+│   └── workflows/
+│       └── release.yml              # CI：推 tag 自动构建 + 发布 Release
 ├── assets/                          # 静态资源（Sona 头像）
+├── CHANGELOG.md                     # 版本变更日志
 ├── pengu.d.ts                       # Pengu Loader API 类型声明
 ├── package.json
 ├── tsconfig.json

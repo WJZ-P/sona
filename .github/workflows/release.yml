@@ -1,0 +1,81 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build plugin
+        run: |
+          # CI 环境：将 loaderPath 指向当前目录，让构建产物输出到项目内
+          node -e "
+            const pkg = JSON.parse(require('fs').readFileSync('package.json','utf8'));
+            pkg.config.loaderPath = './';
+            require('fs').writeFileSync('package.json', JSON.stringify(pkg, null, 2));
+          "
+          npx tsc
+          npx vite build
+
+      - name: Prepare release package
+        run: |
+          mkdir -p release/sona
+          # 复制构建产物
+          cp dist/index.js release/sona/
+          cp dist/index.css release/sona/
+          # 复制 assets（如果存在）
+          if [ -d "dist/assets" ]; then
+            cp -r dist/assets release/sona/
+          fi
+          # 打包
+          cd release
+          zip -r ../sona-${{ github.ref_name }}.zip sona/
+
+      - name: Generate release notes
+        id: notes
+        run: |
+          TAG=${{ github.ref_name }}
+          echo "tag=${TAG}" >> $GITHUB_OUTPUT
+          # 尝试从 CHANGELOG.md 提取当前版本的内容
+          if [ -f CHANGELOG.md ]; then
+            # 提取两个版本标题之间的内容
+            NOTES=$(sed -n "/^## \[${TAG#v}\]/,/^## \[/{ /^## \[${TAG#v}\]/d; /^## \[/d; p; }" CHANGELOG.md)
+            if [ -z "$NOTES" ]; then
+              # 如果没有匹配到，提取第一个版本块
+              NOTES=$(sed -n '/^## \[/,/^## \[/{//!p;}' CHANGELOG.md | head -50)
+            fi
+          fi
+          if [ -z "$NOTES" ]; then
+            NOTES="Release ${TAG}"
+          fi
+          # 写入多行输出
+          echo "notes<<EOF" >> $GITHUB_OUTPUT
+          echo "$NOTES" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Sona ${{ github.ref_name }}
+          body: ${{ steps.notes.outputs.notes }}
+          files: sona-${{ github.ref_name }}.zip
+          draft: false
+          prerelease: false
