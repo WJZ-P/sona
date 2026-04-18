@@ -49,77 +49,84 @@ let initialized = false
  */
 export async function initAssets() {
   if (initialized) return
-  try {
-    const [items, spells, queues, maps, perks, perkStyles, champions] = await Promise.all([
-      lcu.getItems(),
-      lcu.getSummonerSpells(),
-      lcu.getQueues(),
-      lcu.getMapAssets().catch(() => []),
-      lcu.getPerks().catch(() => []),
-      lcu.getPerkStyles().catch(() => ({ styles: [] })),
-      lcu.getChampionSummary().catch(() => []),
-    ])
 
-    for (const item of items) {
-      if (item.id > 0 && item.iconPath) {
-        itemMap.set(item.id, normalizePath(item.iconPath))
-      }
+  // 每个资源独立 catch，失败不影响其他；最多重试 3 次（每次间隔 3 秒）
+  await tryInit(0)
+}
+
+/**
+ * 尝试初始化（失败的资源自动重试）
+ * @param attempt 当前重试次数
+ */
+async function tryInit(attempt: number) {
+  const MAX_RETRY = 3
+  const RETRY_DELAY = 2000
+
+  const [items, spells, queues, maps, perks, perkStyles, champions] = await Promise.all([
+    lcu.getItems().catch((e) => { logger.warn('[Assets] getItems 失败:', e); return [] }),
+    lcu.getSummonerSpells().catch((e) => { logger.warn('[Assets] getSummonerSpells 失败:', e); return [] }),
+    lcu.getQueues().catch((e) => { logger.warn('[Assets] getQueues 失败:', e); return [] }),
+    lcu.getMapAssets().catch((e) => { logger.warn('[Assets] getMapAssets 失败:', e); return [] }),
+    lcu.getPerks().catch((e) => { logger.warn('[Assets] getPerks 失败:', e); return [] }),
+    lcu.getPerkStyles().catch((e) => { logger.warn('[Assets] getPerkStyles 失败:', e); return { styles: [] } }),
+    lcu.getChampionSummary().catch((e) => { logger.warn('[Assets] getChampionSummary 失败:', e); return [] }),
+  ])
+
+  // 只填充获取到的数据（失败的返回空数组，for 循环自然跳过）
+  for (const item of items) {
+    if (item.id > 0 && item.iconPath) itemMap.set(item.id, normalizePath(item.iconPath))
+  }
+  for (const spell of spells) {
+    if (spell.id > 0 && spell.iconPath) spellMap.set(spell.id, normalizePath(spell.iconPath))
+  }
+  for (const queue of queues) {
+    queueMap.set(queue.id, queue)
+  }
+  for (const map of maps as Array<{ id: number; name: string; gameModeName: string }>) {
+    if (map.id != null) mapDataMap.set(map.id, map)
+  }
+  for (const perk of perks) {
+    if (perk.id > 0 && perk.iconPath) perkMap.set(perk.id, normalizePath(perk.iconPath))
+  }
+  for (const style of perkStyles.styles) {
+    if (style.id > 0 && style.iconPath) perkStyleMap.set(style.id, normalizePath(style.iconPath))
+  }
+  for (const champ of champions) {
+    if (champ.id > 0) {
+      championMap.set(champ.id, {
+        id: champ.id,
+        name: champ.description || '',
+        title: champ.name || '',
+        alias: champ.alias,
+      })
     }
+  }
 
-    for (const spell of spells) {
-      if (spell.id > 0 && spell.iconPath) {
-        spellMap.set(spell.id, normalizePath(spell.iconPath))
-      }
-    }
+  logger.info(
+    '[Assets] 资源映射初始化 (attempt %d) → 装备 %d, 技能 %d, 符文 %d, 符文系 %d, 队列 %d, 地图 %d, 英雄 %d',
+    attempt + 1,
+    itemMap.size, spellMap.size, perkMap.size, perkStyleMap.size, queueMap.size, mapDataMap.size, championMap.size,
+  )
 
-    for (const queue of queues) {
-      queueMap.set(queue.id, queue)
-    }
+  // 判断是否有关键资源缺失，决定是否重试
+  const missing = [
+    itemMap.size === 0 && 'items',
+    spellMap.size === 0 && 'spells',
+    queueMap.size === 0 && 'queues',
+    championMap.size === 0 && 'champions',
+  ].filter(Boolean)
 
-    // Debug: 打印可玩队列完整对象
-    const playable = queues.filter(q =>
-      q.id > 0 && !q.isCustom && q.isEnabled
-      && q.queueAvailability === 'Available'
-      && q.gameMode !== 'TUTORIAL' && q.gameMode !== 'PRACTICETOOL'
-    )
-    logger.info('[Assets] 可玩队列完整对象 (%d 个):', playable.length, playable)
+  if (missing.length > 0 && attempt < MAX_RETRY) {
+    logger.warn('[Assets] 关键资源缺失: %s，%d 秒后重试 (%d/%d)', missing.join(','), RETRY_DELAY / 1000, attempt + 1, MAX_RETRY)
+    setTimeout(() => tryInit(attempt + 1), RETRY_DELAY)
+    return
+  }
 
-    for (const map of maps as Array<{ id: number; name: string; gameModeName: string }>) {
-      if (map.id != null) {
-        mapDataMap.set(map.id, map)
-      }
-    }
-
-    for (const perk of perks) {
-      if (perk.id > 0 && perk.iconPath) {
-        perkMap.set(perk.id, normalizePath(perk.iconPath))
-      }
-    }
-
-    for (const style of perkStyles.styles) {
-      if (style.id > 0 && style.iconPath) {
-        perkStyleMap.set(style.id, normalizePath(style.iconPath))
-      }
-    }
-
-    for (const champ of champions) {
-      if (champ.id > 0) {
-        championMap.set(champ.id, {
-          id: champ.id,
-          name: champ.description || '',
-          title: champ.name || '',
-          alias: champ.alias,
-        })
-      }
-    }
-
-    initialized = true
-    logger.info(
-      '[Assets] 资源映射初始化完成 → 装备 %d, 技能 %d, 符文 %d, 符文系 %d, 队列 %d, 地图 %d, 英雄 %d',
-      itemMap.size, spellMap.size, perkMap.size, perkStyleMap.size, queueMap.size, mapDataMap.size, championMap.size,
-    )
-  } catch (err) {
-    logger.error('[Assets] 资源映射初始化失败:', err)
+  initialized = true
+  if (missing.length > 0) {
+    logger.error('[Assets] 重试 %d 次后仍有资源缺失: %s', MAX_RETRY, missing.join(','))
+  } else {
+    logger.info('[Assets] 资源映射初始化完成 ✓')
   }
 }
 

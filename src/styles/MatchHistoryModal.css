@@ -316,8 +316,7 @@
   display: inline-block;
   width: 16px;
   height: 16px;
-  -webkit-mask-image: url('/fe/lol-match-history/icons.png');
-  mask-image: url('/fe/lol-match-history/icons.png');
+  /* -webkit-mask-image 在 JSX 内联样式里设置，避免 Vite CSS url() 重写 */
   -webkit-mask-size: 100% 700%;
   mask-size: 100% 700%;
   -webkit-mask-repeat: no-repeat;
@@ -419,8 +418,7 @@
   display: inline-block;
   width: 16px;
   height: 16px;
-  -webkit-mask-image: url('/fe/lol-static-assets/images/game-id-clipboard-copy.svg');
-  mask-image: url('/fe/lol-static-assets/images/game-id-clipboard-copy.svg');
+  /* -webkit-mask-image 在 JSX 内联样式里设置，避免 Vite CSS url() 重写 */
   -webkit-mask-size: contain;
   mask-size: contain;
   -webkit-mask-repeat: no-repeat;

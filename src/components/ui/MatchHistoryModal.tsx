@@ -142,7 +142,7 @@ function MatchRow({ match }: { match: MatchRowData }) {
         </div>
         <div className="smh-stats-line">
           <span className="smh-kda">
-            <span className="smh-sprite-icon" style={{ WebkitMaskPositionY: '0%', width: '22px', height: '22px'}} />
+            <span className="smh-sprite-icon" style={{ WebkitMaskImage: 'url(/fe/lol-match-history/icons.png)', WebkitMaskPositionY: '0%', width: '22px', height: '22px' }} />
             <span className={`smh-kda-num${match.kills >= match.deaths && match.kills >= match.assists ? ' smh-kda-highlight' : ''}`}>{match.kills}</span>
             {' / '}
             <span className={`smh-kda-num${match.deaths > match.kills && match.deaths > match.assists ? ' smh-kda-highlight' : ''}`}>{match.deaths}</span>
@@ -168,7 +168,7 @@ function MatchRow({ match }: { match: MatchRowData }) {
         <span className="smh-date">{formatDate(match.gameCreation)}</span>
         <span className="smh-gameid" onClick={handleCopyGameId}>
           ID:{match.gameId}
-          <span className={`smh-copy-icon ${copied ? 'smh-copied' : ''}`} />
+          <span className={`smh-copy-icon ${copied ? 'smh-copied' : ''}`} style={{ WebkitMaskImage: 'url(/fe/lol-static-assets/images/game-id-clipboard-copy.svg)' }} />
         </span>
       </div>
     </div>
