@@ -68,6 +68,7 @@
 - [技术架构](#技术架构)
 - [项目结构](#项目结构)
 - [注意事项](#注意事项)
+- [交流群](#交流群)
 - [To Do List](#to-do-list)
 - [License](#license)
 - [重要声明](#重要声明)
@@ -322,6 +323,16 @@ Made by **WJZ_P** with love ❤
 ## 🐧 LINUX DO
 
 本项目支持 [LINUX DO](https://linux.do) 社区
+
+<br>
+
+<h2 id="交流群">💬 交流群</h2>
+
+欢迎加入交流群一起讨论使用技巧、反馈问题或提建议！
+
+<p align="center">
+  <img src="markdown/group.jpg" alt="Sona 交流群" width="280">
+</p>
 
 <br>
 
