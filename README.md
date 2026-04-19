@@ -146,19 +146,25 @@
 
 ### 安装步骤
 
-[Pengu Loader 项目地址](https://github.com/PenguLoader/PenguLoader),安装方式很简单，在release中下载最新版的setup.exe，直接安装即可。安装完成后打开，如下图启用状态为ready则表示安装成功，后续不再需要打开该软件，正常启动LOL即可。
+[Pengu Loader 项目地址](https://github.com/PenguLoader/PenguLoader),安装方式很简单，在release中下载最新版的setup.exe，直接安装即可。安装完成后打开，如下图启用状态为ready则表示安装成功，后续不再需要打开该软件，正常启动LOL即可。如果需要你选择LOL路径，选择到“英雄联盟”文件夹即可。
 
 <p align="center">
 <img src="markdown/pengu1.png" alt="Pengu Loader" width="70%">
 </p>
 
-接着点击上方右侧的Plugins,打开插件目录，从本项目的release中下载压缩包(不要下载项目源码使用)，解压出sona文件夹并拖动至插件目录。
+接着点击上方右侧的Plugins,打开插件目录，从本项目的release中下载压缩包(不要下载项目源码使用)，解压出sona文件夹并拖动至插件目录，注意，loader不支持直接拖入文件，应该点击右下角打开插件目录，然后将sona文件夹拖动进去。
+
+<p align="center">
+<img src="markdown/path.png" alt="Pengu Loader" width="70%">
+</p>
+
+注意，这里要把sona文件夹拖动进来，并确保里面应该是两个index文件。
 
 <p align="center">
 <img src="markdown/pengu2.png" alt="Pengu Loader" width="70%">
 </p>
 
-
+操作完成后，回到loader，点刷新，像上图一样就是安装成功了，接着重启客户端即可。
 
 
 ## 🚀 使用
