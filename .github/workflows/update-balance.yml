@@ -2,7 +2,7 @@ name: Update Champion Balance
 
 on:
   schedule:
-    # 每周三/四/五 09:00 UTC（对准拳头补丁发布日，Meraki CDN 稍后同步）
+    # 每周三/四/五 09:00 UTC（对准拳头补丁发布日，Wiki 通常当天或次日同步，本来用的Meraki CDN，但是那个数据有的不准。）
     - cron: "0 9 * * 3,4,5"
   workflow_dispatch:
 
@@ -76,7 +76,7 @@ jobs:
           COUNT=$(node -p "require('./src/data/champion-balance.json')._meta.championCount")
 
           # 构造新版本块
-          NEW_BLOCK="## [$NEW_VERSION] - $TODAY\n\n### 🔄 自动更新\n\n- **英雄平衡数据更新** — 从 Meraki Analytics CDN 同步最新 ARAM / URF 平衡数值（共 $COUNT 个英雄）\n\n---\n"
+          NEW_BLOCK="## [$NEW_VERSION] - $TODAY\n\n### 🔄 自动更新\n\n- **英雄平衡数据更新** — 从 Fandom LoL Wiki 同步最新模式平衡数值（共 $COUNT 个英雄，覆盖 ARAM / URF / 克隆 / 极限闪击 / 斗魂竞技场 / 终极魔咒书）\n\n---\n"
 
           # 插入到 CHANGELOG.md 第一个 "## [" 之前
           if [ -f CHANGELOG.md ]; then
