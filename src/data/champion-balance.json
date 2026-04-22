@@ -1,0 +1,3431 @@
+{
+  "_meta": {
+    "source": "meraki-analytics",
+    "sourceUrl": "https://cdn.merakianalytics.com/riot/lol/resources/latest/en-US/champions.json",
+    "updatedAt": "2026-04-22T09:18:03.399Z",
+    "sha1": "e7fb6817b5e8139475216e375c93b9f10fe860b2",
+    "championCount": 171
+  },
+  "champions": {
+    "1": {
+      "id": 1,
+      "alias": "Annie",
+      "aram": {
+        "damageDealt": 0.95,
+        "damageTaken": 1.05,
+        "healing": 1,
+        "shielding": 0.9,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 0.9,
+        "damageTaken": 1.1,
+        "healing": 1,
+        "shielding": 0.9
+      }
+    },
+    "2": {
+      "id": 2,
+      "alias": "Olaf",
+      "aram": {
+        "damageDealt": 1.05,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "3": {
+      "id": 3,
+      "alias": "Galio",
+      "aram": {
+        "damageDealt": 0.9,
+        "damageTaken": 1.05,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "4": {
+      "id": 4,
+      "alias": "TwistedFate",
+      "aram": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 0.95,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "5": {
+      "id": 5,
+      "alias": "XinZhao",
+      "aram": {
+        "damageDealt": 0.95,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1,
+        "damageTaken": 1.1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "6": {
+      "id": 6,
+      "alias": "Urgot",
+      "aram": {
+        "damageDealt": 1,
+        "damageTaken": 1.05,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1.15,
+        "damageTaken": 0.85,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "7": {
+      "id": 7,
+      "alias": "Leblanc",
+      "aram": {
+        "damageDealt": 1.1,
+        "damageTaken": 0.9,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 20,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "8": {
+      "id": 8,
+      "alias": "Vladimir",
+      "aram": {
+        "damageDealt": 1,
+        "damageTaken": 1.05,
+        "healing": 0.9,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 0.92,
+        "damageTaken": 1.05,
+        "healing": 1.2,
+        "shielding": 1
+      }
+    },
+    "9": {
+      "id": 9,
+      "alias": "Fiddlesticks",
+      "aram": {
+        "damageDealt": 0.95,
+        "damageTaken": 1.05,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1.1,
+        "damageTaken": 0.85,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "10": {
+      "id": 10,
+      "alias": "Kayle",
+      "aram": {
+        "damageDealt": 0.95,
+        "damageTaken": 1.1,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 0.85,
+        "damageTaken": 1.1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "11": {
+      "id": 11,
+      "alias": "MasterYi",
+      "aram": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 0.9,
+        "damageTaken": 1,
+        "healing": 0.8,
+        "shielding": 1
+      }
+    },
+    "12": {
+      "id": 12,
+      "alias": "Alistar",
+      "aram": {
+        "damageDealt": 0.95,
+        "damageTaken": 1.05,
+        "healing": 0.8,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1,
+        "damageTaken": 0.95,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "13": {
+      "id": 13,
+      "alias": "Ryze",
+      "aram": {
+        "damageDealt": 1.05,
+        "damageTaken": 0.95,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "14": {
+      "id": 14,
+      "alias": "Sion",
+      "aram": {
+        "damageDealt": 0.9,
+        "damageTaken": 1.1,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": -10,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1.1,
+        "damageTaken": 0.92,
+        "healing": 1,
+        "shielding": 1.2
+      }
+    },
+    "15": {
+      "id": 15,
+      "alias": "Sivir",
+      "aram": {
+        "damageDealt": 0.93,
+        "damageTaken": 1.05,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 0.85,
+        "damageTaken": 1.05,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "16": {
+      "id": 16,
+      "alias": "Soraka",
+      "aram": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 10,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1.05,
+        "damageTaken": 0.92,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "17": {
+      "id": 17,
+      "alias": "Teemo",
+      "aram": {
+        "damageDealt": 0.95,
+        "damageTaken": 1.1,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": -15,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 0.9,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "18": {
+      "id": 18,
+      "alias": "Tristana",
+      "aram": {
+        "damageDealt": 1.05,
+        "damageTaken": 0.95,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 0.9,
+        "damageTaken": 1.05,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "19": {
+      "id": 19,
+      "alias": "Warwick",
+      "aram": {
+        "damageDealt": 1.05,
+        "damageTaken": 0.95,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "20": {
+      "id": 20,
+      "alias": "Nunu",
+      "aram": {
+        "damageDealt": 1.1,
+        "damageTaken": 0.9,
+        "healing": 1.1,
+        "shielding": 1.2,
+        "tenacity": 1.2,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1.08,
+        "damageTaken": 0.95,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "21": {
+      "id": 21,
+      "alias": "MissFortune",
+      "aram": {
+        "damageDealt": 0.95,
+        "damageTaken": 1.05,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "22": {
+      "id": 22,
+      "alias": "Ashe",
+      "aram": {
+        "damageDealt": 1.05,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "23": {
+      "id": 23,
+      "alias": "Tryndamere",
+      "aram": {
+        "damageDealt": 1.1,
+        "damageTaken": 0.9,
+        "healing": 1.2,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "24": {
+      "id": 24,
+      "alias": "Jax",
+      "aram": {
+        "damageDealt": 1.05,
+        "damageTaken": 0.97,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 0.9,
+        "damageTaken": 1.15,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "25": {
+      "id": 25,
+      "alias": "Morgana",
+      "aram": {
+        "damageDealt": 0.95,
+        "damageTaken": 1.1,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 0.9,
+        "damageTaken": 1.05,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "26": {
+      "id": 26,
+      "alias": "Zilean",
+      "aram": {
+        "damageDealt": 1.05,
+        "damageTaken": 0.95,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1.05,
+        "damageTaken": 0.9,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "27": {
+      "id": 27,
+      "alias": "Singed",
+      "aram": {
+        "damageDealt": 1,
+        "damageTaken": 1.08,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 0.9,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "28": {
+      "id": 28,
+      "alias": "Evelynn",
+      "aram": {
+        "damageDealt": 1.1,
+        "damageTaken": 0.9,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1.2,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1.05,
+        "damageTaken": 0.95,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "29": {
+      "id": 29,
+      "alias": "Twitch",
+      "aram": {
+        "damageDealt": 1,
+        "damageTaken": 0.95,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 0.85,
+        "damageTaken": 1.1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "30": {
+      "id": 30,
+      "alias": "Karthus",
+      "aram": {
+        "damageDealt": 0.93,
+        "damageTaken": 1.05,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 0.9,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "31": {
+      "id": 31,
+      "alias": "Chogath",
+      "aram": {
+        "damageDealt": 1,
+        "damageTaken": 1.1,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "32": {
+      "id": 32,
+      "alias": "Amumu",
+      "aram": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1.1,
+        "damageTaken": 0.9,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "33": {
+      "id": 33,
+      "alias": "Rammus",
+      "aram": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1.1,
+        "damageTaken": 0.85,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "34": {
+      "id": 34,
+      "alias": "Anivia",
+      "aram": {
+        "damageDealt": 1.05,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1.15,
+        "damageTaken": 0.92,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "35": {
+      "id": 35,
+      "alias": "Shaco",
+      "aram": {
+        "damageDealt": 1.05,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 0.9,
+        "damageTaken": 1.1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "36": {
+      "id": 36,
+      "alias": "DrMundo",
+      "aram": {
+        "damageDealt": 0.9,
+        "damageTaken": 1.05,
+        "healing": 0.9,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "37": {
+      "id": 37,
+      "alias": "Sona",
+      "aram": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 0.9,
+        "damageTaken": 1,
+        "healing": 0.7,
+        "shielding": 1
+      }
+    },
+    "38": {
+      "id": 38,
+      "alias": "Kassadin",
+      "aram": {
+        "damageDealt": 1,
+        "damageTaken": 0.95,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "39": {
+      "id": 39,
+      "alias": "Irelia",
+      "aram": {
+        "damageDealt": 1.05,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 20,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "40": {
+      "id": 40,
+      "alias": "Janna",
+      "aram": {
+        "damageDealt": 0.95,
+        "damageTaken": 1.05,
+        "healing": 0.9,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "41": {
+      "id": 41,
+      "alias": "Gangplank",
+      "aram": {
+        "damageDealt": 1.05,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "42": {
+      "id": 42,
+      "alias": "Corki",
+      "aram": {
+        "damageDealt": 1,
+        "damageTaken": 0.9,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": -20,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "43": {
+      "id": 43,
+      "alias": "Karma",
+      "aram": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "44": {
+      "id": 44,
+      "alias": "Taric",
+      "aram": {
+        "damageDealt": 1,
+        "damageTaken": 1.1,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 0.85,
+        "shielding": 1
+      }
+    },
+    "45": {
+      "id": 45,
+      "alias": "Veigar",
+      "aram": {
+        "damageDealt": 0.93,
+        "damageTaken": 1.1,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 0.9,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "48": {
+      "id": 48,
+      "alias": "Trundle",
+      "aram": {
+        "damageDealt": 1,
+        "damageTaken": 1.05,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 0.95,
+        "damageTaken": 0.95,
+        "healing": 0.8,
+        "shielding": 1
+      }
+    },
+    "50": {
+      "id": 50,
+      "alias": "Swain",
+      "aram": {
+        "damageDealt": 0.95,
+        "damageTaken": 1.15,
+        "healing": 0.8,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "51": {
+      "id": 51,
+      "alias": "Caitlyn",
+      "aram": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "53": {
+      "id": 53,
+      "alias": "Blitzcrank",
+      "aram": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "54": {
+      "id": 54,
+      "alias": "Malphite",
+      "aram": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 0.95,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "55": {
+      "id": 55,
+      "alias": "Katarina",
+      "aram": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1.2,
+        "abilityHaste": 10,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1.1,
+        "damageTaken": 0.95,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "56": {
+      "id": 56,
+      "alias": "Nocturne",
+      "aram": {
+        "damageDealt": 1.1,
+        "damageTaken": 0.9,
+        "healing": 1.2,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 0.95,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "57": {
+      "id": 57,
+      "alias": "Maokai",
+      "aram": {
+        "damageDealt": 0.85,
+        "damageTaken": 1.1,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1,
+        "damageTaken": 1.05,
+        "healing": 0.7,
+        "shielding": 1
+      }
+    },
+    "58": {
+      "id": 58,
+      "alias": "Renekton",
+      "aram": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1.1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 0.95,
+        "damageTaken": 0.95,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "59": {
+      "id": 59,
+      "alias": "JarvanIV",
+      "aram": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "60": {
+      "id": 60,
+      "alias": "Elise",
+      "aram": {
+        "damageDealt": 1.05,
+        "damageTaken": 0.9,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1.1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1,
+        "damageTaken": 0.95,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "61": {
+      "id": 61,
+      "alias": "Orianna",
+      "aram": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 0.9,
+        "damageTaken": 1.1,
+        "healing": 1,
+        "shielding": 0.8
+      }
+    },
+    "62": {
+      "id": 62,
+      "alias": "MonkeyKing",
+      "aram": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 0.9,
+        "damageTaken": 1.1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "63": {
+      "id": 63,
+      "alias": "Brand",
+      "aram": {
+        "damageDealt": 0.95,
+        "damageTaken": 1.1,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": -10,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "64": {
+      "id": 64,
+      "alias": "LeeSin",
+      "aram": {
+        "damageDealt": 1.05,
+        "damageTaken": 0.95,
+        "healing": 1.1,
+        "shielding": 1.2,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1.05,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "67": {
+      "id": 67,
+      "alias": "Vayne",
+      "aram": {
+        "damageDealt": 1,
+        "damageTaken": 0.95,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 0.95,
+        "damageTaken": 1.05,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "68": {
+      "id": 68,
+      "alias": "Rumble",
+      "aram": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "69": {
+      "id": 69,
+      "alias": "Cassiopeia",
+      "aram": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 0.95,
+        "damageTaken": 1.05,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "72": {
+      "id": 72,
+      "alias": "Skarner",
+      "aram": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1.1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 0.9
+      }
+    },
+    "74": {
+      "id": 74,
+      "alias": "Heimerdinger",
+      "aram": {
+        "damageDealt": 0.9,
+        "damageTaken": 1.1,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "75": {
+      "id": 75,
+      "alias": "Nasus",
+      "aram": {
+        "damageDealt": 0.9,
+        "damageTaken": 1.05,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "76": {
+      "id": 76,
+      "alias": "Nidalee",
+      "aram": {
+        "damageDealt": 1.1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1.1,
+        "damageTaken": 0.95,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "77": {
+      "id": 77,
+      "alias": "Udyr",
+      "aram": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1.1,
+        "damageTaken": 0.92,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "78": {
+      "id": 78,
+      "alias": "Poppy",
+      "aram": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "79": {
+      "id": 79,
+      "alias": "Gragas",
+      "aram": {
+        "damageDealt": 1,
+        "damageTaken": 0.95,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "80": {
+      "id": 80,
+      "alias": "Pantheon",
+      "aram": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "81": {
+      "id": 81,
+      "alias": "Ezreal",
+      "aram": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 0.95,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "82": {
+      "id": 82,
+      "alias": "Mordekaiser",
+      "aram": {
+        "damageDealt": 0.95,
+        "damageTaken": 1.02,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1,
+        "damageTaken": 0.85,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "83": {
+      "id": 83,
+      "alias": "Yorick",
+      "aram": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "84": {
+      "id": 84,
+      "alias": "Akali",
+      "aram": {
+        "damageDealt": 1,
+        "damageTaken": 0.95,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1.2,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1,
+        "damageTaken": 0.9,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "85": {
+      "id": 85,
+      "alias": "Kennen",
+      "aram": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1,
+        "damageTaken": 0.95,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "86": {
+      "id": 86,
+      "alias": "Garen",
+      "aram": {
+        "damageDealt": 1,
+        "damageTaken": 0.95,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1.1,
+        "damageTaken": 0.95,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "89": {
+      "id": 89,
+      "alias": "Leona",
+      "aram": {
+        "damageDealt": 0.95,
+        "damageTaken": 1.05,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "90": {
+      "id": 90,
+      "alias": "Malzahar",
+      "aram": {
+        "damageDealt": 0.9,
+        "damageTaken": 1.1,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 0.92,
+        "damageTaken": 1.08,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "91": {
+      "id": 91,
+      "alias": "Talon",
+      "aram": {
+        "damageDealt": 1.05,
+        "damageTaken": 0.95,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1.2,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "92": {
+      "id": 92,
+      "alias": "Riven",
+      "aram": {
+        "damageDealt": 1.05,
+        "damageTaken": 0.92,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1,
+        "damageTaken": 0.95,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "96": {
+      "id": 96,
+      "alias": "KogMaw",
+      "aram": {
+        "damageDealt": 0.92,
+        "damageTaken": 1.1,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 0.85,
+        "damageTaken": 1.05,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "98": {
+      "id": 98,
+      "alias": "Shen",
+      "aram": {
+        "damageDealt": 0.95,
+        "damageTaken": 1.05,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1,
+        "damageTaken": 1.05,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "99": {
+      "id": 99,
+      "alias": "Lux",
+      "aram": {
+        "damageDealt": 0.9,
+        "damageTaken": 1.1,
+        "healing": 1,
+        "shielding": 0.9,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 0.95,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "101": {
+      "id": 101,
+      "alias": "Xerath",
+      "aram": {
+        "damageDealt": 0.93,
+        "damageTaken": 1.05,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "102": {
+      "id": 102,
+      "alias": "Shyvana",
+      "aram": {
+        "damageDealt": 1,
+        "damageTaken": 0.95,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 0.85,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "103": {
+      "id": 103,
+      "alias": "Ahri",
+      "aram": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 0.9,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 0.9,
+        "damageTaken": 1.05,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "104": {
+      "id": 104,
+      "alias": "Graves",
+      "aram": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "105": {
+      "id": 105,
+      "alias": "Fizz",
+      "aram": {
+        "damageDealt": 1.05,
+        "damageTaken": 0.95,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1.1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 0.9,
+        "damageTaken": 1.1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "106": {
+      "id": 106,
+      "alias": "Volibear",
+      "aram": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 0.95,
+        "damageTaken": 1.1,
+        "healing": 0.8,
+        "shielding": 1
+      }
+    },
+    "107": {
+      "id": 107,
+      "alias": "Rengar",
+      "aram": {
+        "damageDealt": 1.05,
+        "damageTaken": 0.92,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1.2,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "110": {
+      "id": 110,
+      "alias": "Varus",
+      "aram": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "111": {
+      "id": 111,
+      "alias": "Nautilus",
+      "aram": {
+        "damageDealt": 0.95,
+        "damageTaken": 1.1,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "112": {
+      "id": 112,
+      "alias": "Viktor",
+      "aram": {
+        "damageDealt": 0.95,
+        "damageTaken": 1.05,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 0.95,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "113": {
+      "id": 113,
+      "alias": "Sejuani",
+      "aram": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "114": {
+      "id": 114,
+      "alias": "Fiora",
+      "aram": {
+        "damageDealt": 1,
+        "damageTaken": 0.95,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 0.9,
+        "damageTaken": 1.1,
+        "healing": 0.65,
+        "shielding": 1
+      }
+    },
+    "115": {
+      "id": 115,
+      "alias": "Ziggs",
+      "aram": {
+        "damageDealt": 0.87,
+        "damageTaken": 1.2,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": -20,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "117": {
+      "id": 117,
+      "alias": "Lulu",
+      "aram": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "119": {
+      "id": 119,
+      "alias": "Draven",
+      "aram": {
+        "damageDealt": 1.05,
+        "damageTaken": 0.95,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 0.95,
+        "damageTaken": 1.05,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "120": {
+      "id": 120,
+      "alias": "Hecarim",
+      "aram": {
+        "damageDealt": 1.05,
+        "damageTaken": 0.9,
+        "healing": 1.2,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 10,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "121": {
+      "id": 121,
+      "alias": "Khazix",
+      "aram": {
+        "damageDealt": 1.1,
+        "damageTaken": 0.9,
+        "healing": 1.2,
+        "shielding": 1,
+        "tenacity": 1.2,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "122": {
+      "id": 122,
+      "alias": "Darius",
+      "aram": {
+        "damageDealt": 1.05,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1.05,
+        "damageTaken": 0.85,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "126": {
+      "id": 126,
+      "alias": "Jayce",
+      "aram": {
+        "damageDealt": 1.05,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 0.92,
+        "damageTaken": 1.05,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "127": {
+      "id": 127,
+      "alias": "Lissandra",
+      "aram": {
+        "damageDealt": 0.95,
+        "damageTaken": 1.05,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "131": {
+      "id": 131,
+      "alias": "Diana",
+      "aram": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "133": {
+      "id": 133,
+      "alias": "Quinn",
+      "aram": {
+        "damageDealt": 1.1,
+        "damageTaken": 0.9,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1.2,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1,
+        "damageTaken": 0.95,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "134": {
+      "id": 134,
+      "alias": "Syndra",
+      "aram": {
+        "damageDealt": 1.05,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 5,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 0.9,
+        "damageTaken": 1.1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "136": {
+      "id": 136,
+      "alias": "AurelionSol",
+      "aram": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1.1,
+        "damageTaken": 0.9,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "141": {
+      "id": 141,
+      "alias": "Kayn",
+      "aram": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 0.8,
+        "shielding": 1,
+        "tenacity": 1.2,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "142": {
+      "id": 142,
+      "alias": "Zoe",
+      "aram": {
+        "damageDealt": 1.1,
+        "damageTaken": 0.95,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "143": {
+      "id": 143,
+      "alias": "Zyra",
+      "aram": {
+        "damageDealt": 0.9,
+        "damageTaken": 1.05,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": -10,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "145": {
+      "id": 145,
+      "alias": "Kaisa",
+      "aram": {
+        "damageDealt": 1,
+        "damageTaken": 0.9,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 0.9,
+        "damageTaken": 1.1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "147": {
+      "id": 147,
+      "alias": "Seraphine",
+      "aram": {
+        "damageDealt": 1,
+        "damageTaken": 1.2,
+        "healing": 0.8,
+        "shielding": 0.8,
+        "tenacity": 1,
+        "abilityHaste": -20,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 0.92,
+        "damageTaken": 1,
+        "healing": 0.8,
+        "shielding": 1
+      }
+    },
+    "150": {
+      "id": 150,
+      "alias": "Gnar",
+      "aram": {
+        "damageDealt": 1.05,
+        "damageTaken": 0.95,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1.1,
+        "damageTaken": 0.9,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "154": {
+      "id": 154,
+      "alias": "Zac",
+      "aram": {
+        "damageDealt": 1,
+        "damageTaken": 0.96,
+        "healing": 1.1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "157": {
+      "id": 157,
+      "alias": "Yasuo",
+      "aram": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1,
+        "damageTaken": 0.9,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "161": {
+      "id": 161,
+      "alias": "Velkoz",
+      "aram": {
+        "damageDealt": 0.95,
+        "damageTaken": 1.05,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 0.95,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "163": {
+      "id": 163,
+      "alias": "Taliyah",
+      "aram": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "164": {
+      "id": 164,
+      "alias": "Camille",
+      "aram": {
+        "damageDealt": 1.05,
+        "damageTaken": 0.95,
+        "healing": 1.2,
+        "shielding": 1.1,
+        "tenacity": 1,
+        "abilityHaste": 10,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "166": {
+      "id": 166,
+      "alias": "Akshan",
+      "aram": {
+        "damageDealt": 1.05,
+        "damageTaken": 0.95,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1.05,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "200": {
+      "id": 200,
+      "alias": "Belveth",
+      "aram": {
+        "damageDealt": 1.05,
+        "damageTaken": 0.95,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1.2,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "201": {
+      "id": 201,
+      "alias": "Braum",
+      "aram": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1.05,
+        "damageTaken": 0.82,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "202": {
+      "id": 202,
+      "alias": "Jhin",
+      "aram": {
+        "damageDealt": 0.95,
+        "damageTaken": 1.05,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1.01,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "203": {
+      "id": 203,
+      "alias": "Kindred",
+      "aram": {
+        "damageDealt": 1.1,
+        "damageTaken": 0.9,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "221": {
+      "id": 221,
+      "alias": "Zeri",
+      "aram": {
+        "damageDealt": 1.1,
+        "damageTaken": 0.95,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "222": {
+      "id": 222,
+      "alias": "Jinx",
+      "aram": {
+        "damageDealt": 0.9,
+        "damageTaken": 1.05,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "223": {
+      "id": 223,
+      "alias": "TahmKench",
+      "aram": {
+        "damageDealt": 1,
+        "damageTaken": 1.05,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1.2,
+        "damageTaken": 0.85,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "233": {
+      "id": 233,
+      "alias": "Briar",
+      "aram": {
+        "damageDealt": 1.05,
+        "damageTaken": 0.95,
+        "healing": 1.15,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "234": {
+      "id": 234,
+      "alias": "Viego",
+      "aram": {
+        "damageDealt": 1.05,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1.05,
+        "damageTaken": 0.9,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "235": {
+      "id": 235,
+      "alias": "Senna",
+      "aram": {
+        "damageDealt": 0.92,
+        "damageTaken": 1.05,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1.1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "236": {
+      "id": 236,
+      "alias": "Lucian",
+      "aram": {
+        "damageDealt": 1.05,
+        "damageTaken": 0.95,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1.2,
+        "abilityHaste": 10,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 0.95,
+        "damageTaken": 1.05,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "238": {
+      "id": 238,
+      "alias": "Zed",
+      "aram": {
+        "damageDealt": 1.05,
+        "damageTaken": 0.95,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1.2,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 0.85,
+        "damageTaken": 1.1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "240": {
+      "id": 240,
+      "alias": "Kled",
+      "aram": {
+        "damageDealt": 1.05,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1,
+        "damageTaken": 0.9,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "245": {
+      "id": 245,
+      "alias": "Ekko",
+      "aram": {
+        "damageDealt": 1.1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1.2,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "246": {
+      "id": 246,
+      "alias": "Qiyana",
+      "aram": {
+        "damageDealt": 1.15,
+        "damageTaken": 0.9,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1.2,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1,
+        "damageTaken": 0.9,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "254": {
+      "id": 254,
+      "alias": "Vi",
+      "aram": {
+        "damageDealt": 1.05,
+        "damageTaken": 0.95,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 0.95,
+        "damageTaken": 1.05,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "266": {
+      "id": 266,
+      "alias": "Aatrox",
+      "aram": {
+        "damageDealt": 1.05,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1.15,
+        "damageTaken": 0.7,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "267": {
+      "id": 267,
+      "alias": "Nami",
+      "aram": {
+        "damageDealt": 0.95,
+        "damageTaken": 1.05,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "268": {
+      "id": 268,
+      "alias": "Azir",
+      "aram": {
+        "damageDealt": 1,
+        "damageTaken": 0.95,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 20,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "350": {
+      "id": 350,
+      "alias": "Yuumi",
+      "aram": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 0.75,
+        "damageTaken": 0.9,
+        "healing": 0.7,
+        "shielding": 1
+      }
+    },
+    "360": {
+      "id": 360,
+      "alias": "Samira",
+      "aram": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 0.95,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "412": {
+      "id": 412,
+      "alias": "Thresh",
+      "aram": {
+        "damageDealt": 1,
+        "damageTaken": 1.05,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1,
+        "damageTaken": 0.87,
+        "healing": 1,
+        "shielding": 1.2
+      }
+    },
+    "420": {
+      "id": 420,
+      "alias": "Illaoi",
+      "aram": {
+        "damageDealt": 0.95,
+        "damageTaken": 1.05,
+        "healing": 0.8,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1,
+        "damageTaken": 0.9,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "421": {
+      "id": 421,
+      "alias": "RekSai",
+      "aram": {
+        "damageDealt": 1.05,
+        "damageTaken": 0.9,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1.07,
+        "damageTaken": 0.93,
+        "healing": 1.2,
+        "shielding": 1
+      }
+    },
+    "427": {
+      "id": 427,
+      "alias": "Ivern",
+      "aram": {
+        "damageDealt": 0.95,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 0.9,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "429": {
+      "id": 429,
+      "alias": "Kalista",
+      "aram": {
+        "damageDealt": 1.1,
+        "damageTaken": 0.9,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1.1,
+        "damageTaken": 0.9,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "432": {
+      "id": 432,
+      "alias": "Bard",
+      "aram": {
+        "damageDealt": 1.15,
+        "damageTaken": 0.85,
+        "healing": 1.2,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1.15,
+        "damageTaken": 0.85,
+        "healing": 1.2,
+        "shielding": 1
+      }
+    },
+    "497": {
+      "id": 497,
+      "alias": "Rakan",
+      "aram": {
+        "damageDealt": 1,
+        "damageTaken": 0.95,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 10,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "498": {
+      "id": 498,
+      "alias": "Xayah",
+      "aram": {
+        "damageDealt": 1.05,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 0.85,
+        "damageTaken": 1.1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "516": {
+      "id": 516,
+      "alias": "Ornn",
+      "aram": {
+        "damageDealt": 0.9,
+        "damageTaken": 1.05,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1.05,
+        "damageTaken": 0.95,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "517": {
+      "id": 517,
+      "alias": "Sylas",
+      "aram": {
+        "damageDealt": 1.05,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 0.95,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "518": {
+      "id": 518,
+      "alias": "Neeko",
+      "aram": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "523": {
+      "id": 523,
+      "alias": "Aphelios",
+      "aram": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1.05,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "526": {
+      "id": 526,
+      "alias": "Rell",
+      "aram": {
+        "damageDealt": 0.95,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 0.9,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "555": {
+      "id": 555,
+      "alias": "Pyke",
+      "aram": {
+        "damageDealt": 1.1,
+        "damageTaken": 0.9,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1.2,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1,
+        "damageTaken": 0.95,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "711": {
+      "id": 711,
+      "alias": "Vex",
+      "aram": {
+        "damageDealt": 0.95,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 0.9,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "777": {
+      "id": 777,
+      "alias": "Yone",
+      "aram": {
+        "damageDealt": 1.05,
+        "damageTaken": 0.97,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1.1,
+        "damageTaken": 0.9,
+        "healing": 1,
+        "shielding": 1.2
+      }
+    },
+    "799": {
+      "id": 799,
+      "alias": "Ambessa",
+      "aram": {
+        "damageDealt": 1,
+        "damageTaken": 1.05,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "800": {
+      "id": 800,
+      "alias": "Mel",
+      "aram": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": -10,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 0.9,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "804": {
+      "id": 804,
+      "alias": "Yunara",
+      "aram": {
+        "damageDealt": 0,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 0,
+        "damageTaken": 0,
+        "healing": 0,
+        "shielding": 1
+      }
+    },
+    "875": {
+      "id": 875,
+      "alias": "Sett",
+      "aram": {
+        "damageDealt": 1,
+        "damageTaken": 1.1,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1.05,
+        "damageTaken": 0.92,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "876": {
+      "id": 876,
+      "alias": "Lillia",
+      "aram": {
+        "damageDealt": 0.95,
+        "damageTaken": 1.05,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "887": {
+      "id": 887,
+      "alias": "Gwen",
+      "aram": {
+        "damageDealt": 1.02,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "888": {
+      "id": 888,
+      "alias": "Renata",
+      "aram": {
+        "damageDealt": 0.95,
+        "damageTaken": 1.05,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "893": {
+      "id": 893,
+      "alias": "Aurora",
+      "aram": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 10,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "895": {
+      "id": 895,
+      "alias": "Nilah",
+      "aram": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "897": {
+      "id": 897,
+      "alias": "KSante",
+      "aram": {
+        "damageDealt": 1.05,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1.05,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "901": {
+      "id": 901,
+      "alias": "Smolder",
+      "aram": {
+        "damageDealt": 1,
+        "damageTaken": 1.02,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": -10,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "902": {
+      "id": 902,
+      "alias": "Milio",
+      "aram": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 0.95,
+        "shielding": 0.9,
+        "tenacity": 1,
+        "abilityHaste": -10,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "910": {
+      "id": 910,
+      "alias": "Hwei",
+      "aram": {
+        "damageDealt": 0.95,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 1,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    },
+    "950": {
+      "id": 950,
+      "alias": "Naafiri",
+      "aram": {
+        "damageDealt": 1.1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1,
+        "tenacity": 1,
+        "abilityHaste": 10,
+        "attackSpeed": 1,
+        "energyRegen": 1
+      },
+      "urf": {
+        "damageDealt": 1,
+        "damageTaken": 1,
+        "healing": 1,
+        "shielding": 1
+      }
+    }
+  }
+}

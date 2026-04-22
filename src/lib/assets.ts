@@ -12,6 +12,7 @@
 import { lcu } from '@/lib/lcu'
 import { logger } from '@/index'
 import type { GameQueue } from '@/types/lcu'
+import balanceData from '@/data/champion-balance.json'
 
 /** 路径小写化，LCU 资源路径不区分大小写但统一小写更安全 */
 function normalizePath(raw: string): string {
@@ -39,6 +40,38 @@ export interface ChampionInfo {
 }
 const championMap = new Map<number, ChampionInfo>()
 
+/**
+ * 英雄在特殊模式下的平衡数值（只取 flat 字段）
+ *
+ * 数值含义示例（以大乱斗为例）：
+ * - aramDamageDealt = 1.05 → 造成伤害 ×1.05（+5%）
+ * - aramDamageTaken = 1    → 受到伤害 ×1.0（无调整）
+ * - aramDamageTaken = 0.9  → 受到伤害 ×0.9（减伤 10%）
+ */
+export interface ChampionBalance {
+  id: number
+  alias: string
+  /** 大乱斗 (ARAM) 平衡数据 */
+  aram: {
+    damageDealt: number    // 造成伤害
+    damageTaken: number    // 承受伤害
+    healing: number        // 治疗效果
+    shielding: number      // 护盾效果
+    tenacity: number       // 韧性
+    abilityHaste: number   // 技能急速
+    attackSpeed: number    // 攻击速度
+    energyRegen: number    // 能量回复
+  }
+  /** 无限火力 (URF) 平衡数据 */
+  urf: {
+    damageDealt: number
+    damageTaken: number
+    healing: number
+    shielding: number
+  }
+}
+const championBalanceMap = new Map<number, ChampionBalance>()
+
 let initialized = false
 
 // ==================== 初始化 ====================
@@ -50,8 +83,35 @@ let initialized = false
 export async function initAssets() {
   if (initialized) return
 
+  // 加载本地英雄平衡数据（构建期嵌入，无网络请求）
+  loadChampionBalance()
+
   // 每个资源独立 catch，失败不影响其他；最多重试 3 次（每次间隔 3 秒）
   await tryInit(0)
+}
+
+// ==================== 英雄平衡数据（构建期嵌入） ====================
+
+/**
+ * 从本地 JSON 加载英雄平衡数据到 championBalanceMap
+ *
+ * 数据由 scripts/update-champion-balance.ts 从 Meraki CDN 爬取，
+ * 构建期通过 import 嵌入 JS bundle，运行时零网络请求。
+ */
+function loadChampionBalance() {
+  try {
+    const champions = balanceData.champions as Record<string, ChampionBalance>
+    for (const [id, balance] of Object.entries(champions)) {
+      championBalanceMap.set(Number(id), balance)
+    }
+    logger.info(
+      '[Assets] 英雄平衡数据加载完成 → %d 个英雄 (数据更新于 %s)',
+      championBalanceMap.size,
+      balanceData._meta?.updatedAt ?? '未知',
+    )
+  } catch (err) {
+    logger.error('[Assets] 英雄平衡数据加载失败:', err)
+  }
 }
 
 /**
@@ -221,6 +281,28 @@ export function searchChampions(keyword: string, limit = 8): ChampionInfo[] {
   })
 
   return results.slice(0, limit)
+}
+
+// ==================== 英雄平衡数据查询 ====================
+
+/** 通过英雄 ID 获取平衡数据（ARAM + URF） */
+export function getChampionBalance(id: number): ChampionBalance | undefined {
+  return championBalanceMap.get(id)
+}
+
+/** 获取所有英雄平衡数据（用于调试/导出） */
+export function getAllChampionBalances(): ChampionBalance[] {
+  return Array.from(championBalanceMap.values())
+}
+
+/** 英雄平衡数据是否已就绪 */
+export function isChampionBalanceReady(): boolean {
+  return championBalanceMap.size > 0
+}
+
+/** 获取英雄平衡数据的元信息（数据源、更新时间等） */
+export function getChampionBalanceMeta() {
+  return balanceData._meta
 }
 
 /**

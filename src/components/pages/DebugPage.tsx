@@ -4,7 +4,7 @@ import { SonaButton } from '@/components/ui/SonaButton'
 import { SonaInput } from '@/components/ui/SonaInput'
 import { store } from '@/lib/store'
 import { lcu } from '@/lib/lcu'
-import { searchChampions, type ChampionInfo } from '@/lib/assets'
+import { searchChampions, type ChampionInfo, getChampionBalanceMeta, getAllChampionBalances } from '@/lib/assets'
 import { logger } from '@/index'
 import '@/styles/SettingsPage.css'
 
@@ -495,6 +495,14 @@ export function DebugPage() {
           </SonaButton>
           <SonaButton onClick={() => runAndLog('热键设置 (input-settings)', () => lcu.getInputSettings())}>
             热键设置
+          </SonaButton>
+          <SonaButton onClick={() => runAndLog('游戏版本 (game-version)', () => lcu.getGameVersion())}>
+            游戏版本
+          </SonaButton>
+          <SonaButton onClick={() => runAndLog('英雄平衡数据 (meta + count)', () =>
+            Promise.resolve({ meta: getChampionBalanceMeta(), count: getAllChampionBalances().length })
+          )}>
+            英雄平衡数据
           </SonaButton>
         </div>
       </SettingGroup>

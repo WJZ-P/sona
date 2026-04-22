@@ -1,0 +1,113 @@
+name: Update Champion Balance
+
+on:
+  schedule:
+    # 每周三/四/五 09:00 UTC（对准拳头补丁发布日，Meraki CDN 稍后同步）
+    - cron: "0 9 * * 3,4,5"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  check-and-update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run balance updater
+        id: update
+        run: |
+          set +e
+          npm run update-balance
+          echo "exit_code=$?" >> $GITHUB_OUTPUT
+
+      - name: Stop if no update
+        if: steps.update.outputs.exit_code != '0'
+        run: |
+          echo "✓ 数据无变化，结束流程"
+          exit 0
+
+      - name: Bump patch version
+        if: steps.update.outputs.exit_code == '0'
+        id: version
+        run: |
+          # 读取旧版本号
+          OLD_VERSION=$(node -p "require('./package.json').version")
+          echo "旧版本: $OLD_VERSION"
+
+          # 拆分并 +1 到 patch 段
+          IFS='.' read -r MAJOR MINOR PATCH <<< "$OLD_VERSION"
+          NEW_PATCH=$((PATCH + 1))
+          NEW_VERSION="$MAJOR.$MINOR.$NEW_PATCH"
+          echo "新版本: $NEW_VERSION"
+
+          # 写回 package.json
+          node -e "
+            const fs = require('fs');
+            const pkg = JSON.parse(fs.readFileSync('package.json', 'utf-8'));
+            pkg.version = '$NEW_VERSION';
+            fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
+          "
+
+          echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
+
+      - name: Update CHANGELOG
+        if: steps.update.outputs.exit_code == '0'
+        run: |
+          NEW_VERSION="${{ steps.version.outputs.new_version }}"
+          TODAY=$(date -u +"%Y-%m-%d")
+
+          # 读取 meta 中的更新时间戳
+          UPDATED_AT=$(node -p "require('./src/data/champion-balance.json')._meta.updatedAt")
+          COUNT=$(node -p "require('./src/data/champion-balance.json')._meta.championCount")
+
+          # 构造新版本块
+          NEW_BLOCK="## [$NEW_VERSION] - $TODAY\n\n### 🔄 自动更新\n\n- **英雄平衡数据更新** — 从 Meraki Analytics CDN 同步最新 ARAM / URF 平衡数值（共 $COUNT 个英雄）\n\n---\n"
+
+          # 插入到 CHANGELOG.md 第一个 "## [" 之前
+          if [ -f CHANGELOG.md ]; then
+            # 找到第一个版本块的行号
+            FIRST_VERSION_LINE=$(grep -n "^## \[" CHANGELOG.md | head -1 | cut -d: -f1)
+            if [ -n "$FIRST_VERSION_LINE" ]; then
+              HEAD_LINES=$((FIRST_VERSION_LINE - 1))
+              head -n $HEAD_LINES CHANGELOG.md > CHANGELOG.tmp
+              echo -e "$NEW_BLOCK" >> CHANGELOG.tmp
+              tail -n +$FIRST_VERSION_LINE CHANGELOG.md >> CHANGELOG.tmp
+              mv CHANGELOG.tmp CHANGELOG.md
+            else
+              echo -e "$NEW_BLOCK\n$(cat CHANGELOG.md)" > CHANGELOG.md
+            fi
+          else
+            echo -e "# Changelog\n\n$NEW_BLOCK" > CHANGELOG.md
+          fi
+
+      - name: Configure git
+        if: steps.update.outputs.exit_code == '0'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Commit, tag and push
+        if: steps.update.outputs.exit_code == '0'
+        run: |
+          NEW_VERSION="${{ steps.version.outputs.new_version }}"
+          git add src/data/champion-balance.json package.json CHANGELOG.md
+          git commit -m "chore: 自动更新英雄平衡数据 (v$NEW_VERSION)"
+          git tag "v$NEW_VERSION"
+          git push origin HEAD:main
+          git push origin "v$NEW_VERSION"
+          echo "✓ 已推送 v$NEW_VERSION，release.yml 将自动触发打包发布"

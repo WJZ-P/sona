@@ -569,6 +569,11 @@ class LCUManager {
 
   // ==================== 游戏资源 ====================
 
+  /** 获取当前客户端的游戏版本号（如 "14.7.580.1234"） */
+  getGameVersion(): Promise<string> {
+    return get<string>('/lol-patch/v1/game-version')
+  }
+
   /** 获取所有物品数据（含 iconPath） */
   getItems(): Promise<Array<{ id: number; iconPath: string; name: string }>> {
     return get('/lol-game-data/assets/v1/items.json')
