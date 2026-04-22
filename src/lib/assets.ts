@@ -41,34 +41,37 @@ export interface ChampionInfo {
 const championMap = new Map<number, ChampionInfo>()
 
 /**
- * 英雄在特殊模式下的平衡数值（只取 flat 字段）
+ * 英雄在特殊模式下的平衡数值
+ *
+ * 数据源：Fandom LoL Wiki 的 Module:ChampionData/data
+ * 结构稀疏——没有调整的字段不会存在。
  *
  * 数值含义示例（以大乱斗为例）：
- * - aramDamageDealt = 1.05 → 造成伤害 ×1.05（+5%）
- * - aramDamageTaken = 1    → 受到伤害 ×1.0（无调整）
- * - aramDamageTaken = 0.9  → 受到伤害 ×0.9（减伤 10%）
+ * - dmg_dealt = 1.05 → 造成伤害 ×1.05（+5%）
+ * - dmg_taken = 0.97 → 受到伤害 ×0.97（-3%）
+ * - ability_haste = 10 → 固定 +10 技能急速
  */
+export type ChampionBalanceStats = {
+  dmg_dealt?: number        // 造成伤害（倍率）
+  dmg_taken?: number        // 承受伤害（倍率）
+  healing?: number          // 治疗效果（倍率）
+  shielding?: number        // 护盾效果（倍率）
+  ability_haste?: number    // 技能急速（加数）
+  mana_regen?: number       // 法力回复（倍率）
+  energy_regen?: number     // 能量回复（倍率）
+  attack_speed?: number     // 攻击速度（倍率）
+  movement_speed?: number   // 移动速度（倍率）
+  tenacity?: number         // 韧性（倍率）
+}
+
+/** 支持的特殊模式 key */
+export type BalanceMode = 'aram' | 'urf' | 'ofa' | 'nb' | 'ar' | 'usb'
+
 export interface ChampionBalance {
   id: number
   alias: string
-  /** 大乱斗 (ARAM) 平衡数据 */
-  aram: {
-    damageDealt: number    // 造成伤害
-    damageTaken: number    // 承受伤害
-    healing: number        // 治疗效果
-    shielding: number      // 护盾效果
-    tenacity: number       // 韧性
-    abilityHaste: number   // 技能急速
-    attackSpeed: number    // 攻击速度
-    energyRegen: number    // 能量回复
-  }
-  /** 无限火力 (URF) 平衡数据 */
-  urf: {
-    damageDealt: number
-    damageTaken: number
-    healing: number
-    shielding: number
-  }
+  /** 各模式下的平衡调整（只有有调整的模式才存在） */
+  stats: Partial<Record<BalanceMode, ChampionBalanceStats>>
 }
 const championBalanceMap = new Map<number, ChampionBalance>()
 
@@ -95,7 +98,7 @@ export async function initAssets() {
 /**
  * 从本地 JSON 加载英雄平衡数据到 championBalanceMap
  *
- * 数据由 scripts/update-champion-balance.ts 从 Meraki CDN 爬取，
+ * 数据由 scripts/update-champion-balance.ts 从 Fandom LoL Wiki 爬取，
  * 构建期通过 import 嵌入 JS bundle，运行时零网络请求。
  */
 function loadChampionBalance() {

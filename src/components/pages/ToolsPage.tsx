@@ -100,9 +100,11 @@ function BackupManager() {
 export function ToolsPage() {
   const [autoAccept, setAutoAccept] = useState(store.get('autoAcceptMatch'))
   const [unlockStatus, setUnlockStatus] = useState(store.get('unlockStatus'))
+  const [unlockAvailability, setUnlockAvailability] = useState(store.get('unlockAvailability'))
   const [benchNoCooldown, setBenchNoCooldown] = useState(store.get('benchNoCooldown'))
   const [windowEffect, setWindowEffect] = useState(store.get('windowEffect'))
   const [champSelectAssist, setChampSelectAssist] = useState(store.get('champSelectAssist'))
+  const [balanceBuffTooltip, setBalanceBuffTooltip] = useState(store.get('balanceBuffTooltip'))
   const [analyzeTeamPower, setAnalyzeTeamPower] = useState(store.get('analyzeTeamPower'))
   const [friendSmartGroup, setFriendSmartGroup] = useState(store.get('friendSmartGroup'))
   const [customProfileBg, setCustomProfileBg] = useState(store.get('customProfileBg'))
@@ -135,9 +137,11 @@ export function ToolsPage() {
     const unsubs = [
       store.onChange('autoAcceptMatch', setAutoAccept),
       store.onChange('unlockStatus', setUnlockStatus),
+      store.onChange('unlockAvailability', setUnlockAvailability),
       store.onChange('benchNoCooldown', setBenchNoCooldown),
       store.onChange('windowEffect', setWindowEffect),
       store.onChange('champSelectAssist', setChampSelectAssist),
+      store.onChange('balanceBuffTooltip', setBalanceBuffTooltip),
       store.onChange('analyzeTeamPower', setAnalyzeTeamPower),
       store.onChange('friendSmartGroup', setFriendSmartGroup),
       store.onChange('customProfileBg', setCustomProfileBg),
@@ -262,6 +266,15 @@ export function ToolsPage() {
           />
         </SettingCard>
         <SettingCard
+          title="平衡性调整buff提示"
+          description="游玩特定模式（大乱斗、无限火力）时，鼠标悬停在英雄头像上，显示对应的平衡性数值调整。"
+        >
+          <SonaSwitch
+            checked={balanceBuffTooltip}
+            onChange={(v) => { setBalanceBuffTooltip(v); store.set('balanceBuffTooltip', v) }}
+          />
+        </SettingCard>
+        <SettingCard
           title="对局结束自动点赞"
           description="对局结束后，随机给队友点赞，再也不用手点啦。"
         >
@@ -342,6 +355,15 @@ export function ToolsPage() {
           <SonaSwitch
             checked={unlockStatus}
             onChange={(v) => { setUnlockStatus(v); store.set('unlockStatus', v) }}
+          />
+        </SettingCard>
+        <SettingCard
+          title="解锁在线状态切换"
+          description="接管客户端的状态按钮，支持切换至隐身、手机在线等客户端默认不提供的状态。"
+        >
+          <SonaSwitch
+            checked={unlockAvailability}
+            onChange={(v) => { setUnlockAvailability(v); store.set('unlockAvailability', v) }}
           />
         </SettingCard>
         <SettingCard

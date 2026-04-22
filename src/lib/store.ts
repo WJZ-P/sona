@@ -29,6 +29,8 @@ export interface SonaConfig {
   developerMode: boolean
   /** 解锁自定义签名 */
   unlockStatus: boolean
+  /** 解锁在线状态切换（接管客户端状态按钮，支持"隐身/手机在线"等） */
+  unlockAvailability: boolean
   /** 大乱斗无CD换英雄 */
   benchNoCooldown: boolean
   /** 侧边栏收缩状态 */
@@ -67,6 +69,8 @@ export interface SonaConfig {
   autoLockChampionId: number
   /** 秒抢时是否直接锁定（false 则只选择不锁定） */
   autoLockInstant: boolean
+  /** 平衡性调整 buff 提示（游玩特定模式时悬停头像显示数值调整） */
+  balanceBuffTooltip: boolean
 }
 
 
@@ -76,6 +80,7 @@ const DEFAULT_CONFIG: SonaConfig = {
   autoAcceptMatch: false,
   developerMode: false,
   unlockStatus: true,
+  unlockAvailability: false,
   benchNoCooldown: false,
   sidebarCollapsed: false,
   availability: 'chat',
@@ -95,6 +100,7 @@ const DEFAULT_CONFIG: SonaConfig = {
   autoLockChampion: false,
   autoLockChampionId: 0,
   autoLockInstant: true,
+  balanceBuffTooltip: false,
 }
 
 

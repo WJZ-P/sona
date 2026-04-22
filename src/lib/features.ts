@@ -11,6 +11,8 @@ import { lcu, LcuEventUri } from '@/lib/lcu'
 import type { LCUEventMessage, GameflowPhase } from '@/lib/lcu'
 import { injector } from '@/lib/InjectorManager'
 import { sleep } from '@/lib/utils'
+import { updateBalanceBuffTooltip } from '@/lib/balance-buff-viewer'
+import { setAvailabilityHijackEnabled } from '@/lib/injections'
 
 // ==================== 自动接受对局 ====================
 
@@ -1371,6 +1373,13 @@ export function initFeatures() {
 
   updateAutoLockChampion(store.get('autoLockChampion'))
   store.onChange('autoLockChampion', updateAutoLockChampion)
+
+  updateBalanceBuffTooltip(store.get('balanceBuffTooltip'))
+  store.onChange('balanceBuffTooltip', updateBalanceBuffTooltip)
+
+  // 解锁在线状态切换（接管客户端按钮，弹自定义"隐身/手机在线"菜单）
+  setAvailabilityHijackEnabled(store.get('unlockAvailability'))
+  store.onChange('unlockAvailability', setAvailabilityHijackEnabled)
 
   // 恢复窗口特效
   const savedEffect = store.get('windowEffect')

@@ -183,9 +183,30 @@ function showAvailabilityMenu(anchor: HTMLElement) {
   })
 }
 
+/** 是否启用"解锁在线状态切换"功能（由 features.ts 的开关控制） */
+let availabilityHijackEnabled = false
+
+/** 设置开关状态（供 features.ts 调用） */
+export function setAvailabilityHijackEnabled(enabled: boolean) {
+  availabilityHijackEnabled = enabled
+  if (enabled) {
+    // 启用时：立即尝试注入一次（处理已经渲染出来的按钮）
+    injector.register(tryHijackAvailabilityHitbox)
+    // 并恢复持久化的状态（若此时客户端已就绪）
+    restoreAvailabilityAndStatus()
+  } else {
+    // 禁用时：取消注入任务，并关闭可能已打开的菜单
+    injector.unregister(tryHijackAvailabilityHitbox)
+    closeAvailabilityMenu()
+  }
+}
+
 /**
  * 注入任务：接管 .lol-social-availability-hitbox 的点击事件
  * 阻止客户端原有逻辑，替换为自定义的状态选择菜单
+ *
+ * 注：事件监听只能绑定一次（用 HIJACKED_ATTR 保证幂等），
+ *    开关关闭时通过 availabilityHijackEnabled flag 让 listener 放行客户端原逻辑。
  */
 function tryHijackAvailabilityHitbox(): boolean {
   const hitbox = document.querySelector(`.lol-social-availability-hitbox:not([${HIJACKED_ATTR}])`) as HTMLElement | null
@@ -193,10 +214,10 @@ function tryHijackAvailabilityHitbox(): boolean {
 
   hitbox.setAttribute(HIJACKED_ATTR, 'true')
 
-  // 启动时恢复持久化的在线状态和签名
-  restoreAvailabilityAndStatus()
-
   hitbox.addEventListener('click', (e) => {
+    // 开关未开时：放行，走客户端默认行为
+    if (!availabilityHijackEnabled) return
+
     e.stopPropagation()
     e.stopImmediatePropagation()
     e.preventDefault()
@@ -223,7 +244,7 @@ function tryHijackAvailabilityHitbox(): boolean {
  */
 export function registerAllInjections() {
   injector.register(tryInjectSonaButton)
-  injector.register(tryHijackAvailabilityHitbox)
+  // tryHijackAvailabilityHitbox 由 features.ts 的 unlockAvailability 开关按需注册
 
   injector.start()
 }
