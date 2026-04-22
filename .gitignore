@@ -23,3 +23,5 @@ Thumbs.db
 # HTTPS cert cache
 .cert/
 dist
+
+test/

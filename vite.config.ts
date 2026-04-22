@@ -118,6 +118,19 @@ function penguBuild(): Plugin {
         // Add CSS import at top
         js = `import "./index.css";\n${js}`
 
+        // Pengu Loader 插件头注释（识别插件元信息用）
+        const banner = [
+          '/**',
+          ' * @name Sona',
+          ` * @version ${pkg.version}`,
+          ' * @description 基于 Pengu Loader 的全服可用英雄联盟客户端增强插件',
+          ' * @author WJZ_P',
+          ' * @link https://github.com/WJZ-P/sona',
+          ' */',
+          '',
+        ].join('\n')
+        js = banner + js
+
         fs.writeFileSync(jsPath, js)
       }
 
