@@ -99,6 +99,9 @@ function BackupManager() {
 
 export function ToolsPage() {
   const [autoAccept, setAutoAccept] = useState(store.get('autoAcceptMatch'))
+  // 延迟值在 UI 里用字符串存，避免"删到空 → 变 NaN"、"输到一半"等中间态被推回 store
+  const [autoAcceptDelayMin, setAutoAcceptDelayMin] = useState(String(store.get('autoAcceptDelayMin')))
+  const [autoAcceptDelayMax, setAutoAcceptDelayMax] = useState(String(store.get('autoAcceptDelayMax')))
   const [unlockStatus, setUnlockStatus] = useState(store.get('unlockStatus'))
   const [unlockAvailability, setUnlockAvailability] = useState(store.get('unlockAvailability'))
   const [unlockChromas, setUnlockChromas] = useState(store.get('unlockChromas'))
@@ -138,6 +141,8 @@ export function ToolsPage() {
   useEffect(() => {
     const unsubs = [
       store.onChange('autoAcceptMatch', setAutoAccept),
+      store.onChange('autoAcceptDelayMin', (v) => setAutoAcceptDelayMin(String(v))),
+      store.onChange('autoAcceptDelayMax', (v) => setAutoAcceptDelayMax(String(v))),
       store.onChange('unlockStatus', setUnlockStatus),
       store.onChange('unlockAvailability', setUnlockAvailability),
       store.onChange('unlockChromas', setUnlockChromas),
@@ -242,6 +247,42 @@ export function ToolsPage() {
             onChange={(v) => { setAutoAccept(v); store.set('autoAcceptMatch', v) }}
           />
         </SettingCard>
+        {autoAccept && (
+          <SettingCard
+            title="自动接受的随机延迟"
+            description="在区间内随机延迟后再接受（上限 15000ms）。"
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <div style={{ width: 80 }}>
+                <SonaInput
+                  value={autoAcceptDelayMin}
+                  onChange={(v) => {
+                    // 毫秒只收整数
+                    const cleaned = v.replace(/[^\d]/g, '')
+                    setAutoAcceptDelayMin(cleaned)
+                    const n = parseInt(cleaned, 10)
+                    store.set('autoAcceptDelayMin', Number.isFinite(n) ? n : 0)
+                  }}
+                  placeholder="最小"
+                />
+              </div>
+              <span style={{ color: '#a09b8c', fontSize: 13 }}>—</span>
+              <div style={{ width: 80 }}>
+                <SonaInput
+                  value={autoAcceptDelayMax}
+                  onChange={(v) => {
+                    const cleaned = v.replace(/[^\d]/g, '')
+                    setAutoAcceptDelayMax(cleaned)
+                    const n = parseInt(cleaned, 10)
+                    store.set('autoAcceptDelayMax', Number.isFinite(n) ? n : 0)
+                  }}
+                  placeholder="最大"
+                />
+              </div>
+              <span style={{ color: '#a09b8c', fontSize: 13 }}>毫秒</span>
+            </div>
+          </SettingCard>
+        )}
         <SettingCard
           title="大乱斗无CD换英雄"
           description="移除共享池英雄的切换冷却限制，随时换取心仪英雄。"
