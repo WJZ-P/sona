@@ -101,6 +101,7 @@ export function ToolsPage() {
   const [autoAccept, setAutoAccept] = useState(store.get('autoAcceptMatch'))
   const [unlockStatus, setUnlockStatus] = useState(store.get('unlockStatus'))
   const [unlockAvailability, setUnlockAvailability] = useState(store.get('unlockAvailability'))
+  const [unlockChromas, setUnlockChromas] = useState(store.get('unlockChromas'))
   const [benchNoCooldown, setBenchNoCooldown] = useState(store.get('benchNoCooldown'))
   const [windowEffect, setWindowEffect] = useState(store.get('windowEffect'))
   const [champSelectAssist, setChampSelectAssist] = useState(store.get('champSelectAssist'))
@@ -138,6 +139,7 @@ export function ToolsPage() {
       store.onChange('autoAcceptMatch', setAutoAccept),
       store.onChange('unlockStatus', setUnlockStatus),
       store.onChange('unlockAvailability', setUnlockAvailability),
+      store.onChange('unlockChromas', setUnlockChromas),
       store.onChange('benchNoCooldown', setBenchNoCooldown),
       store.onChange('windowEffect', setWindowEffect),
       store.onChange('champSelectAssist', setChampSelectAssist),
@@ -364,6 +366,15 @@ export function ToolsPage() {
           <SonaSwitch
             checked={unlockAvailability}
             onChange={(v) => { setUnlockAvailability(v); store.set('unlockAvailability', v) }}
+          />
+        </SettingCard>
+        <SettingCard
+          title="解锁炫彩分页（国服）"
+          description="在生涯藏品页恢复被隐藏的「炫彩」子分页。修改开关后需要重启客户端才能生效。"
+        >
+          <SonaSwitch
+            checked={unlockChromas}
+            onChange={(v) => { setUnlockChromas(v); store.set('unlockChromas', v) }}
           />
         </SettingCard>
         <SettingCard

@@ -10,6 +10,8 @@ import { registerHotkey } from '@/lib/modal'
 import { initAssets } from '@/lib/assets'
 import { injector } from '@/lib/InjectorManager'
 import { lcu } from '@/lib/lcu'
+import { installEmberHook } from '@/lib/ember-hook'
+import { registerChromaRules } from '@/lib/features/chroma-unlock'
 import '@/styles/index.css'
 import '@/styles/inject.css'
 import '@/styles/availabilityMenu.css'
@@ -70,6 +72,11 @@ let penguContext: PenguContext | null = null
 export function init(context: PenguContext) {
   penguContext = context
   lcu.bindContext(context)
+
+  // 必须在 init 阶段注册 RCP hook——要赶在客户端调用 getEmber 之前
+  installEmberHook(context)
+  registerChromaRules()
+
   logger.printBanner()
 }
 

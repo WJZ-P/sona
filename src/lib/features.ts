@@ -11,7 +11,7 @@ import { lcu, LcuEventUri } from '@/lib/lcu'
 import type { LCUEventMessage, GameflowPhase } from '@/lib/lcu'
 import { injector } from '@/lib/InjectorManager'
 import { sleep } from '@/lib/utils'
-import { updateBalanceBuffTooltip } from '@/lib/balance-buff-viewer'
+import { updateBalanceBuffTooltip } from '@/lib/features/balance-buff-viewer'
 import { setAvailabilityHijackEnabled } from '@/lib/injections'
 
 // ==================== 自动接受对局 ====================

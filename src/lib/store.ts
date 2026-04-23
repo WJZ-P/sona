@@ -71,6 +71,8 @@ export interface SonaConfig {
   autoLockInstant: boolean
   /** 平衡性调整 buff 提示（游玩特定模式时悬停头像显示数值调整） */
   balanceBuffTooltip: boolean
+  /** 国服解锁炫彩分页（生涯藏品页显示"炫彩"tab，需重启客户端） */
+  unlockChromas: boolean
 }
 
 
@@ -101,6 +103,7 @@ const DEFAULT_CONFIG: SonaConfig = {
   autoLockChampionId: 0,
   autoLockInstant: true,
   balanceBuffTooltip: false,
+  unlockChromas: true,
 }
 
 

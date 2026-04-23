@@ -9,7 +9,19 @@ declare global {
   interface PenguContext {
     rcp: {
       preInit: (name: string, callback: (api: unknown) => void) => void
-      postInit: (name: string, callback: (api: unknown) => void) => void
+      /**
+       * 当指定 RCP 模块初始化后触发回调。
+       *
+       * @param name 目标 RCP 模块名（如 'rcp-fe-ember-libs'）
+       * @param callback 收到该模块 api 对象的回调
+       * @param blocking 关键参数：
+       *   - false（默认）：仅对"未来的初始化事件"生效；若目标模块已经初始化过，回调不会补跑。
+       *                    这意味着 Pengu HMR / 页面 reload 后注册的回调可能错过时机。
+       *   - true：即使目标模块已初始化，也会用缓存 api 立即补跑一次回调；
+       *           且目标模块会等回调 Promise 完成才继续后续初始化——
+       *           hook 类用法（如劫持 getEmber）必须传 true，否则可能漏过劫持窗口。
+       */
+      postInit: (name: string, callback: (api: unknown) => unknown, blocking?: boolean) => void
     }
     socket: {
       observe: (uri: string, callback: (data: unknown) => void) => void
