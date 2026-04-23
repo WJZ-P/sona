@@ -40,12 +40,21 @@ export type MethodWrap = {
 /** Mixin 工厂：返回会被 Component.extend(...) 合并进去的对象 */
 export type MixinFactory = (Ember: EmberNamespace, extendArgs: unknown[]) => Record<string, unknown>
 
+/**
+ * Matcher —— 规则的匹配器，支持三种写法：
+ *   - string：精确匹配 classNames 数组里有这个名字的组件（最常用，语义明确）
+ *   - '*'：匹配所有组件（慎用，会遍历全部 extend 调用）
+ *   - (extendArgs) => boolean：自定义判断，extendArgs 是 Component.extend(...) 被调用时的完整参数
+ *     典型用法：判断传入的 mixin 对象里是否含有某个字段
+ */
+export type Matcher = string | ((extendArgs: unknown[]) => boolean)
+
 /** 规则定义 */
 export type EmberRule = {
   /** 用于日志/去重的名字 */
   name: string
-  /** 要匹配的组件 classNames[0]（例如 'collections-sub-nav-component'） */
-  matcher: string
+  /** 匹配条件 —— 支持 classNames 字符串 / '*' / 自定义函数 */
+  matcher: Matcher
   /** 可选：覆盖/追加成员的 Mixin 工厂 */
   mixin?: MixinFactory
   /** 可选：劫持 prototype 上的方法 */
@@ -178,10 +187,35 @@ function hookComponentExtend(Ember: EmberNamespace) {
     let klass = originalExtend(...args) as EmberComponentClass
 
     // 匹配规则
-    const classNames = extractClassNames(args)
-    if (classNames.length > 0 && rules.length > 0) {
+    if (rules.length > 0) {
+      // classNames 按需计算——只有当确实有字符串 matcher 规则时才遍历提取
+      let classNamesCache: string[] | null = null
+      const getClassNames = () => {
+        if (classNamesCache === null) classNamesCache = extractClassNames(args)
+        return classNamesCache
+      }
+
       for (const rule of rules) {
-        if (classNames.includes(rule.matcher)) {
+        const m = rule.matcher
+        let matched = false
+
+        if (typeof m === 'function') {
+          // 函数式 matcher：自定义判断
+          try {
+            matched = m(args)
+          } catch (e) {
+            logger.warn('[EmberHook] matcher 函数抛错 (%s): %o', rule.name, e)
+            matched = false
+          }
+        } else if (m === '*') {
+          // 通配符：匹配所有组件
+          matched = true
+        } else {
+          // 字符串：精确匹配 classNames
+          matched = getClassNames().includes(m)
+        }
+
+        if (matched) {
           klass = applyRuleToClass(Ember, klass, args, rule)
         }
       }
@@ -260,7 +294,8 @@ export function registerEmberRule(rule: EmberRule) {
     logger.info('[EmberHook] 更新规则: %s', rule.name)
   } else {
     rules.push(rule)
-    logger.info('[EmberHook] 新增规则: %s (matcher=%s)，当前共 %d 条', rule.name, rule.matcher, rules.length)
+    const matcherDesc = typeof rule.matcher === 'function' ? '<function>' : rule.matcher
+    logger.info('[EmberHook] 新增规则: %s (matcher=%s)，当前共 %d 条', rule.name, matcherDesc, rules.length)
   }
 }
 
