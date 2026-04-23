@@ -14,8 +14,8 @@ import { injector } from '@/lib/InjectorManager'
 import { store } from '@/lib/store'
 import { openModal, onModalVisibilityChange } from '@/lib/modal'
 import sonaIcon from '../../assets/Champie_Sona_profileicon.png'
-import { lcu } from '@/lib/lcu'
-import type { Availability } from '@/lib/lcu'
+import { lcu, LcuEventUri, type LCUEventMessage } from '@/lib/lcu'
+import type { Availability, ChatMe } from '@/lib/lcu'
 
 /** 通用标记：标识已被 Sona 接管的 DOM 元素，防止重复绑定 */
 const HIJACKED_ATTR = 'data-sona-hijacked'
@@ -92,34 +92,112 @@ let currentAvailability: Availability = store.get('availability') as Availabilit
 
 /**
  * 启动时恢复持久化的在线状态和签名
- * - 将 store 中保存的 availability 设置到客户端
- * - 检测到签名为空时，自动恢复 store 中保存的签名
+ *
+ * 【重要防御】只在"游戏流程空闲"阶段（None / Lobby）才恢复，否则会和拳头底层状态机打架：
+ *   - 玩家在 ChampSelect / InProgress / EndOfGame 等阶段时，客户端 C++ 层会接管
+ *     lol 对象（写入"选人中/游戏中"），这时如果我们强行 PUT availability=chat，
+ *     XMPP payload 会变成"绿色圆点 + 游戏中文字"的缝合怪状态，可能麦克风自动断开
+ *     也和这个有关？
+ *
+ * 另外：LCU 启动初期聊天服务器（XMPP）尚未连接完成，getChatMe 可能返回假 offline。
+ * 所以恢复操作只做一次，不做周期性校正。
  */
 async function restoreAvailabilityAndStatus() {
   try {
+    // 这里如果是游戏中或者其他在玩的状态，就直接放行，不改，不然怕关麦克风的bug。
+    const phase = await lcu.getGameflowPhase()
+    if (phase !== 'None' && phase !== 'Lobby') {
+      logger.info('[Availability] 当前阶段 %s，跳过状态恢复（避免与底层状态机冲突）', phase)
+      return
+    }
+
     const me = await lcu.getChatMe()
     const savedAvailability = store.get('availability') as Availability
     const savedStatus = store.get('statusMessage')
 
-    // 恢复在线状态
+    // 2. 恢复在线状态
     if (savedAvailability && savedAvailability !== me.availability) {
       await lcu.setAvailability(savedAvailability)
       currentAvailability = savedAvailability
-      logger.info('Restored availability: %s', savedAvailability)
+      logger.info('[Availability] Restored: %s', savedAvailability)
     } else {
       currentAvailability = me.availability
     }
 
-    // 签名为空且有保存的签名时，自动恢复
-    if (me.statusMessage.length === 0 && savedStatus) {
+    // 3. 签名处理（同样只在空闲阶段做）
+    //    - 客户端无签名（null / 非字符串 / 空字符串） + store 有有效签名 → 恢复
+    //    - 客户端有有效签名 → 同步到 store
+    //    - 非字符串 / 空字符串 一律不写入 store，避免空值污染
+    const clientStatus = hasContent(me.statusMessage) ? (me.statusMessage as string) : ''
+    if (clientStatus === '' && hasContent(savedStatus)) {
       await lcu.setStatusMessage(savedStatus)
-      logger.info('Restored status message: %s', savedStatus)
-    } else if (me.statusMessage) {
-      // 客户端有签名，同步到 store
-      store.set('statusMessage', me.statusMessage)
+      logger.info('[Availability] Restored status message: %s', savedStatus)
+    } else if (clientStatus !== '') {
+      store.set('statusMessage', clientStatus)
     }
   } catch (err) {
-    logger.warn('Failed to restore availability/status:', err)
+    logger.warn('[Availability] Failed to restore availability/status:', err)
+  }
+}
+
+/** 判定一个值是否算"有效签名内容"：必须是非空字符串 */
+function hasContent(v: unknown): v is string {
+  return typeof v === 'string' && v.length > 0
+}
+
+/**
+ * 订阅 /lol-chat/v1/me 的实时变化，把客户端 availability/statusMessage 同步到 store。
+ *
+ * 解决的场景：
+ *   玩家在**客户端原生签名输入框**里修改签名（由 unlockStatus 解锁）→ 客户端 PUT /lol-chat/v1/me
+ *   → 我们之前只在启动时拉一次快照，玩家改完签名后若没重启 Sona，store 永远不会更新。
+ *
+ * 同步策略：
+ *   - 和 restoreAvailabilityAndStatus 一样，仅在 None/Lobby 阶段同步，避免捕获"选人中/游戏中XX"等自动签名
+ *   - availability 的写入已经在菜单点击逻辑里做了，这里只负责"客户端自发变化"的单向同步
+ */
+let chatMeUnsub: (() => void) | null = null
+
+function subscribeChatMeSync() {
+  if (chatMeUnsub) return // 已订阅
+
+  chatMeUnsub = lcu.observe(LcuEventUri.CHAT_ME, async (event: LCUEventMessage) => {
+    const me = event.data as ChatMe | null
+    if (!me) return
+
+    // 仅空闲阶段同步，避免把"选人中XX"之类的自动签名误存进去
+    try {
+      const phase = await lcu.getGameflowPhase()
+      if (phase !== 'None' && phase !== 'Lobby') return
+    } catch {
+      // 拉不到 phase 保守不同步
+      return
+    }
+
+    // 同步签名：只有"有效字符串"（非空、非 null、非其他类型）才写 store，
+    // 避免客户端偶尔推送 null/undefined/'' 时覆盖掉已有的有效签名
+    if (hasContent(me.statusMessage) && store.get('statusMessage') !== me.statusMessage) {
+      store.set('statusMessage', me.statusMessage)
+      logger.info('[Availability] 签名变化 → 已持久化: %s', me.statusMessage)
+    }
+
+    // 同步在线状态（菜单点击那条路已经写过一次 store，这里是兜底：比如玩家在别的插件/
+    // 命令行工具里改了 availability，我们也捕获）
+    if (me.availability && store.get('availability') !== me.availability) {
+      store.set('availability', me.availability)
+      currentAvailability = me.availability
+      logger.info('[Availability] 在线状态变化 → 已持久化: %s', me.availability)
+    }
+  })
+
+  logger.info('[Availability] 已订阅 /lol-chat/v1/me 实时同步')
+}
+
+function unsubscribeChatMeSync() {
+  if (chatMeUnsub) {
+    chatMeUnsub()
+    chatMeUnsub = null
+    logger.info('[Availability] 已取消订阅 /lol-chat/v1/me')
   }
 }
 
@@ -152,10 +230,28 @@ function showAvailabilityMenu(anchor: HTMLElement) {
 
       if (option.value !== currentAvailability) {
         currentAvailability = option.value
-        store.set('availability', option.value)
+
+        // 写 store 前先看当前阶段：只在空闲阶段（None/Lobby）持久化。
+        // 游戏中/选人中/结算中临时切一下不该被当成"下次启动的默认状态"，
+        // 否则会造成"玩家游戏中切了一下勿扰 → 下次启动恢复成勿扰 → 又触发缝合怪"的滚雪球。
+        lcu.getGameflowPhase()
+          .then((phase) => {
+            if (phase === 'None' || phase === 'Lobby') {
+              store.set('availability', option.value)
+              logger.info('[Availability] 持久化: %s (phase=%s)', option.value, phase)
+            } else {
+              logger.info('[Availability] 仅临时切换（阶段 %s，不持久化）', phase)
+            }
+          })
+          .catch(() => {
+            // phase 拉不到时保守起见不写 store
+            logger.warn('[Availability] 无法获取 gameflow phase，跳过持久化')
+          })
+
+        // PUT availability 请求本身不受阶段限制——用户点了就按用户意图发
         lcu.setAvailability(option.value)
-          .then(() => logger.info('Status changed to: %s', option.value))
-          .catch((err) => logger.error('Failed to set status:', err))
+          .then(() => logger.info('[Availability] 已切换: %s', option.value))
+          .catch((err) => logger.error('[Availability] 切换失败:', err))
       }
       closeAvailabilityMenu()
     }, true)
@@ -190,10 +286,8 @@ let availabilityHijackEnabled = false
 export function setAvailabilityHijackEnabled(enabled: boolean) {
   availabilityHijackEnabled = enabled
   if (enabled) {
-    // 启用时：立即尝试注入一次（处理已经渲染出来的按钮）
+    // 启用时：注入状态菜单接管任务。restore 由 registerAllInjections 统一负责，这里不重复。
     injector.register(tryHijackAvailabilityHitbox)
-    // 并恢复持久化的状态（若此时客户端已就绪）
-    restoreAvailabilityAndStatus()
   } else {
     // 禁用时：取消注入任务，并关闭可能已打开的菜单
     injector.unregister(tryHijackAvailabilityHitbox)
@@ -246,5 +340,23 @@ export function registerAllInjections() {
   injector.register(tryInjectSonaButton)
   // tryHijackAvailabilityHitbox 由 features.ts 的 unlockAvailability 开关按需注册
 
+  // 状态同步启动顺序（重要！）：
+  //   ① 先主动拉一次 ChatMe 快照做 restore：对齐 store 和客户端状态
+  //   ② 再订阅 /lol-chat/v1/me 实时事件：处理后续所有变化
+  //
+  // 为什么不能颠倒？
+  //   LCU 启动初期（XMPP 未完全连接）会推几条 presence 初始事件，字段可能是 null 或空。
+  //   如果先订阅，那些初始事件会走我们的 listener——虽然 hasContent 已经挡住空值，
+  //   但先 restore 再订阅的语义更干净："先对齐 → 再监听后续变化"。
+  restoreAvailabilityAndStatus().finally(() => {
+    // 无论 restore 成功或失败，都要挂监听——否则玩家之后改签名就没法捕获
+    subscribeChatMeSync()
+  })
+
   injector.start()
+}
+
+/** 供测试/清理用（实际不会调用，因为插件生命周期是进程级） */
+export function unregisterAllInjections() {
+  unsubscribeChatMeSync()
 }

@@ -78,6 +78,16 @@ export function DebugPage() {
           <SonaButton onClick={() => runAndLog('可选英雄列表', () => lcu.getPickableChampionIds())}>
             可选英雄
           </SonaButton>
+          <SonaButton onClick={() => runAndLog('秒退（英雄选择阶段）', async () => {
+            const phase = await lcu.getGameflowPhase()
+            if (phase !== 'ChampSelect') {
+              return `⚠️ 当前阶段为 ${phase}，仅在 ChampSelect 阶段可秒退`
+            }
+            await lcu.leaveLobby()
+            return '✅ 已秒退选人'
+          })}>
+            秒退
+          </SonaButton>
         </div>
         <p className="sona-subtitle">点击选取共享池对应槽位的英雄</p>
         <div className="sona-debug-actions">

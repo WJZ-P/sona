@@ -767,6 +767,8 @@ export enum LcuEventUri {
   GAMEFLOW_PHASE_CHANGE = '/lol-gameflow/v1/gameflow-phase',
   /** 大厅/房间状态 */
   LOBBY = '/lol-lobby/v2/lobby',
+  /** 当前玩家的聊天状态（availability / statusMessage 等） */
+  CHAT_ME = '/lol-chat/v1/me',
 }
 
 // ==================== 聊天相关 ====================
