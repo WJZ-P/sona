@@ -22,6 +22,20 @@ declare global {
        *           hook 类用法（如劫持 getEmber）必须传 true，否则可能漏过劫持窗口。
        */
       postInit: (name: string, callback: (api: unknown) => unknown, blocking?: boolean) => void
+      /**
+       * 像 postInit 一样等待 RCP 就绪，但以 Promise 方式返回，**即使目标插件已经加载完也能拿到**。
+       * 是比 postInit 更健壮的选择——不受插件加载时机影响。
+       *
+       * @example
+       *   const chat = await context.rcp.whenReady('rcp-be-lol-chat')
+       *   const [a, b] = await context.rcp.whenReady(['rcp-a', 'rcp-b'])
+       */
+      whenReady: {
+        (name: string): Promise<unknown>
+        (names: string[]): Promise<unknown[]>
+      }
+      /** 同步获取已注册到 callbacks map 的 RCP 插件（需先通过 whenReady/postInit 注册） */
+      get: (name: string) => unknown
     }
     socket: {
       observe: (uri: string, callback: (data: unknown) => void) => void

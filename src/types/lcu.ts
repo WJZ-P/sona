@@ -153,9 +153,94 @@ export interface LobbyMember {
 
 // ==================== 好友相关 ====================
 
+/**
+ * 好友 / ChatMe 共用的 LOL 子状态字段
+ *
+ * 注意：
+ *   1. 字段全部是**字符串**（即使看起来像数字/ID/布尔也是 "123" / "true" 这种字符串形式），
+ *      这是 XMPP presence payload 的历史遗产
+ *   2. 字段非常**稀疏** —— 玩家当前不在游戏中时大量字段会缺失或空字符串
+ *   3. 这份接口覆盖了目前观察到的字段；Riot 随版本会加新字段，未识别字段不应报错
+ *      （所以上面的字段都是可选的）
+ */
+export interface LolSubStatus {
+  /** 选中的横幅 ID */
+  bannerIdSelected?: string
+  /** 挑战水晶等级：IRON/BRONZE/SILVER/GOLD/PLATINUM/DIAMOND/MASTER/GRANDMASTER/CHALLENGER */
+  challengeCrystalLevel?: string
+  /** 挑战点数（字符串形式） */
+  challengePoints?: string
+  /** 选中展示的 3 个挑战 token（逗号分隔） */
+  challengeTokensSelected?: string
+  /** 当前使用的英雄 ID（"" 表示未选） */
+  championId?: string
+  /** 小小英雄 ID */
+  companionId?: string
+  /** 击杀特效皮肤 ID */
+  damageSkinId?: string
+  /** 当前对局 ID（"" 或 undefined 表示不在对局） */
+  gameId?: string
+  /** 游戏模式：CLASSIC/ARAM/KIWI（大乱斗）/URF/ARURF/CHERRY 等 */
+  gameMode?: string
+  /** 队列类型（历史字段，和 queueId 二选一存在） */
+  gameQueueType?: string
+  /** 游戏状态：outOfGame / inQueue / championSelect / inGame / spectating 等 */
+  gameStatus?: string
+  /** 头像覆盖："summonerIcon" 或 "" */
+  iconOverride?: string
+  /** 是否可被观战：ALL / FRIENDS / NONE */
+  isObservable?: string
+  /** 传说精通分数 */
+  legendaryMasteryScore?: string
+  /** 召唤师等级 */
+  level?: string
+  /** 地图 ID（"11" 召唤师峡谷 / "12" 嚎哭深渊 等） */
+  mapId?: string
+  /** 地图皮肤 ID */
+  mapSkinId?: string
+  /** 选中的玩家称号 UUID */
+  playerTitleSelected?: string
+  /** 头像图标 ID（字符串） */
+  profileIcon?: string
+  /** 组队信息（通常为 ""） */
+  pty?: string
+  /** 组队开放状态：open / closed */
+  ptyType?: string
+  /** 玩家 PUUID */
+  puuid?: string
+  /** 队列 ID（数字的字符串形式，如 "2400" 代表大乱斗） */
+  queueId?: string
+  /** 当前赛季排位子段位：I/II/III/IV */
+  rankedLeagueDivision?: string
+  /** 当前赛季排位队列：RANKED_SOLO_5x5 / RANKED_FLEX_SR / RANKED_TFT_TURBO 等 */
+  rankedLeagueQueue?: string
+  /** 当前赛季排位段位 */
+  rankedLeagueTier?: string
+  /** 当前赛季连败局数（字符串） */
+  rankedLosses?: string
+  /** 上赛季子段位 */
+  rankedPrevSeasonDivision?: string
+  /** 上赛季段位 */
+  rankedPrevSeasonTier?: string
+  /** 分赛段奖励等级 */
+  rankedSplitRewardLevel?: string
+  /** 当前赛季连胜局数（字符串） */
+  rankedWins?: string
+  /** 纹章 JSON 字符串 */
+  regalia?: string
+  /** 皮肤变体 ID */
+  skinVariant?: string
+  /** 皮肤名（英文短名） */
+  skinname?: string
+  /** 观战 key（base64，进入观战用） */
+  spectatorKey?: string
+  /** 进入当前对局的时间戳（毫秒，字符串） */
+  timeStamp?: string
+}
+
 /** /lol-chat/v1/friends 返回的好友对象 */
 export interface ChatFriend {
-  /** 好友 ID（聊天系统内部标识） */
+  /** 好友 ID（聊天系统内部标识，格式 `{puuid}@pvp.net`） */
   id: string
   /** 召唤师 ID */
   summonerId: number
@@ -165,43 +250,52 @@ export interface ChatFriend {
   gameName: string
   /** Riot ID Tag */
   gameTag: string
-  /** 旧版召唤师名 */
+  /** 旧版召唤师名（现在基本为 ""） */
   name: string
   /** 头像 ID */
   icon: number
-  /** 在线状态: 'chat' | 'away' | 'dnd' | 'offline' | 'mobile' */
-  availability: string
-  /** 当前所在产品: 'league_of_legends' | 'valorant' 等 */
+  /** 在线状态 */
+  availability: Availability
+  /** 当前所在产品: 'league_of_legends' / 'valorant' 等 */
   product: string
-  /** 产品显示名 */
+  /** 产品显示名（通常为 ""） */
   productName: string
-  /** 游戏状态: 'inGame' | 'inTeamBuilder' | 'championSelect' | 'outOfGame' 等 */
-  gameStatus: string
-  /** 当前对局 ID（不在游戏中时为 0） */
-  gameId: number
-  /** 队列类型（如 'RANKED_SOLO_5x5'） */
-  gameQueueType: string
-  /** 好友分组 ID */
+  /** 客户端分线（通常为 ""） */
+  patchline: string
+  /** 进程/会话 ID（XMPP 内部用） */
+  pid: string
+  /** 平台 ID：HN1 (国服) / EUW1 / NA1 等 */
+  platformId: string
+  /** 显示分组 ID */
+  displayGroupId: number
+  /** 显示分组名（默认分组是 "**Default"） */
+  displayGroupName: string
+  /** 真实分组 ID */
   groupId: number
-  /** 好友分组名 */
+  /** 真实分组名 */
   groupName: string
   /** 备注 */
   note: string
   /** 个性签名 */
   statusMessage: string
-  /** 上次在线时间（ISO 格式） */
-  lastSeenOnlineTimestamp: string
-  /** 是否为 P2P 通话好友 */
+  /** 简介（通常为 ""） */
+  summary: string
+  /** 上次在线时间（未知时为 null；在线时为 0 或毫秒时间戳） */
+  lastSeenOnlineTimestamp: string | number | null
+  /** XMPP 时间戳（毫秒） */
+  time: number
+  /** 是否屏蔽该好友的 P2P 语音 */
   isP2PConversationMuted: boolean
-  /** LOL 特有的子状态（部分客户端版本） */
-  lol?: {
-    gameId?: number
-    gameStatus?: string
-    gameQueueType?: string
-    level?: string
-    rankedLeagueDivision?: string
-    rankedLeagueTier?: string
-  }
+  /** 与此玩家在 Riot 层的关系（friend / pending / blocked 等） */
+  relationshipOnRiot: string
+  /** Discord 账户 ID（未绑定为 null） */
+  discordId: string | null
+  /** Discord 账户详情（未绑定为 null） */
+  discordInfo: unknown | null
+  /** Discord 在线状态（未绑定为 null） */
+  discordOnlineStatus: string | null
+  /** LOL 子状态（稀疏，字段全为字符串） */
+  lol: LolSubStatus
 }
 
 // ==================== 匹配相关 ====================
@@ -814,21 +908,42 @@ export type Availability = 'chat' | 'away' | 'dnd' | 'offline' | 'mobile' | (str
 
 /** 当前用户聊天状态 — GET /lol-chat/v1/me */
 export interface ChatMe {
+  /** 在线状态：chat / away / dnd / offline / mobile */
   availability: Availability
+  /** Riot ID 名称 */
   gameName: string
+  /** Riot ID Tag（如 "77772"） */
   gameTag: string
+  /** 头像 ID */
   icon: number
+  /** 聊天系统内部标识，格式 `{puuid}@pvp.net` */
   id: string
-  lol: Record<string, string>
+  /** LOL 子状态（稀疏，字段全是字符串） */
+  lol: LolSubStatus
+  /** 旧版召唤师名（现在通常为 ""） */
   name: string
+  /** 混淆后的召唤师 ID（0 表示未提供） */
   obfuscatedSummonerId: number
+  /** 客户端分线（通常为 ""） */
   patchline: string
+  /** 进程/会话 ID（格式同 id） */
   pid: string
+  /** 平台 ID：HN1 (国服) / EUW1 / NA1 等 */
   platformId: string
+  /** 产品：league_of_legends / valorant 等 */
   product: string
+  /** 产品显示名（通常为 ""） */
   productName: string
+  /** 玩家 PUUID */
   puuid: string
-  statusMessage: string
+  /** 个性签名。**注意可能为 null**（从未设置过签名 / XMPP 未就绪等） */
+  statusMessage: string | null
+  /** 简介（通常为 ""） */
   summary: string
+  /** 召唤师 ID */
   summonerId: number
+  /** XMPP 时间戳（毫秒；0 表示未提供） */
+  time: number
+  /** 上次在线时间（通常为 null） */
+  lastSeenOnlineTimestamp?: string | number | null
 }

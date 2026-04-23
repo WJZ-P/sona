@@ -105,6 +105,8 @@ let currentAvailability: Availability = store.get('availability') as Availabilit
  */
 async function restoreAvailabilityAndStatus() {
   try {
+    logger.info('[Availability] 开始恢复持久化状态...')
+
     // 这里如果是游戏中或者其他在玩的状态，就直接放行，不改，不然怕关麦克风的bug。
     const phase = await lcu.getGameflowPhase()
     if (phase !== 'None' && phase !== 'Lobby') {
@@ -116,36 +118,47 @@ async function restoreAvailabilityAndStatus() {
     const savedAvailability = store.get('availability') as Availability
     const savedStatus = store.get('statusMessage')
 
-    // 2. 恢复在线状态（带验证重试）
+    logger.info(
+      '[Availability] 当前状态快照: client.availability=%s, client.statusMessage=%s | saved.availability=%s, saved.statusMessage=%s',
+      me.availability, JSON.stringify(me.statusMessage),
+      savedAvailability, JSON.stringify(savedStatus),
+    )
+
+    // 2. 恢复在线状态
     if (savedAvailability && savedAvailability !== me.availability) {
-      await persistWithVerify({
-        label: 'availability',
-        target: savedAvailability,
-        write: () => lcu.setAvailability(savedAvailability),
-        read: async () => (await lcu.getChatMe()).availability,
-      })
+      try {
+        await lcu.setAvailability(savedAvailability)
+        logger.info('[Availability] 已写入 availability: %s', savedAvailability)
+      } catch (err) {
+        logger.warn('[Availability] availability 写入失败（稍后会再校验一次）:', err)
+      }
       currentAvailability = savedAvailability
     } else {
+      logger.info('[Availability] availability 无需恢复（已与 store 一致 / 未配置）')
       currentAvailability = me.availability
     }
 
-    // 3. 签名处理（同样只在空闲阶段做，且带验证重试）
-    //    - 客户端无签名（null / 非字符串 / 空字符串） + store 有有效签名 → 恢复
+    // 3. 签名处理（同一策略：一次性写入，不校验）
+    //    - 客户端无签名（null / 非字符串 / 空字符串） + store 有有效签名 → 写入
     //    - 客户端有有效签名 → 同步到 store
     //    - 非字符串 / 空字符串 一律不写入 store，避免空值污染
     const clientStatus = hasContent(me.statusMessage) ? (me.statusMessage as string) : ''
     if (clientStatus === '' && hasContent(savedStatus)) {
-      await persistWithVerify({
-        label: 'statusMessage',
-        target: savedStatus,
-        write: () => lcu.setStatusMessage(savedStatus),
-        read: async () => {
-          const v = (await lcu.getChatMe()).statusMessage
-          return hasContent(v) ? (v as string) : ''
-        },
-      })
+      try {
+        await lcu.setStatusMessage(savedStatus)
+        logger.info('[Availability] 已写入 statusMessage: %s', savedStatus)
+      } catch (err) {
+        logger.warn('[Availability] statusMessage 写入失败（稍后会再校验一次）:', err)
+      }
     } else if (clientStatus !== '') {
-      store.set('statusMessage', clientStatus)
+      if (clientStatus !== savedStatus) {
+        store.set('statusMessage', clientStatus)
+        logger.info('[Availability] 客户端签名与 store 不一致，已回写到 store: %s', clientStatus)
+      } else {
+        logger.info('[Availability] statusMessage 无需恢复（客户端与 store 一致）')
+      }
+    } else {
+      logger.info('[Availability] 客户端无签名且 store 也无签名，跳过')
     }
   } catch (err) {
     logger.warn('[Availability] Failed to restore availability/status:', err)
@@ -153,69 +166,62 @@ async function restoreAvailabilityAndStatus() {
 }
 
 /**
- * 通用的"写入→验证→重试"流程。
+ * 订阅 WS 后的**延迟校验**。
  *
- * 为什么需要？
- *   LCU 启动初期 XMPP 连接尚未稳定，`PUT /lol-chat/v1/me` 有时响应成功但实际并未生效
- *   （返回旧值 / 空值 / 默认值）。只打一次"Restored"日志但不验证，等于盲写——
- *   玩家看到的仍是默认状态，还会以为 Sona 修好了。
+ * 背景：
+ *   完整重启客户端时，存在一个时间窗口：
+ *     T0: Sona restore 写入签名 → 客户端 PUT 返回成功
+ *     T1: 我们的 WS 监听挂上
+ *     T2: 客户端自己晚到的 XMPP 初始化完成，给 chat/me 推了"干净的初始状态"→ 签名被清空
+ *   T2 这条推送理论上 WS 能抓到，但客户端可能用本地"同步"而非事件路径，导致我们 listener
+ *   根本没被触发——表现就是"写入成功日志打了，但客户端显示还是空"。
  *
- * 策略：
- *   1. 调 write() 写入
- *   2. 等 500ms 让客户端把变化推给 XMPP
- *   3. 重新 read() 拉最新值
- *   4. 和 target 对比：
- *        - 一致 → ✅ 打成功日志，退出
- *        - 不一致 → 重试（最多 3 次）
- *   5. 3 次都失败 → 打警告日志（不抛异常，不影响其它逻辑）
+ * 解决：
+ *   挂上 WS 后等一段时间（让客户端完成所有启动态同步），再重新拉 /lol-chat/v1/me 核对一次：
+ *     - 如果和 store 还不一致 → 再写一次（此时客户端已经稳定，写入一定生效）
+ *     - 如果一致 → restore 是真成功了，什么都不做
  */
-async function persistWithVerify<T>(opts: {
-  label: string
-  target: T
-  write: () => Promise<unknown>
-  read: () => Promise<T>
-  maxAttempts?: number
-  delayMs?: number
-}): Promise<boolean> {
-  const { label, target, write, read, maxAttempts = 3, delayMs = 500 } = opts
+async function verifyAfterSubscribe() {
+  // 给客户端足够时间完成启动期所有 presence 同步，实测两秒左右比较合适
+  await sleep(2000)
 
-  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-    try {
-      await write()
-    } catch (err) {
-      logger.warn('[Availability] %s 写入失败 (attempt %d/%d): %o', label, attempt, maxAttempts, err)
-      // 写入本身失败也继续重试——XMPP 刚连上时偶尔会 502
-      await sleep(delayMs)
-      continue
+  try {
+    const phase = await lcu.getGameflowPhase()
+    if (phase !== 'None' && phase !== 'Lobby') {
+      logger.info('[Availability] 延迟校验时阶段为 %s，跳过', phase)
+      return
     }
 
-    // 等客户端把变化同步到 XMPP
-    await sleep(delayMs)
+    const me = await lcu.getChatMe()
+    const savedAvailability = store.get('availability') as Availability
+    const savedStatus = store.get('statusMessage')
 
-    let actual: T
-    try {
-      actual = await read()
-    } catch (err) {
-      logger.warn('[Availability] %s 验证读取失败 (attempt %d/%d): %o', label, attempt, maxAttempts, err)
-      continue
-    }
+    const clientStatus = hasContent(me.statusMessage) ? (me.statusMessage as string) : ''
 
-    if (actual === target) {
-      logger.info('[Availability] %s 恢复成功 ✓ → %s (验证通过, attempt %d)', label, String(target), attempt)
-      return true
-    }
-
-    logger.warn(
-      '[Availability] %s 恢复验证失败 (attempt %d/%d): 期望=%s 实际=%s，%dms 后重试',
-      label, attempt, maxAttempts, String(target), String(actual), delayMs,
+    logger.info(
+      '[Availability] 延迟校验快照: client.availability=%s, client.statusMessage=%s | saved.availability=%s, saved.statusMessage=%s',
+      me.availability, JSON.stringify(me.statusMessage),
+      savedAvailability, JSON.stringify(savedStatus),
     )
-  }
 
-  logger.warn(
-    '[Availability] %s 恢复 %d 次均未生效，放弃（目标值=%s）。可能原因：LCU 被其它插件抢写 / 服务器拒绝 / 网络抖动',
-    label, maxAttempts, String(target),
-  )
-  return false
+    // 校验 availability
+    if (savedAvailability && savedAvailability !== me.availability) {
+      logger.warn('[Availability] 延迟校验发现 availability 被客户端回退，再次写入: %s', savedAvailability)
+      await lcu.setAvailability(savedAvailability).catch((err) => {
+        logger.warn('[Availability] 延迟校验写 availability 失败:', err)
+      })
+    }
+
+    // 校验 statusMessage
+    if (hasContent(savedStatus) && clientStatus !== savedStatus) {
+      logger.warn('[Availability] 延迟校验发现 statusMessage 被客户端回退（"%s" → "%s"），再次写入', savedStatus, clientStatus)
+      await lcu.setStatusMessage(savedStatus).catch((err) => {
+        logger.warn('[Availability] 延迟校验写 statusMessage 失败:', err)
+      })
+    }
+  } catch (err) {
+    logger.warn('[Availability] 延迟校验失败:', err)
+  }
 }
 
 /** 判定一个值是否算"有效签名内容"：必须是非空字符串 */
@@ -381,7 +387,7 @@ export function setAvailabilityHijackEnabled(enabled: boolean) {
  *    开关关闭时通过 availabilityHijackEnabled flag 让 listener 放行客户端原逻辑。
  */
 function tryHijackAvailabilityHitbox(): boolean {
-  const hitbox = document.querySelector(`.lol-social-availability-hitbox:not([${HIJACKED_ATTR}])`) as HTMLElement | null
+  const hitbox = document.querySelector(`.social-identity-block .lol-social-availability-hitbox:not([${HIJACKED_ATTR}])`) as HTMLElement | null
   if (!hitbox) return true
 
   hitbox.setAttribute(HIJACKED_ATTR, 'true')
@@ -419,16 +425,19 @@ export function registerAllInjections() {
   // tryHijackAvailabilityHitbox 由 features.ts 的 unlockAvailability 开关按需注册
 
   // 状态同步启动顺序（重要！）：
-  //   ① 先主动拉一次 ChatMe 快照做 restore：对齐 store 和客户端状态
+  //   ① 先主动拉一次 ChatMe 快照做 restore：对齐 store 和客户端状态（只写不校验）
   //   ② 再订阅 /lol-chat/v1/me 实时事件：处理后续所有变化
+  //   ③ 订阅后延迟 3s 做一次校验：兜住"restore 写入成功但客户端之后又把签名清掉"的时间窗口
   //
-  // 为什么不能颠倒？
-  //   LCU 启动初期（XMPP 未完全连接）会推几条 presence 初始事件，字段可能是 null 或空。
-  //   如果先订阅，那些初始事件会走我们的 listener——虽然 hasContent 已经挡住空值，
-  //   但先 restore 再订阅的语义更干净："先对齐 → 再监听后续变化"。
+  // 为什么把校验放到 subscribe 之后？
+  //   完整重启客户端时，客户端自己的 XMPP 初始化比 Sona 晚，它可能在 T2 时把 /lol-chat/v1/me
+  //   推成"干净的初始状态"（签名被清空）。这条推送理论上我们 WS 能抓，但客户端有时会走
+  //   "本地同步"而非事件路径，导致 listener 根本没触发。所以最稳的办法是：订阅后主动再核一次。
   restoreAvailabilityAndStatus().finally(() => {
     // 无论 restore 成功或失败，都要挂监听——否则玩家之后改签名就没法捕获
     subscribeChatMeSync()
+    // 挂监听后再做一次延迟校验（fire-and-forget，不阻塞 injector.start）
+    verifyAfterSubscribe()
   })
 
   injector.start()

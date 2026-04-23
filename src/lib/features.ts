@@ -871,10 +871,13 @@ async function refreshFriendInfoMap(retries = 5) {
         const name = f.gameName || f.name
         if (!name) continue
 
-        const gameId = f.lol?.gameId ?? f.gameId
-        const gameStatus = f.lol?.gameStatus ?? f.gameStatus
+        // lol.gameId / lol.gameStatus 是字符串形式，需要转 number
+        // （XMPP presence 字段约定所有值都是 string）
+        const gameIdStr = f.lol?.gameId
+        const gameId = gameIdStr ? Number(gameIdStr) : 0
+        const gameStatus = f.lol?.gameStatus ?? ''
 
-        if (gameId && gameId > 0 && gameStatus && gameStatus !== 'outOfGame') {
+        if (gameId > 0 && gameStatus && gameStatus !== 'outOfGame') {
           newMap.set(name, { gameId, gameStatus })
         }
       }
