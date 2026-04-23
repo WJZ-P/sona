@@ -83,8 +83,8 @@ export function DebugPage() {
             if (phase !== 'ChampSelect') {
               return `⚠️ 当前阶段为 ${phase}，仅在 ChampSelect 阶段可秒退`
             }
-            await lcu.leaveLobby()
-            return '✅ 已秒退选人'
+            await lcu.dodgeChampSelect()
+            return '✅ 已秒退选人（走 LCDS teambuilder-draft.quitV2）'
           })}>
             秒退
           </SonaButton>
