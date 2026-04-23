@@ -78,16 +78,20 @@ export function DebugPage() {
           <SonaButton onClick={() => runAndLog('可选英雄列表', () => lcu.getPickableChampionIds())}>
             可选英雄
           </SonaButton>
+          {/* 秒退功能暂时注释掉——目前 /lol-lobby-team-builder/champ-select/v1/session/quit 实测不生效，
+              仍在寻找可用接口。找到之前不暴露入口，免得误导玩家以为能用 */}
+          {/*
           <SonaButton onClick={() => runAndLog('秒退（英雄选择阶段）', async () => {
             const phase = await lcu.getGameflowPhase()
             if (phase !== 'ChampSelect') {
               return `⚠️ 当前阶段为 ${phase}，仅在 ChampSelect 阶段可秒退`
             }
             await lcu.dodgeChampSelect()
-            return '✅ 已秒退选人（走 LCDS teambuilder-draft.quitV2）'
+            return '✅ 已秒退选人（POST /lol-lobby-team-builder/champ-select/v1/session/quit）'
           })}>
             秒退
           </SonaButton>
+          */}
         </div>
         <p className="sona-subtitle">点击选取共享池对应槽位的英雄</p>
         <div className="sona-debug-actions">

@@ -210,20 +210,17 @@ class LCUManager {
   /**
    * 秒退英雄选择阶段（dodge ChampSelect）
    *
-   * 走 LCDS 代理调用 `teambuilder-draft.quitV2` 方法——这是 Riot 内部专用于
-   * "选人秒退"的服务方法，和 `DELETE /lol-lobby/v2/lobby`（大厅解散）是两条路。
-   * 后者在 ChampSelect 阶段会导致客户端状态机卡住（匹配队列残留、无法退出等），
-   * 前者才是官方意图上的秒退入口。
+   * 走客户端自己的 TeamBuilder 底层退房接口——这是从自定义房间抓包得到的
+   * 真正被客户端调用的端点，比 LCDS 代理（`/lol-login/v1/session/invoke`）更干净：
+   *   - 无需 URL encode args / 构造 LCDS 调用签名
+   *   - 无需 body（纯 POST）
+   *   - 路径本身就清晰表达了语义
    *
    * 注：这会吃逃跑惩罚（降低排位或禁止匹配一段时间），由调用方自行确认场景。
    */
   dodgeChampSelect(): Promise<unknown> {
-    // args 必须是 URL 编码后的 JSON 字符串：["","teambuilder-draft","quitV2",""]
-    const rawArgs = '["","teambuilder-draft","quitV2",""]'
-    const encodedArgs = encodeURIComponent(rawArgs)
-    const url = `/lol-login/v1/session/invoke?destination=lcdsServiceProxy&method=call&args=${encodedArgs}`
-    // body 必须是空数组（部分 LCU 版本没 body 会 400）
-    return post(url, [])
+    // 纯 POST，无 body
+    return post('/lol-lobby-team-builder/champ-select/v1/session/quit')
   }
 
   // ==================== 匹配 ====================

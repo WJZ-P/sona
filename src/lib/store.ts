@@ -73,6 +73,8 @@ export interface SonaConfig {
   balanceBuffTooltip: boolean
   /** 国服解锁炫彩分页（生涯藏品页显示"炫彩"tab，需重启客户端） */
   unlockChromas: boolean
+  /** 选人阶段退出按钮（非自定义对局的英雄选择里补上"退出对局"按钮） */
+  champSelectQuitButton: boolean
 }
 
 
@@ -104,6 +106,7 @@ const DEFAULT_CONFIG: SonaConfig = {
   autoLockInstant: true,
   balanceBuffTooltip: false,
   unlockChromas: true,
+  champSelectQuitButton: false,
 }
 
 

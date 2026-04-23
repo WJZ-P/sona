@@ -12,6 +12,7 @@ import type { LCUEventMessage, GameflowPhase } from '@/lib/lcu'
 import { injector } from '@/lib/InjectorManager'
 import { sleep } from '@/lib/utils'
 import { updateBalanceBuffTooltip } from '@/lib/features/balance-buff-viewer'
+import { updateChampSelectQuitButton } from '@/lib/features/champselect-quit-button'
 import { setAvailabilityHijackEnabled } from '@/lib/injections'
 
 // ==================== 自动接受对局 ====================
@@ -1376,6 +1377,9 @@ export function initFeatures() {
 
   updateBalanceBuffTooltip(store.get('balanceBuffTooltip'))
   store.onChange('balanceBuffTooltip', updateBalanceBuffTooltip)
+
+  updateChampSelectQuitButton(store.get('champSelectQuitButton'))
+  store.onChange('champSelectQuitButton', updateChampSelectQuitButton)
 
   // 解锁在线状态切换（接管客户端按钮，弹自定义"隐身/手机在线"菜单）
   setAvailabilityHijackEnabled(store.get('unlockAvailability'))

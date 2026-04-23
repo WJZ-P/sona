@@ -16,6 +16,7 @@ import { openModal, onModalVisibilityChange } from '@/lib/modal'
 import sonaIcon from '../../assets/Champie_Sona_profileicon.png'
 import { lcu, LcuEventUri, type LCUEventMessage } from '@/lib/lcu'
 import type { Availability, ChatMe } from '@/lib/lcu'
+import { sleep } from '@/lib/utils'
 
 /** 通用标记：标识已被 Sona 接管的 DOM 元素，防止重复绑定 */
 const HIJACKED_ATTR = 'data-sona-hijacked'
@@ -115,29 +116,106 @@ async function restoreAvailabilityAndStatus() {
     const savedAvailability = store.get('availability') as Availability
     const savedStatus = store.get('statusMessage')
 
-    // 2. 恢复在线状态
+    // 2. 恢复在线状态（带验证重试）
     if (savedAvailability && savedAvailability !== me.availability) {
-      await lcu.setAvailability(savedAvailability)
+      await persistWithVerify({
+        label: 'availability',
+        target: savedAvailability,
+        write: () => lcu.setAvailability(savedAvailability),
+        read: async () => (await lcu.getChatMe()).availability,
+      })
       currentAvailability = savedAvailability
-      logger.info('[Availability] Restored: %s', savedAvailability)
     } else {
       currentAvailability = me.availability
     }
 
-    // 3. 签名处理（同样只在空闲阶段做）
+    // 3. 签名处理（同样只在空闲阶段做，且带验证重试）
     //    - 客户端无签名（null / 非字符串 / 空字符串） + store 有有效签名 → 恢复
     //    - 客户端有有效签名 → 同步到 store
     //    - 非字符串 / 空字符串 一律不写入 store，避免空值污染
     const clientStatus = hasContent(me.statusMessage) ? (me.statusMessage as string) : ''
     if (clientStatus === '' && hasContent(savedStatus)) {
-      await lcu.setStatusMessage(savedStatus)
-      logger.info('[Availability] Restored status message: %s', savedStatus)
+      await persistWithVerify({
+        label: 'statusMessage',
+        target: savedStatus,
+        write: () => lcu.setStatusMessage(savedStatus),
+        read: async () => {
+          const v = (await lcu.getChatMe()).statusMessage
+          return hasContent(v) ? (v as string) : ''
+        },
+      })
     } else if (clientStatus !== '') {
       store.set('statusMessage', clientStatus)
     }
   } catch (err) {
     logger.warn('[Availability] Failed to restore availability/status:', err)
   }
+}
+
+/**
+ * 通用的"写入→验证→重试"流程。
+ *
+ * 为什么需要？
+ *   LCU 启动初期 XMPP 连接尚未稳定，`PUT /lol-chat/v1/me` 有时响应成功但实际并未生效
+ *   （返回旧值 / 空值 / 默认值）。只打一次"Restored"日志但不验证，等于盲写——
+ *   玩家看到的仍是默认状态，还会以为 Sona 修好了。
+ *
+ * 策略：
+ *   1. 调 write() 写入
+ *   2. 等 500ms 让客户端把变化推给 XMPP
+ *   3. 重新 read() 拉最新值
+ *   4. 和 target 对比：
+ *        - 一致 → ✅ 打成功日志，退出
+ *        - 不一致 → 重试（最多 3 次）
+ *   5. 3 次都失败 → 打警告日志（不抛异常，不影响其它逻辑）
+ */
+async function persistWithVerify<T>(opts: {
+  label: string
+  target: T
+  write: () => Promise<unknown>
+  read: () => Promise<T>
+  maxAttempts?: number
+  delayMs?: number
+}): Promise<boolean> {
+  const { label, target, write, read, maxAttempts = 3, delayMs = 500 } = opts
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      await write()
+    } catch (err) {
+      logger.warn('[Availability] %s 写入失败 (attempt %d/%d): %o', label, attempt, maxAttempts, err)
+      // 写入本身失败也继续重试——XMPP 刚连上时偶尔会 502
+      await sleep(delayMs)
+      continue
+    }
+
+    // 等客户端把变化同步到 XMPP
+    await sleep(delayMs)
+
+    let actual: T
+    try {
+      actual = await read()
+    } catch (err) {
+      logger.warn('[Availability] %s 验证读取失败 (attempt %d/%d): %o', label, attempt, maxAttempts, err)
+      continue
+    }
+
+    if (actual === target) {
+      logger.info('[Availability] %s 恢复成功 ✓ → %s (验证通过, attempt %d)', label, String(target), attempt)
+      return true
+    }
+
+    logger.warn(
+      '[Availability] %s 恢复验证失败 (attempt %d/%d): 期望=%s 实际=%s，%dms 后重试',
+      label, attempt, maxAttempts, String(target), String(actual), delayMs,
+    )
+  }
+
+  logger.warn(
+    '[Availability] %s 恢复 %d 次均未生效，放弃（目标值=%s）。可能原因：LCU 被其它插件抢写 / 服务器拒绝 / 网络抖动',
+    label, maxAttempts, String(target),
+  )
+  return false
 }
 
 /** 判定一个值是否算"有效签名内容"：必须是非空字符串 */

@@ -106,6 +106,7 @@ export function ToolsPage() {
   const [windowEffect, setWindowEffect] = useState(store.get('windowEffect'))
   const [champSelectAssist, setChampSelectAssist] = useState(store.get('champSelectAssist'))
   const [balanceBuffTooltip, setBalanceBuffTooltip] = useState(store.get('balanceBuffTooltip'))
+  const [champSelectQuitButton, setChampSelectQuitButton] = useState(store.get('champSelectQuitButton'))
   const [analyzeTeamPower, setAnalyzeTeamPower] = useState(store.get('analyzeTeamPower'))
   const [friendSmartGroup, setFriendSmartGroup] = useState(store.get('friendSmartGroup'))
   const [customProfileBg, setCustomProfileBg] = useState(store.get('customProfileBg'))
@@ -144,6 +145,7 @@ export function ToolsPage() {
       store.onChange('windowEffect', setWindowEffect),
       store.onChange('champSelectAssist', setChampSelectAssist),
       store.onChange('balanceBuffTooltip', setBalanceBuffTooltip),
+      store.onChange('champSelectQuitButton', setChampSelectQuitButton),
       store.onChange('analyzeTeamPower', setAnalyzeTeamPower),
       store.onChange('friendSmartGroup', setFriendSmartGroup),
       store.onChange('customProfileBg', setCustomProfileBg),
@@ -274,6 +276,15 @@ export function ToolsPage() {
           <SonaSwitch
             checked={balanceBuffTooltip}
             onChange={(v) => { setBalanceBuffTooltip(v); store.set('balanceBuffTooltip', v) }}
+          />
+        </SettingCard>
+        <SettingCard
+          title="选人阶段退出按钮"
+          description="非自定义对局的英雄选择里客户端不会显示退出按钮，Sona 帮你补一个。点击后会弹确认窗，秒退会扣逃跑分。"
+        >
+          <SonaSwitch
+            checked={champSelectQuitButton}
+            onChange={(v) => { setChampSelectQuitButton(v); store.set('champSelectQuitButton', v) }}
           />
         </SettingCard>
         <SettingCard
