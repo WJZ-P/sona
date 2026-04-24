@@ -111,6 +111,7 @@ export function ToolsPage() {
   const [balanceBuffTooltip, setBalanceBuffTooltip] = useState(store.get('balanceBuffTooltip'))
   const [champSelectQuitButton, setChampSelectQuitButton] = useState(store.get('champSelectQuitButton'))
   const [analyzeTeamPower, setAnalyzeTeamPower] = useState(store.get('analyzeTeamPower'))
+  const [sideIndicator, setSideIndicator] = useState(store.get('sideIndicator'))
   const [friendSmartGroup, setFriendSmartGroup] = useState(store.get('friendSmartGroup'))
   const [customProfileBg, setCustomProfileBg] = useState(store.get('customProfileBg'))
   const [rankQueue, setRankQueue] = useState(store.get('rankQueue'))
@@ -152,6 +153,7 @@ export function ToolsPage() {
       store.onChange('balanceBuffTooltip', setBalanceBuffTooltip),
       store.onChange('champSelectQuitButton', setChampSelectQuitButton),
       store.onChange('analyzeTeamPower', setAnalyzeTeamPower),
+      store.onChange('sideIndicator', setSideIndicator),
       store.onChange('friendSmartGroup', setFriendSmartGroup),
       store.onChange('customProfileBg', setCustomProfileBg),
       store.onChange('autoHonor', setAutoHonor),
@@ -294,11 +296,20 @@ export function ToolsPage() {
         </SettingCard>
         <SettingCard
           title="分析友方战力"
-          description="进入英雄选择时，自动分析队友近期战绩并发送到队伍聊天框。"
+          description="进入英雄选择时，自动分析队友近期战绩并发送到队伍聊天框。(队友可见)"
         >
           <SonaSwitch
             checked={analyzeTeamPower}
             onChange={(v) => { setAnalyzeTeamPower(v); store.set('analyzeTeamPower', v) }}
+          />
+        </SettingCard>
+        <SettingCard
+          title="红蓝方提示"
+          description="进入英雄选择时，在聊天框提示本局是蓝方还是红方。(队友可见)"
+        >
+          <SonaSwitch
+            checked={sideIndicator}
+            onChange={(v) => { setSideIndicator(v); store.set('sideIndicator', v) }}
           />
         </SettingCard>
         <SettingCard

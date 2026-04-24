@@ -51,6 +51,8 @@ export interface SonaConfig {
   champSelectAssist: boolean
   /** 分析友方战力（进入选人自动查战绩并发送到聊天框） */
   analyzeTeamPower: boolean
+  /** 选人阶段红蓝方提示（进入英雄选择时在聊天框提示当前阵营） */
+  sideIndicator: boolean
   /** 全局粒子美化效果 */
   globalParticle: boolean
   /** 好友智能分组（开黑好友用同样颜色的border-right展示） */
@@ -99,6 +101,7 @@ const DEFAULT_CONFIG: SonaConfig = {
   windowEffect: 'none',
   champSelectAssist: false,
   analyzeTeamPower: false,
+  sideIndicator: false,
   globalParticle: false,
   friendSmartGroup: false,
   customProfileBg: false,

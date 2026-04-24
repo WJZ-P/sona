@@ -662,13 +662,11 @@ function getRating(winRate: number, kda: number): string {
 
 async function analyzeTeammates() {
   try {
-    const { isBlue, stats } = await fetchTeamStats()
-    const sideText = isBlue ? '🔵 蓝方 (左下方)' : '🔴 红方 (右上方)'
+    const { stats } = await fetchTeamStats()
 
     logger.info('┌─── 队友战绩分析 ───')
-    logger.info('│ 阵营: %s', sideText)
 
-    const chatLines: string[] = [`Sona助手 ♫\n 本局${sideText} — 队友卡池一览(近期战绩):\n`]
+    const chatLines: string[] = ['Sona助手 ♫\n 队友卡池一览(近期战绩):\n']
 
     for (const s of stats) {
       const floor = `${s.floor}楼`
@@ -695,19 +693,17 @@ async function analyzeTeammates() {
     logger.info('└────────────────────')
 
     // 等待聊天室就绪后发送
-    if (store.get('analyzeTeamPower')) {
-      const msg = chatLines.join('\n')
-      for (let attempt = 0; attempt < 10; attempt++) {
-        try {
-          await lcu.sendChampSelectMessage(msg)
-          logger.info('队友分析已发送到聊天框 ✓')
-          break
-        } catch {
-          if (attempt < 9) {
-            await sleep(1000)
-          } else {
-            logger.warn('聊天发送失败，聊天室始终未就绪')
-          }
+    const msg = chatLines.join('\n')
+    for (let attempt = 0; attempt < 10; attempt++) {
+      try {
+        await lcu.sendChampSelectMessage(msg)
+        logger.info('队友分析已发送到聊天框 ✓')
+        break
+      } catch {
+        if (attempt < 9) {
+          await sleep(1000)
+        } else {
+          logger.warn('聊天发送失败，聊天室始终未就绪')
         }
       }
     }
@@ -731,6 +727,52 @@ function updateAnalyzeTeamPower(enabled: boolean) {
     analyzeTeamPowerUnsub()
     analyzeTeamPowerUnsub = null
     logger.info('Analyze team power disabled')
+  }
+}
+
+// ==================== 选人阶段红蓝方提示 ====================
+
+async function sendSideIndicator() {
+  try {
+    const session = await lcu.getChampSelectSession()
+    const localPlayer = session.myTeam.find((p) => p.cellId === session.localPlayerCellId)
+    const isBlue = localPlayer ? localPlayer.cellId < 5 : true
+    const sideText = isBlue ? '🔵 蓝方 (左下方)' : '🔴 红方 (右上方)'
+
+    const msg = `Sona助手 ♫\n 本局${sideText}`
+    for (let attempt = 0; attempt < 10; attempt++) {
+      try {
+        await lcu.sendChampSelectMessage(msg)
+        logger.info('红蓝方提示已发送 → %s', sideText)
+        break
+      } catch {
+        if (attempt < 9) {
+          await sleep(1000)
+        } else {
+          logger.warn('红蓝方提示发送失败，聊天室始终未就绪')
+        }
+      }
+    }
+  } catch (err) {
+    logger.error('红蓝方提示失败:', err)
+  }
+}
+
+let sideIndicatorUnsub: (() => void) | null = null
+
+function updateSideIndicator(enabled: boolean) {
+  if (enabled && !sideIndicatorUnsub) {
+    sideIndicatorUnsub = lcu.observe(LcuEventUri.GAMEFLOW_PHASE_CHANGE, (event: LCUEventMessage) => {
+      const phase = event.data as GameflowPhase
+      if (phase === 'ChampSelect') {
+        sendSideIndicator()
+      }
+    })
+    logger.info('Side indicator enabled ✓')
+  } else if (!enabled && sideIndicatorUnsub) {
+    sideIndicatorUnsub()
+    sideIndicatorUnsub = null
+    logger.info('Side indicator disabled')
   }
 }
 
@@ -1439,6 +1481,9 @@ export function initFeatures() {
 
   updateAnalyzeTeamPower(store.get('analyzeTeamPower'))
   store.onChange('analyzeTeamPower', updateAnalyzeTeamPower)
+
+  updateSideIndicator(store.get('sideIndicator'))
+  store.onChange('sideIndicator', updateSideIndicator)
 
   updateChampSelectAssist(store.get('champSelectAssist'))
   store.onChange('champSelectAssist', updateChampSelectAssist)
