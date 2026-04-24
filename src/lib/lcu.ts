@@ -415,7 +415,7 @@ class LCUManager {
     if (targetActionId == null) {
       const session = await this.getChampSelectSession()
       const myAction = session.actions
-        .flat()
+        .flat(2)
         .find((a) => a.actorCellId === session.localPlayerCellId && a.isInProgress && !a.completed)
 
       if (!myAction) {
@@ -440,7 +440,7 @@ class LCUManager {
     if (targetActionId == null) {
       const session = await this.getChampSelectSession()
       const myAction = session.actions
-        .flat()
+        .flat(2)
         .find((a) => a.actorCellId === session.localPlayerCellId && a.isInProgress && !a.completed)
 
       if (!myAction) {

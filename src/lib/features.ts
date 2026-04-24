@@ -277,16 +277,16 @@ interface TeammateStats {
 }
 
 /** 去重：同一个 ChampSelect 阶段多个功能需要同一份数据时，复用同一轮请求 */
-let _fetchTeamStatsPromise: Promise<{ isBlue: boolean; gameId: number; stats: TeammateStats[] }> | null = null
+let _fetchTeamStatsPromise: Promise<{ isBlue: boolean; stats: TeammateStats[]; queueId: number }> | null = null
 
 /**
  * 查询当前选人阶段所有队友的近期战绩
  * 使用 SGP 接口 + tag 参数按当前游戏模式服务端过滤，拉 100 条
- * 返回 { isBlue, stats[] }
+ * 返回 { isBlue, queueId, stats[] }
  *
  * 多次并发调用会复用同一轮请求（promise 去重）
  */
-async function fetchTeamStats(): Promise<{ isBlue: boolean; gameId: number; stats: TeammateStats[] }> {
+async function fetchTeamStats(): Promise<{ isBlue: boolean; stats: TeammateStats[]; queueId: number }> {
   if (_fetchTeamStatsPromise) return _fetchTeamStatsPromise
 
   _fetchTeamStatsPromise = _doFetchTeamStats()
@@ -297,34 +297,50 @@ async function fetchTeamStats(): Promise<{ isBlue: boolean; gameId: number; stat
   }
 }
 
-async function _doFetchTeamStats(): Promise<{ isBlue: boolean; gameId: number; stats: TeammateStats[] }> {
+async function _doFetchTeamStats(): Promise<{ isBlue: boolean; stats: TeammateStats[]; queueId: number }> {
   const session = await lcu.getChampSelectSession()
-  const myTeam = session.myTeam.filter((p) => p.summonerId > 0)
   const localPlayer = session.myTeam.find((p) => p.cellId === session.localPlayerCellId)
   const isBlue = localPlayer ? localPlayer.cellId < 5 : true
 
-  // 获取当前队列 ID 用于 SGP tag 过滤
-  let currentQueueId = 0
-  try {
-    const gfSession = await lcu.getGameflowSession()
-    currentQueueId = gfSession.gameData.queue.id
-    logger.info('[TeamStats] 当前队列 ID: %d (%s)', currentQueueId, gfSession.gameData.queue.name)
-  } catch {
-    logger.warn('[TeamStats] 无法获取队列 ID，将使用全部对局')
-  }
+  // 直接从 ChampSelectSession 拿 queueId，无需额外请求
+  const currentQueueId = session.queueId
+  logger.info('[TeamStats] 当前队列 ID: %d', currentQueueId)
 
   // 将 queueId 转为 SGP tag
   const tag = queueIdToTag(currentQueueId)
 
   const FETCH_COUNT = 100
 
-  // 并行查询所有队友的战绩
-  const stats = await Promise.all(myTeam.map(async (player, i) => {
+  /** 构造占位元素：主播模式下队友 puuid 为空，无法查询战绩 */
+  const placeholder = (player: typeof session.myTeam[number], i: number): TeammateStats => ({
+    floor: i + 1,
+    summonerId: player.summonerId,
+    puuid: player.puuid,
+    gameName: player.gameName,
+    tagLine: player.tagLine,
+    winRate: null,
+    wins: 0,
+    total: 0,
+    avgK: 0,
+    avgD: 0,
+    avgA: 0,
+    kdaNum: 0,
+  })
+
+  // 并行查询所有队友的战绩（不过滤，保留占位以对齐楼层索引）
+  const stats = await Promise.all(session.myTeam.map(async (player, i) => {
+    // 主播模式下队友 puuid 为空，跳过查询，直接返回占位
+    if (!player.puuid) {
+      return placeholder(player, i)
+    }
+
     try {
-      const summoner = await lcu.getSummonerById(player.summonerId)
+      const puuid = player.puuid
+      const gameName = player.gameName
+      const tagLine = player.tagLine
 
       // SGP 查询，tag 参数由服务端过滤
-      const resp = await lcu.getSgpMatchHistory(summoner.puuid, {
+      const resp = await lcu.getSgpMatchHistory(puuid, {
         startIndex: 0,
         count: FETCH_COUNT,
         tag: tag || undefined,
@@ -334,7 +350,7 @@ async function _doFetchTeamStats(): Promise<{ isBlue: boolean; gameId: number; s
       const matchStats: Array<{ kills: number; deaths: number; assists: number; win: boolean }> = []
 
       for (const game of games) {
-        const p = game.json.participants.find((pt) => pt.puuid === summoner.puuid)
+        const p = game.json.participants.find((pt) => pt.puuid === puuid)
         if (!p) continue
 
         matchStats.push({
@@ -346,7 +362,7 @@ async function _doFetchTeamStats(): Promise<{ isBlue: boolean; gameId: number; s
       }
 
       if (matchStats.length === 0) {
-        return { floor: i + 1, summonerId: player.summonerId, puuid: summoner.puuid, gameName: summoner.gameName, tagLine: summoner.tagLine, winRate: null, wins: 0, total: 0, avgK: 0, avgD: 0, avgA: 0, kdaNum: 0 } as TeammateStats
+        return placeholder(player, i)
       }
 
       let wins = 0, totalKills = 0, totalDeaths = 0, totalAssists = 0
@@ -358,14 +374,14 @@ async function _doFetchTeamStats(): Promise<{ isBlue: boolean; gameId: number; s
       }
 
       const total = matchStats.length
-      logger.info('[TeamStats] %s → SGP 拉取 %d 场 (tag=%s)', summoner.gameName, total, tag || '全部')
+      logger.info('[TeamStats] %s → SGP 拉取 %d 场 (tag=%s)', gameName, total, tag || '全部')
 
       return {
         floor: i + 1,
         summonerId: player.summonerId,
-        puuid: summoner.puuid,
-        gameName: summoner.gameName,
-        tagLine: summoner.tagLine,
+        puuid,
+        gameName,
+        tagLine,
         winRate: (wins / total) * 100,
         wins,
         total,
@@ -375,11 +391,11 @@ async function _doFetchTeamStats(): Promise<{ isBlue: boolean; gameId: number; s
         kdaNum: totalDeaths === 0 ? totalKills + totalAssists : (totalKills + totalAssists) / totalDeaths,
       } as TeammateStats
     } catch {
-      return { floor: i + 1, summonerId: player.summonerId, puuid: '', gameName: '?', tagLine: '', winRate: null, wins: 0, total: 0, avgK: 0, avgD: 0, avgA: 0, kdaNum: 0 } as TeammateStats
+      return placeholder(player, i)
     }
   }))
 
-  return { isBlue, gameId: session.gameId, stats }
+  return { isBlue, queueId: currentQueueId, stats }
 }
 
 // ==================== 选人阶段头像胜率特效 (champSelectAssist) ====================
@@ -395,8 +411,6 @@ const SONA_CLICK_ATTR = 'data-sona-click'
 
 /** 每个楼层的完整战绩缓存 */
 let floorStats: TeammateStats[] = []
-/** 当前对局 ID，用于判断 DOM 上的数据是否属于本局 */
-let currentGameId = 0
 /** 当前选人阶段的队列 ID，用于打开战绩弹窗时自动过滤 */
 let currentChampSelectQueueId = 0
 
@@ -463,18 +477,10 @@ function tryInjectChampSelectTier(): boolean {
     const stat = floorStats[i]
     if (!stat || stat.winRate == null) return
     const winRate = stat.winRate
-    const injectKey = `${currentGameId}-${i}`
 
     // ---- 粒子特效 ----
-    const existingParticle = iconContainer.querySelector('[data-sona-particle]')
-    if (existingParticle && iconContainer.getAttribute(SONA_TIER_ATTR) !== injectKey) {
-      const idx = mountedRoots.findIndex((r) => r.container === existingParticle)
-      if (idx >= 0) { mountedRoots[idx].root.unmount(); mountedRoots.splice(idx, 1) }
-      existingParticle.remove()
-      iconContainer.removeAttribute(SONA_TIER_ATTR)
-    }
     if (!iconContainer.querySelector('[data-sona-particle]')) {
-      iconContainer.setAttribute(SONA_TIER_ATTR, injectKey)
+      iconContainer.setAttribute(SONA_TIER_ATTR, 'true')
       iconContainer.style.position = 'relative'
       iconContainer.style.overflow = 'visible'
       iconContainer.style.borderRadius = '50%'
@@ -517,13 +523,7 @@ function tryInjectChampSelectTier(): boolean {
 
     // ---- player-details 下方战绩文字 ----
     const playerDetails = wrapper.querySelector('.player-details') as HTMLElement | null
-    if (playerDetails) {
-      const existingStats = playerDetails.querySelector(`[${SONA_STATS_ATTR}]`)
-      if (existingStats && existingStats.getAttribute(SONA_STATS_ATTR) !== injectKey) {
-        existingStats.remove()
-      }
-
-      if (!playerDetails.querySelector(`[${SONA_STATS_ATTR}]`)) {
+    if (playerDetails && !playerDetails.querySelector(`[${SONA_STATS_ATTR}]`)) {
         playerDetails.style.position = 'relative'
         playerDetails.style.overflow = 'visible'
         const summonerContainer = playerDetails.closest('.summoner-container') as HTMLElement | null
@@ -533,7 +533,7 @@ function tryInjectChampSelectTier(): boolean {
         const winColor = winRate >= 55 ? '#5bbd72' : winRate >= 45 ? '#c8aa6e' : '#e74c3c'
 
         const statsDiv = document.createElement('div')
-        statsDiv.setAttribute(SONA_STATS_ATTR, injectKey)
+        statsDiv.setAttribute(SONA_STATS_ATTR, 'true')
         statsDiv.style.cssText = 'position:absolute;left:0;top:100%;display:flex;align-items:center;font-size:11px;line-height:1;white-space:nowrap;margin-top:2px;'
 
         const winSpan = document.createElement('span')
@@ -551,7 +551,6 @@ function tryInjectChampSelectTier(): boolean {
 
         // 记录注入引用，离开 ChampSelect 时直接清理
         champSelectInjectedRefs.push({ statsDiv, iconContainer, summonerContainer, playerDetails })
-      }
     }
   })
 
@@ -575,7 +574,6 @@ function unregisterTierInjection() {
     tierInjectionRegistered = false
   }
   floorStats = []
-  currentGameId = 0
   currentChampSelectQueueId = 0
   mountedRoots.forEach(({ root, container }) => {
     root.unmount()
@@ -606,16 +604,8 @@ async function applyChampSelectIconEffects() {
     // 先清理上一局的残留
     unregisterTierInjection()
 
-    // 获取当前队列 ID，供战绩弹窗过滤
-    try {
-      const gfSession = await lcu.getGameflowSession()
-      currentChampSelectQueueId = gfSession.gameData.queue.id
-    } catch {
-      currentChampSelectQueueId = 0
-    }
-
-    const { gameId, stats } = await fetchTeamStats()
-    currentGameId = gameId
+    const { stats, queueId } = await fetchTeamStats()
+    currentChampSelectQueueId = queueId
     floorStats = stats
     registerTierInjection()
 
@@ -1182,7 +1172,7 @@ async function tryAutoLockChampion() {
     try {
       const session = await lcu.getChampSelectSession()
 
-      const allActions = session.actions.flat()
+      const allActions = session.actions.flat(2)
       const myPickAction = allActions.find(
         (a) => a.actorCellId === session.localPlayerCellId && a.type === 'pick' && !a.completed
       )

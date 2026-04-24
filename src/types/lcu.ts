@@ -423,20 +423,50 @@ export interface PlayerChampionSelection {
 
 /** 英雄选择会话 — GET /lol-champ-select/v1/session */
 export interface ChampSelectSession {
-  actions: ChampSelectAction[][]
+  actions: ChampSelectAction[][][]
   allowBattleBoost: boolean
   allowDuplicatePicks: boolean
+  allowLockedEvents: boolean
+  allowPlayerPickSameChampion: boolean
   allowRerolling: boolean
   allowSkinSelection: boolean
+  allowSubsetChampionPicks: boolean
   benchChampions: BenchChampion[] // ARAM 模式，共享池中的英雄
   benchEnabled: boolean
+  boostableSkinCount: number
+  chatDetails: {
+    mucJwtDto: {
+      channelClaim: string
+      domain: string
+      jwt: string
+      targetRegion: string
+    }
+    multiUserChatId: string
+    multiUserChatPassword: string
+  }
+  counter: number
+  disallowBanningTeammateHoveredChampions: boolean
   gameId: number
+  hasSimultaneousBans: boolean
+  hasSimultaneousPicks: boolean
+  id: string
+  isCustomGame: boolean
+  isLegacyChampSelect: boolean
+  isSpectating: boolean
   localPlayerCellId: number
+  lockedEventIndex: number
   myTeam: ChampSelectPlayer[]
+  pickOrderSwaps: unknown[]
+  positionSwaps: unknown[]
+  queueId: number
+  rerollsRemaining: number
+  showQuitButton: boolean
+  skipChampionSelect: boolean
   theirTeam: ChampSelectPlayer[]
   timer: {
     adjustedTimeLeftInPhase: number
     internalNowInEpochMs: number
+    isInfinite: boolean
     phase: 'PLANNING' | 'BAN_PICK' | 'FINALIZATION' | 'GAME_STARTING' | (string & {})
     totalTimeInPhase: number
   }
@@ -446,7 +476,6 @@ export interface ChampSelectSession {
     theirTeamBans: number[]
     numBans: number
   }
-  skipChampionSelect: boolean
 }
 
 /** 替补席英雄（ARAM 模式） */
@@ -472,17 +501,74 @@ export interface ChampSelectAction {
   type: 'pick' | 'ban' | 'ten_bans_reveal' | (string & {})
 }
 
-/** 英雄选择中的玩家 */
+/**
+ * 英雄选择中的玩家
+ *
+ * 主播模式（nameVisibilityType === 'HIDDEN'）下：
+ *   - puuid 为空字符串 ""，使用 obfuscatedPuuid 替代
+ *   - summonerId 为 0，使用 obfuscatedSummonerId 替代
+ *   - gameName / tagLine / internalName / playerAlias 均为空字符串
+ */
 export interface ChampSelectPlayer {
+  /** 分配位置，如 "top"/"jungle"/"mid"/"bot"/"utility"，未分配时为 "" */
   assignedPosition: string
+  /** 格子 ID（0-4 己方，5-9 对方） */
   cellId: number
+  /** 已选定英雄 ID，未选时为 0 */
   championId: number
+  /** 意向选择英雄 ID，未选时为 0 */
   championPickIntent: number
+  /** Riot ID 名称，主播模式下为 "" */
+  gameName: string
+  /** 内部名称，主播模式下为 "" */
+  internalName: string
+  /** 是否被自动补位 */
+  isAutofilled: boolean
+  /** 是否为人类玩家（人机为 false） */
+  isHumanoid: boolean
+  /**
+   * 名称可见性类型：
+   * - "HIDDEN" — 主播模式，身份信息被混淆
+   * - "PUBLIC" — 正常可见
+   */
+  nameVisibilityType: 'HIDDEN' | 'PUBLIC' | (string & {})
+  /**
+   * 混淆后的 PUUID，主播模式下替代 puuid 使用
+   * 格式如 "d6b1c306-6893-02eb-22a2-199bfd58f170"
+   */
+  obfuscatedPuuid: string
+  /** 混淆后的召唤师 ID，主播模式下替代 summonerId 使用 */
+  obfuscatedSummonerId: number
+  /** 选择模式 */
+  pickMode: number
+  /** 选择轮次 */
+  pickTurn: number
+  /** 玩家别名，主播模式下为 "" */
+  playerAlias: string
+  /** 玩家类型 */
+  playerType: string
+  /**
+   * 玩家 PUUID，主播模式下为空字符串 ""
+   * 主播模式下请使用 obfuscatedPuuid
+   */
+  puuid: string
+  /** 选中的皮肤 ID，未选时为 0 */
   selectedSkinId: number
+  /** 召唤师技能1 ID */
   spell1Id: number
+  /** 召唤师技能2 ID */
   spell2Id: number
+  /**
+   * 召唤师 ID，主播模式下为 0
+   * 主播模式下请使用 obfuscatedSummonerId
+   */
   summonerId: number
-  team: number
+  /** Riot ID Tag，主播模式下为 "" */
+  tagLine: string
+  /** 队伍：1 = 己方（蓝方），2 = 对方（红方） */
+  team: 1 | 2 | number
+  /** 守卫皮肤 ID，未选择时为 -1 */
+  wardSkinId: number
 }
 
 /** 选人阶段玩家详细信息（组合查询结果） */
