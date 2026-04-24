@@ -319,7 +319,8 @@ export function ToolsPage() {
             onChange={(v) => { setBalanceBuffTooltip(v); store.set('balanceBuffTooltip', v) }}
           />
         </SettingCard>
-        <SettingCard
+        {/* 这个选人阶段退出，没找到合适的LCU接口，暂时加不了 */}
+        {/* <SettingCard
           title="选人阶段退出按钮"
           description="非自定义对局的英雄选择里客户端不会显示退出按钮，Sona 帮你补一个。点击后会弹确认窗，秒退会扣逃跑分。"
         >
@@ -327,7 +328,7 @@ export function ToolsPage() {
             checked={champSelectQuitButton}
             onChange={(v) => { setChampSelectQuitButton(v); store.set('champSelectQuitButton', v) }}
           />
-        </SettingCard>
+        </SettingCard> */}
         <SettingCard
           title="对局结束自动点赞"
           description="对局结束后，随机给队友点赞，再也不用手点啦。"
