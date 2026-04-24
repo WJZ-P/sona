@@ -71,6 +71,7 @@
 - [交流群](#交流群)
 - [To Do List](#to-do-list)
 - [License](#license)
+- [致谢](#致谢)
 - [重要声明](#重要声明)
 
 <br>
@@ -339,6 +340,22 @@ Made by **WJZ_P** with love ❤
 ## 🐧 LINUX DO
 
 本项目支持 [LINUX DO](https://linux.do) 社区
+
+<br>
+
+<br>
+
+<h2 id="致谢">💝 致谢</h2>
+
+Sona 能走到今天，离不开这些前辈们的无私开源。站在前人的肩膀上，我才能看得更远。在此郑重感谢这些项目，我从它们的代码里学到了很多，真的超级感谢大家～ ₍ᐢ..ᐢ₎♡
+
+- [**BakaFT / BetterTencentLCU**](https://github.com/BakaFT/BetterTencentLCU)
+- [**imunproductive / upl**](https://github.com/imunproductive/upl)
+- [**BakaFT / CustomHookLoader**](https://github.com/BakaFT/CustomHookLoader) 
+- [**nomi-san / balance-buff-viewer**](https://github.com/nomi-san/balance-buff-viewer) 
+- [**LeagueAkari / LeagueAkari**](https://github.com/LeagueAkari/LeagueAkari) 
+
+每一个 commit、每一行注释、每一个巧妙的设计，都是前辈们留给社区的珍贵财富。Sona 只是一个小小的学习者，未来也会把自己学到的东西继续开源回馈出去。感谢每一位奉献者 ✨
 
 <br>
 
