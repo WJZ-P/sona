@@ -276,12 +276,28 @@ interface TeammateStats {
   kdaNum: number
 }
 
+/** 去重：同一个 ChampSelect 阶段多个功能需要同一份数据时，复用同一轮请求 */
+let _fetchTeamStatsPromise: Promise<{ isBlue: boolean; gameId: number; stats: TeammateStats[] }> | null = null
+
 /**
  * 查询当前选人阶段所有队友的近期战绩
  * 使用 SGP 接口 + tag 参数按当前游戏模式服务端过滤，拉 100 条
  * 返回 { isBlue, stats[] }
+ *
+ * 多次并发调用会复用同一轮请求（promise 去重）
  */
 async function fetchTeamStats(): Promise<{ isBlue: boolean; gameId: number; stats: TeammateStats[] }> {
+  if (_fetchTeamStatsPromise) return _fetchTeamStatsPromise
+
+  _fetchTeamStatsPromise = _doFetchTeamStats()
+  try {
+    return await _fetchTeamStatsPromise
+  } finally {
+    _fetchTeamStatsPromise = null
+  }
+}
+
+async function _doFetchTeamStats(): Promise<{ isBlue: boolean; gameId: number; stats: TeammateStats[] }> {
   const session = await lcu.getChampSelectSession()
   const myTeam = session.myTeam.filter((p) => p.summonerId > 0)
   const localPlayer = session.myTeam.find((p) => p.cellId === session.localPlayerCellId)
@@ -383,6 +399,19 @@ let floorStats: TeammateStats[] = []
 let currentGameId = 0
 /** 当前选人阶段的队列 ID，用于打开战绩弹窗时自动过滤 */
 let currentChampSelectQueueId = 0
+
+/** 选人阶段注入的 DOM 引用，离开 ChampSelect 时直接从 ref 清理，不依赖 querySelector */
+interface ChampSelectInjectedRef {
+  /** 我们创建的 stats div（胜率/KDA） */
+  statsDiv: HTMLDivElement
+  /** 被修改了 style 的 iconContainer */
+  iconContainer: HTMLElement
+  /** 被修改了 overflow 的 summonerContainer（可能为 null） */
+  summonerContainer: HTMLElement | null
+  /** 被修改了 style 的 playerDetails */
+  playerDetails: HTMLElement
+}
+let champSelectInjectedRefs: ChampSelectInjectedRef[] = []
 
 /** 战绩弹窗的独立 React root */
 let matchModalRoot: Root | null = null
@@ -509,7 +538,7 @@ function tryInjectChampSelectTier(): boolean {
 
         const winSpan = document.createElement('span')
         winSpan.style.cssText = `color:${winColor};font-weight:bold;display:inline-block;min-width:90px;`
-        winSpan.textContent = `${winRate.toFixed(0)}% (${stat.wins}W/${stat.total - stat.wins}L)`
+        winSpan.textContent = `${winRate.toFixed(0)}% (${stat.wins}胜/${stat.total - stat.wins}负)`
 
         const kdaColor = stat.kdaNum >= 5 ? '#5bbd72' : stat.kdaNum >= 3 ? '#c8aa6e' : '#e74c3c'
         const kdaSpan = document.createElement('span')
@@ -519,6 +548,9 @@ function tryInjectChampSelectTier(): boolean {
         statsDiv.appendChild(winSpan)
         statsDiv.appendChild(kdaSpan)
         playerDetails.appendChild(statsDiv)
+
+        // 记录注入引用，离开 ChampSelect 时直接清理
+        champSelectInjectedRefs.push({ statsDiv, iconContainer, summonerContainer, playerDetails })
       }
     }
   })
@@ -550,17 +582,20 @@ function unregisterTierInjection() {
     container.remove()
   })
   mountedRoots.length = 0
-  document.querySelectorAll(`[${SONA_TIER_ATTR}]`).forEach((el) => {
-    const htmlEl = el as HTMLElement
-    htmlEl.style.filter = ''
-    htmlEl.style.boxShadow = ''
-    htmlEl.removeAttribute(SONA_TIER_ATTR)
-  })
-  document.querySelectorAll(`[${SONA_STATS_ATTR}]`).forEach((el) => el.remove())
-  document.querySelectorAll(`[${SONA_CLICK_ATTR}]`).forEach((el) => {
-    el.removeAttribute(SONA_CLICK_ATTR)
-    ;(el as HTMLElement).style.cursor = ''
-  })
+
+  // 从注入的 DOM 引用直接清理，不依赖 querySelector（离开 ChampSelect 后 DOM 可能已卸载）
+  for (const ref of champSelectInjectedRefs) {
+    ref.statsDiv.remove()
+    ref.iconContainer.style.filter = ''
+    ref.iconContainer.style.boxShadow = ''
+    ref.iconContainer.removeAttribute(SONA_TIER_ATTR)
+    ref.playerDetails.removeAttribute(SONA_CLICK_ATTR)
+    ref.playerDetails.style.cursor = ''
+    if (ref.summonerContainer) ref.summonerContainer.style.overflow = ''
+  }
+  champSelectInjectedRefs = []
+
+
   cleanupMatchModal()
 }
 
