@@ -7,7 +7,7 @@
 
 import { logger } from '@/index'
 import { store } from '@/lib/store'
-import { lcu, LcuEventUri } from '@/lib/lcu'
+import { lcu, LcuEventUri, queueIdToTag } from '@/lib/lcu'
 import type { LCUEventMessage, GameflowPhase } from '@/lib/lcu'
 import { injector } from '@/lib/InjectorManager'
 import { sleep } from '@/lib/utils'
@@ -278,8 +278,7 @@ interface TeammateStats {
 
 /**
  * 查询当前选人阶段所有队友的近期战绩
- * 按当前游戏模式（queueId）过滤，目标采样数 TARGET_SAMPLE 条同模式对局
- * 每次拉 PAGE_SIZE 条，若连续 MAX_RAW 条原始对局都无匹配则放弃
+ * 使用 SGP 接口 + tag 参数按当前游戏模式服务端过滤，拉 100 条
  * 返回 { isBlue, stats[] }
  */
 async function fetchTeamStats(): Promise<{ isBlue: boolean; gameId: number; stats: TeammateStats[] }> {
@@ -288,7 +287,7 @@ async function fetchTeamStats(): Promise<{ isBlue: boolean; gameId: number; stat
   const localPlayer = session.myTeam.find((p) => p.cellId === session.localPlayerCellId)
   const isBlue = localPlayer ? localPlayer.cellId < 5 : true
 
-  // 获取当前队列 ID 用于过滤
+  // 获取当前队列 ID 用于 SGP tag 过滤
   let currentQueueId = 0
   try {
     const gfSession = await lcu.getGameflowSession()
@@ -298,49 +297,52 @@ async function fetchTeamStats(): Promise<{ isBlue: boolean; gameId: number; stat
     logger.warn('[TeamStats] 无法获取队列 ID，将使用全部对局')
   }
 
-  const GREEDY_FETCH = 100  // 一次性贪婪拉取的对局数
+  // 将 queueId 转为 SGP tag
+  const tag = queueIdToTag(currentQueueId)
+
+  const FETCH_COUNT = 100
 
   // 并行查询所有队友的战绩
   const stats = await Promise.all(myTeam.map(async (player, i) => {
     try {
       const summoner = await lcu.getSummonerById(player.summonerId)
 
-      // 一次性贪婪拉取 100 条，穿透 LCU 分页缓存
-      const history = await lcu.getMatchHistory(summoner.puuid, 0, GREEDY_FETCH - 1)
-      const chunk = history.games?.games ?? []
+      // SGP 查询，tag 参数由服务端过滤
+      const resp = await lcu.getSgpMatchHistory(summoner.puuid, {
+        startIndex: 0,
+        count: FETCH_COUNT,
+        tag: tag || undefined,
+      })
+      const games = resp.games ?? []
 
-      const filteredGames: Array<{ kills: number; deaths: number; assists: number; win: boolean }> = []
+      const matchStats: Array<{ kills: number; deaths: number; assists: number; win: boolean }> = []
 
-      for (const game of chunk) {
-        if (currentQueueId > 0 && game.queueId !== currentQueueId) continue
+      for (const game of games) {
+        const p = game.json.participants.find((pt) => pt.puuid === summoner.puuid)
+        if (!p) continue
 
-        const identity = game.participantIdentities.find((id) => id.player.puuid === summoner.puuid)
-        if (!identity) continue
-        const participant = game.participants.find((p) => p.participantId === identity.participantId)
-        if (!participant) continue
-
-        filteredGames.push({
-          kills: participant.stats.kills,
-          deaths: participant.stats.deaths,
-          assists: participant.stats.assists,
-          win: participant.stats.win,
+        matchStats.push({
+          kills: p.kills,
+          deaths: p.deaths,
+          assists: p.assists,
+          win: p.win,
         })
       }
 
-      if (filteredGames.length === 0) {
+      if (matchStats.length === 0) {
         return { floor: i + 1, summonerId: player.summonerId, puuid: summoner.puuid, gameName: summoner.gameName, tagLine: summoner.tagLine, winRate: null, wins: 0, total: 0, avgK: 0, avgD: 0, avgA: 0, kdaNum: 0 } as TeammateStats
       }
 
       let wins = 0, totalKills = 0, totalDeaths = 0, totalAssists = 0
-      for (const g of filteredGames) {
+      for (const g of matchStats) {
         if (g.win) wins++
         totalKills += g.kills
         totalDeaths += g.deaths
         totalAssists += g.assists
       }
 
-      const total = filteredGames.length
-      logger.info('[TeamStats] %s → 拉取 %d 场，筛出 %d 场同模式', summoner.gameName, chunk.length, total)
+      const total = matchStats.length
+      logger.info('[TeamStats] %s → SGP 拉取 %d 场 (tag=%s)', summoner.gameName, total, tag || '全部')
 
       return {
         floor: i + 1,

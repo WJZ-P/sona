@@ -3,7 +3,7 @@ import { SettingCard, SettingGroup } from '@/components/ui/SettingCard'
 import { SonaButton } from '@/components/ui/SonaButton'
 import { SonaInput } from '@/components/ui/SonaInput'
 import { store } from '@/lib/store'
-import { lcu } from '@/lib/lcu'
+import { lcu, SGP_SERVERS } from '@/lib/lcu'
 import { searchChampions, type ChampionInfo, getChampionBalanceMeta, getAllChampionBalances } from '@/lib/assets'
 import { logger } from '@/index'
 import '@/styles/SettingsPage.css'
@@ -181,6 +181,68 @@ export function DebugPage() {
             runAndLog(`时间线 #${id}`, () => lcu.getMatchTimeline(id))
           }}>
             时间线
+          </SonaButton>
+        </div>
+      </SettingGroup>
+
+      <SettingGroup title="SGP Token & 直连调试">
+        <p className="sona-subtitle">
+          测试从 LCU 获取 SGP 所需的 Token，并尝试直接请求 SGP 战绩接口。
+        </p>
+        <div className="sona-debug-actions">
+          <SonaButton variant="primary" onClick={() => runAndLog('Entitlements Token', () => lcu.getEntitlementsToken())}>
+            获取 Entitlements Token
+          </SonaButton>
+          <SonaButton onClick={() => runAndLog('League Session Token', () => lcu.getLeagueSessionToken())}>
+            获取 Session Token
+          </SonaButton>
+          <SonaButton onClick={() => runAndLog('SGP Server ID (从 issuer 解析)', () => lcu.getSgpServerId())}>
+            解析 SGP Server ID
+          </SonaButton>
+        </div>
+        <div className="sona-debug-actions" style={{ marginTop: 8 }}>
+          <SonaButton onClick={() => runAndLog('SGP 直连: 自己战绩', async () => {
+            const [tokenRes, me, sgpServerId] = await Promise.all([
+              lcu.getEntitlementsToken(),
+              lcu.getSummonerInfo(),
+              lcu.getSgpServerId(),
+            ])
+            const sgpServer = SGP_SERVERS[sgpServerId.toUpperCase()]
+            const baseUrl = sgpServer?.matchHistory
+            if (!baseUrl) {
+              return { error: `未知 SGP 服务器 ID: ${sgpServerId}`, issuer: tokenRes.issuer, sgpServerId }
+            }
+            const url = `${baseUrl}/match-history-query/v1/products/lol/player/${me.puuid}/SUMMARY?startIndex=0&count=10`
+            const result: Record<string, unknown> = {
+              sgpServerId,
+              baseUrl,
+              puuid: me.puuid,
+              requestUrl: url,
+              tokenPreview: tokenRes.accessToken?.slice(0, 40) + '...',
+            }
+            try {
+              const resp = await fetch(url, {
+                headers: {
+                  'Authorization': `Bearer ${tokenRes.accessToken}`,
+                  'User-Agent': 'LeagueOfLegendsClient/14.13.596.7996 (rcp-be-lol-match-history)',
+                },
+              })
+              result.status = resp.status
+              result.statusText = resp.statusText
+              result.ok = resp.ok
+              if (resp.ok) {
+                const data = await resp.json()
+                result.dataPreview = data
+              } else {
+                result.errorBody = await resp.text().catch(() => '')
+              }
+            } catch (err: unknown) {
+              result.fetchError = err instanceof Error ? err.message : String(err)
+              result.hint = '如果看到 CORS/Network 错误，说明 CEF 浏览器拦截了跨域请求，SGP 直连走不通'
+            }
+            return result
+          })}>
+            SGP 直连: 自己战绩
           </SonaButton>
         </div>
       </SettingGroup>

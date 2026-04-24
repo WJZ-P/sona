@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { Modal } from '@/components/ui/Modal'
-import { lcu } from '@/lib/lcu'
+import { lcu, queueIdToTag } from '@/lib/lcu'
 import { getChampIcon, getItemIcon, getSpellIcon, getPerkIcon, getPerkStyleIcon, getQueueName, getMapName, getPlayableQueues } from '@/lib/assets'
-import type { MatchGame } from '@/types/lcu'
+import type { SgpGameSummaryLol, SgpParticipantLol } from '@/types/sgp'
 import '@/styles/MatchHistoryModal.css'
 
 // ==================== 数据解析 ====================
@@ -51,43 +51,47 @@ interface MatchRowData {
   gameCreation: number
 }
 
-function parseMatch(game: MatchGame, puuid: string): MatchRowData | null {
-  const identity = game.participantIdentities.find((id) => id.player.puuid === puuid)
-  if (!identity) return null
-  const participant = game.participants.find((p) => p.participantId === identity.participantId)
+/** 从 SGP 对局数据中解析指定玩家的战绩行 */
+function parseSgpMatch(game: SgpGameSummaryLol, puuid: string): MatchRowData | null {
+  const json = game.json
+  const participant = json.participants.find((p: SgpParticipantLol) => p.puuid === puuid)
   if (!participant) return null
 
-  const s = participant.stats
-
   // mapId=12 的地图有多个皮肤变体，通过 gameModeMutators 区分
-  let mapName = getMapName(game.mapId)
-  if (game.mapId === 12) {
-    const mutator = game.gameModeMutators?.[0]
+  let mapName = getMapName(json.mapId)
+  if (json.mapId === 12) {
+    const mutator = json.gameModeMutators?.[0]
     if (mutator === 'mapskin_ha_bilgewater') mapName = '屠夫之桥'
     else if (mutator === 'mapskin_map12_bloom') mapName = '莲华栈桥'
     else mapName = '嚎哭深渊'
   }
 
+  // SGP 的符文结构：perks.styles[0] = 主系, styles[1] = 副系
+  const primaryStyle = participant.perks?.styles?.[0]
+  const subStyle = participant.perks?.styles?.[1]
+  const perk0 = primaryStyle?.selections?.[0]?.perk ?? 0
+  const perkSubStyle = subStyle?.style ?? 0
+
   return {
-    gameId: game.gameId,
-    queueId: game.queueId,
-    win: s.win,
+    gameId: json.gameId,
+    queueId: json.queueId,
+    win: participant.win,
     championId: participant.championId,
-    level: s.champLevel,
-    kills: s.kills,
-    deaths: s.deaths,
-    assists: s.assists,
-    cs: s.totalMinionsKilled + s.neutralMinionsKilled,
-    gold: s.goldEarned,
-    damage: s.totalDamageDealtToChampions,
-    queueName: getQueueName(game.queueId),
+    level: participant.champLevel,
+    kills: participant.kills,
+    deaths: participant.deaths,
+    assists: participant.assists,
+    cs: participant.totalMinionsKilled + participant.neutralMinionsKilled,
+    gold: participant.goldEarned,
+    damage: participant.totalDamageDealtToChampions,
+    queueName: getQueueName(json.queueId),
     mapName,
     spell1Id: participant.spell1Id,
     spell2Id: participant.spell2Id,
-    perk0: s.perk0,
-    perkSubStyle: s.perkSubStyle,
-    items: [s.item0, s.item1, s.item2, s.item3, s.item4, s.item5, s.item6],
-    gameCreation: game.gameCreation,
+    perk0,
+    perkSubStyle,
+    items: [participant.item0, participant.item1, participant.item2, participant.item3, participant.item4, participant.item5, participant.item6],
+    gameCreation: json.gameCreation,
   }
 }
 
@@ -180,25 +184,37 @@ export interface MatchHistoryModalProps {
   onClose: () => void
   puuid: string
   playerName: string
-  /** 可选：默认过滤的队列 ID，不传则不过滤 */
+  /** 可选：默认过滤的队列 ID，不传则查全部模式 */
   queueId?: number
 }
 
+/**
+ * 战绩弹窗
+ *
+ * 使用 SGP 接口查询战绩，支持通过 tag 参数按队列模式服务端过滤。
+ * 下拉切换模式时会重新请求 SGP，而非前端过滤。
+ */
 export function MatchHistoryModal({ open, onClose, puuid, playerName, queueId: defaultQueueId }: MatchHistoryModalProps) {
-  const [allMatches, setAllMatches] = useState<MatchRowData[]>([])
+  const [matches, setMatches] = useState<MatchRowData[]>([])
   const [loading, setLoading] = useState(false)
+  const [loadingMore, setLoadingMore] = useState(false)
   const [error, setError] = useState('')
+  const [hasMore, setHasMore] = useState(true)
   const [filterQueueId, setFilterQueueId] = useState<number>(defaultQueueId ?? 0)
   const [filterOpen, setFilterOpen] = useState(false)
-  const loadedPuuid = useRef('')
+  const loadedKey = useRef('')
   const listRef = useRef<HTMLDivElement>(null)
   const filterRef = useRef<HTMLDivElement>(null)
-  const GREEDY_FETCH = 100
+  const nextStartIndex = useRef(0)
+  const cleanupScroll = useRef<(() => void) | null>(null)
+  const INITIAL_FETCH = 100
+  const MORE_FETCH = 20
 
   // 可玩队列缓存
   const [queueOptions, setQueueOptions] = useState<{ id: number; name: string }[]>([])
   useEffect(() => {
-    setQueueOptions(getPlayableQueues())
+    const all = getPlayableQueues()
+    setQueueOptions(all)
   }, [])
 
   // 点击外部关闭下拉框
@@ -210,24 +226,29 @@ export function MatchHistoryModal({ open, onClose, puuid, playerName, queueId: d
     return () => document.removeEventListener('mousedown', handler)
   }, [])
 
-  // 过滤后的列表
-  const matches = filterQueueId > 0
-    ? allMatches.filter((m) => m.queueId === filterQueueId)
-    : allMatches
-
-  // 一次性贪婪拉取
-  const loadAll = useCallback(async () => {
+  // 首次拉取战绩（SGP 服务端过滤）
+  const loadMatches = useCallback(async (queueId: number) => {
     setLoading(true)
     setError('')
-    setAllMatches([])
+    setMatches([])
+    setHasMore(true)
+    nextStartIndex.current = 0
 
     try {
-      const resp = await lcu.getMatchHistory(puuid, 0, GREEDY_FETCH - 1)
-      const games = resp.games?.games ?? []
+      const tag = queueIdToTag(queueId)
+      const resp = await lcu.getSgpMatchHistory(puuid, {
+        startIndex: 0,
+        count: INITIAL_FETCH,
+        tag: tag || undefined,
+      })
+      const games = resp.games ?? []
       const parsed = games
-        .map((g) => parseMatch(g, puuid))
+        .map((g) => parseSgpMatch(g, puuid))
         .filter((m): m is MatchRowData => m !== null)
-      setAllMatches(parsed)
+      setMatches(parsed)
+      nextStartIndex.current = INITIAL_FETCH
+      // 返回数量少于请求数量，说明没有更多了
+      if (games.length < INITIAL_FETCH) setHasMore(false)
     } catch {
       setError('查询战绩失败')
     } finally {
@@ -235,18 +256,81 @@ export function MatchHistoryModal({ open, onClose, puuid, playerName, queueId: d
     }
   }, [puuid])
 
-  // 初始加载 / 当 puuid 变化时重新加载
+  // 加载更多
+  const loadMore = useCallback(async () => {
+    if (loadingMore || !hasMore) return
+    setLoadingMore(true)
+
+    try {
+      const tag = queueIdToTag(filterQueueId)
+      const resp = await lcu.getSgpMatchHistory(puuid, {
+        startIndex: nextStartIndex.current,
+        count: MORE_FETCH,
+        tag: tag || undefined,
+      })
+      const games = resp.games ?? []
+      const parsed = games
+        .map((g) => parseSgpMatch(g, puuid))
+        .filter((m): m is MatchRowData => m !== null)
+      setMatches((prev) => [...prev, ...parsed])
+      nextStartIndex.current += games.length
+      if (games.length < MORE_FETCH) setHasMore(false)
+    } catch {
+      // 加载更多失败静默，不影响已展示数据
+    } finally {
+      setLoadingMore(false)
+    }
+  }, [puuid, filterQueueId, loadingMore, hasMore])
+
+  // 用 ref 稳定回调，避免 loadMore 变化导致 scroll listener 反复重绑
+  const loadMoreRef = useRef(loadMore)
+  loadMoreRef.current = loadMore
+
+  // 滚动到底部触发加载更多
+  useEffect(() => {
+    if (!open) return
+    // 等 Modal DOM 渲染后再绑定
+    const raf = requestAnimationFrame(() => {
+      const el = listRef.current
+      if (!el) return
+      const handleScroll = () => {
+        const { scrollTop, scrollHeight, clientHeight } = el
+        if (scrollHeight - scrollTop - clientHeight < 60) {
+          loadMoreRef.current()
+        }
+      }
+      el.addEventListener('scroll', handleScroll, { passive: true })
+      // 清理函数存在 closure 里
+      cleanupScroll.current = () => el.removeEventListener('scroll', handleScroll)
+    })
+
+    return () => {
+      cancelAnimationFrame(raf)
+      cleanupScroll.current?.()
+      cleanupScroll.current = null
+    }
+  }, [open])
+
+  // 初始加载 / 当 puuid 或 defaultQueueId 变化时重新加载
   useEffect(() => {
     if (!open || !puuid) return
     const key = `${puuid}-${defaultQueueId ?? 0}`
-    if (key === loadedPuuid.current) return
-    loadedPuuid.current = key
+    if (key === loadedKey.current) return
+    loadedKey.current = key
     setFilterQueueId(defaultQueueId ?? 0)
-    loadAll()
-  }, [open, puuid, defaultQueueId, loadAll])
+    loadMatches(defaultQueueId ?? 0)
+  }, [open, puuid, defaultQueueId, loadMatches])
+
+  // 下拉切换模式 → 重新请求 SGP
+  const handleFilterChange = (queueId: number) => {
+    setFilterQueueId(queueId)
+    setFilterOpen(false)
+    loadedKey.current = `${puuid}-${queueId}`
+    loadMatches(queueId)
+  }
 
   useEffect(() => {
-    if (!open) loadedPuuid.current = ''
+    if (!open) loadedKey.current = ''
   }, [open])
 
   const currentFilterLabel = filterQueueId > 0
@@ -273,7 +357,7 @@ export function MatchHistoryModal({ open, onClose, puuid, playerName, queueId: d
               <div className="smh-filter-dropdown">
                 <button
                   className={`smh-filter-option${filterQueueId === 0 ? ' smh-filter-option--active' : ''}`}
-                  onClick={() => { setFilterQueueId(0); setFilterOpen(false) }}
+                  onClick={() => handleFilterChange(0)}
                   type="button"
                 >
                   全部模式
@@ -282,7 +366,7 @@ export function MatchHistoryModal({ open, onClose, puuid, playerName, queueId: d
                   <button
                     key={q.id}
                     className={`smh-filter-option${filterQueueId === q.id ? ' smh-filter-option--active' : ''}`}
-                    onClick={() => { setFilterQueueId(q.id); setFilterOpen(false) }}
+                    onClick={() => handleFilterChange(q.id)}
                     type="button"
                   >
                     {q.name}
@@ -301,8 +385,11 @@ export function MatchHistoryModal({ open, onClose, puuid, playerName, queueId: d
           {matches.map((m) => (
             <MatchRow key={m.gameId} match={m} />
           ))}
+          {loadingMore && <div className="smh-empty">加载更多...</div>}
           {!loading && !error && matches.length > 0 && (
-            <div className="smh-empty smh-no-more">— 共 {matches.length} 条战绩 —</div>
+            <div className="smh-empty smh-no-more">
+              {hasMore ? '↓ 下滑加载更多' : `— 共 ${matches.length} 条战绩 —`}
+            </div>
           )}
         </div>
       </div>

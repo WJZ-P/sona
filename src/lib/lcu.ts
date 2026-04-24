@@ -33,9 +33,12 @@ import type {
   ChampionSummaryData,
   GameQueue,
 } from '@/types/lcu'
+import type { SgpEntitlementsToken } from '@/types/sgp'
 
 // Re-export types for convenience
 export type { SummonerInfo, LobbyConfig, Lobby, GameflowPhase, GameflowSession, LCUEventMessage, ChatConversation, ChatMessage, ChatMe, Availability, SendChatMessageBody, ReadyCheck, ChampSelectPlayerDetail, MatchHistoryResponse, ChatFriend }
+export type { SgpEntitlementsToken, SgpMatchHistoryLol } from '@/types/sgp'
+export { SGP_SERVERS, TENCENT_MATCH_HISTORY_INTEROP, TENCENT_SERVER_NAMES, queueIdToTag } from '@/types/sgp'
 
 export { LcuEventUri, QueueId } from '@/types/lcu'
 
@@ -122,6 +125,39 @@ class LCUManager {
   private observedUris = new Set<string>()
   private penguContext: PenguContext | null = null
 
+  // -------------------- SGP Token 缓存 --------------------
+
+  /**
+   * Entitlements Token 缓存
+   *
+   * 通过 WS 事件 `/entitlements/v1/token` 自动保活：
+   * LCU 会在 token 即将过期时主动推送新 token，无需自己算过期时间。
+   * 初始值通过主动拉取填充，后续由 WS 事件驱动更新。
+   */
+  private _entitlementsToken: SgpEntitlementsToken | null = null
+
+  /**
+   * League Session Token 缓存
+   *
+   * 通过 WS 事件 `/lol-league-session/v1/league-session-token` 自动保活。
+   */
+  private _leagueSessionToken: string | null = null
+
+  /** SGP Token 是否已就绪（两个 token 都已拿到） */
+  get isSgpTokenReady(): boolean {
+    return this._entitlementsToken !== null && this._leagueSessionToken !== null
+  }
+
+  /** 获取缓存的 Entitlements Token（不会发起网络请求） */
+  get cachedEntitlementsToken(): SgpEntitlementsToken | null {
+    return this._entitlementsToken
+  }
+
+  /** 获取缓存的 League Session Token（不会发起网络请求） */
+  get cachedLeagueSessionToken(): string | null {
+    return this._leagueSessionToken
+  }
+
 
   // -------------------- 初始化 --------------------
 
@@ -133,12 +169,81 @@ class LCUManager {
     this.penguContext = context
 
     // context / socket 变了，但已有业务回调仍然有效：
-    // 这里只清空“底层 socket 已订阅 URI”状态，然后把现有回调重新挂到新 socket 上。
+    // 这里只清空"底层 socket 已订阅 URI"状态，然后把现有回调重新挂到新 socket 上。
     const uris = Array.from(this.eventListeners.keys())
     this.observedUris.clear()
 
     console.log('[LCUManager] bindContext() → replay %d observed uri(s)', uris.length)
     uris.forEach((uri) => this.observeUriOnSocket(uri))
+
+    // 绑定 context 后立即初始化 SGP Token 保活
+    this._initSgpTokenKeepAlive()
+  }
+
+  /**
+   * SGP Token 保活机制
+   *
+   * 参考 LeagueAkari 的 _maintainEntitlementsToken / _maintainLeagueSessionToken 实现。
+   *
+   * 策略：
+   * 1. 启动时主动拉取一次 token 填充缓存
+   * 2. 监听 LCU WebSocket 事件，token 变化时自动更新缓存
+   *    - `/entitlements/v1/token` → Entitlements Token
+   *    - `/lol-league-session/v1/league-session-token` → League Session Token
+   * 3. LCU 会在 token 即将过期时主动推送新 token，无需自己算过期时间
+   */
+  private _initSgpTokenKeepAlive() {
+    // 1. 主动拉取初始 token
+    this._fetchInitialTokens()
+
+    // 2. 监听 WS 事件保活
+    this.observe('/entitlements/v1/token', (event) => {
+      const token = event.data as SgpEntitlementsToken | null
+      if (token) {
+        this._entitlementsToken = token
+        console.log('[LCUManager] Entitlements Token 已通过 WS 事件更新')
+      } else {
+        this._entitlementsToken = null
+        console.log('[LCUManager] Entitlements Token 已清空（WS 事件）')
+      }
+    })
+
+    this.observe('/lol-league-session/v1/league-session-token', (event) => {
+      const token = event.data as string | null
+      if (token) {
+        this._leagueSessionToken = token
+        console.log('[LCUManager] League Session Token 已通过 WS 事件更新')
+      } else {
+        this._leagueSessionToken = null
+        console.log('[LCUManager] League Session Token 已清空（WS 事件）')
+      }
+    })
+  }
+
+  /** 主动拉取初始 token 填充缓存 */
+  private async _fetchInitialTokens() {
+    try {
+      const [entToken, sessionToken] = await Promise.all([
+        this.getEntitlementsToken().catch((e) => {
+          console.warn('[LCUManager] 初始拉取 Entitlements Token 失败:', e)
+          return null
+        }),
+        this.getLeagueSessionToken().catch((e) => {
+          console.warn('[LCUManager] 初始拉取 League Session Token 失败:', e)
+          return null
+        }),
+      ])
+      if (entToken) {
+        this._entitlementsToken = entToken
+        console.log('[LCUManager] 初始 Entitlements Token 已获取')
+      }
+      if (sessionToken) {
+        this._leagueSessionToken = sessionToken
+        console.log('[LCUManager] 初始 League Session Token 已获取')
+      }
+    } catch (error) {
+      console.warn('[LCUManager] 初始拉取 SGP Token 异常:', error)
+    }
   }
 
 
@@ -571,6 +676,120 @@ class LCUManager {
   /** 获取最近一起玩过的召唤师 */
   getRecentlyPlayedSummoners(): Promise<unknown> {
     return get('/lol-match-history/v1/recently-played-summoners')
+  }
+
+  // ==================== SGP Token ====================
+
+  /**
+   * 获取 Entitlements Token（SGP 战绩查询所需）
+   *
+   * 返回值说明：
+   * - `accessToken`: JWT，用于 `Authorization: Bearer {accessToken}` 请求 SGP 战绩/对局详情接口
+   * - `token`: Entitlements JWT（格式不同，部分 SGP 接口可能需要）
+   * - `issuer`: 签发者 URL，如 `http://hn1-k8s-bcs-internal.lol.qq.com:28088`
+   *   可从中解析当前区服（hn1 = 艾欧尼亚、hn10 = 黑色玫瑰 等）
+   * - `subject`: 玩家 PUUID
+   * - `entitlements`: 权限列表（通常为空数组）
+   *
+   * Akari 通过 WS 事件 `/entitlements/v1/token` 自动刷新，我们这里按需拉取。
+   */
+  getEntitlementsToken(): Promise<SgpEntitlementsToken> {
+    return get('/entitlements/v1/token')
+  }
+
+  /**
+   * 获取 League Session Token（SGP 通用查询所需）
+   *
+   * 返回纯 JWT 字符串，用于 `Authorization: Bearer {token}` 请求 SGP 通用接口（召唤师/排位等）。
+   */
+  getLeagueSessionToken(): Promise<string> {
+    return get('/lol-league-session/v1/league-session-token')
+  }
+
+  /**
+   * 从 Entitlements Token 的 issuer 推断当前 SGP 服务器 ID
+   *
+   * 优先使用缓存的 token，避免每次都发请求。
+   * 国服 issuer 格式：`http://hn1-k8s-bcs-internal.lol.qq.com:28088`
+   *   → 提取 `hn1` → 映射为 `TENCENT_HN1`
+   *
+   * 外服 issuer 格式：`https://euw1-red.lol.sgp.pvp.net`
+   *   → 提取 `euw1` → 映射为 `EUW`
+   *
+   * 如果解析失败返回空字符串
+   */
+  async getSgpServerId(): Promise<string> {
+    const tokenRes = this._entitlementsToken ?? await this.getEntitlementsToken()
+    const issuer = tokenRes.issuer ?? ''
+
+    // 国服格式: http://hn1-k8s-bcs-internal.lol.qq.com:28088
+    // 提取子域名部分
+    const tencentMatch = issuer.match(/https?:\/\/([a-z0-9]+)-k8s-bcs-internal\.lol\.qq\.com/)
+    if (tencentMatch) {
+      const serverCode = tencentMatch[1].toUpperCase() // e.g. "HN1"
+      return `TENCENT_${serverCode}`
+    }
+
+    // 外服格式: https://euw1-red.lol.sgp.pvp.net
+    // 简单提取第一个子域名段
+    const externalMatch = issuer.match(/https?:\/\/([a-z0-9]+)-/)
+    if (externalMatch) {
+      return externalMatch[1].toUpperCase()
+    }
+
+    return ''
+  }
+
+  /**
+   * 通过 SGP 查询战绩列表
+   *
+   * 相比 LCU 接口的优势：
+   * - 支持 `tag` 参数按队列模式过滤（如 `q_450` 只查大乱斗）
+   * - 无浏览器缓存问题
+   * - 国服跨区查询
+   * - 突破 LCU 100 场上限
+   *
+   * @param puuid 玩家 PUUID
+   * @param options 查询参数
+   * @param options.startIndex 起始索引（默认 0，注意：SGP 用 startIndex 而非 LCU 的 begIndex）
+   * @param options.count 获取数量（默认 100，注意：SGP 用 count 而非 LCU 的 endIndex）
+   * @param options.tag 按队列模式过滤，如 `q_450`（大乱斗），不传则查全部模式。使用 `queueIdToTag()` 生成。
+   */
+  async getSgpMatchHistory(puuid: string, options?: {
+    startIndex?: number
+    count?: number
+    tag?: string
+  }): Promise<import('@/types/sgp').SgpMatchHistoryLol> {
+    const token = this._entitlementsToken ?? await this.getEntitlementsToken()
+    const sgpServerId = await this.getSgpServerId()
+    const { SGP_SERVERS } = await import('@/types/sgp')
+    const server = SGP_SERVERS[sgpServerId.toUpperCase()]
+    if (!server?.matchHistory) {
+      throw new Error(`[SGP] 找不到服务器配置: ${sgpServerId}`)
+    }
+
+    const params = new URLSearchParams()
+    params.set('startIndex', String(options?.startIndex ?? 0))
+    params.set('count', String(options?.count ?? 100))
+    if (options?.tag) {
+      params.set('tag', options.tag)
+    }
+
+    const url = `${server.matchHistory}/match-history-query/v1/products/lol/player/${puuid}/SUMMARY?${params}`
+
+    const resp = await fetch(url, {
+      headers: {
+        'Authorization': `Bearer ${token.accessToken}`,
+        'User-Agent': 'LeagueOfLegendsClient',
+      },
+    })
+
+    if (!resp.ok) {
+      const body = await resp.text().catch(() => '')
+      throw new Error(`[SGP] 请求失败: ${resp.status} ${resp.statusText} ${body}`)
+    }
+
+    return resp.json()
   }
 
   // ==================== 好友 ====================
