@@ -432,7 +432,7 @@ export function ToolsPage() {
         </SettingCard>
         <SettingCard
           title="卸下头像边框"
-          description="移除头像框装饰，恢复干净的头像展示。"
+          description="移除头像框装饰，恢复干净的头像展示。(需召唤兽等级>=525)"
         >
           <SonaButton onClick={async () => {
             try {
@@ -451,7 +451,7 @@ export function ToolsPage() {
         </SettingCard>
         <SettingCard
           title="自定义生涯背景"
-          description="增强生涯背景弹窗，可以选择任意皮肤作为生涯背景。"
+          description="增强修改生涯背景弹窗，可以选择任意皮肤作为生涯背景。"
         >
           <SonaSwitch
             checked={customProfileBg}
@@ -477,6 +477,7 @@ export function ToolsPage() {
               options={[
                 { value: 'RANKED_SOLO_5x5', label: '单排/双排' },
                 { value: 'RANKED_FLEX_SR', label: '灵活组排' },
+                { value: 'RANKED_FLEX_TT', label: '灵活 3v3' },
                 { value: 'RANKED_TFT', label: '云顶之弈' },
                 { value: 'RANKED_TFT_DOUBLE_UP', label: '云顶双人' },
                 { value: 'RANKED_TFT_TURBO', label: '云顶激斗' },
