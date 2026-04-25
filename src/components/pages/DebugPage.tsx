@@ -3,6 +3,8 @@ import { SettingCard, SettingGroup } from '@/components/ui/SettingCard'
 import { SonaButton } from '@/components/ui/SonaButton'
 import { SonaInput } from '@/components/ui/SonaInput'
 import { SonaSelect } from '@/components/ui/SonaSelect'
+import { GameAnalysisModal } from '@/components/ui/GameAnalysisModal'
+import type { GameAnalysisModalProps } from '@/components/ui/GameAnalysisModal'
 import { store } from '@/lib/store'
 import { lcu, SGP_SERVERS } from '@/lib/lcu'
 import { searchChampions, type ChampionInfo, getChampionBalanceMeta, getAllChampionBalances } from '@/lib/assets'
@@ -22,6 +24,7 @@ export function DebugPage() {
   const [champSuggestions, setChampSuggestions] = useState<ChampionInfo[]>([])
   const [showChampSuggestions, setShowChampSuggestions] = useState(false)
   const [selectedChampId, setSelectedChampId] = useState(0)
+  const [gameAnalysisOpen, setGameAnalysisOpen] = useState(false)
   const champRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -73,6 +76,9 @@ export function DebugPage() {
           </SonaButton>
           <SonaButton onClick={() => runAndLog('英雄选择会话', () => lcu.getChampSelectSession())}>
             选人 Session
+          </SonaButton>
+          <SonaButton onClick={() => runAndLog('GameFlow Session', () => lcu.getGameflowSession())}>
+            GameFlow Session
           </SonaButton>
           <SonaButton onClick={() => runAndLog('共享池英雄', () => lcu.getBenchChampions())}>
             Bench 英雄
@@ -291,6 +297,9 @@ export function DebugPage() {
           </SonaButton>
           <SonaButton variant="secondary" onClick={() => window.reloadClient()}>
             重载客户端
+          </SonaButton>
+          <SonaButton onClick={() => setGameAnalysisOpen(true)}>
+            对局分析面板
           </SonaButton>
         </div>
       </SettingGroup>
@@ -654,6 +663,142 @@ export function DebugPage() {
           <pre>{output}</pre>
         </div>
       )}
+
+      <GameAnalysisModal open={gameAnalysisOpen} onClose={() => setGameAnalysisOpen(false)} mockData={GAME_ANALYSIS_MOCK} />
     </div>
   )
+}
+
+const GAME_ANALYSIS_MOCK: NonNullable<GameAnalysisModalProps['mockData']> = {
+  gameInfo: {
+    queueName: '排位赛 单双排',
+    gameMode: 'CLASSIC',
+    mapName: '召唤师峡谷',
+    isBlueTeam: true,
+    queueId: 420,
+  },
+  blueTeam: [
+    {
+      puuid: 'mock-blue-1', summonerId: 1, summonerName: '暗夜猎手 #CN1', championId: 67, teamParticipantId: 1, selectedPosition: 'top',
+      winRate: 75, wins: 30, total: 40, kdaNum: 5.2, avgK: 8.2, avgD: 4.1, avgA: 13.1,
+      rankText: '最强王者 单双', rankColor: '#f1c40f', rating: '战神', premadeGroup: 'A',
+      recentGames: [
+        { championId: 67, win: true, kills: 12, deaths: 3, assists: 8 },
+        { championId: 67, win: true, kills: 7, deaths: 5, assists: 11 },
+        { championId: 22, win: false, kills: 4, deaths: 8, assists: 6 },
+        { championId: 67, win: true, kills: 9, deaths: 2, assists: 14 },
+        { championId: 51, win: true, kills: 6, deaths: 4, assists: 9 },
+      ],
+    },
+    {
+      puuid: 'mock-blue-2', summonerId: 2, summonerName: '疾风剑豪 #JP2', championId: 157, teamParticipantId: 1, selectedPosition: 'mid',
+      winRate: 62, wins: 31, total: 50, kdaNum: 2.1, avgK: 9.5, avgD: 7.8, avgA: 6.9,
+      rankText: '傲世宗师 单双', rankColor: '#e74c3c', rating: '猛将', premadeGroup: 'A',
+      recentGames: [
+        { championId: 157, win: false, kills: 11, deaths: 9, assists: 3 },
+        { championId: 157, win: true, kills: 15, deaths: 5, assists: 4 },
+        { championId: 157, win: false, kills: 3, deaths: 12, assists: 2 },
+        { championId: 238, win: true, kills: 8, deaths: 6, assists: 5 },
+        { championId: 157, win: false, kills: 6, deaths: 10, assists: 4 },
+      ],
+    },
+    {
+      puuid: 'mock-blue-3', summonerId: 3, summonerName: '光辉女郎 #KR3', championId: 99, teamParticipantId: 3, selectedPosition: 'jungle',
+      winRate: 55, wins: 22, total: 40, kdaNum: 4.8, avgK: 5.1, avgD: 3.2, avgA: 10.3,
+      rankText: '超凡大师 单双', rankColor: '#9b59b6', rating: '神射', premadeGroup: null,
+      recentGames: [
+        { championId: 99, win: true, kills: 4, deaths: 2, assists: 16 },
+        { championId: 99, win: true, kills: 7, deaths: 3, assists: 12 },
+        { championId: 161, win: false, kills: 3, deaths: 6, assists: 8 },
+        { championId: 99, win: true, kills: 6, deaths: 4, assists: 11 },
+        { championId: 143, win: false, kills: 2, deaths: 5, assists: 9 },
+      ],
+    },
+    {
+      puuid: 'mock-blue-4', summonerId: 4, summonerName: '盲僧 #SEA4', championId: 64, teamParticipantId: 4, selectedPosition: 'bot',
+      winRate: 48, wins: 24, total: 50, kdaNum: 3.3, avgK: 7.3, avgD: 5.8, avgA: 11.8,
+      rankText: '璀璨钻石 II 单双', rankColor: '#3498db', rating: '先锋', premadeGroup: null,
+      recentGames: [
+        { championId: 64, win: true, kills: 8, deaths: 4, assists: 14 },
+        { championId: 64, win: false, kills: 5, deaths: 7, assists: 9 },
+        { championId: 64, win: true, kills: 10, deaths: 3, assists: 12 },
+        { championId: 120, win: true, kills: 6, deaths: 5, assists: 10 },
+        { championId: 64, win: false, kills: 3, deaths: 9, assists: 7 },
+      ],
+    },
+    {
+      puuid: 'mock-blue-5', summonerId: 5, summonerName: '锤石 #EU5', championId: 412, teamParticipantId: 5, selectedPosition: 'utility',
+      winRate: 25, wins: 8, total: 32, kdaNum: 2.8, avgK: 2.1, avgD: 5.3, avgA: 12.8,
+      rankText: '流光翡翠 IV 灵活', rankColor: '#00d084', rating: '坚守', premadeGroup: null,
+      recentGames: [
+        { championId: 412, win: false, kills: 1, deaths: 7, assists: 14 },
+        { championId: 412, win: false, kills: 3, deaths: 4, assists: 18 },
+        { championId: 201, win: false, kills: 0, deaths: 8, assists: 10 },
+        { championId: 412, win: true, kills: 2, deaths: 3, assists: 16 },
+        { championId: 89, win: false, kills: 1, deaths: 6, assists: 9 },
+      ],
+    },
+  ],
+  redTeam: [
+    {
+      puuid: 'mock-red-1', summonerId: 6, summonerName: '影流之主 #CN6', championId: 238, teamParticipantId: 6,
+      winRate: 58, wins: 29, total: 50, kdaNum: 4.5, avgK: 10.2, avgD: 4.8, avgA: 11.3,
+      rankText: '华贵铂金 I 单双', rankColor: '#b8c4cc', rating: '刺客', premadeGroup: 'B',
+      recentGames: [
+        { championId: 238, win: true, kills: 14, deaths: 3, assists: 6 },
+        { championId: 238, win: true, kills: 11, deaths: 5, assists: 8 },
+        { championId: 91, win: false, kills: 6, deaths: 9, assists: 3 },
+        { championId: 238, win: true, kills: 9, deaths: 4, assists: 7 },
+        { championId: 238, win: false, kills: 5, deaths: 8, assists: 4 },
+      ],
+    },
+    {
+      puuid: 'mock-red-2', summonerId: 7, summonerName: '沙漠皇帝 #KR7', championId: 268, teamParticipantId: 6,
+      winRate: 44, wins: 17, total: 39, kdaNum: 3.9, avgK: 6.5, avgD: 3.8, avgA: 8.3,
+      rankText: '荣耀黄金 III 单双', rankColor: '#c8aa6e', rating: '统帅', premadeGroup: 'B',
+      recentGames: [
+        { championId: 268, win: true, kills: 7, deaths: 3, assists: 10 },
+        { championId: 268, win: false, kills: 4, deaths: 6, assists: 7 },
+        { championId: 69, win: true, kills: 8, deaths: 2, assists: 9 },
+        { championId: 268, win: true, kills: 5, deaths: 4, assists: 11 },
+        { championId: 112, win: false, kills: 3, deaths: 7, assists: 5 },
+      ],
+    },
+    {
+      puuid: 'mock-red-3', summonerId: 8, summonerName: '德莱文 #NA8', championId: 119, teamParticipantId: 8,
+      winRate: 35, wins: 13, total: 37, kdaNum: 2.5, avgK: 8.8, avgD: 7.2, avgA: 9.1,
+      rankText: '不屈白银 II 灵活', rankColor: '#a09b8c', rating: '勇武', premadeGroup: null,
+      recentGames: [
+        { championId: 119, win: false, kills: 9, deaths: 8, assists: 5 },
+        { championId: 119, win: true, kills: 14, deaths: 4, assists: 6 },
+        { championId: 119, win: false, kills: 5, deaths: 10, assists: 3 },
+        { championId: 22, win: true, kills: 7, deaths: 5, assists: 8 },
+        { championId: 119, win: false, kills: 3, deaths: 9, assists: 4 },
+      ],
+    },
+    {
+      puuid: 'mock-red-4', summonerId: 9, summonerName: '赵信 #TW9', championId: 5, teamParticipantId: 9, selectedPosition: 'bot',
+      winRate: 22, wins: 7, total: 32, kdaNum: 2.9, avgK: 6.8, avgD: 6.1, avgA: 10.9,
+      rankText: '英勇青铜 I 单双', rankColor: '#cd7f32', rating: '冲锋', premadeGroup: 'C',
+      recentGames: [
+        { championId: 5, win: false, kills: 8, deaths: 5, assists: 13 },
+        { championId: 5, win: false, kills: 4, deaths: 8, assists: 7 },
+        { championId: 120, win: false, kills: 7, deaths: 4, assists: 12 },
+        { championId: 5, win: true, kills: 9, deaths: 3, assists: 11 },
+        { championId: 113, win: false, kills: 3, deaths: 9, assists: 6 },
+      ],
+    },
+    {
+      puuid: 'mock-red-5', summonerId: 10, summonerName: '牛头 #JP10', championId: 12, teamParticipantId: 9,
+      winRate: 15, wins: 4, total: 27, kdaNum: 3.1, avgK: 1.8, avgD: 4.5, avgA: 12.1,
+      rankText: '坚韧黑铁 IV 单双', rankColor: '#7e7e7e', rating: '坚守', premadeGroup: 'C',
+      recentGames: [
+        { championId: 12, win: false, kills: 2, deaths: 3, assists: 18 },
+        { championId: 12, win: false, kills: 0, deaths: 6, assists: 11 },
+        { championId: 201, win: false, kills: 1, deaths: 4, assists: 15 },
+        { championId: 89, win: true, kills: 3, deaths: 5, assists: 13 },
+        { championId: 12, win: false, kills: 1, deaths: 7, assists: 8 },
+      ],
+    },
+  ],
 }

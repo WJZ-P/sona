@@ -112,8 +112,14 @@ export function ToolsPage() {
   const [champSelectAssist, setChampSelectAssist] = useState(store.get('champSelectAssist'))
   const [balanceBuffTooltip, setBalanceBuffTooltip] = useState(store.get('balanceBuffTooltip'))
   const [champSelectQuitButton, setChampSelectQuitButton] = useState(store.get('champSelectQuitButton'))
+  const [gameAnalysisPopup, setGameAnalysisPopup] = useState(store.get('gameAnalysisPopup'))
+  const [autoReturnToLobby, setAutoReturnToLobby] = useState(store.get('autoReturnToLobby'))
+  const [autoReturnMode, setAutoReturnMode] = useState(store.get('autoReturnMode'))
   const [analyzeTeamPower, setAnalyzeTeamPower] = useState(store.get('analyzeTeamPower'))
   const [analyzeTeamPowerMsgType, setAnalyzeTeamPowerMsgType] = useState(store.get('analyzeTeamPowerMsgType'))
+  const [analyzeTeamPowerFetchCount, setAnalyzeTeamPowerFetchCount] = useState(store.get('analyzeTeamPowerFetchCount'))
+  const [champSelectAssistFetchCount, setChampSelectAssistFetchCount] = useState(store.get('champSelectAssistFetchCount'))
+  const [gameAnalysisFetchCount, setGameAnalysisFetchCount] = useState(store.get('gameAnalysisFetchCount'))
   const [sideIndicator, setSideIndicator] = useState(store.get('sideIndicator'))
   const [sideIndicatorMsgType, setSideIndicatorMsgType] = useState(store.get('sideIndicatorMsgType'))
   const [friendSmartGroup, setFriendSmartGroup] = useState(store.get('friendSmartGroup'))
@@ -157,7 +163,13 @@ export function ToolsPage() {
       store.onChange('champSelectAssist', setChampSelectAssist),
       store.onChange('balanceBuffTooltip', setBalanceBuffTooltip),
       store.onChange('champSelectQuitButton', setChampSelectQuitButton),
+      store.onChange('gameAnalysisPopup', setGameAnalysisPopup),
+      store.onChange('autoReturnToLobby', setAutoReturnToLobby),
+      store.onChange('autoReturnMode', setAutoReturnMode),
       store.onChange('analyzeTeamPower', setAnalyzeTeamPower),
+      store.onChange('analyzeTeamPowerFetchCount', setAnalyzeTeamPowerFetchCount),
+      store.onChange('champSelectAssistFetchCount', setChampSelectAssistFetchCount),
+      store.onChange('gameAnalysisFetchCount', setGameAnalysisFetchCount),
       store.onChange('sideIndicator', setSideIndicator),
       store.onChange('friendSmartGroup', setFriendSmartGroup),
       store.onChange('customProfileBg', setCustomProfileBg),
@@ -291,24 +303,6 @@ export function ToolsPage() {
           </SettingCard>
         )}
         <SettingCard
-          title="隐藏云顶之弈"
-          description="隐藏顶部导航栏的云顶之弈入口。"
-        >
-          <SonaSwitch
-            checked={hideTFT}
-            onChange={(v) => { setHideTFT(v); store.set('hideTFT', v) }}
-          />
-        </SettingCard>
-        <SettingCard
-          title="隐藏右侧导航文字"
-          description="隐藏主页顶部右侧导航栏的文字标签，仅保留图标，界面更简洁。"
-        >
-          <SonaSwitch
-            checked={hideRightNavText}
-            onChange={(v) => { setHideRightNavText(v); store.set('hideRightNavText', v) }}
-          />
-        </SettingCard>
-        <SettingCard
           title="大乱斗无CD换英雄"
           description="移除共享池英雄的切换冷却限制，随时换取心仪英雄。"
         >
@@ -321,6 +315,15 @@ export function ToolsPage() {
           title="分析友方战力"
           description="进入英雄选择时，自动分析队友近期战绩并发送到队伍聊天框。"
         >
+          <SonaSelect
+            value={String(analyzeTeamPowerFetchCount)}
+            onChange={(v) => { setAnalyzeTeamPowerFetchCount(Number(v)); store.set('analyzeTeamPowerFetchCount', Number(v)) }}
+            options={[
+              { value: '20', label: '近20局' },
+              { value: '50', label: '近50局' },
+              { value: '100', label: '近100局' },
+            ]}
+          />
           <SonaSelect
             value={analyzeTeamPowerMsgType}
             onChange={(v) => { setAnalyzeTeamPowerMsgType(v); store.set('analyzeTeamPowerMsgType', v) }}
@@ -355,6 +358,15 @@ export function ToolsPage() {
           title="英雄选择阶段增强"
           description="英雄选择时显示粒子特效，底部自动显示本模式近期胜率和KDA，点击队友头像可查询近期战绩。"
         >
+          <SonaSelect
+            value={String(champSelectAssistFetchCount)}
+            onChange={(v) => { setChampSelectAssistFetchCount(Number(v)); store.set('champSelectAssistFetchCount', Number(v)) }}
+            options={[
+              { value: '20', label: '近20局' },
+              { value: '50', label: '近50局' },
+              { value: '100', label: '近100局' },
+            ]}
+          />
           <SonaSwitch
             checked={champSelectAssist}
             onChange={(v) => { setChampSelectAssist(v); store.set('champSelectAssist', v) }}
@@ -379,6 +391,41 @@ export function ToolsPage() {
             onChange={(v) => { setChampSelectQuitButton(v); store.set('champSelectQuitButton', v) }}
           />
         </SettingCard> */}
+        <SettingCard
+          title="全局战力分析弹窗"
+          description="进入游戏后，自动弹窗展示双方队伍战力分析，包括胜率、KDA、段位、开黑分组。"
+        >
+          <SonaSelect
+            value={String(gameAnalysisFetchCount)}
+            onChange={(v) => { setGameAnalysisFetchCount(Number(v)); store.set('gameAnalysisFetchCount', Number(v)) }}
+            options={[
+              { value: '20', label: '近20局' },
+              { value: '50', label: '近50局' },
+              { value: '100', label: '近100局' },
+            ]}
+          />
+          <SonaSwitch
+            checked={gameAnalysisPopup}
+            onChange={(v) => { setGameAnalysisPopup(v); store.set('gameAnalysisPopup', v) }}
+          />
+        </SettingCard>
+        <SettingCard
+          title="对局结束自动返回房间"
+          description="对局结束后自动返回房间，省去手动操作。可选择自动排队或仅返回房间。"
+        >
+          <SonaSelect
+            value={autoReturnMode}
+            onChange={(v) => { setAutoReturnMode(v); store.set('autoReturnMode', v) }}
+            options={[
+              { value: 'queue', label: '自动排队' },
+              { value: 'lobby', label: '仅返回房间' },
+            ]}
+          />
+          <SonaSwitch
+            checked={autoReturnToLobby}
+            onChange={(v) => { setAutoReturnToLobby(v); store.set('autoReturnToLobby', v) }}
+          />
+        </SettingCard>
         <SettingCard
           title="对局结束自动点赞"
           description="对局结束后，随机给队友点赞，再也不用手点啦。"
@@ -516,6 +563,39 @@ export function ToolsPage() {
             checked={friendSmartGroup}
             onChange={(v) => { setFriendSmartGroup(v); store.set('friendSmartGroup', v) }}
           />
+        </SettingCard>
+      </SettingGroup>
+
+      <SettingGroup title="界面">
+        <SettingCard
+          title="隐藏首页云顶之弈"
+          description="隐藏顶部导航栏的云顶之弈入口。"
+        >
+          <SonaSwitch
+            checked={hideTFT}
+            onChange={(v) => { setHideTFT(v); store.set('hideTFT', v) }}
+          />
+        </SettingCard>
+        <SettingCard
+          title="隐藏右侧导航文字"
+          description="隐藏主页顶部右侧导航栏的文字标签，仅保留图标，界面更简洁。"
+        >
+          <SonaSwitch
+            checked={hideRightNavText}
+            onChange={(v) => { setHideRightNavText(v); store.set('hideRightNavText', v) }}
+          />
+        </SettingCard>
+        <SettingCard
+          title="窗口特效"
+          description="为客户端窗口添加毛玻璃等视觉效果。Win10 拖动窗口时可能卡顿。但实际测试下来好像没啥效果？"
+        >
+          <div style={{ minWidth: 130 }}>
+            <SonaSelect
+              options={effectOptions}
+              value={windowEffect}
+              onChange={handleEffectChange}
+            />
+          </div>
         </SettingCard>
       </SettingGroup>
 
@@ -668,21 +748,6 @@ export function ToolsPage() {
       <SettingGroup title="设置备份">
         <p className="sona-subtitle" style={{ marginBottom: 10 }}>备份当前客户端设置（快捷键、界面布局等），支持多个命名存档。</p>
         <BackupManager />
-      </SettingGroup>
-
-      <SettingGroup title="界面">
-        <SettingCard
-          title="窗口特效"
-          description="为客户端窗口添加毛玻璃等视觉效果。Win10 拖动窗口时可能卡顿。但实际测试下来好像没啥效果？"
-        >
-          <div style={{ minWidth: 130 }}>
-            <SonaSelect
-              options={effectOptions}
-              value={windowEffect}
-              onChange={handleEffectChange}
-            />
-          </div>
-        </SettingCard>
       </SettingGroup>
     </div>
   )

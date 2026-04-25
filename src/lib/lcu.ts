@@ -383,6 +383,11 @@ class LCUManager {
     return post('/lol-gameflow/v1/surrender')
   }
 
+  /** 再来一局（对局结束后返回房间并自动排队） */
+  playAgain(): Promise<unknown> {
+    return post('/lol-lobby/v2/play-again')
+  }
+
   // ==================== 英雄选择 ====================
 
   /** 获取英雄选择会话 */

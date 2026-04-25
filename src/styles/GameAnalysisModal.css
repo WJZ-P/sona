@@ -1,0 +1,467 @@
+/* ==================== 对局战力分析弹窗 ==================== */
+
+.sga-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  user-select: none;
+}
+
+/* ---- Header ---- */
+
+.sga-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  border-bottom: 1px solid #3c2e16;
+}
+
+.sga-header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sga-header-icon {
+  color: #c8aa6e;
+  font-size: 18px;
+}
+
+.sga-header-title {
+  color: #c8aa6e;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 3px;
+}
+
+.sga-header-info {
+  color: #a09b8c;
+  font-size: 14px;
+  padding: 5px 12px;
+  background: rgba(30, 35, 40, 0.6);
+  border: 1px solid rgba(200, 170, 110, 0.2);
+  border-radius: 0;
+  white-space: nowrap;
+}
+
+/* ---- Body ---- */
+
+.sga-body {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.sga-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: 14px;
+  color: #a09b8c;
+  font-size: 14px;
+}
+
+.sga-loading-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid #3c2e16;
+  border-top-color: #c8aa6e;
+  border-radius: 50%;
+  animation: sga-spin 0.8s linear infinite;
+}
+
+@keyframes sga-spin {
+  to { transform: rotate(360deg); }
+}
+
+.sga-error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #e74c3c;
+  font-size: 14px;
+}
+
+.sga-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #5c5b57;
+  font-size: 14px;
+}
+
+/* ---- 双栏队伍 ---- */
+
+.sga-teams {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.sga-team {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.sga-team:first-child {
+  border-right: 1px solid #3c2e16;
+}
+
+.sga-team-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px;
+  background: rgba(15, 25, 35, 0.7);
+  border-bottom: 1px solid #3c2e16;
+}
+
+.sga-team-header--blue {
+  border-left: 3px solid #0088cc;
+}
+
+.sga-team-header--red {
+  border-right: 3px solid #cc3333;
+  border-left: none;
+  flex-direction: row-reverse;
+}
+
+.sga-team-name {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+.sga-team-header--blue .sga-team-name {
+  color: #00a1e6;
+}
+
+.sga-team-header--red .sga-team-name {
+  color: #e84057;
+}
+
+.sga-team-avg {
+  font-size: 12px;
+  color: #a09b8c;
+  font-weight: 600;
+}
+
+.sga-team-avg-num {
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.sga-team-avg-num.sga-avg-green {
+  color: #5bbd72;
+}
+
+.sga-team-avg-num.sga-avg-red {
+  color: #e84057;
+}
+
+.sga-team-players {
+  flex: 1;
+  overflow-y: auto;
+  padding: 6px 8px;
+}
+
+.sga-team-players::-webkit-scrollbar { width: 4px; }
+.sga-team-players::-webkit-scrollbar-track { background: rgba(1, 10, 19, 0.8); }
+.sga-team-players::-webkit-scrollbar-thumb { background: #3c2e16; border-radius: 2px; }
+
+/* ---- 玩家卡片（含近期战绩） ---- */
+
+.sga-player-wrapper {
+  position: relative;
+  margin-bottom: 4px;
+  border-radius: 2px;
+  border: 1px solid transparent;
+  border-left: 3px solid #3c2e16;
+  overflow: hidden;
+  transition: border-color 0.2s;
+  cursor: pointer;
+  background: rgba(30, 35, 40, 0.4);
+}
+
+.sga-player-wrapper::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0);
+  transition: background 0.15s;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.sga-player-wrapper:hover {
+  border-color: rgba(200, 170, 110, 0.3);
+}
+
+.sga-player-wrapper:hover::after {
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.sga-player-wrapper--red {
+  border-left: none;
+  border-right: 3px solid #cc3333;
+}
+
+.sga-player-wrapper--red:hover {
+  border-right-color: #cc3333;
+}
+
+.sga-player-wrapper:not(.sga-player-wrapper--red) {
+  border-left-color: #0088cc;
+}
+
+.sga-player-wrapper:not(.sga-player-wrapper--red):hover {
+  border-left-color: #0088cc;
+}
+
+.sga-player {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  gap: 12px;
+  transition: background 0.15s;
+}
+
+.sga-player--red {
+  flex-direction: row-reverse;
+  text-align: right;
+}
+
+/* ---- 英雄头像 ---- */
+
+.sga-player-champ {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 1.5px solid #c8aa6e;
+  flex-shrink: 0;
+  background: #010a13;
+}
+
+.sga-player-champ-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.15);
+}
+
+.sga-player-champ-placeholder {
+  width: 100%;
+  height: 100%;
+  background: #1e2328;
+}
+
+/* ---- 玩家信息 (名称 + 段位) ---- */
+
+.sga-player-info {
+  width: 200px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow: hidden;
+}
+
+.sga-player--red .sga-player-info {
+  align-items: flex-end;
+}
+
+.sga-player-name-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  overflow: hidden;
+}
+
+.sga-player--red .sga-player-name-row {
+  flex-direction: row-reverse;
+}
+
+.sga-player-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: #f0e6d2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sga-premade-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 2px;
+  color: #010a13;
+  font-size: 10px;
+  font-weight: 800;
+  flex-shrink: 0;
+  letter-spacing: 0.5px;
+}
+
+.sga-player-rank {
+  font-size: 11px;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sga-player-rating {
+  color: #c8aa6e;
+  font-weight: 400;
+}
+
+/* ---- 胜率 ---- */
+
+.sga-player-winrate {
+  flex: 1;
+  min-width: 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.sga-player--red .sga-player-winrate {
+  align-items: flex-end;
+}
+
+.sga-winrate-text {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  width: 100%;
+}
+
+.sga-player--red .sga-winrate-text {
+  flex-direction: row-reverse;
+}
+
+.sga-winrate-wl {
+  font-size: 12px;
+}
+
+.sga-wl-win {
+  color: #5bbd72;
+  font-weight: 600;
+}
+
+.sga-wl-loss {
+  color: #e84057;
+  font-weight: 600;
+}
+
+.sga-wl-sep {
+  color: #7e7e7e;
+}
+
+.sga-no-data {
+  color: #5c5b57;
+  font-size: 11px;
+}
+
+.sga-winrate-bar {
+  width: 100%;
+  height: 3px;
+  background: #111;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.sga-winrate-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.4s ease;
+}
+
+/* ---- KDA ---- */
+
+.sga-player-kda {
+  width: 60px;
+  text-align: center;
+  font-size: 13px;
+  font-family: monospace;
+  flex-shrink: 0;
+  color: #b8c4d0;
+}
+
+.sga-kda-label {
+  color: #7e7e7e;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* ---- 近期战绩 ---- */
+
+.sga-recent {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  gap: 6px;
+  padding: 6px 12px 8px;
+}
+
+.sga-player-wrapper--red .sga-recent {
+  flex-direction: row-reverse;
+}
+
+.sga-recent-game {
+  display: flex;
+  align-items: center;
+  padding: 4px 8px;
+  border-radius: 3px;
+  font-size: 11px;
+  white-space: nowrap;
+  flex: 1;
+  justify-content: space-between;
+}
+
+.sga-recent-win {
+  background: rgba(91, 189, 114, 0.15);
+}
+
+.sga-recent-loss {
+  background: rgba(232, 64, 87, 0.15);
+}
+
+.sga-recent-champ {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.sga-recent-kda {
+  color: #a09b8c;
+  font-size: 15px;
+  text-align: center;
+  font-weight: bold;
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.sga-kda-slash {
+  color: #98abaf;
+}

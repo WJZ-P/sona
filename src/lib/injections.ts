@@ -124,8 +124,8 @@ async function restoreAvailabilityAndStatus() {
       savedAvailability, JSON.stringify(savedStatus),
     )
 
-    // 2. 恢复在线状态
-    if (savedAvailability && savedAvailability !== me.availability) {
+    // 2. 恢复在线状态（不恢复 away，它是客户端自动设置的，不应作为启动默认值）
+    if (savedAvailability && savedAvailability !== 'away' && savedAvailability !== me.availability) {
       try {
         await lcu.setAvailability(savedAvailability)
         logger.info('[Availability] 已写入 availability: %s', savedAvailability)
@@ -267,7 +267,9 @@ function subscribeChatMeSync() {
 
     // 同步在线状态（菜单点击那条路已经写过一次 store，这里是兜底：比如玩家在别的插件/
     // 命令行工具里改了 availability，我们也捕获）
-    if (me.availability && store.get('availability') !== me.availability) {
+    // 注意：不持久化 away 状态，因为它是客户端自动设置的（玩家一段时间不操作），
+    // 不应作为下次启动的默认状态
+    if (me.availability && me.availability !== 'away' && store.get('availability') !== me.availability) {
       store.set('availability', me.availability)
       currentAvailability = me.availability
       logger.info('[Availability] 在线状态变化 → 已持久化: %s', me.availability)
@@ -318,9 +320,11 @@ function showAvailabilityMenu(anchor: HTMLElement) {
         // 写 store 前先看当前阶段：只在空闲阶段（None/Lobby）持久化。
         // 游戏中/选人中/结算中临时切一下不该被当成"下次启动的默认状态"，
         // 否则会造成"玩家游戏中切了一下勿扰 → 下次启动恢复成勿扰 → 又触发缝合怪"的滚雪球。
+        // 同样不持久化 away 状态，它是客户端自动设置的（玩家一段时间不操作），
+        // 不应作为下次启动的默认状态。
         lcu.getGameflowPhase()
           .then((phase) => {
-            if (phase === 'None' || phase === 'Lobby') {
+            if ((phase === 'None' || phase === 'Lobby') && option.value !== 'away') {
               store.set('availability', option.value)
               logger.info('[Availability] 持久化: %s (phase=%s)', option.value, phase)
             } else {
@@ -475,12 +479,14 @@ export function setHideRightNavTextEnabled(enabled: boolean) {
   } else {
     injector.unregister(tryHideRightNavText)
     // 恢复被隐藏的文字
-    document.querySelectorAll(`[${NAV_TEXT_HIDDEN_ATTR}]`).forEach((el) => {
-      const navItem = el as HTMLElement
-      const text = navItem.shadowRoot?.querySelector('.menu-item-small-text') as HTMLElement | null
-      if (text) text.style.display = ''
-      navItem.removeAttribute(NAV_TEXT_HIDDEN_ATTR)
-    })
+    const nav = document.querySelector('.right-nav-menu')
+    if (nav) {
+      nav.removeAttribute(NAV_TEXT_HIDDEN_ATTR)
+      nav.querySelectorAll('lol-uikit-navigation-item').forEach((item) => {
+        const text = (item as HTMLElement).querySelector('.menu-item-small-text') as HTMLElement | null
+        if (text) text.style.display = ''
+      })
+    }
   }
 }
 
@@ -491,20 +497,24 @@ export function setHideRightNavTextEnabled(enabled: boolean) {
 function tryHideRightNavText(): boolean {
   if (!hideRightNavTextEnabled) return true
 
-  const navItems = document.querySelectorAll(
-    `.right-nav-menu lol-uikit-navigation-item:not([${NAV_TEXT_HIDDEN_ATTR}])`
-  )
-  logger.info('navItems', navItems)
+  const nav = document.querySelector('.right-nav-menu')
+  if (!nav || nav.hasAttribute(NAV_TEXT_HIDDEN_ATTR)) return true
 
+  const navItems = nav.querySelectorAll('lol-uikit-navigation-item')
+  let hiddenCount = 0
   navItems.forEach((item) => {
     const el = item as HTMLElement
     const text = el.querySelector('.menu-item-small-text') as HTMLElement | null
     if (text) {
       text.style.display = 'none'
-      el.setAttribute(NAV_TEXT_HIDDEN_ATTR, 'true')
+      hiddenCount++
+      logger.info(`[HideRightNavText] Hide right nav text: ${el.textContent}`)
     }
   })
-
+  // 只有所有 item 都成功隐藏了 text 才打 tag，否则下帧继续尝试
+  if (hiddenCount > 0) {
+    nav.setAttribute(NAV_TEXT_HIDDEN_ATTR, 'true')
+  }
   return true
 }
 

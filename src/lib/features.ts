@@ -310,7 +310,11 @@ async function _doFetchTeamStats(): Promise<{ isBlue: boolean; stats: TeammateSt
   // 将 queueId 转为 SGP tag
   const tag = queueIdToTag(currentQueueId)
 
-  const FETCH_COUNT = 100
+  // 取两个功能中较大的查询局数，确保数据充足（两者共用同一轮请求）
+  const FETCH_COUNT = Math.max(
+    store.get('champSelectAssistFetchCount') || 50,
+    store.get('analyzeTeamPowerFetchCount') || 50,
+  )
 
   /** 构造占位元素：主播模式下队友 puuid 为空，无法查询战绩 */
   const placeholder = (player: typeof session.myTeam[number], i: number): TeammateStats => ({
@@ -644,7 +648,7 @@ function updateChampSelectAssist(enabled: boolean) {
 /**
  * 根据胜率和 KDA 给出 LOL 风格幽默评价
  */
-function getRating(winRate: number, kda: number): string {
+export function getRating(winRate: number, kda: number): string {
   if (winRate >= 75 && kda >= 4.5) return '👑 峡谷通天代'
   if (winRate >= 70) return '🚀 降维来炸鱼'
   if (winRate >= 65) return '🔥 绝对真大腿'
@@ -1397,6 +1401,7 @@ function updateRankDisguise(enabled: boolean) {
 
 
 import { ProfileBackgroundPicker } from '@/components/ui/ProfileBackgroundPicker'
+import { GameAnalysisModal } from '@/components/ui/GameAnalysisModal'
 
 // ==================== 生涯背景自定义 ====================
 
@@ -1480,6 +1485,192 @@ function updateCustomProfileBg(enabled: boolean) {
 }
 
 
+// ==================== 进入游戏自动弹窗战力分析 ====================
+
+/** GameAnalysisModal 的独立 React root */
+let gameAnalysisRoot: Root | null = null
+let gameAnalysisContainer: HTMLDivElement | null = null
+
+function showGameAnalysisModal() {
+  if (!gameAnalysisContainer) {
+    gameAnalysisContainer = document.createElement('div')
+    gameAnalysisContainer.id = 'sona-game-analysis-root'
+    document.body.appendChild(gameAnalysisContainer)
+    gameAnalysisRoot = createRoot(gameAnalysisContainer)
+  }
+
+  const close = () => {
+    gameAnalysisRoot?.render(
+      createElement(GameAnalysisModal, { open: false, onClose: close }),
+    )
+  }
+
+  gameAnalysisRoot!.render(
+    createElement(GameAnalysisModal, { open: true, onClose: close }),
+  )
+  logger.info('[GameAnalysis] 战力分析弹窗已显示')
+}
+
+function cleanupGameAnalysisModal() {
+  if (gameAnalysisRoot) {
+    gameAnalysisRoot.unmount()
+    gameAnalysisRoot = null
+  }
+  if (gameAnalysisContainer) {
+    gameAnalysisContainer.remove()
+    gameAnalysisContainer = null
+  }
+}
+
+// ---- 客户端内嵌按钮 ----
+
+const GAME_ANALYSIS_BTN_ATTR = 'data-sona-game-analysis'
+
+/**
+ * 注入任务：在 game-in-progress-container 中注入"对局分析"按钮
+ * 直接使用客户端原生的 <lol-uikit-flat-button>，自带官方金色边框、hover 动效、点击反馈
+ */
+function tryInjectGameAnalysisButton(): boolean {
+  const container = document.querySelector('.game-in-progress-container')
+  if (!container) return false
+
+  // 已注入过，跳过
+  if (container.querySelector(`[${GAME_ANALYSIS_BTN_ATTR}]`)) return true
+
+  const btn = document.createElement('lol-uikit-flat-button')
+  btn.setAttribute(GAME_ANALYSIS_BTN_ATTR, 'true')
+  btn.textContent = '对局分析'
+  btn.style.marginTop = '12px'
+
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation()
+    e.preventDefault()
+    showGameAnalysisModal()
+    logger.info('[GameAnalysis] 打开分析弹窗')
+  })
+
+  container.appendChild(btn)
+  logger.info('[GameAnalysis] 客户端内嵌按钮已注入 ✓')
+  return true
+}
+
+/** 清理客户端内嵌按钮 */
+function cleanupGameAnalysisButton() {
+  document.querySelectorAll(`[${GAME_ANALYSIS_BTN_ATTR}]`).forEach((el) => el.remove())
+}
+
+let gameAnalysisBtnRegistered = false
+
+/** 跟踪当前游戏 ID，确保每局只弹一次 */
+let lastPopupGameId = 0
+
+let gameAnalysisPopupUnsub: (() => void) | null = null
+
+function updateGameAnalysisPopup(enabled: boolean) {
+  if (enabled && !gameAnalysisPopupUnsub) {
+    gameAnalysisPopupUnsub = lcu.observe(LcuEventUri.GAMEFLOW_PHASE_CHANGE, (event: LCUEventMessage) => {
+      const phase = event.data as GameflowPhase
+      if (phase === 'InProgress') {
+        // 注册内嵌按钮注入
+        if (!gameAnalysisBtnRegistered) {
+          injector.register(tryInjectGameAnalysisButton)
+          gameAnalysisBtnRegistered = true
+        }
+        // 查询当前 gameId 避免重连时重复弹窗
+        lcu.getGameflowSession()
+          .then((session) => {
+            const gid = session.gameData?.gameId ?? 0
+            if (gid > 0 && gid !== lastPopupGameId) {
+              lastPopupGameId = gid
+              showGameAnalysisModal()
+            }
+          })
+          .catch(() => {
+            // session 查询失败也尝试弹窗（可能是自定义等特殊情况）
+            showGameAnalysisModal()
+          })
+      } else if (phase === 'None' || phase === 'Lobby') {
+        // 对局彻底结束，重置状态
+        lastPopupGameId = 0
+        // 取消按钮注入
+        if (gameAnalysisBtnRegistered) {
+          injector.unregister(tryInjectGameAnalysisButton)
+          gameAnalysisBtnRegistered = false
+        }
+        cleanupGameAnalysisButton()
+        cleanupGameAnalysisModal()
+      }
+    })
+    logger.info('Game analysis popup enabled ✓')
+  } else if (!enabled && gameAnalysisPopupUnsub) {
+    gameAnalysisPopupUnsub()
+    gameAnalysisPopupUnsub = null
+    lastPopupGameId = 0
+    if (gameAnalysisBtnRegistered) {
+      injector.unregister(tryInjectGameAnalysisButton)
+      gameAnalysisBtnRegistered = false
+    }
+    cleanupGameAnalysisButton()
+    cleanupGameAnalysisModal()
+    logger.info('Game analysis popup disabled')
+  }
+}
+
+
+// ==================== 对局结束自动返回房间 ====================
+
+let autoReturnUnsub: (() => void) | null = null
+
+function updateAutoReturnToLobby(enabled: boolean) {
+  if (enabled && !autoReturnUnsub) {
+    autoReturnUnsub = lcu.observe(LcuEventUri.GAMEFLOW_PHASE_CHANGE, async (event: LCUEventMessage) => {
+      const phase = event.data as GameflowPhase
+
+      if (phase === 'EndOfGame') {
+        const mode = store.get('autoReturnMode')
+        logger.info('[AutoReturn] 检测到对局结束，准备执行自动返回流程...')
+
+        // 延迟等待：刚进入结算时，服务器可能还在结算荣誉，给点缓冲时间
+        await sleep(2000);
+
+        try {
+          // 统一使用 playAgain 重建房间
+          await lcu.playAgain()
+          logger.info('[AutoReturn] 已通过 play-again 重建房间（已保留原队伍结构）✓')
+
+          // 自动排队模式：额外调用 startMatchmaking（带重试，队友可能还没准备好）
+          if (mode === 'queue') {
+            logger.info('[AutoReturn] 当前模式为自动排队，准备启动匹配引擎...')
+            const MAX_RETRIES = 15
+            for (let i = 1; i <= MAX_RETRIES; i++) {
+              await sleep(1000)
+              try {
+                await lcu.startMatchmaking()
+                logger.info('[AutoReturn] 正在自动匹配... ✓ (第 %d 次尝试)', i)
+                break
+              } catch (err) {
+                if (i < MAX_RETRIES) {
+                  logger.info('[AutoReturn] 开始排队失败（队友可能未就绪），1s 后重试... (%d/%d)', i, MAX_RETRIES)
+                } else {
+                  logger.error('[AutoReturn] 开始排队失败，已达最大重试次数 %d:', MAX_RETRIES, err)
+                }
+              }
+            }
+          }
+        } catch (err) {
+          logger.error('[AutoReturn] 自动返回流程异常:', err)
+        }
+      }
+    })
+    logger.info('Auto return to lobby enabled ✓')
+  } else if (!enabled && autoReturnUnsub) {
+    autoReturnUnsub()
+    autoReturnUnsub = null
+    logger.info('Auto return to lobby disabled')
+  }
+}
+
+
 // ==================== 初始化 ====================
 
 
@@ -1537,6 +1728,19 @@ export function initFeatures() {
 
   updateChampSelectQuitButton(store.get('champSelectQuitButton'))
   store.onChange('champSelectQuitButton', updateChampSelectQuitButton)
+
+  updateGameAnalysisPopup(store.get('gameAnalysisPopup'))
+  store.onChange('gameAnalysisPopup', updateGameAnalysisPopup)
+
+  updateAutoReturnToLobby(store.get('autoReturnToLobby'))
+  store.onChange('autoReturnToLobby', updateAutoReturnToLobby)
+  store.onChange('autoReturnMode', () => {
+    // 模式变化时，如果功能已启用，重新注册以应用新模式
+    if (store.get('autoReturnToLobby')) {
+      updateAutoReturnToLobby(false)
+      updateAutoReturnToLobby(true)
+    }
+  })
 
   // 解锁在线状态切换（接管客户端按钮，弹自定义"隐身/手机在线"菜单）
   setAvailabilityHijackEnabled(store.get('unlockAvailability'))

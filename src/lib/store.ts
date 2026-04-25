@@ -53,6 +53,12 @@ export interface SonaConfig {
   analyzeTeamPower: boolean
   /** 分析友方战力消息类型: chat=队友可见, celebration=仅自己可见 */
   analyzeTeamPowerMsgType: string
+  /** 战绩查询局数（20/50/100），默认50 */
+  analyzeTeamPowerFetchCount: number
+  /** 英雄选择增强查询局数（20/50/100），默认50 */
+  champSelectAssistFetchCount: number
+  /** 全局战力分析查询局数（20/50/100），默认50 */
+  gameAnalysisFetchCount: number
   /** 选人阶段红蓝方提示（进入英雄选择时在聊天框提示当前阵营） */
   sideIndicator: boolean
   /** 红蓝方提示消息类型: chat=队友可见, celebration=仅自己可见 */
@@ -89,6 +95,12 @@ export interface SonaConfig {
   unlockChromas: boolean
   /** 选人阶段退出按钮（非自定义对局的英雄选择里补上"退出对局"按钮） */
   champSelectQuitButton: boolean
+  /** 进入游戏后自动弹窗显示全局战力分析 */
+  gameAnalysisPopup: boolean
+  /** 对局结束后自动返回房间 */
+  autoReturnToLobby: boolean
+  /** 自动返回模式: queue=自动排队, lobby=仅返回房间 */
+  autoReturnMode: string
 }
 
 
@@ -110,6 +122,9 @@ const DEFAULT_CONFIG: SonaConfig = {
   champSelectAssist: false,
   analyzeTeamPower: false,
   analyzeTeamPowerMsgType: 'celebration',
+  analyzeTeamPowerFetchCount: 50,
+  champSelectAssistFetchCount: 50,
+  gameAnalysisFetchCount: 50,
   sideIndicator: false,
   sideIndicatorMsgType: 'celebration',
   globalParticle: false,
@@ -128,6 +143,9 @@ const DEFAULT_CONFIG: SonaConfig = {
   balanceBuffTooltip: false,
   unlockChromas: true,
   champSelectQuitButton: false,
+  gameAnalysisPopup: false,
+  autoReturnToLobby: false,
+  autoReturnMode: 'queue',
 }
 
 

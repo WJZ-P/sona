@@ -377,16 +377,15 @@ export interface GameflowSession {
   gameClient: GameClient
   gameData: {
     gameId: number
+    gameName: string
     isCustomGame: boolean
-    queue: {
-      id: number
-      type: string
-      gameMode: string
-      name: string
-    }
+    password: string
+    playerChampionSelections: PlayerChampionSelection[]
+    queue: GameQueue
+    spectatorKey: string
+    spectatorsAllowed: boolean
     teamOne: GameflowTeamPlayer[]
     teamTwo: GameflowTeamPlayer[]
-    playerChampionSelections: PlayerChampionSelection[]
   }
   gameDodge: {
     dodgeIds: number[]
@@ -396,7 +395,20 @@ export interface GameflowSession {
   map: {
     id: number
     name: string
+    description: string
+    gameMode: string
+    gameModeName: string
+    gameModeShortName: string
+    gameMutator: string
+    isRGM: boolean
+    mapStringId: string
+    platformId: string
+    platformName: string
     assets: Record<string, string>
+    categorizedContentBundles: Record<string, unknown>
+    perPositionDisallowedSummonerSpells: Record<string, unknown>
+    perPositionRequiredSummonerSpells: Record<string, unknown>
+    properties: Record<string, unknown>
   }
 }
 
@@ -404,19 +416,26 @@ export interface GameflowSession {
 export interface GameflowTeamPlayer {
   championId: number
   puuid: string
+  profileIconId: number
+  lastSelectedSkinIndex: number
   selectedPosition: string
   selectedRole: string
   summonerId: number
+  /** 注意：在 InProgress 阶段此字段始终为空字符串，需通过 getSummonerByPuuid 获取 displayName */
+  summonerInternalName: string
+  /** 注意：在 InProgress 阶段此字段始终为空字符串，需通过 getSummonerByPuuid 获取 displayName */
   summonerName: string
+  teamOwner: boolean
+  teamParticipantId: number
 }
 
 /** 玩家英雄选择信息 */
 export interface PlayerChampionSelection {
   championId: number
+  puuid: string
   selectedSkinIndex: number
   spell1Id: number
   spell2Id: number
-  summonerInternalName: string
 }
 
 // ==================== 英雄选择相关 ====================

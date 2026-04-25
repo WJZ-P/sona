@@ -68,8 +68,8 @@
     inset 0 1px 0 rgba(200, 170, 110, 0.08);
   overflow: hidden;
   animation: sona-modal-dialog-in 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  max-width: 90vw;
-  max-height: 85vh;
+  max-width: 95vw;
+  max-height: 92vh;
 }
 
 /* 粒子 Canvas 背景 — 覆盖整个 dialog */
