@@ -207,7 +207,7 @@ export function MatchHistoryModal({ open, onClose, puuid, playerName, queueId: d
   const filterRef = useRef<HTMLDivElement>(null)
   const nextStartIndex = useRef(0)
   const cleanupScroll = useRef<(() => void) | null>(null)
-  const INITIAL_FETCH = 100
+  const INITIAL_FETCH = 20
   const MORE_FETCH = 20
 
   // 可玩队列缓存

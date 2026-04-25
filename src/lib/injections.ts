@@ -414,6 +414,100 @@ function tryHijackAvailabilityHitbox(): boolean {
   return true
 }
 
+// ==================== 隐藏云顶之弈入口 ====================
+
+/** 是否启用"隐藏云顶之弈入口"功能 */
+let hideTFTEnabled = false
+
+/** 设置开关状态（供 features.ts 调用） */
+export function setHideTFTEnabled(enabled: boolean) {
+  hideTFTEnabled = enabled
+  if (enabled) {
+    injector.register(tryRemoveTFT)
+  } else {
+    injector.unregister(tryRemoveTFT)
+    // 恢复被隐藏的元素：移除 data-sona-hidden 标记，让元素重新显示
+    document.querySelectorAll(`[${HIJACKED_ATTR}-tft]`).forEach((el) => {
+      (el as HTMLElement).style.display = ''
+      el.removeAttribute(`${HIJACKED_ATTR}-tft`)
+    })
+  }
+}
+
+const TFT_HIDDEN_ATTR = `${HIJACKED_ATTR}-tft`
+
+/**
+ * 注入任务：隐藏云顶之弈入口
+ * 隐藏顶部导航栏 TFT 菜单项
+ */
+function tryRemoveTFT(): boolean {
+  if (!hideTFTEnabled) return true
+
+  // 顶部导航栏 TFT 菜单项
+  const navItem = document.querySelector(`.menu_item_navbar_tft:not([${TFT_HIDDEN_ATTR}])`)
+  if (navItem) {
+    navItem.setAttribute(TFT_HIDDEN_ATTR, 'true')
+    ;(navItem as HTMLElement).style.display = 'none'
+  }
+
+  // 主界面 TFT 游戏模式卡片
+  // const gameCard = document.querySelector(`[data-game-mode="TFT"].game-type-card:not([${TFT_HIDDEN_ATTR}])`)
+  // if (gameCard) {
+  //   gameCard.setAttribute(TFT_HIDDEN_ATTR, 'true')
+  //   ;(gameCard as HTMLElement).style.display = 'none'
+  // }
+
+  return true
+}
+
+// ==================== 隐藏右侧导航栏文字 ====================
+
+/** 是否启用"隐藏右侧导航栏文字"功能 */
+let hideRightNavTextEnabled = false
+
+const NAV_TEXT_HIDDEN_ATTR = `${HIJACKED_ATTR}-nav-text`
+
+/** 设置开关状态（供 features.ts 调用） */
+export function setHideRightNavTextEnabled(enabled: boolean) {
+  hideRightNavTextEnabled = enabled
+  if (enabled) {
+    injector.register(tryHideRightNavText)
+  } else {
+    injector.unregister(tryHideRightNavText)
+    // 恢复被隐藏的文字
+    document.querySelectorAll(`[${NAV_TEXT_HIDDEN_ATTR}]`).forEach((el) => {
+      const navItem = el as HTMLElement
+      const text = navItem.shadowRoot?.querySelector('.menu-item-small-text') as HTMLElement | null
+      if (text) text.style.display = ''
+      navItem.removeAttribute(NAV_TEXT_HIDDEN_ATTR)
+    })
+  }
+}
+
+/**
+ * 注入任务：隐藏主页右侧导航栏文字
+ * 查找 right-nav-menu 内所有 lol-uikit-navigation-item，访问 shadowRoot 隐藏 menu-item-small-text
+ */
+function tryHideRightNavText(): boolean {
+  if (!hideRightNavTextEnabled) return true
+
+  const navItems = document.querySelectorAll(
+    `.right-nav-menu lol-uikit-navigation-item:not([${NAV_TEXT_HIDDEN_ATTR}])`
+  )
+  logger.info('navItems', navItems)
+
+  navItems.forEach((item) => {
+    const el = item as HTMLElement
+    const text = el.querySelector('.menu-item-small-text') as HTMLElement | null
+    if (text) {
+      text.style.display = 'none'
+      el.setAttribute(NAV_TEXT_HIDDEN_ATTR, 'true')
+    }
+  })
+
+  return true
+}
+
 // ==================== 注册所有注入点 ====================
 
 /**

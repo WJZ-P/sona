@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import { SettingCard, SettingGroup } from '@/components/ui/SettingCard'
 import { SonaButton } from '@/components/ui/SonaButton'
 import { SonaInput } from '@/components/ui/SonaInput'
+import { SonaSelect } from '@/components/ui/SonaSelect'
 import { store } from '@/lib/store'
 import { lcu, SGP_SERVERS } from '@/lib/lcu'
 import { searchChampions, type ChampionInfo, getChampionBalanceMeta, getAllChampionBalances } from '@/lib/assets'
@@ -13,6 +14,7 @@ export function DebugPage() {
   const [gameId, setGameId] = useState('')
   const [puuid, setPuuid] = useState('')
   const [chatMsg, setChatMsg] = useState('')
+  const [chatMsgType, setChatMsgType] = useState('celebration')
   const [riotId, setRiotId] = useState('')
   const [skinId, setSkinId] = useState('')
   const [lobbyQueueId, setLobbyQueueId] = useState('')
@@ -248,17 +250,30 @@ export function DebugPage() {
       </SettingGroup>
 
       <SettingGroup title="聊天调试">
+        <p className="sona-subtitle">
+          向当前英雄选择聊天框发送指定类型的消息。celebration / system / information 仅自己可见，chat 所有人可见。
+        </p>
         <div className="sona-debug-actions" style={{ gap: 8 }}>
           <div style={{ flex: 1 }}>
             <SonaInput
               value={chatMsg}
               onChange={setChatMsg}
-              placeholder="输入要发送到选人聊天的消息..."
+              placeholder="输入要发送的消息..."
             />
           </div>
+          <SonaSelect
+            value={chatMsgType}
+            onChange={setChatMsgType}
+            options={[
+              { value: 'chat', label: 'chat (所有人可见)' },
+              { value: 'celebration', label: 'celebration (仅自己可见)' },
+              { value: 'system', label: 'system (仅自己可见)' },
+              { value: 'information', label: 'information (仅自己可见)' },
+            ]}
+          />
           <SonaButton onClick={() => {
             if (!chatMsg.trim()) { setOutput('❌ 请输入消息'); return }
-            runAndLog(`发送聊天 (${chatMsg.length}字)`, () => lcu.sendChampSelectMessage(chatMsg))
+            runAndLog(`发送聊天 [${chatMsgType}] (${chatMsg.length}字)`, () => lcu.sendChampSelectMessage(chatMsg, chatMsgType))
           }}>
             发送
           </SonaButton>

@@ -605,14 +605,15 @@ class LCUManager {
    * 在英雄选择界面发送消息（一步到位）
    * 自动找到选人聊天会话并发送消息
    * @param message 消息内容
+   * @param type 消息类型: 'chat'(所有人可见)、'celebration'(仅自己可见/黄色)、'system'(仅自己可见/系统样式)
    * @throws 如果当前不在选人阶段（找不到 championSelect 会话）
    */
-  async sendChampSelectMessage(message: string): Promise<ChatMessage> {
+  async sendChampSelectMessage(message: string, type?: 'chat' | 'celebration' | 'system' |'information' | string): Promise<ChatMessage> {
     const conversation = await this.getChampSelectConversation()
     if (!conversation) {
       throw new Error('[LCU] 当前不在英雄选择阶段，找不到 championSelect 会话')
     }
-    return this.sendChatMessage(conversation.id, message)
+    return this.sendChatMessage(conversation.id, { body: message, type: type ?? 'chat' })
   }
 
   // ==================== 队列信息 ====================

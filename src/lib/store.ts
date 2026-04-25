@@ -51,14 +51,22 @@ export interface SonaConfig {
   champSelectAssist: boolean
   /** 分析友方战力（进入选人自动查战绩并发送到聊天框） */
   analyzeTeamPower: boolean
+  /** 分析友方战力消息类型: chat=队友可见, celebration=仅自己可见 */
+  analyzeTeamPowerMsgType: string
   /** 选人阶段红蓝方提示（进入英雄选择时在聊天框提示当前阵营） */
   sideIndicator: boolean
+  /** 红蓝方提示消息类型: chat=队友可见, celebration=仅自己可见 */
+  sideIndicatorMsgType: string
   /** 全局粒子美化效果 */
   globalParticle: boolean
   /** 好友智能分组（开黑好友用同样颜色的border-right展示） */
   friendSmartGroup: boolean
   /** 自定义生涯背景 */
   customProfileBg: boolean
+  /** 隐藏客户端云顶之弈入口 */
+  hideTFT: boolean
+  /** 隐藏主页右侧导航栏文字（仅保留图标） */
+  hideRightNavText: boolean
   /** 对局结束自动点赞 */
   autoHonor: boolean
   /** 段位伪装开关 */
@@ -101,9 +109,13 @@ const DEFAULT_CONFIG: SonaConfig = {
   windowEffect: 'none',
   champSelectAssist: false,
   analyzeTeamPower: false,
+  analyzeTeamPowerMsgType: 'celebration',
   sideIndicator: false,
+  sideIndicatorMsgType: 'celebration',
   globalParticle: false,
   friendSmartGroup: false,
+  hideTFT: false,
+  hideRightNavText: false,
   customProfileBg: false,
   autoHonor: false,
   rankDisguise: false,

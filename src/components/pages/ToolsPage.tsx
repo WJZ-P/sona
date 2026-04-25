@@ -106,12 +106,16 @@ export function ToolsPage() {
   const [unlockAvailability, setUnlockAvailability] = useState(store.get('unlockAvailability'))
   const [unlockChromas, setUnlockChromas] = useState(store.get('unlockChromas'))
   const [benchNoCooldown, setBenchNoCooldown] = useState(store.get('benchNoCooldown'))
+  const [hideTFT, setHideTFT] = useState(store.get('hideTFT'))
+  const [hideRightNavText, setHideRightNavText] = useState(store.get('hideRightNavText'))
   const [windowEffect, setWindowEffect] = useState(store.get('windowEffect'))
   const [champSelectAssist, setChampSelectAssist] = useState(store.get('champSelectAssist'))
   const [balanceBuffTooltip, setBalanceBuffTooltip] = useState(store.get('balanceBuffTooltip'))
   const [champSelectQuitButton, setChampSelectQuitButton] = useState(store.get('champSelectQuitButton'))
   const [analyzeTeamPower, setAnalyzeTeamPower] = useState(store.get('analyzeTeamPower'))
+  const [analyzeTeamPowerMsgType, setAnalyzeTeamPowerMsgType] = useState(store.get('analyzeTeamPowerMsgType'))
   const [sideIndicator, setSideIndicator] = useState(store.get('sideIndicator'))
+  const [sideIndicatorMsgType, setSideIndicatorMsgType] = useState(store.get('sideIndicatorMsgType'))
   const [friendSmartGroup, setFriendSmartGroup] = useState(store.get('friendSmartGroup'))
   const [customProfileBg, setCustomProfileBg] = useState(store.get('customProfileBg'))
   const [rankQueue, setRankQueue] = useState(store.get('rankQueue'))
@@ -148,6 +152,7 @@ export function ToolsPage() {
       store.onChange('unlockAvailability', setUnlockAvailability),
       store.onChange('unlockChromas', setUnlockChromas),
       store.onChange('benchNoCooldown', setBenchNoCooldown),
+      store.onChange('hideTFT', setHideTFT),
       store.onChange('windowEffect', setWindowEffect),
       store.onChange('champSelectAssist', setChampSelectAssist),
       store.onChange('balanceBuffTooltip', setBalanceBuffTooltip),
@@ -286,6 +291,24 @@ export function ToolsPage() {
           </SettingCard>
         )}
         <SettingCard
+          title="隐藏云顶之弈"
+          description="隐藏顶部导航栏的云顶之弈入口。"
+        >
+          <SonaSwitch
+            checked={hideTFT}
+            onChange={(v) => { setHideTFT(v); store.set('hideTFT', v) }}
+          />
+        </SettingCard>
+        <SettingCard
+          title="隐藏右侧导航文字"
+          description="隐藏主页顶部右侧导航栏的文字标签，仅保留图标，界面更简洁。"
+        >
+          <SonaSwitch
+            checked={hideRightNavText}
+            onChange={(v) => { setHideRightNavText(v); store.set('hideRightNavText', v) }}
+          />
+        </SettingCard>
+        <SettingCard
           title="大乱斗无CD换英雄"
           description="移除共享池英雄的切换冷却限制，随时换取心仪英雄。"
         >
@@ -296,8 +319,16 @@ export function ToolsPage() {
         </SettingCard>
         <SettingCard
           title="分析友方战力"
-          description="进入英雄选择时，自动分析队友近期战绩并发送到队伍聊天框。(队友可见)"
+          description="进入英雄选择时，自动分析队友近期战绩并发送到队伍聊天框。"
         >
+          <SonaSelect
+            value={analyzeTeamPowerMsgType}
+            onChange={(v) => { setAnalyzeTeamPowerMsgType(v); store.set('analyzeTeamPowerMsgType', v) }}
+            options={[
+              { value: 'celebration', label: '自己可见' },
+              { value: 'chat', label: '全队可见' },
+            ]}
+          />
           <SonaSwitch
             checked={analyzeTeamPower}
             onChange={(v) => { setAnalyzeTeamPower(v); store.set('analyzeTeamPower', v) }}
@@ -305,8 +336,16 @@ export function ToolsPage() {
         </SettingCard>
         <SettingCard
           title="红蓝方提示"
-          description="进入英雄选择时，在聊天框提示本局是蓝方还是红方。(队友可见)"
+          description="进入英雄选择时，在聊天框提示本局是蓝方还是红方。"
         >
+          <SonaSelect
+            value={sideIndicatorMsgType}
+            onChange={(v) => { setSideIndicatorMsgType(v); store.set('sideIndicatorMsgType', v) }}
+            options={[
+              { value: 'celebration', label: '自己可见' },
+              { value: 'chat', label: '全队可见' },
+            ]}
+          />
           <SonaSwitch
             checked={sideIndicator}
             onChange={(v) => { setSideIndicator(v); store.set('sideIndicator', v) }}
@@ -314,7 +353,7 @@ export function ToolsPage() {
         </SettingCard>
         <SettingCard
           title="英雄选择阶段增强"
-          description="英雄选择时显示粒子特效，底部自动显示近20场胜率和KDA，点击队友头像可查询近期战绩。"
+          description="英雄选择时显示粒子特效，底部自动显示本模式近期胜率和KDA，点击队友头像可查询近期战绩。"
         >
           <SonaSwitch
             checked={champSelectAssist}

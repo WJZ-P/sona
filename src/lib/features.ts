@@ -12,8 +12,9 @@ import type { LCUEventMessage, GameflowPhase } from '@/lib/lcu'
 import { injector } from '@/lib/InjectorManager'
 import { sleep } from '@/lib/utils'
 import { updateBalanceBuffTooltip } from '@/lib/features/balance-buff-viewer'
+import { getChampionById } from '@/lib/assets'
 import { updateChampSelectQuitButton } from '@/lib/features/champselect-quit-button'
-import { setAvailabilityHijackEnabled } from '@/lib/injections'
+import { setAvailabilityHijackEnabled, setHideTFTEnabled, setHideRightNavTextEnabled } from '@/lib/injections'
 
 // ==================== 自动接受对局 ====================
 
@@ -666,7 +667,7 @@ async function analyzeTeammates() {
 
     logger.info('┌─── 队友战绩分析 ───')
 
-    const chatLines: string[] = ['Sona助手 ♫\n 队友卡池一览(近期战绩):\n']
+    const chatLines: string[] = ['Sona助手 ♫   队友卡池一览(本模式战绩):\n']
 
     for (const s of stats) {
       const floor = `${s.floor}楼`
@@ -694,9 +695,10 @@ async function analyzeTeammates() {
 
     // 等待聊天室就绪后发送
     const msg = chatLines.join('\n')
+    const msgType = store.get('analyzeTeamPowerMsgType') || 'celebration'
     for (let attempt = 0; attempt < 10; attempt++) {
       try {
-        await lcu.sendChampSelectMessage(msg)
+        await lcu.sendChampSelectMessage(msg, msgType)
         logger.info('队友分析已发送到聊天框 ✓')
         break
       } catch {
@@ -739,10 +741,11 @@ async function sendSideIndicator() {
     const isBlue = localPlayer ? localPlayer.cellId < 5 : true
     const sideText = isBlue ? '🔵 蓝方 (左下方)' : '🔴 红方 (右上方)'
 
-    const msg = `Sona助手 ♫\n 本局${sideText}`
+    const msg = `Sona助手 ♫   本局${sideText}`
+    const msgType = store.get('sideIndicatorMsgType') || 'celebration'
     for (let attempt = 0; attempt < 10; attempt++) {
       try {
-        await lcu.sendChampSelectMessage(msg)
+        await lcu.sendChampSelectMessage(msg, msgType)
         logger.info('红蓝方提示已发送 → %s', sideText)
         break
       } catch {
@@ -1199,6 +1202,21 @@ function updateAutoHonor(enabled: boolean) {
 // ==================== 秒抢英雄 ====================
 
 /**
+ * 秒抢/预选成功后发送 celebration 消息到聊天框
+ */
+async function notifyAutoLockSuccess(championId: number, isLock: boolean) {
+  const champInfo = getChampionById(championId)
+  const champName = champInfo?.name || `英雄#${championId}`
+  const action = isLock ? '自动锁定' : '自动预选'
+  const msg = `Sona助手 ♫   ${action}: ${champName}`
+  try {
+    await lcu.sendChampSelectMessage(msg, 'celebration')
+  } catch {
+    // 聊天室未就绪时静默忽略
+  }
+}
+
+/**
  * 监听英雄选择的 actions 变化，当轮到自己的 pick action 处于 isInProgress 时秒锁
  * 仅在有 pick 动作的模式生效（排位/匹配等），大乱斗等无 pick 的模式不受影响
  */
@@ -1257,6 +1275,7 @@ async function tryAutoLockChampion() {
 
           if (patchRes.ok) {
             logger.info('[AutoLock] 秒锁成功 (PATCH completed:true) ✓')
+            notifyAutoLockSuccess(championId, true)
           } else {
             // 备用方案：先 PATCH 选择，再 POST /select 锁定
             logger.warn('[AutoLock] PATCH 方案失败，尝试备用方案 /select')
@@ -1269,6 +1288,7 @@ async function tryAutoLockChampion() {
             const selectRes = await fetch(`${actionUrl}/select`, { method: 'POST' })
             if (selectRes.ok) {
               logger.info('[AutoLock] 秒锁成功 (select 备用) ✓')
+              notifyAutoLockSuccess(championId, true)
             } else {
               logger.error('[AutoLock] 秒锁失败，可能英雄被抢或被 Ban')
             }
@@ -1281,6 +1301,7 @@ async function tryAutoLockChampion() {
             body: JSON.stringify({ championId }),
           })
           logger.info('[AutoLock] 预选成功 ✓')
+          notifyAutoLockSuccess(championId, false)
         }
 
         return
@@ -1520,6 +1541,14 @@ export function initFeatures() {
   // 解锁在线状态切换（接管客户端按钮，弹自定义"隐身/手机在线"菜单）
   setAvailabilityHijackEnabled(store.get('unlockAvailability'))
   store.onChange('unlockAvailability', setAvailabilityHijackEnabled)
+
+  // 隐藏云顶之弈入口
+  setHideTFTEnabled(store.get('hideTFT'))
+  store.onChange('hideTFT', setHideTFTEnabled)
+
+  // 隐藏主页右侧导航栏文字
+  setHideRightNavTextEnabled(store.get('hideRightNavText'))
+  store.onChange('hideRightNavText', setHideRightNavTextEnabled)
 
   // 恢复窗口特效
   const savedEffect = store.get('windowEffect')
