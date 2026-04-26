@@ -316,6 +316,21 @@
   letter-spacing: 0.5px;
 }
 
+.sga-broadcaster-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 16px;
+  padding: 0 5px;
+  border-radius: 2px;
+  background: #e74c3c;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 800;
+  flex-shrink: 0;
+  letter-spacing: 0.5px;
+}
+
 .sga-player-rank {
   font-size: 11px;
   font-weight: 500;
@@ -460,6 +475,20 @@
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.sga-recent--broadcaster {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 14px;
+}
+
+.sga-broadcaster-hint {
+  color: #5c5b57;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1px;
 }
 
 .sga-kda-slash {

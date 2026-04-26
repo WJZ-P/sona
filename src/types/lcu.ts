@@ -427,6 +427,14 @@ export interface GameflowTeamPlayer {
   summonerName: string
   teamOwner: boolean
   teamParticipantId: number
+  /**
+   * 名称可见性类型：
+   * - "HIDDEN" — 主播模式，身份信息被混淆
+   * - "PUBLIC" — 正常可见
+   */
+  nameVisibilityType?: 'HIDDEN' | 'PUBLIC' | (string & {})
+  /** 混淆后的 PUUID，主播模式下替代 puuid 使用 */
+  obfuscatedPuuid?: string
 }
 
 /** 玩家英雄选择信息 */
