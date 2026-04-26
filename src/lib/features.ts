@@ -8,7 +8,7 @@
 import { logger } from '@/index'
 import { store } from '@/lib/store'
 import { lcu, LcuEventUri, queueIdToTag } from '@/lib/lcu'
-import type { LCUEventMessage, GameflowPhase } from '@/lib/lcu'
+import type { LCUEventMessage, GameflowPhase, ChampSelectSession } from '@/lib/lcu'
 import { injector } from '@/lib/InjectorManager'
 import { sleep } from '@/lib/utils'
 import { updateBalanceBuffTooltip } from '@/lib/features/balance-buff-viewer'
@@ -416,6 +416,8 @@ const SONA_CLICK_ATTR = 'data-sona-click'
 
 /** 每个楼层的完整战绩缓存 */
 let floorStats: TeammateStats[] = []
+/** puuid → TeammateStats 映射，用于换楼后按新顺序重建 floorStats */
+let statsByPuuid = new Map<string, TeammateStats>()
 /** 当前选人阶段的队列 ID，用于打开战绩弹窗时自动过滤 */
 let currentChampSelectQueueId = 0
 
@@ -429,6 +431,8 @@ interface ChampSelectInjectedRef {
   summonerContainer: HTMLElement | null
   /** 被修改了 style 的 playerDetails */
   playerDetails: HTMLElement
+  /** iconContainer 上的 click handler，清理时需要 removeEventListener */
+  clickHandler: ((e: Event) => void) | null
 }
 let champSelectInjectedRefs: ChampSelectInjectedRef[] = []
 
@@ -508,11 +512,12 @@ function tryInjectChampSelectTier(): boolean {
     }
 
     // ---- 头像点击 → 弹出战绩弹窗 ----
+    let clickHandler: ((e: Event) => void) | null = null
     if (!iconContainer.hasAttribute(SONA_CLICK_ATTR) && stat.puuid) {
       iconContainer.setAttribute(SONA_CLICK_ATTR, 'true')
       iconContainer.style.cursor = 'pointer'
       const floorIndex = i
-      iconContainer.addEventListener('click', (e) => {
+      clickHandler = (e: Event) => {
         // 放行 swap 按钮等内部交互元素的点击
         const target = e.target as HTMLElement
         if (target.closest('.swap-button-component, .swap-button-btn')) return
@@ -523,7 +528,8 @@ function tryInjectChampSelectTier(): boolean {
         if (current?.puuid) {
           showMatchHistoryModal(current.puuid, `${current.gameName}#${current.tagLine}`, currentChampSelectQueueId || undefined)
         }
-      }, true)
+      }
+      iconContainer.addEventListener('click', clickHandler, true)
     }
 
     // ---- player-details 下方战绩文字 ----
@@ -555,7 +561,7 @@ function tryInjectChampSelectTier(): boolean {
         playerDetails.appendChild(statsDiv)
 
         // 记录注入引用，离开 ChampSelect 时直接清理
-        champSelectInjectedRefs.push({ statsDiv, iconContainer, summonerContainer, playerDetails })
+        champSelectInjectedRefs.push({ statsDiv, iconContainer, summonerContainer, playerDetails, clickHandler })
     }
   })
 
@@ -579,26 +585,10 @@ function unregisterTierInjection() {
     tierInjectionRegistered = false
   }
   floorStats = []
+  statsByPuuid.clear()
   currentChampSelectQueueId = 0
-  mountedRoots.forEach(({ root, container }) => {
-    root.unmount()
-    container.remove()
-  })
-  mountedRoots.length = 0
 
-  // 从注入的 DOM 引用直接清理，不依赖 querySelector（离开 ChampSelect 后 DOM 可能已卸载）
-  for (const ref of champSelectInjectedRefs) {
-    ref.statsDiv.remove()
-    ref.iconContainer.style.filter = ''
-    ref.iconContainer.style.boxShadow = ''
-    ref.iconContainer.removeAttribute(SONA_TIER_ATTR)
-    ref.playerDetails.removeAttribute(SONA_CLICK_ATTR)
-    ref.playerDetails.style.cursor = ''
-    if (ref.summonerContainer) ref.summonerContainer.style.overflow = ''
-  }
-  champSelectInjectedRefs = []
-
-
+  cleanupInjectedDOM()
   cleanupMatchModal()
 }
 
@@ -612,6 +602,11 @@ async function applyChampSelectIconEffects() {
     const { stats, queueId } = await fetchTeamStats()
     currentChampSelectQueueId = queueId
     floorStats = stats
+    // 建立 puuid → stats 映射，换楼后可用新 myTeam 顺序重建 floorStats
+    statsByPuuid.clear()
+    for (const s of stats) {
+      if (s.puuid) statsByPuuid.set(s.puuid, s)
+    }
     registerTierInjection()
 
     logger.info('头像特效数据就绪，%d 位队友，队列 ID: %d', stats.length, currentChampSelectQueueId)
@@ -621,6 +616,89 @@ async function applyChampSelectIconEffects() {
 }
 
 let champSelectAssistUnsub: (() => void) | null = null
+/** CHAMP_SELECT session 更新监听（用于换楼后重建 floorStats） */
+let champSelectUpdateUnsub: (() => void) | null = null
+
+/**
+ * 当 ChampSelect session 更新时，检查 myTeam 的 puuid 顺序是否变化，
+ * 如果变化（换楼），则按新顺序重建 floorStats 并重新注入
+ */
+function onChampSelectUpdate(event: LCUEventMessage) {
+  // 只处理 Update 事件
+  if (event.eventType !== 'Update') return
+  // 数据还没准备好就不处理
+  if (statsByPuuid.size === 0) return
+
+  const session = event.data as ChampSelectSession
+  if (!session?.myTeam) return
+
+  // 取 myTeam 中 puuid 列表（按数组顺序 = 楼层顺序）
+  const newPuuidOrder = session.myTeam.map((p) => p.puuid).filter(Boolean)
+  // 当前 floorStats 的 puuid 顺序
+  const currentPuuidOrder = floorStats.map((s) => s.puuid).filter(Boolean)
+
+  // 顺序没变，无需重建
+  if (newPuuidOrder.length === currentPuuidOrder.length &&
+      newPuuidOrder.every((p, i) => p === currentPuuidOrder[i])) return
+
+  logger.info('[ChampSelect] 检测到楼层顺序变化，重建 floorStats')
+
+  // 按新 myTeam 顺序从 statsByPuuid 重建 floorStats
+  const newFloorStats: TeammateStats[] = session.myTeam.map((player, i) => {
+    if (player.puuid && statsByPuuid.has(player.puuid)) {
+      const stat = { ...statsByPuuid.get(player.puuid)! }
+      stat.floor = i + 1  // 更新楼层号
+      return stat
+    }
+    // fallback：该玩家无 puuid 或不在缓存中，构造占位
+    return {
+      floor: i + 1,
+      summonerId: player.summonerId,
+      puuid: player.puuid,
+      gameName: player.gameName,
+      tagLine: player.tagLine,
+      winRate: null,
+      wins: 0,
+      total: 0,
+      avgK: 0,
+      avgD: 0,
+      avgA: 0,
+      kdaNum: 0,
+    }
+  })
+
+  // 清理旧注入并重建
+  cleanupInjectedDOM()
+  floorStats = newFloorStats
+  // 注意：不需要重新 registerTierInjection，injector 已经在轮询，
+  // 清理后下一轮 tryInjectChampSelectTier 就会用新的 floorStats 重新注入
+}
+
+/** 清理已注入的 DOM（但不重置 floorStats / statsByPuuid / 注入注册状态） */
+function cleanupInjectedDOM() {
+  mountedRoots.forEach(({ root, container }) => {
+    root.unmount()
+    container.remove()
+  })
+  mountedRoots.length = 0
+
+  for (const ref of champSelectInjectedRefs) {
+    ref.statsDiv.remove()
+    // 移除 click handler
+    if (ref.clickHandler) {
+      ref.iconContainer.removeEventListener('click', ref.clickHandler, true)
+    }
+    ref.iconContainer.style.filter = ''
+    ref.iconContainer.style.boxShadow = ''
+    ref.iconContainer.removeAttribute(SONA_TIER_ATTR)
+    ref.iconContainer.removeAttribute(SONA_CLICK_ATTR)
+    ref.iconContainer.style.cursor = ''
+    ref.playerDetails.removeAttribute(SONA_STATS_ATTR)
+    ref.playerDetails.style.cursor = ''
+    if (ref.summonerContainer) ref.summonerContainer.style.overflow = ''
+  }
+  champSelectInjectedRefs = []
+}
 
 function updateChampSelectAssist(enabled: boolean) {
   if (enabled && !champSelectAssistUnsub) {
@@ -634,11 +712,17 @@ function updateChampSelectAssist(enabled: boolean) {
         unregisterTierInjection()
       }
     })
+    // 监听 ChampSelect session 更新，检测换楼
+    champSelectUpdateUnsub = lcu.observe(LcuEventUri.CHAMP_SELECT, onChampSelectUpdate)
     logger.info('Champ select assist enabled ✓')
   } else if (!enabled && champSelectAssistUnsub) {
     champSelectAssistUnsub()
     champSelectAssistUnsub = null
     unregisterTierInjection()
+    if (champSelectUpdateUnsub) {
+      champSelectUpdateUnsub()
+      champSelectUpdateUnsub = null
+    }
     logger.info('Champ select assist disabled')
   }
 }
@@ -1589,8 +1673,9 @@ function updateGameAnalysisPopup(enabled: boolean) {
             // session 查询失败也尝试弹窗（可能是自定义等特殊情况）
             showGameAnalysisModal()
           })
-      } else if (phase === 'None' || phase === 'Lobby') {
-        // 对局彻底结束，重置状态
+      } else if (phase === 'WaitingForStats' || phase === 'PreEndOfGame' || phase === 'EndOfGame') {
+        // 游戏已结束（WaitingForStats / PreEndOfGame / EndOfGame / None / Lobby 等）
+        // 重置状态并关闭弹窗
         lastPopupGameId = 0
         // 取消按钮注入
         if (gameAnalysisBtnRegistered) {

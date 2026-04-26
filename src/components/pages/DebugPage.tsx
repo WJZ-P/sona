@@ -741,7 +741,7 @@ const GAME_ANALYSIS_MOCK: NonNullable<GameAnalysisModalProps['mockData']> = {
   ],
   redTeam: [
     {
-      puuid: 'mock-red-1', summonerId: 6, summonerName: '影流之主 #CN6', championId: 238, teamParticipantId: 6,
+      puuid: 'mock-red-1', summonerId: 6, summonerName: '影流之主 #CN6', championId: 238, teamParticipantId: 6, selectedPosition: 'top',
       winRate: 58, wins: 29, total: 50, kdaNum: 4.5, avgK: 10.2, avgD: 4.8, avgA: 11.3,
       rankText: '华贵铂金 I 单双', rankColor: '#b8c4cc', rating: '刺客', premadeGroup: 'B', isBroadcaster: false,
       recentGames: [
@@ -753,7 +753,7 @@ const GAME_ANALYSIS_MOCK: NonNullable<GameAnalysisModalProps['mockData']> = {
       ],
     },
     {
-      puuid: 'mock-red-2', summonerId: 7, summonerName: '沙漠皇帝 #KR7', championId: 268, teamParticipantId: 6,
+      puuid: 'mock-red-2', summonerId: 7, summonerName: '沙漠皇帝 #KR7', championId: 268, teamParticipantId: 6, selectedPosition: 'mid',
       winRate: 44, wins: 17, total: 39, kdaNum: 3.9, avgK: 6.5, avgD: 3.8, avgA: 8.3,
       rankText: '荣耀黄金 III 单双', rankColor: '#c8aa6e', rating: '统帅', premadeGroup: 'B', isBroadcaster: false,
       recentGames: [
@@ -765,10 +765,16 @@ const GAME_ANALYSIS_MOCK: NonNullable<GameAnalysisModalProps['mockData']> = {
       ],
     },
     {
-      puuid: 'mock-red-3', summonerId: 8, summonerName: '未知', championId: 119, teamParticipantId: 8,
-      winRate: null, wins: 0, total: 0, kdaNum: 0, avgK: 0, avgD: 0, avgA: 0,
-      rankText: '', rankColor: '', rating: '', premadeGroup: null,
-      recentGames: [],
+      puuid: 'mock-red-3', summonerId: 8, summonerName: '未知', championId: 119, teamParticipantId: 0, selectedPosition: 'jungle',
+      winRate: 35, wins: 13, total: 37, kdaNum: 2.5, avgK: 8.8, avgD: 7.2, avgA: 9.1,
+      rankText: '不屈白银 II 灵活', rankColor: '#a09b8c', rating: '勇武', premadeGroup: null,
+      recentGames: [
+        { championId: 119, win: false, kills: 9, deaths: 8, assists: 5 },
+        { championId: 119, win: true, kills: 14, deaths: 4, assists: 6 },
+        { championId: 119, win: false, kills: 5, deaths: 10, assists: 3 },
+        { championId: 22, win: true, kills: 7, deaths: 5, assists: 8 },
+        { championId: 119, win: false, kills: 3, deaths: 9, assists: 4 },
+      ],
       isBroadcaster: true,
     },
     {
@@ -784,7 +790,7 @@ const GAME_ANALYSIS_MOCK: NonNullable<GameAnalysisModalProps['mockData']> = {
       ],
     },
     {
-      puuid: 'mock-red-5', summonerId: 10, summonerName: '牛头 #JP10', championId: 12, teamParticipantId: 9,
+      puuid: 'mock-red-5', summonerId: 10, summonerName: '牛头 #JP10', championId: 12, teamParticipantId: 9, selectedPosition: 'utility',
       winRate: 15, wins: 4, total: 27, kdaNum: 3.1, avgK: 1.8, avgD: 4.5, avgA: 12.1,
       rankText: '坚韧黑铁 IV 单双', rankColor: '#7e7e7e', rating: '坚守', premadeGroup: 'C', isBroadcaster: false,
       recentGames: [

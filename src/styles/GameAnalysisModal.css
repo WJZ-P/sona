@@ -35,6 +35,13 @@
   letter-spacing: 3px;
 }
 
+.sga-header-subtitle {
+  color: #7e7e7e;
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
 .sga-header-info {
   color: #a09b8c;
   font-size: 14px;
@@ -475,20 +482,6 @@
   display: flex;
   justify-content: center;
   align-items: center;
-}
-
-.sga-recent--broadcaster {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-top: 14px;
-}
-
-.sga-broadcaster-hint {
-  color: #5c5b57;
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 1px;
 }
 
 .sga-kda-slash {

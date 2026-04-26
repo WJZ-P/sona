@@ -6,7 +6,7 @@ import { lcu, queueIdToTag } from '@/lib/lcu'
 import { store } from '@/lib/store'
 import { getChampIcon } from '@/lib/assets'
 import { getRating } from '@/lib/features'
-import type { GameflowSession, GameflowTeamPlayer } from '@/types/lcu'
+import type { GameflowTeamPlayer, PlayerChampionSelection } from '@/types/lcu'
 import '@/styles/GameAnalysisModal.css'
 
 // ==================== 类型 ====================
@@ -148,10 +148,25 @@ export function GameAnalysisModal({ open, onClose, mockData }: GameAnalysisModal
       const session = await lcu.getGameflowSession()
       const teamOne = session.gameData.teamOne ?? []
       const teamTwo = session.gameData.teamTwo ?? []
+      const selections = session.gameData.playerChampionSelections ?? []
 
-      // 判断自己所在队伍
+      // playerChampionSelections 是 puuid 的权威来源，始终包含所有 10 人
+      // 索引 0-4 = teamOne（蓝方），5-9 = teamTwo（红方）
+      // 主播模式玩家会从 teamOne/teamTwo 中消失，但 selections 中依然保留
+      const teamSize = Math.ceil(selections.length / 2) || 5
+      const selTeamOne = selections.slice(0, teamSize)
+      const selTeamTwo = selections.slice(teamSize)
+
+      // puuid → teamParticipantId 映射（仅非主播模式玩家在 team 中有记录）
+      const puuidToTeamPlayer = new Map<string, GameflowTeamPlayer>()
+      for (const p of [...teamOne, ...teamTwo]) {
+        puuidToTeamPlayer.set(p.puuid, p)
+      }
+
+      // 判断自己所在队伍：优先从 team 匹配，否则从 selections 索引判断
       const localPuuid = (await lcu.getSummonerInfo()).puuid
       const isInTeamOne = teamOne.some(p => p.puuid === localPuuid)
+        || selTeamOne.some(s => s.puuid === localPuuid)
 
       setGameInfo({
         queueName: session.gameData.queue.name,
@@ -161,11 +176,10 @@ export function GameAnalysisModal({ open, onClose, mockData }: GameAnalysisModal
         queueId: session.gameData.queue.id,
       })
 
-      // 开黑分组：按 teamParticipantId 聚合
+      // 开黑分组：按 teamParticipantId 聚合（仅非主播模式玩家）
       const groupIdMap = new Map<string, string>()
       const participantGroups = new Map<number, string[]>()
-      const allPlayers = [...teamOne, ...teamTwo]
-      for (const p of allPlayers) {
+      for (const p of [...teamOne, ...teamTwo]) {
         const tid = p.teamParticipantId
         if (tid && tid > 0) {
           if (!participantGroups.has(tid)) participantGroups.set(tid, [])
@@ -189,22 +203,39 @@ export function GameAnalysisModal({ open, onClose, mockData }: GameAnalysisModal
       const queueId = session.gameData.queue.id
       const tag = queueIdToTag(queueId)
 
-      // 并行查询所有玩家数据
-      const analyzeTeam = async (players: GameflowTeamPlayer[]): Promise<PlayerAnalysis[]> => {
-        return Promise.all(players.map(async (p) => {
-          const tid = p.teamParticipantId
+      // 解析后的玩家信息
+      interface ResolvedPlayer {
+        puuid: string
+        championId: number
+        teamParticipantId: number
+        isBroadcaster: boolean
+      }
 
-          // 判断是否为主播模式（puuid 为空 或 nameVisibilityType 为 HIDDEN）
-          const isBroadcaster = !p.puuid || p.nameVisibilityType === 'HIDDEN'
+      // 从 selections 构建 ResolvedPlayer，通过 puuid 是否在 team 中判断主播模式
+      const resolveSelections = (sels: PlayerChampionSelection[]): ResolvedPlayer[] =>
+        sels.map(s => ({
+          puuid: s.puuid,
+          championId: s.championId,
+          teamParticipantId: puuidToTeamPlayer.get(s.puuid)?.teamParticipantId ?? 0,
+          isBroadcaster: !puuidToTeamPlayer.has(s.puuid),
+        }))
+
+      const resolvedTeamOne = resolveSelections(selTeamOne)
+      const resolvedTeamTwo = resolveSelections(selTeamTwo)
+
+      // 并行查询所有玩家数据
+      const analyzeTeam = async (players: ResolvedPlayer[]): Promise<PlayerAnalysis[]> => {
+        return Promise.all(players.map(async (p) => {
+          const isBroadcaster = p.isBroadcaster
 
           // 默认占位
           const placeholder: PlayerAnalysis = {
             puuid: p.puuid,
-            summonerId: p.summonerId,
-            summonerName: isBroadcaster ? '未知' : p.summonerName,
+            summonerId: 0,
+            summonerName: isBroadcaster ? '未知' : '',
             championId: p.championId,
-            teamParticipantId: tid ?? 0,
-            selectedPosition: p.selectedPosition ?? '',
+            teamParticipantId: p.teamParticipantId,
+            selectedPosition: '',
             winRate: null,
             wins: 0,
             total: 0,
@@ -212,19 +243,17 @@ export function GameAnalysisModal({ open, onClose, mockData }: GameAnalysisModal
             avgK: 0,
             avgD: 0,
             avgA: 0,
-            rankText: isBroadcaster ? '' : '未定级',
-            rankColor: isBroadcaster ? '' : RANK_COLORS.UNRANKED,
+            rankText: '未定级',
+            rankColor: RANK_COLORS.UNRANKED,
             rating: '',
             premadeGroup: groupIdMap.get(p.puuid) ?? null,
             recentGames: [],
             isBroadcaster,
           }
 
-          // 主播模式：无法查询任何数据，直接返回占位
-          if (isBroadcaster) return placeholder
-
+          // 主播模式：有真实 puuid，可以查询数据，但名字隐藏
+          // 非主播模式：正常查询
           try {
-            // summonerName 在 InProgress 阶段始终为空，需通过 puuid 查询获取 displayName
             const [summoner, ranked, sgpResp] = await Promise.all([
               lcu.getSummonerByPuuid(p.puuid).catch(() => null),
               lcu.getRankedStats(p.puuid).catch(() => null),
@@ -235,7 +264,10 @@ export function GameAnalysisModal({ open, onClose, mockData }: GameAnalysisModal
               }).catch(() => null),
             ])
 
-            const summonerName = summoner?.gameName ? `${summoner.gameName} #${summoner.tagLine}` : '未知'
+            // 主播模式：名字用 "未知"，但数据正常展示
+            const summonerName = isBroadcaster
+              ? '未知'
+              : (summoner?.gameName ? `${summoner.gameName} #${summoner.tagLine}` : '未知')
 
             // 解析排位（取最高段位）
             let rankText = '未定级'
@@ -324,8 +356,8 @@ export function GameAnalysisModal({ open, onClose, mockData }: GameAnalysisModal
       }
 
       const [one, two] = await Promise.all([
-        analyzeTeam(teamOne),
-        analyzeTeam(teamTwo),
+        analyzeTeam(resolvedTeamOne),
+        analyzeTeam(resolvedTeamTwo),
       ])
 
       setBlueTeam(sortTeamByPosition(isInTeamOne ? one : two))
@@ -360,7 +392,7 @@ export function GameAnalysisModal({ open, onClose, mockData }: GameAnalysisModal
         <div className="sga-header">
           <div className="sga-header-left">
             <span className="sga-header-icon">❖</span>
-            <span className="sga-header-title">对局分析</span>
+            <span className="sga-header-title">对局分析<span className="sga-header-subtitle">（本模式近{store.get('gameAnalysisFetchCount') || 50}局）</span></span>
           </div>
           {gameInfo && (
             <span className="sga-header-info">
@@ -451,9 +483,8 @@ function PlayerRow({ player, isRed, queueId }: { player: PlayerAnalysis; isRed: 
   const premadeColor = premadeIdx >= 0 ? (PREMADE_COLORS[premadeIdx] ?? '#c8aa6e') : undefined
   const premadeBg = premadeIdx >= 0 ? (PREMADE_BG_COLORS[premadeIdx] ?? undefined) : undefined
 
-  // 主播模式不可点击
   const handleClick = () => {
-    if (player.isBroadcaster || !player.puuid) return
+    if (!player.puuid) return
     showMatchHistoryModal(player.puuid, player.summonerName || '???', queueId)
   }
 
@@ -462,7 +493,6 @@ function PlayerRow({ player, isRed, queueId }: { player: PlayerAnalysis; isRed: 
       className={`sga-player-wrapper ${isRed ? 'sga-player-wrapper--red' : ''} ${player.isBroadcaster ? 'sga-player-wrapper--broadcaster' : ''}`}
       style={{
         ...(premadeBg ? { background: premadeBg } : {}),
-        ...(player.isBroadcaster ? { cursor: 'default', opacity: 0.6 } : {}),
       }}
       onClick={handleClick}
     >
@@ -493,7 +523,7 @@ function PlayerRow({ player, isRed, queueId }: { player: PlayerAnalysis; isRed: 
           </div>
           <span className="sga-player-rank" style={{ color: player.rankColor || '#5c5b57' }}>
             {isRed && player.rating ? <span className="sga-player-rating">{player.rating} · </span> : null}
-            {player.rankText || (player.isBroadcaster ? '主播模式' : '未定级')}
+            {player.rankText || '未定级'}
             {!isRed && player.rating ? <span className="sga-player-rating"> · {player.rating}</span> : null}
           </span>
         </div>
@@ -513,7 +543,7 @@ function PlayerRow({ player, isRed, queueId }: { player: PlayerAnalysis; isRed: 
               </div>
             </>
           ) : (
-            <span className="sga-no-data">{player.isBroadcaster ? '隐藏' : '无数据'}</span>
+            <span className="sga-no-data">无数据</span>
           )}
         </div>
 
@@ -531,11 +561,7 @@ function PlayerRow({ player, isRed, queueId }: { player: PlayerAnalysis; isRed: 
       </div>
 
       {/* 近期战绩 */}
-      {player.isBroadcaster ? (
-        <div className="sga-recent sga-recent--broadcaster">
-          <span className="sga-broadcaster-hint">玩家数据不可见</span>
-        </div>
-      ) : player.recentGames.length > 0 ? (
+      {player.recentGames.length > 0 ? (
         <div className="sga-recent">
           {player.recentGames.map((g, i) => (
             <div key={i} className={`sga-recent-game ${g.win ? 'sga-recent-win' : 'sga-recent-loss'}`}>
