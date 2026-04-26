@@ -253,16 +253,23 @@ let currentMode: { dataKey: BalanceMode; displayName: string } | null = null
 let sessionUnsub: (() => void) | null = null
 let phaseUnsub: (() => void) | null = null
 let injectRegistered = false
+/** 轮询定时器：WS observer 未推送时，定时主动拉取 session 兜底 */
+let pollTimer: ReturnType<typeof setInterval> | null = null
 
 // ==================== 数据更新 ====================
 
 function buildTooltipData(champId: number): TooltipData | null {
   if (champId <= 0 || !currentMode) return null
   const balance = getChampionBalance(champId)
-  if (!balance) return null
+  if (!balance) {
+    logger.debug('[BalanceBuff] buildTooltipData: championId=%d 无平衡数据', champId)
+    return null
+  }
 
   // Wiki 数据稀疏：没调整的模式根本不存在
   const stats = balance.stats?.[currentMode.dataKey] ?? {}
+  const statKeys = Object.keys(stats)
+  logger.debug('[BalanceBuff] buildTooltipData: championId=%d, mode=%s, stats字段=%s', champId, currentMode.dataKey, statKeys.length ? statKeys.join(',') : '(无)')
   return {
     champId,
     caption: `${currentMode.displayName} · 平衡调整`,
@@ -284,6 +291,9 @@ function updateFromSession(session: ChampSelectSession) {
       const data = buildTooltipData(champId)
       teamArray[i] = data ?? { champId: 0, caption: '', content: '' }
     }
+    logger.debug('[BalanceBuff] updateFromSession: myTeam=%d人, teamArray有效=%d', session.myTeam.length, teamArray.filter(d => d.champId > 0).length)
+  } else {
+    logger.debug('[BalanceBuff] updateFromSession: myTeam 不是数组')
   }
 
   // 候选席（大乱斗专属）
@@ -293,6 +303,7 @@ function updateFromSession(session: ChampSelectSession) {
       const data = buildTooltipData(slot.championId)
       benchArray[i] = data ?? { champId: 0, caption: '', content: '' }
     }
+    logger.debug('[BalanceBuff] updateFromSession: bench=%d个, benchArray有效=%d', session.benchChampions.length, benchArray.filter(d => d.champId > 0).length)
   }
 }
 
@@ -303,28 +314,36 @@ const BOUND_ATTR = 'data-sona-balance-hover'
 function tryBindHover(): boolean {
   if (!tooltip || !currentMode) return true
 
+  logger.debug('[BalanceBuff] tryBindHover: tooltip=%s, mode=%s', !!tooltip, currentMode.dataKey)
+
   // 我方队员
   const party = document.querySelector('.summoner-array.your-party')
   if (party) {
     const wrappers = party.querySelectorAll('.summoner-container-wrapper')
+    logger.debug('[BalanceBuff] tryBindHover: 找到party, wrappers=%d个', wrappers.length)
     wrappers.forEach((el, index) => {
       if (el.hasAttribute(BOUND_ATTR)) return
       el.setAttribute(BOUND_ATTR, 'team')
       el.addEventListener('mouseenter', () => {
         const data = teamArray[index]
+        logger.debug('[BalanceBuff] mouseenter: index=%d, champId=%d', index, data?.champId ?? -1)
         if (data && data.champId > 0) tooltip!.show(el, 'right', data.caption, data.content)
       })
       el.addEventListener('mouseleave', () => tooltip!.hide())
     })
+  } else {
+    logger.debug('[BalanceBuff] tryBindHover: 未找到 .summoner-array.your-party')
   }
 
   // 候选席
   const bench = document.querySelectorAll('.bench-container .champion-bench-item')
+  logger.debug('[BalanceBuff] tryBindHover: bench元素=%d个', bench.length)
   bench.forEach((el, index) => {
     if (el.hasAttribute(BOUND_ATTR)) return
     el.setAttribute(BOUND_ATTR, 'bench')
     el.addEventListener('mouseenter', () => {
       const data = benchArray[index]
+      logger.debug('[BalanceBuff] mouseenter bench: index=%d, champId=%d', index, data?.champId ?? -1)
       if (data && data.champId > 0) tooltip!.show(el, 'bottom', data.caption, data.content)
     })
     el.addEventListener('mouseleave', () => tooltip!.hide())
@@ -336,6 +355,7 @@ function tryBindHover(): boolean {
 // ==================== 生命周期 ====================
 
 async function mountForChampSelect() {
+  logger.debug('[BalanceBuff] mountForChampSelect 开始')
   // 1. 探测当前模式：用 gameMode 映射平衡数据 key，用 queueId 拿官方中文名
   let gameMode = ''
   let queueId = 0
@@ -343,8 +363,10 @@ async function mountForChampSelect() {
     const gf = await lcu.getGameflowSession()
     gameMode = gf.gameData?.queue?.gameMode || ''
     queueId = gf.gameData?.queue?.id || 0
-  } catch {
+    logger.debug('[BalanceBuff] getGameflowSession: gameMode=%s, queueId=%d', gameMode, queueId)
+  } catch (e) {
     // fallback: 从 ChampSelectSession 推测（有些接口字段不同）
+    logger.debug('[BalanceBuff] getGameflowSession 失败: %o', e)
   }
 
   const modeKey = getBalanceKey(gameMode)
@@ -364,6 +386,7 @@ async function mountForChampSelect() {
     logger.warn('[BalanceBuff] 未找到 layer-manager-wrapper，延迟挂载')
     return
   }
+  logger.debug('[BalanceBuff] 找到 layer-manager-wrapper，创建 tooltip')
   tooltip = new BalanceTooltip(manager)
 
   // 3. 订阅 champ-select 会话变化（核心：换英雄自动更新数组）
@@ -375,10 +398,31 @@ async function mountForChampSelect() {
   // 4. 主动拉一次当前会话初始化数据
   try {
     const session = await lcu.getChampSelectSession()
+    logger.debug('[BalanceBuff] 初始session拉取成功, myTeam=%d人', session.myTeam?.length ?? -1)
     updateFromSession(session)
-  } catch {
+  } catch (e) {
     // 选人刚开始可能拉不到，靠后面的 observe 补
+    logger.debug('[BalanceBuff] 初始session拉取失败: %o', e)
   }
+
+  // 5. 启动轮询兜底：首次启动时 WS observer 可能不推送 CHAMP_SELECT 事件
+  //    当 teamArray 无有效数据时，每 2 秒主动拉取一次；一旦有数据或离开选人则停止
+  pollTimer = setInterval(async () => {
+    const hasValidData = teamArray.some(d => d.champId > 0) || benchArray.some(d => d.champId > 0)
+    if (hasValidData) {
+      // 数据已就绪，停止轮询
+      if (pollTimer) { clearInterval(pollTimer); pollTimer = null }
+      logger.debug('[BalanceBuff] 轮询检测到有效数据，停止轮询')
+      return
+    }
+    try {
+      const session = await lcu.getChampSelectSession()
+      logger.debug('[BalanceBuff] 轮询拉取session, myTeam=%d人', session.myTeam?.length ?? -1)
+      updateFromSession(session)
+    } catch {
+      // 忽略，下次再试
+    }
+  }, 2000)
 
   // 5. 注册 DOM 绑定注入（injector 会自愈）
   injector.register(tryBindHover)
@@ -386,6 +430,8 @@ async function mountForChampSelect() {
 }
 
 function unmountForChampSelect() {
+  logger.debug('[BalanceBuff] unmountForChampSelect 执行')
+  if (pollTimer) { clearInterval(pollTimer); pollTimer = null }
   if (injectRegistered) {
     injector.unregister(tryBindHover)
     injectRegistered = false
@@ -412,6 +458,7 @@ function unmountForChampSelect() {
  * 监听 gameflow-phase：进入 ChampSelect 时 mount，离开时 unmount
  */
 export function updateBalanceBuffTooltip(enabled: boolean) {
+  logger.debug('[BalanceBuff] updateBalanceBuffTooltip: enabled=%s, phaseUnsub=%s', enabled, !!phaseUnsub)
   if (enabled && !phaseUnsub) {
     phaseUnsub = lcu.observe(LcuEventUri.GAMEFLOW_PHASE_CHANGE, (event: LCUEventMessage) => {
       const phase = event.data as GameflowPhase
@@ -426,6 +473,7 @@ export function updateBalanceBuffTooltip(enabled: boolean) {
 
     // 插件启动时若已经在 ChampSelect 阶段，立即挂载
     lcu.getGameflowPhase().then((phase) => {
+      logger.debug('[BalanceBuff] 启动时当前阶段=%s', phase)
       if (phase === 'ChampSelect') {
         unmountForChampSelect()
         mountForChampSelect()
