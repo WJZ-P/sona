@@ -393,7 +393,7 @@ export function ToolsPage() {
         </SettingCard> */}
         <SettingCard
           title="全局战力分析弹窗"
-          description="进入游戏后，自动弹窗展示双方队伍战力分析，包括胜率、KDA、段位、开黑分组。"
+          description="进入游戏后，自动弹窗展示双方队伍战力分析，包括胜率、KDA、段位、开黑分组。(注，不是直接在游戏内展示，需要切回客户端查看)"
         >
           <SonaSelect
             value={String(gameAnalysisFetchCount)}
