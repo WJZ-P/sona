@@ -251,6 +251,8 @@
 }
 
 .smd-player-row {
+  --smd-team-accent: #0088cc;
+  --smd-team-accent-rgb: 0, 136, 204;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -271,6 +273,8 @@
 }
 
 .smd-player-row--red {
+  --smd-team-accent: #e84057;
+  --smd-team-accent-rgb: 232, 64, 87;
   flex-direction: row-reverse;
   border-left: 1px solid transparent;
   border-right: 4px solid #e84057;
@@ -293,6 +297,14 @@
   box-shadow:
     inset 0 0 0 1px rgba(200, 170, 110, 0.34),
     0 0 12px rgba(200, 170, 110, 0.12);
+}
+
+.smd-player-row.smd-player-row--top-damage {
+  border-top-color: rgba(var(--smd-team-accent-rgb), 0.4);
+  border-bottom-color: rgba(var(--smd-team-accent-rgb), 0.4);
+  box-shadow:
+    inset 0 0 0 1px rgba(var(--smd-team-accent-rgb), 0.18),
+    0 0 18px rgba(var(--smd-team-accent-rgb), 0.16);
 }
 
 .smd-champ-block {
@@ -581,6 +593,8 @@
   height: 6px;
   margin-top: 2px;
   background: #010a13;
+  border-radius: 999px;
+  overflow: hidden;
 }
 
 .smd-player-row--red .smd-damage-bar {
@@ -589,13 +603,104 @@
 }
 
 .smd-damage-bar i {
+  position: relative;
   display: block;
   height: 100%;
+  overflow: hidden;
+  border-radius: inherit;
   background: #0088cc;
 }
 
 .smd-player-row--red .smd-damage-bar i {
   background: #e84057;
+}
+
+.smd-player-row--top-damage .smd-damage-value {
+  filter: drop-shadow(0 0 5px rgba(var(--smd-team-accent-rgb), 0.65));
+  animation: smdTopDamagePulse 5.8s ease-in-out infinite;
+}
+
+.smd-player-row--top-damage .smd-damage-icon {
+  animation: smdTopDamageIcon 5.8s ease-in-out infinite;
+}
+
+.smd-player-row--top-damage .smd-damage-bar {
+  height: 8px;
+  background:
+    linear-gradient(90deg, rgba(1, 10, 19, 0.95), rgba(30, 35, 40, 0.95)),
+    #010a13;
+  box-shadow:
+    0 0 0 1px rgba(var(--smd-team-accent-rgb), 0.24),
+    0 0 14px rgba(var(--smd-team-accent-rgb), 0.42);
+}
+
+.smd-player-row--top-damage .smd-damage-bar i {
+  background:
+    linear-gradient(
+      90deg,
+      rgba(var(--smd-team-accent-rgb), 0.62),
+      var(--smd-team-accent) 42%,
+      rgba(var(--smd-team-accent-rgb), 0.92)
+    );
+  box-shadow:
+    0 0 10px rgba(var(--smd-team-accent-rgb), 0.58),
+    inset 0 0 6px rgba(255, 255, 255, 0.2);
+}
+
+.smd-player-row--top-damage .smd-damage-bar i::after {
+  content: '';
+  position: absolute;
+  inset: -45% -55%;
+  background: linear-gradient(
+    110deg,
+    transparent 0%,
+    transparent 34%,
+    rgba(255, 255, 255, 0.18) 42%,
+    rgba(255, 255, 255, 0.86) 50%,
+    rgba(255, 255, 255, 0.2) 58%,
+    transparent 68%,
+    transparent 100%
+  );
+  transform: translateX(-70%) skewX(-18deg);
+  animation: smdDamageShine 3.6s cubic-bezier(0.45, 0, 0.2, 1) infinite;
+}
+
+@keyframes smdDamageShine {
+  0% {
+    transform: translateX(-85%) skewX(-18deg);
+  }
+
+  68% {
+    transform: translateX(85%) skewX(-18deg);
+  }
+
+  100% {
+    transform: translateX(85%) skewX(-18deg);
+  }
+}
+
+@keyframes smdTopDamagePulse {
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  50% {
+    transform: translateY(-1px);
+    opacity: 0.88;
+  }
+}
+
+@keyframes smdTopDamageIcon {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.18);
+  }
 }
 
 .smd-items-block {

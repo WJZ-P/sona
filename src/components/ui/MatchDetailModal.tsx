@@ -190,6 +190,7 @@ function ParticipantRow({
   ].filter((item) => item.icon)
   const maxKdaValue = Math.max(stats.kills, stats.deaths, stats.assists)
   const damageWidth = maxDamage > 0 ? Math.max(6, Math.round((stats.totalDamageDealtToChampions / maxDamage) * 100)) : 0
+  const topDamage = maxDamage > 0 && stats.totalDamageDealtToChampions === maxDamage
   const name = identity ? `${identity.gameName}#${identity.tagLine}` : `玩家 ${participant.participantId}`
   const cs = stats.totalMinionsKilled + stats.neutralMinionsKilled
   const displayRank = rankInfo ?? getRankInfoFromTier(participant.highestAchievedSeasonTier)
@@ -202,7 +203,7 @@ function ParticipantRow({
   }
 
   return (
-    <div className={`smd-player-row${isRed ? ' smd-player-row--red' : ''}${highlighted ? ' smd-player-row--focus' : ''}`}>
+    <div className={`smd-player-row${isRed ? ' smd-player-row--red' : ''}${highlighted ? ' smd-player-row--focus' : ''}${topDamage ? ' smd-player-row--top-damage' : ''}`}>
       <div className="smd-champ-block">
         <div className="smd-champ">
           <img src={getChampIcon(participant.championId)} alt="" />
