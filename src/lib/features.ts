@@ -25,6 +25,7 @@ import { applyRankDisguise, updateRankDisguise } from '@/lib/features/rank-disgu
 import { updateCustomProfileBg } from '@/lib/features/profile-background'
 import { updateGameAnalysisPopup } from '@/lib/features/game-analysis-popup'
 import { updateAutoReturnToLobby } from '@/lib/features/auto-return-to-lobby'
+import { updateOpggBuildRecommendation } from '@/lib/features/opgg-build-recommendation'
 import { setAvailabilityHijackEnabled, setHideTFTEnabled, setHideRightNavTextEnabled } from '@/lib/injections'
 
 // ==================== 共享：查询队友胜率 ====================
@@ -662,6 +663,9 @@ export function initFeatures() {
 
   updateChampSelectAssist(store.get('champSelectAssist'))
   store.onChange('champSelectAssist', updateChampSelectAssist)
+
+  updateOpggBuildRecommendation(store.get('opggBuildRecommendation'))
+  store.onChange('opggBuildRecommendation', updateOpggBuildRecommendation)
 
   updateGlobalParticle(store.get('globalParticle'))
   store.onChange('globalParticle', updateGlobalParticle)

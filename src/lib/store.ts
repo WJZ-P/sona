@@ -49,6 +49,8 @@ export interface SonaConfig {
   windowEffect: string
   /** 英雄选择玩家头像交互（点击队友头像展示历史数据） */
   champSelectAssist: boolean
+  /** OP.GG 配装推荐（接管选好英雄后的技能预览面板点击） */
+  opggBuildRecommendation: boolean
   /** 分析友方战力（进入选人自动查战绩并发送到聊天框） */
   analyzeTeamPower: boolean
   /** 分析友方战力消息类型: chat=队友可见, celebration=仅自己可见 */
@@ -120,6 +122,7 @@ const DEFAULT_CONFIG: SonaConfig = {
   hotkey: 'F1',
   windowEffect: 'none',
   champSelectAssist: false,
+  opggBuildRecommendation: false,
   analyzeTeamPower: false,
   analyzeTeamPowerMsgType: 'celebration',
   analyzeTeamPowerFetchCount: 50,
