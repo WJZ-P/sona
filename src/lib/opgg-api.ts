@@ -141,6 +141,7 @@ export interface OpggNormalChampionData {
   trends: OpggTrends
   game_lengths: OpggGameLength[]
   counters: unknown[]
+  augment_group?: OpggAugmentGroup[]
 }
 
 export interface OpggAugment {

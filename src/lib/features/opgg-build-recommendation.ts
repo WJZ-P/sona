@@ -27,6 +27,7 @@ import { lcu, LcuEventUri, type ChampSelectSession, type LCUEventMessage } from 
 import {
   normalizeOpggVersion,
   opggApi,
+  type OpggAugmentGroup,
   type OpggArenaModeChampion,
   type OpggChampion,
   type OpggItemBuild,
@@ -144,16 +145,21 @@ function isKiwiMode(context: RecommendationContext): boolean {
 }
 
 function isArenaChampion(data: OpggChampion): data is OpggArenaModeChampion {
-  return 'augment_group' in data.data
+  return 'synergies' in data.data
 }
 
 function isNormalChampion(data: OpggChampion): data is OpggNormalModeChampion {
   return 'rune_pages' in data.data
 }
 
+function getAugmentGroups(data: OpggChampion): OpggAugmentGroup[] {
+  return 'augment_group' in data.data && Array.isArray(data.data.augment_group)
+    ? data.data.augment_group
+    : []
+}
+
 function getRecommendationCacheKey(context: RecommendationContext): string {
   const mode = resolveOpggMode(context)
-  const version = normalizeOpggVersion(context.gameVersion) || 'latest'
   const position = mode === 'ranked'
     ? (context.position === 'none' ? 'mid' : context.position)
     : 'none'
@@ -164,7 +170,7 @@ function getRecommendationCacheKey(context: RecommendationContext): string {
     context.gameMode || 'unknown',
     mode,
     position,
-    version,
+    'latest',
   ].join('|')
 }
 
@@ -264,30 +270,25 @@ async function loadRecommendation(context: RecommendationContext): Promise<Build
   if (context.championId <= 0) return null
 
   const mode = resolveOpggMode(context)
-  const version = normalizeOpggVersion(context.gameVersion)
   const position = mode === 'ranked' ? (context.position === 'none' ? 'mid' : context.position) : 'none'
   const mainChampion = await getChampionWithVersionFallback({
     id: context.championId,
     mode,
     tier: mode === 'arena' ? 'all' : 'platinum_plus',
     position,
-    version,
   })
 
-  let augmentChampion: OpggArenaModeChampion | null = isArenaChampion(mainChampion) ? mainChampion : null
   let warning: string | undefined
+  let augmentGroups = getAugmentGroups(mainChampion)
 
-  if (isKiwiMode(context) && !augmentChampion) {
+  if (isKiwiMode(context) && augmentGroups.length === 0) {
     try {
       const arenaChampion = await getChampionWithVersionFallback({
         id: context.championId,
         mode: 'arena',
         tier: 'all',
-        version,
       })
-      if (isArenaChampion(arenaChampion)) {
-        augmentChampion = arenaChampion
-      }
+      augmentGroups = getAugmentGroups(arenaChampion)
     } catch (err) {
       warning = `KIWI 海克斯推荐请求失败：${err instanceof Error ? err.message : String(err)}`
       logger.warn('[OPGG] KIWI 海克斯推荐请求失败:', err)
@@ -311,7 +312,7 @@ async function loadRecommendation(context: RecommendationContext): Promise<Build
     prismItems: arena?.data.prism_items ?? [],
     lastItems: data.last_items ?? [],
     runePages: normal?.data.runes ?? [],
-    augments: (augmentChampion?.data.augment_group ?? []).map((group) => ({
+    augments: augmentGroups.map((group) => ({
       rarity: group.rarity,
       items: group.augments.slice(0, 4).map((augment) => ({
         id: augment.id,
