@@ -14,7 +14,7 @@ async function notifyAutoLockSuccess(championId: number, isLock: boolean) {
   const champInfo = getChampionById(championId)
   const champName = champInfo?.name || `英雄#${championId}`
   const action = isLock ? '自动锁定' : '自动预选'
-  const msg = `Sona助手 ♫   ${action}: ${champName}`
+  const msg = `${action}: ${champName}`
   try {
     await lcu.sendChampSelectMessage(msg, 'celebration')
   } catch {

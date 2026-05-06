@@ -523,7 +523,7 @@ async function analyzeTeammates() {
 
     logger.info('┌─── 队友战绩分析 ───')
 
-    const chatLines: string[] = ['Sona助手 ♫   队友卡池一览(本模式战绩):\n']
+    const chatLines: string[] = ['队友卡池一览(本模式战绩):\n']
 
     for (const s of stats) {
       const floor = `${s.floor}楼`
@@ -600,7 +600,7 @@ async function sendSideIndicator() {
     // 注意：选人阶段暂时拿不到本局大乱斗随机地图。
     // 实测 /lol-gameflow/v1/session 的 map.gameMutator / mapMutator 在 ChampSelect 阶段为空字符串，
     // 客户端应当是进入游戏后才知道本局随机到嚎哭深渊、屠夫之桥或莲华栈桥，因此这里不展示地图名。
-    const msg = `Sona助手 ♫   本局${sideText}`
+    const msg = `本局${sideText}`
     const msgType = store.get('sideIndicatorMsgType') || 'celebration'
     for (let attempt = 0; attempt < 10; attempt++) {
       try {
