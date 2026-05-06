@@ -35,9 +35,20 @@
 }
 
 .sona-select-value {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.sona-select-icon {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+  object-fit: contain;
 }
 
 .sona-select-arrow {
@@ -98,6 +109,13 @@
   cursor: pointer;
   transition: all 0.15s ease;
   text-align: left;
+}
+
+.sona-select-option-label {
+  display: inline-flex;
+  min-width: 0;
+  align-items: center;
+  gap: 8px;
 }
 
 .sona-select-option:hover {

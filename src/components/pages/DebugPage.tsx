@@ -7,6 +7,7 @@ import { GameAnalysisModal } from '@/components/ui/GameAnalysisModal'
 import type { GameAnalysisModalProps } from '@/components/ui/GameAnalysisModal'
 import { store } from '@/lib/store'
 import { lcu, SGP_SERVERS } from '@/lib/lcu'
+import { aramggApi } from '@/lib/aramgg-api'
 import { searchChampions, type ChampionInfo, getChampionBalanceMeta, getAllChampionBalances } from '@/lib/assets'
 import { openOpggBuildRecommendationDebugPanel } from '@/lib/features/opgg-build-recommendation'
 import { logger } from '@/index'
@@ -151,6 +152,14 @@ export function DebugPage() {
     } finally {
       window.clearTimeout(timer)
     }
+  }
+
+  const fetchAramggAugmentsStats = async () => {
+    return aramggApi.getAugmentsStatsRaw()
+  }
+
+  const fetchAramggMayhemAugmentsZhCn = async () => {
+    return aramggApi.getMayhemAugmentsZhCn()
   }
 
   const getOpggDebugChampionId = async () => {
@@ -414,6 +423,12 @@ export function DebugPage() {
             fetchOpggJson('/api/contents/aram-balance')
           )}>
             ARAM Balance
+          </SonaButton>
+          <SonaButton onClick={() => runAndLog('ARAMGG 海克斯原始统计', fetchAramggAugmentsStats)}>
+            ARAMGG 海克斯统计
+          </SonaButton>
+          <SonaButton onClick={() => runAndLog('ARAMGG 海克斯中文信息', fetchAramggMayhemAugmentsZhCn)}>
+            ARAMGG 海克斯中文
           </SonaButton>
           <div ref={opggPanelButtonRef} style={{ display: 'inline-block' }}>
             <SonaButton onClick={async () => {

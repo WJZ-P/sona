@@ -15,6 +15,7 @@ import { createRoot, type Root } from 'react-dom/client'
 import { getQueue, getQueueName } from '@/lib/assets'
 import { OpggBuildRecommendationPanel, type BuildRecommendation, type RecommendationContext } from '@/components/ui/OpggBuildRecommendationPanel'
 import { lcu, LcuEventUri, type ChampSelectSession, type LCUEventMessage } from '@/lib/lcu'
+import { store } from '@/lib/store'
 import {
   opggApi,
   type OpggAugmentGroup,
@@ -31,6 +32,24 @@ const TARGET_SELECTOR = '.toggle-ability-previews-button'
 const HIJACK_ATTR = 'data-sona-opgg-build-hijacked'
 const PANEL_ID = 'sona-opgg-build-panel'
 const DEFAULT_OPGG_TIER: OpggTier = 'master_plus'
+const SELECTABLE_OPGG_TIERS: OpggTier[] = [
+  'all',
+  'challenger',
+  'grandmaster',
+  'master_plus',
+  'master',
+  'diamond_plus',
+  'diamond',
+  'emerald_plus',
+  'emerald',
+  'platinum_plus',
+  'platinum',
+  'gold_plus',
+  'gold',
+  'silver',
+  'bronze',
+  'iron',
+]
 
 interface RecommendationCacheEntry {
   key: string
@@ -128,6 +147,7 @@ function getRecommendationCacheKey(context: RecommendationContext): string {
   const position = mode === 'ranked'
     ? (context.position === 'none' ? 'mid' : context.position)
     : 'none'
+  const tier = getEffectiveOpggTier(context)
 
   return [
     context.championId,
@@ -135,8 +155,21 @@ function getRecommendationCacheKey(context: RecommendationContext): string {
     context.gameMode || 'unknown',
     mode,
     position,
+    tier,
     'latest',
   ].join('|')
+}
+
+function normalizeOpggTier(value: string): OpggTier {
+  return SELECTABLE_OPGG_TIERS.includes(value as OpggTier) ? value as OpggTier : DEFAULT_OPGG_TIER
+}
+
+function getSelectedOpggTier(): OpggTier {
+  return normalizeOpggTier(store.get('opggBuildRecommendationTier'))
+}
+
+function getEffectiveOpggTier(context: RecommendationContext): OpggTier {
+  return resolveOpggMode(context) === 'arena' ? 'all' : getSelectedOpggTier()
 }
 
 function ensureRecommendationPrefetch(context: RecommendationContext): RecommendationCacheEntry | null {
@@ -227,10 +260,11 @@ async function loadRecommendation(context: RecommendationContext): Promise<Build
 
   const mode = resolveOpggMode(context)
   const position = mode === 'ranked' ? (context.position === 'none' ? 'mid' : context.position) : 'none'
+  const tier = getEffectiveOpggTier(context)
   const mainChampion = await getChampionWithVersionFallback({
     id: context.championId,
     mode,
-    tier: mode === 'arena' ? 'all' : DEFAULT_OPGG_TIER,
+    tier,
     position,
   })
 
@@ -284,14 +318,13 @@ async function loadRecommendation(context: RecommendationContext): Promise<Build
 
 function getRecommendationMeta(champion: OpggChampion): BuildRecommendation['meta'] {
   const stats = champion.data.summary.average_stats
-  const rank = stats.rank > 0 ? stats.rank : null
-  let previousRank: number | null = null
+  const tierData = 'tier_data' in stats ? stats.tier_data : undefined
+  const rank = tierData?.rank && tierData.rank > 0 ? tierData.rank : stats.rank > 0 ? stats.rank : null
+  const previousRank = tierData?.rank_prev && tierData.rank_prev > 0 ? tierData.rank_prev : null
   let totalRank: number | null = null
 
   if (isNormalChampion(champion)) {
     const trends = champion.data.trends
-    const trendPoints = trends?.win ?? []
-    previousRank = trendPoints.find((point) => point.rank > 0 && point.rank !== rank)?.rank ?? null
     totalRank = trends?.total_position_rank || trends?.total_rank || null
   }
 
@@ -435,7 +468,14 @@ async function openRecommendationPanel(anchor: HTMLElement, contextOverride?: Re
 
   const reactRoot = createRoot(view)
   panelReactRoot = reactRoot
-  renderRecommendationPanel(reactRoot, context, recommendation, loadError, isLoading)
+  const handleTierChange = (tier: OpggTier) => {
+    const nextTier = normalizeOpggTier(tier)
+    store.set('opggBuildRecommendationTier', nextTier)
+    recommendationCache.delete(getRecommendationCacheKey(context))
+    void openRecommendationPanel(anchor, context)
+  }
+
+  renderRecommendationPanel(reactRoot, context, recommendation, loadError, isLoading, getSelectedOpggTier(), handleTierChange)
   manager.appendChild(root)
 
   const rect = anchor.getBoundingClientRect()
@@ -470,6 +510,8 @@ async function openRecommendationPanel(anchor: HTMLElement, contextOverride?: Re
         cacheEntry.data ?? null,
         cacheEntry.error ?? '',
         false,
+        getSelectedOpggTier(),
+        handleTierChange,
       )
 
       const updatedRect = anchor.getBoundingClientRect()
@@ -500,6 +542,8 @@ function renderRecommendationPanel(
   recommendation: BuildRecommendation | null,
   loadError: string,
   isLoading: boolean,
+  selectedTier: OpggTier,
+  onTierChange: (tier: OpggTier) => void,
 ): void {
   flushSync(() => {
     root.render(createElement(OpggBuildRecommendationPanel, {
@@ -507,6 +551,8 @@ function renderRecommendationPanel(
       recommendation,
       loadError,
       isLoading,
+      selectedTier,
+      onTierChange,
       onClose: closePanel,
     }))
   })

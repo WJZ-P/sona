@@ -51,6 +51,8 @@ export interface SonaConfig {
   champSelectAssist: boolean
   /** OP.GG 配装推荐（接管选好英雄后的技能预览面板点击） */
   opggBuildRecommendation: boolean
+  /** OP.GG 配装推荐段位过滤 */
+  opggBuildRecommendationTier: string
   /** 分析友方战力（进入选人自动查战绩并发送到聊天框） */
   analyzeTeamPower: boolean
   /** 分析友方战力消息类型: chat=队友可见, celebration=仅自己可见 */
@@ -123,6 +125,7 @@ const DEFAULT_CONFIG: SonaConfig = {
   windowEffect: 'none',
   champSelectAssist: false,
   opggBuildRecommendation: false,
+  opggBuildRecommendationTier: 'emerald_plus',
   analyzeTeamPower: false,
   analyzeTeamPowerMsgType: 'celebration',
   analyzeTeamPowerFetchCount: 50,

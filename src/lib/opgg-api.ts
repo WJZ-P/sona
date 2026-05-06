@@ -1,6 +1,6 @@
 export type OpggRegion = 'global' | 'na' | 'euw' | 'kr' | 'br' | 'eune' | 'jp' | 'lan' | 'las' | 'oce' | 'tr' | 'ru' | 'sg' | 'id' | 'ph' | 'th' | 'vn' | 'tw' | 'me'
 export type OpggMode = 'aram' | 'arena' | 'nexus_blitz' | 'urf' | 'ranked'
-export type OpggTier = 'all' | 'ibsg' | 'gold_plus' | 'platinum_plus' | 'emerald_plus' | 'diamond_plus' | 'master' | 'master_plus' | 'grandmaster' | 'challenger'
+export type OpggTier = 'all' | 'ibsg' | 'iron' | 'bronze' | 'silver' | 'gold' | 'gold_plus' | 'platinum' | 'platinum_plus' | 'emerald' | 'emerald_plus' | 'diamond' | 'diamond_plus' | 'master' | 'master_plus' | 'grandmaster' | 'challenger'
 export type OpggPosition = 'mid' | 'jungle' | 'adc' | 'top' | 'support' | 'all' | 'none'
 
 export interface OpggVersions {
@@ -21,6 +21,12 @@ export interface OpggAverageStats {
   kda: number
   tier: number
   rank: number
+  tier_data?: {
+    tier: number
+    rank: number
+    rank_prev: number | null
+    rank_prev_patch: number | null
+  }
 }
 
 export interface OpggArenaAverageStats {

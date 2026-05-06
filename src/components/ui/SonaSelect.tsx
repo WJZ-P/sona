@@ -4,6 +4,7 @@ import '@/styles/SonaSelect.css'
 export interface SonaSelectOption {
   value: string
   label: string
+  icon?: string
 }
 
 export interface SonaSelectProps {
@@ -37,6 +38,7 @@ export function SonaSelect({ options, value, onChange, placeholder = '请选择.
         type="button"
       >
         <span className="sona-select-value">
+          {selectedOption?.icon && <img className="sona-select-icon" src={selectedOption.icon} alt="" />}
           {selectedOption ? selectedOption.label : placeholder}
         </span>
         <svg className={`sona-select-arrow${isOpen ? ' sona-select-arrow--open' : ''}`} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -56,7 +58,10 @@ export function SonaSelect({ options, value, onChange, placeholder = '请选择.
               }}
               type="button"
             >
-              <span>{option.label}</span>
+              <span className="sona-select-option-label">
+                {option.icon && <img className="sona-select-icon" src={option.icon} alt="" />}
+                {option.label}
+              </span>
               {value === option.value && (
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <polyline points="20 6 9 17 4 12" />
