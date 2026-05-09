@@ -7,6 +7,7 @@ import { store } from '@/lib/store'
 import { getChampIcon } from '@/lib/assets'
 import { getRating } from '@/lib/features'
 import type { GameflowTeamPlayer, PlayerChampionSelection } from '@/types/lcu'
+import { translate, useI18n } from '@/lib/i18n'
 import '@/styles/GameAnalysisModal.css'
 
 // ==================== 类型 ====================
@@ -120,6 +121,7 @@ export interface GameAnalysisModalProps {
 }
 
 export function GameAnalysisModal({ open, onClose, mockData }: GameAnalysisModalProps) {
+  const { t } = useI18n()
   const [blueTeam, setBlueTeam] = useState<PlayerAnalysis[]>([])
   const [redTeam, setRedTeam] = useState<PlayerAnalysis[]>([])
   const [gameInfo, setGameInfo] = useState<GameInfo | null>(null)
@@ -232,7 +234,7 @@ export function GameAnalysisModal({ open, onClose, mockData }: GameAnalysisModal
           const placeholder: PlayerAnalysis = {
             puuid: p.puuid,
             summonerId: 0,
-            summonerName: isBroadcaster ? '未知' : '',
+            summonerName: isBroadcaster ? t('common.unknown') : '',
             championId: p.championId,
             teamParticipantId: p.teamParticipantId,
             selectedPosition: '',
@@ -243,7 +245,7 @@ export function GameAnalysisModal({ open, onClose, mockData }: GameAnalysisModal
             avgK: 0,
             avgD: 0,
             avgA: 0,
-            rankText: '未定级',
+            rankText: t('common.unranked'),
             rankColor: RANK_COLORS.UNRANKED,
             rating: '',
             premadeGroup: groupIdMap.get(p.puuid) ?? null,
@@ -266,10 +268,10 @@ export function GameAnalysisModal({ open, onClose, mockData }: GameAnalysisModal
 
             const summonerName = summoner?.gameName
               ? `${summoner.gameName} #${summoner.tagLine}`
-              : '未知'
+              : t('common.unknown')
 
             // 解析排位（取最高段位）
-            let rankText = '未定级'
+            let rankText = t('common.unranked')
             let rankColor = RANK_COLORS.UNRANKED
             const TIER_ORDER = ['IRON', 'BRONZE', 'SILVER', 'GOLD', 'PLATINUM', 'EMERALD', 'DIAMOND', 'MASTER', 'GRANDMASTER', 'CHALLENGER']
             const DIV_ORDER: Record<string, number> = { IV: 1, III: 2, II: 3, I: 4 }
@@ -297,7 +299,7 @@ export function GameAnalysisModal({ open, onClose, mockData }: GameAnalysisModal
                     return (DIV_ORDER[a.division] ?? 0) - (DIV_ORDER[b.division] ?? 0)
                   })
                   const best = candidates[0]
-                  rankText = (RANK_NAMES[best.tier] ?? best.tier) + (best.division && best.division !== 'NA' ? ` ${best.division}` : '') + ` ${best.label}`
+                  rankText = (t(`rank.${best.tier}`) ?? RANK_NAMES[best.tier] ?? best.tier) + (best.division && best.division !== 'NA' ? ` ${best.division}` : '') + ` ${best.label === '单双' ? t('tools.queueSolo') : t('tools.queueFlex')}`
                   rankColor = RANK_COLORS[best.tier] ?? RANK_COLORS.UNRANKED
                 }
               }
@@ -349,7 +351,7 @@ export function GameAnalysisModal({ open, onClose, mockData }: GameAnalysisModal
               recentGames,
             }
           } catch {
-            return { ...placeholder, summonerName: '未知' }
+            return { ...placeholder, summonerName: t('common.unknown') }
           }
         }))
       }
@@ -362,12 +364,12 @@ export function GameAnalysisModal({ open, onClose, mockData }: GameAnalysisModal
       setBlueTeam(sortTeamByPosition(isInTeamOne ? one : two))
       setRedTeam(sortTeamByPosition(isInTeamOne ? two : one))
     } catch (err) {
-      setError('获取对局信息失败')
+      setError(t('analysis.loadFailed'))
       console.error('[GameAnalysis] 加载失败:', err)
     } finally {
       setLoading(false)
     }
-  }, [mockData])
+  }, [mockData, t])
 
   // 打开时加载
   useEffect(() => {
@@ -391,7 +393,7 @@ export function GameAnalysisModal({ open, onClose, mockData }: GameAnalysisModal
         <div className="sga-header">
           <div className="sga-header-left">
             <span className="sga-header-icon">❖</span>
-            <span className="sga-header-title">对局分析<span className="sga-header-subtitle">（本模式近{store.get('gameAnalysisFetchCount') || 50}局）</span></span>
+            <span className="sga-header-title">{t('analysis.title')}<span className="sga-header-subtitle">{t('analysis.recentCount', { count: store.get('gameAnalysisFetchCount') || 50 })}</span></span>
           </div>
           {gameInfo && (
             <span className="sga-header-info">
@@ -405,7 +407,7 @@ export function GameAnalysisModal({ open, onClose, mockData }: GameAnalysisModal
           {loading && (
             <div className="sga-loading">
               <div className="sga-loading-spinner" />
-              <span>正在分析对局数据...</span>
+              <span>{t('analysis.loading')}</span>
             </div>
           )}
           {error && <div className="sga-error">{error}</div>}
@@ -414,10 +416,10 @@ export function GameAnalysisModal({ open, onClose, mockData }: GameAnalysisModal
               {/* 蓝色方 */}
               <div className="sga-team">
                 <div className="sga-team-header sga-team-header--blue">
-                  <span className="sga-team-name">蓝色方</span>
+                  <span className="sga-team-name">{t('analysis.blueTeam')}</span>
                   {blueAvg != null && (
                     <span className="sga-team-avg">
-                      平均胜率 <span className={`sga-team-avg-num ${blueAvg > 50 ? 'sga-avg-green' : 'sga-avg-red'}`}>{blueAvg}%</span>
+                      {t('analysis.avgWinRate')} <span className={`sga-team-avg-num ${blueAvg > 50 ? 'sga-avg-green' : 'sga-avg-red'}`}>{blueAvg}%</span>
                     </span>
                   )}
                 </div>
@@ -431,10 +433,10 @@ export function GameAnalysisModal({ open, onClose, mockData }: GameAnalysisModal
               {/* 红色方 */}
               <div className="sga-team">
                 <div className="sga-team-header sga-team-header--red">
-                  <span className="sga-team-name">红色方</span>
+                  <span className="sga-team-name">{t('analysis.redTeam')}</span>
                   {redAvg != null && (
                     <span className="sga-team-avg">
-                      平均胜率 <span className={`sga-team-avg-num ${redAvg > 50 ? 'sga-avg-green' : 'sga-avg-red'}`}>{redAvg}%</span>
+                      {t('analysis.avgWinRate')} <span className={`sga-team-avg-num ${redAvg > 50 ? 'sga-avg-green' : 'sga-avg-red'}`}>{redAvg}%</span>
                     </span>
                   )}
                 </div>
@@ -447,7 +449,7 @@ export function GameAnalysisModal({ open, onClose, mockData }: GameAnalysisModal
             </div>
           )}
           {!loading && !error && blueTeam.length === 0 && redTeam.length === 0 && (
-            <div className="sga-empty">暂无对局数据</div>
+            <div className="sga-empty">{t('analysis.empty')}</div>
           )}
         </div>
 
@@ -465,6 +467,7 @@ function renderKdaValue(val: number, isMax: boolean) {
 }
 
 function PlayerRow({ player, isRed, queueId }: { player: PlayerAnalysis; isRed: boolean; queueId?: number }) {
+  const { t } = useI18n()
   const winRate = player.winRate
   // 胜率颜色
   const winColor = winRate != null
@@ -512,7 +515,7 @@ function PlayerRow({ player, isRed, queueId }: { player: PlayerAnalysis; isRed: 
           <div className="sga-player-name-row">
             <span className="sga-player-name">{player.summonerName || '???'}</span>
             {player.isBroadcaster && (
-              <span className="sga-broadcaster-badge">主播模式</span>
+              <span className="sga-broadcaster-badge">{t('analysis.broadcaster')}</span>
             )}
             {premadeGroup && (
               <span className="sga-premade-badge" style={{ background: premadeColor }}>
@@ -522,7 +525,7 @@ function PlayerRow({ player, isRed, queueId }: { player: PlayerAnalysis; isRed: 
           </div>
           <span className="sga-player-rank" style={{ color: player.rankColor || '#5c5b57' }}>
             {isRed && player.rating ? <span className="sga-player-rating">{player.rating} · </span> : null}
-            {player.rankText || '未定级'}
+            {player.rankText || t('common.unranked')}
             {!isRed && player.rating ? <span className="sga-player-rating"> · {player.rating}</span> : null}
           </span>
         </div>
@@ -534,7 +537,7 @@ function PlayerRow({ player, isRed, queueId }: { player: PlayerAnalysis; isRed: 
               <div className="sga-winrate-text">
                 <span style={{ color: winColor, fontWeight: 'bold' }}>{winRate.toFixed(0)}%</span>
                 <span className="sga-winrate-wl">
-                <span className="sga-wl-win">{player.wins} 胜</span><span className="sga-wl-sep"> / </span><span className="sga-wl-loss">{player.total - player.wins} 负</span>
+                <span className="sga-wl-win">{player.wins} {t('common.wins')}</span><span className="sga-wl-sep"> / </span><span className="sga-wl-loss">{player.total - player.wins} {t('common.losses')}</span>
               </span>
               </div>
               <div className="sga-winrate-bar">
@@ -542,7 +545,7 @@ function PlayerRow({ player, isRed, queueId }: { player: PlayerAnalysis; isRed: 
               </div>
             </>
           ) : (
-            <span className="sga-no-data">无数据</span>
+            <span className="sga-no-data">{t('common.noData')}</span>
           )}
         </div>
 

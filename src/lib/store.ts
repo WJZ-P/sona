@@ -23,6 +23,8 @@
 
 /** 所有配置项及其类型 */
 export interface SonaConfig {
+  /** Interface language */
+  language: 'zh-CN' | 'en-US'
   /** 自动接受对局 */
   autoAcceptMatch: boolean
   /** 自动接受对局的随机延迟：最小值（毫秒），0 或非法值视为无延迟 */
@@ -113,6 +115,7 @@ export interface SonaConfig {
 
 /** 配置项默认值 */
 const DEFAULT_CONFIG: SonaConfig = {
+  language: 'zh-CN',
   autoAcceptMatch: false,
   autoAcceptDelayMin: 0,
   autoAcceptDelayMax: 0,

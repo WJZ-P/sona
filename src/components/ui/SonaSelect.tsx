@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import '@/styles/SonaSelect.css'
+import { translate } from '@/lib/i18n'
 
 export interface SonaSelectOption {
   value: string
@@ -14,7 +15,7 @@ export interface SonaSelectProps {
   placeholder?: string
 }
 
-export function SonaSelect({ options, value, onChange, placeholder = '请选择...' }: SonaSelectProps) {
+export function SonaSelect({ options, value, onChange, placeholder = translate('common.selectPlaceholder') }: SonaSelectProps) {
   const [isOpen, setIsOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
 

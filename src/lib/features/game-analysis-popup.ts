@@ -5,6 +5,7 @@ import { lcu, LcuEventUri } from '@/lib/lcu'
 import type { LCUEventMessage, GameflowPhase } from '@/lib/lcu'
 import { injector } from '@/lib/InjectorManager'
 import { GameAnalysisModal } from '@/components/ui/GameAnalysisModal'
+import { translate } from '@/lib/i18n'
 
 // ==================== 进入游戏自动弹窗战力分析 ====================
 
@@ -60,7 +61,7 @@ function tryInjectGameAnalysisButton(): boolean {
 
   const btn = document.createElement('lol-uikit-flat-button')
   btn.setAttribute(GAME_ANALYSIS_BTN_ATTR, 'true')
-  btn.textContent = '对局分析'
+  btn.textContent = translate('injections.gameAnalysisButton')
   btn.style.marginTop = '12px'
 
   btn.addEventListener('click', (e) => {

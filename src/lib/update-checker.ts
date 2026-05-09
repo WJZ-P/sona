@@ -2,6 +2,7 @@ declare const __PLUGIN_VERSION__: string
 
 import { logger } from '@/index'
 import { lcu } from '@/lib/lcu'
+import { translate } from '@/lib/i18n'
 
 export interface UpdateInfo {
   currentVersion: string
@@ -157,7 +158,7 @@ export function checkForUpdates(): Promise<UpdateState> {
           latestVersion,
           releaseName: release.name || `Sona v${latestVersion}`,
           releaseUrl: release.html_url || RELEASE_PAGE_URL,
-          releaseBody: release.body || '该版本没有填写更新说明。',
+          releaseBody: release.body || translate('updateChecker.emptyReleaseBody'),
           publishedAt: release.published_at || '',
         },
       }
@@ -185,8 +186,8 @@ function notifyUpdateAvailable(currentVersion: string, latestVersion: string) {
   notifiedVersion = latestVersion
 
   void lcu.sendNotification(
-    '检测到 Sona 新版本',
-    `${currentVersion} → ${latestVersion}，打开 Sona 面板查看更新内容。`,
+    translate('updateChecker.notificationTitle'),
+    translate('updateChecker.notificationBody', { currentVersion, latestVersion }),
   ).catch((err) => {
     notifiedVersion = ''
     logger.warn('[Update] 发送更新通知失败:', err)

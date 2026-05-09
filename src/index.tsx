@@ -13,6 +13,7 @@ import { lcu } from '@/lib/lcu'
 import { installEmberHook } from '@/lib/ember-hook'
 import { registerChromaRules } from '@/lib/features/chroma-unlock'
 import { checkForUpdates } from '@/lib/update-checker'
+import { translate } from '@/lib/i18n'
 import '@/styles/index.css'
 import '@/styles/inject.css'
 import '@/styles/availabilityMenu.css'
@@ -143,7 +144,7 @@ function mountApp() {
   logger.info('Mounted ✓ (container connected: %s)', String(container.isConnected))
 
   if (!runtime.hasShownStartupToast) {
-    Toast.success('Sona 已启动 ♫')
+    Toast.success(translate('injections.toastStarted'))
     runtime.hasShownStartupToast = true
   }
 

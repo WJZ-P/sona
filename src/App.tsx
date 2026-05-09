@@ -13,21 +13,7 @@ import { HomeIcon, GamepadIcon, SettingsIcon, InfoIcon, BugIcon, ZapIcon } from 
 import { onModalVisibilityChange, isModalVisible, closeModal } from '@/lib/modal'
 import { store } from '@/lib/store'
 import { getUpdateState, onUpdateStateChange, type UpdateState } from '@/lib/update-checker'
-
-const baseSidebarItems: SidebarItem[] = [
-  { id: 'home', icon: <HomeIcon />, label: '主页' },
-  { id: 'tools', icon: <GamepadIcon />, label: '工具' },
-  { id: 'settings', icon: <SettingsIcon />, label: '设置' },
-  { id: 'about', icon: <InfoIcon />, label: '关于' },
-]
-
-const debugSidebarItem: SidebarItem = {
-  id: 'debug', icon: <BugIcon />, label: '调试',
-}
-
-const updateSidebarItem: SidebarItem = {
-  id: 'update', icon: <ZapIcon />, label: '检测到新版本',
-}
+import { useI18n } from '@/lib/i18n'
 
 function PageContent({ pageId }: { pageId: string }) {
   switch (pageId) {
@@ -49,6 +35,7 @@ function PageContent({ pageId }: { pageId: string }) {
 }
 
 export function App() {
+  const { t } = useI18n()
   const [visible, setVisible] = useState(isModalVisible())
   const [activePageId, setActivePageId] = useState(() => (getUpdateState().status === 'available' ? 'update' : 'home'))
   const [sidebarCollapsed, setSidebarCollapsed] = useState(store.get('sidebarCollapsed'))
@@ -88,11 +75,23 @@ export function App() {
 
   // 动态构建侧边栏项目
   const sidebarItems = useMemo(() => {
+    const baseSidebarItems: SidebarItem[] = [
+      { id: 'home', icon: <HomeIcon />, label: t('nav.home') },
+      { id: 'tools', icon: <GamepadIcon />, label: t('nav.tools') },
+      { id: 'settings', icon: <SettingsIcon />, label: t('nav.settings') },
+      { id: 'about', icon: <InfoIcon />, label: t('nav.about') },
+    ]
+    const debugSidebarItem: SidebarItem = {
+      id: 'debug', icon: <BugIcon />, label: t('nav.debug'),
+    }
+    const updateSidebarItem: SidebarItem = {
+      id: 'update', icon: <ZapIcon />, label: t('nav.update'),
+    }
     const items = updateState.status === 'available'
       ? [updateSidebarItem, ...baseSidebarItems]
       : baseSidebarItems
     return devMode ? [...items, debugSidebarItem] : items
-  }, [devMode, updateState.status])
+  }, [devMode, updateState.status, t])
 
   const handleClose = () => {
     closeModal()

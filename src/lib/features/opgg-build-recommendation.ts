@@ -9,6 +9,7 @@
 
 import { logger } from '@/index'
 import { injector } from '@/lib/InjectorManager'
+import { translate } from '@/lib/i18n'
 import { createElement } from 'react'
 import { flushSync } from 'react-dom'
 import { createRoot, type Root } from 'react-dom/client'
@@ -741,7 +742,7 @@ function tryHijackAbilityPreviewPanel(): boolean {
     }
 
     target.setAttribute(HIJACK_ATTR, 'true')
-    target.innerText = '配装推荐'
+    target.innerText = translate('injections.buildRecommendation')
     target.style.cursor = 'pointer'
     target.addEventListener('click', handler, true)
     boundElements.push({ el: target, handler, originalText })
