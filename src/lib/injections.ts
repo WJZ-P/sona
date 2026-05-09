@@ -18,6 +18,7 @@ import { lcu, LcuEventUri, type LCUEventMessage } from '@/lib/lcu'
 import type { Availability, ChatMe } from '@/lib/lcu'
 import { sleep } from '@/lib/utils'
 import { getPuuid } from '@/lib/assets'
+import { getUpdateState, onUpdateStateChange } from '@/lib/update-checker'
 
 /** 通用标记：标识已被 Sona 接管的 DOM 元素，防止重复绑定 */
 const HIJACKED_ATTR = 'data-sona-hijacked'
@@ -36,6 +37,7 @@ function createEntryButton(): HTMLElement {
 
   btn.innerHTML = `
     <img class="sona-entry-icon" src="${sonaIcon}" alt="Sona" />
+    <span class="sona-entry-update-badge" aria-hidden="true">!</span>
   `
 
   // 防止客户端底层的 mousedown/mouseup 事件穿透
@@ -52,6 +54,12 @@ function createEntryButton(): HTMLElement {
   onModalVisibilityChange((visible) => {
     btn.classList.toggle('sona-entry-btn--active', visible)
   })
+
+  const syncUpdateBadge = () => {
+    btn.classList.toggle('sona-entry-btn--has-update', getUpdateState().status === 'available')
+  }
+  syncUpdateBadge()
+  onUpdateStateChange(syncUpdateBadge)
 
   return btn
 }

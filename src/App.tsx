@@ -8,9 +8,11 @@ import { ToolsPage } from '@/components/pages/ToolsPage'
 import { SettingsPage } from '@/components/pages/SettingsPage'
 import { AboutPage } from '@/components/pages/AboutPage'
 import { DebugPage } from '@/components/pages/DebugPage'
-import { HomeIcon, GamepadIcon, SettingsIcon, InfoIcon, BugIcon } from '@/components/ui/icons'
+import { UpdatePage } from '@/components/pages/UpdatePage'
+import { HomeIcon, GamepadIcon, SettingsIcon, InfoIcon, BugIcon, ZapIcon } from '@/components/ui/icons'
 import { onModalVisibilityChange, isModalVisible, closeModal } from '@/lib/modal'
 import { store } from '@/lib/store'
+import { getUpdateState, onUpdateStateChange, type UpdateState } from '@/lib/update-checker'
 
 const baseSidebarItems: SidebarItem[] = [
   { id: 'home', icon: <HomeIcon />, label: '主页' },
@@ -23,8 +25,14 @@ const debugSidebarItem: SidebarItem = {
   id: 'debug', icon: <BugIcon />, label: '调试',
 }
 
+const updateSidebarItem: SidebarItem = {
+  id: 'update', icon: <ZapIcon />, label: '检测到新版本',
+}
+
 function PageContent({ pageId }: { pageId: string }) {
   switch (pageId) {
+    case 'update':
+      return <UpdatePage />
     case 'home':
       return <HomePage />
     case 'tools':
@@ -42,15 +50,19 @@ function PageContent({ pageId }: { pageId: string }) {
 
 export function App() {
   const [visible, setVisible] = useState(isModalVisible())
-  const [activePageId, setActivePageId] = useState('home')
+  const [activePageId, setActivePageId] = useState(() => (getUpdateState().status === 'available' ? 'update' : 'home'))
   const [sidebarCollapsed, setSidebarCollapsed] = useState(store.get('sidebarCollapsed'))
   const [devMode, setDevMode] = useState(store.get('developerMode'))
+  const [updateState, setUpdateState] = useState<UpdateState>(() => getUpdateState())
 
   useEffect(() => {
     return onModalVisibilityChange((v) => {
       const rootConnected = Boolean(document.getElementById('sona-root')?.isConnected)
       logger.debug('Modal visibility changed: %s (root in DOM: %s)', String(v), String(rootConnected))
       setVisible(v)
+      if (v && getUpdateState().status === 'available') {
+        setActivePageId('update')
+      }
     })
   }, [])
 
@@ -65,10 +77,22 @@ export function App() {
     })
   }, [activePageId])
 
+  useEffect(() => {
+    return onUpdateStateChange((state) => {
+      setUpdateState(state)
+      if (state.status !== 'available' && activePageId === 'update') {
+        setActivePageId('home')
+      }
+    })
+  }, [activePageId])
+
   // 动态构建侧边栏项目
   const sidebarItems = useMemo(() => {
-    return devMode ? [...baseSidebarItems, debugSidebarItem] : baseSidebarItems
-  }, [devMode])
+    const items = updateState.status === 'available'
+      ? [updateSidebarItem, ...baseSidebarItems]
+      : baseSidebarItems
+    return devMode ? [...items, debugSidebarItem] : items
+  }, [devMode, updateState.status])
 
   const handleClose = () => {
     closeModal()

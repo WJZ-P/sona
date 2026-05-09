@@ -107,6 +107,7 @@ declare global {
     container: HTMLDivElement | null
     root: Root | null
     hasShownStartupToast: boolean
+    hasShownSpecialDayToast: boolean
   }
 }
 

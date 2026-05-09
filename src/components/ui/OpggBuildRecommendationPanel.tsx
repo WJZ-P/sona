@@ -75,7 +75,11 @@ export interface BuildRecommendation {
   prismItems: OpggItemBuild[]
   lastItems: OpggItemBuild[]
   runePages: OpggRuneBuild[]
-  augments: Array<{ rarity: number; items: Array<{ id: number; pickRate: number; averagePlace: number; firstPlace: number }> }>
+  augments: Array<{
+    rarity: number
+    label?: string
+    items: Array<{ id: number; pickRate: number; averagePlace?: number; firstPlace?: number; winRate?: number }>
+  }>
   meta?: RecommendationMeta
   warning?: string
 }
@@ -151,10 +155,10 @@ export function OpggBuildRecommendationPanel({
         </div>
 
         <div className="sobp-trend-wrap">
-          <ItemSection title="出装趋势" builds={recommendation?.lastItems} itemLimit={6} />
+          <LastItemTrendSection title="出装趋势" builds={recommendation?.lastItems} />
         </div>
 
-        {showAugments && <AugmentSection title="海克斯推荐" groups={recommendation?.augments} />}
+        {showAugments && <AugmentSection title="海克斯推荐" groups={recommendation?.augments} winRateFirst={isKiwiMode(context)} />}
 
         {isLoading && <PanelMessage>正在后台加载 OP.GG 推荐数据，完成后会自动刷新。</PanelMessage>}
         {loadError && <PanelMessage warning>OP.GG 请求失败：{loadError}</PanelMessage>}
@@ -227,6 +231,15 @@ function TrendMeta({ meta }: { meta?: RecommendationMeta }) {
 
   const trend = getRankTrend(meta.rankDelta)
   const rankText = meta.rank && meta.totalRank ? `${meta.rank}/${meta.totalRank}` : meta.rank ? `#${meta.rank}` : ''
+  if (trend.kind === 'unknown' && rankText) {
+    return (
+      <div className="sobp-meta">
+        <div className="sobp-meta-trend sobp-meta-trend--flat">
+          <span className="sobp-meta-rank">{rankText}</span>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="sobp-meta">
@@ -350,6 +363,32 @@ function ItemSection({ title, builds, itemLimit }: { title: string; builds?: Opg
   )
 }
 
+function LastItemTrendSection({ title, builds }: { title: string; builds?: OpggItemBuild[] }) {
+  const visibleItems = (builds ?? [])
+    .flatMap((build, buildIndex) => build.ids.map((id, itemIndex) => ({
+      id,
+      key: `${buildIndex}-${itemIndex}-${id}`,
+      pickRate: build.pick_rate,
+    })))
+    .slice(0, 18)
+
+  return (
+    <Section title={title} empty={visibleItems.length === 0}>
+      <div className="sobp-last-items">
+        {visibleItems.map((entry) => {
+          const item = getItemInfo(entry.id)
+          return (
+            <div className="sobp-last-item" key={entry.key}>
+              <div className="sobp-last-item-rate">{formatPercent(entry.pickRate)}</div>
+              <BuildIcon src={item.iconPath} title={item.name} description={item.description} price={item.price} size={34} />
+            </div>
+          )
+        })}
+      </div>
+    </Section>
+  )
+}
+
 function SpellSection({ title, builds, limit }: { title: string; builds?: OpggItemBuild[]; limit: number }) {
   const visibleBuilds = builds?.slice(0, limit) ?? []
   const maxRate = getMaxPickRate(visibleBuilds, 1)
@@ -399,6 +438,11 @@ function RuneSection({ title, runes, championName }: { title: string; runes?: Op
         ],
       })
       setAppliedKey(key)
+      try {
+        await lcu.sendChampSelectMessage(`${championName} 符文已应用`, 'celebration')
+      } catch {
+        // 非选人阶段或聊天室未就绪时忽略
+      }
     } catch {
       setApplyErrorKey(key)
     } finally {
@@ -457,7 +501,7 @@ function RuneSection({ title, runes, championName }: { title: string; runes?: Op
   )
 }
 
-function AugmentSection({ title, groups }: { title: string; groups?: BuildRecommendation['augments'] }) {
+function AugmentSection({ title, groups, winRateFirst = false }: { title: string; groups?: BuildRecommendation['augments']; winRateFirst?: boolean }) {
   const visibleGroups = groups ?? []
 
   return (
@@ -465,25 +509,26 @@ function AugmentSection({ title, groups }: { title: string; groups?: BuildRecomm
       <Section title={title} empty={visibleGroups.length === 0}>
         {visibleGroups.map((group) => (
           <div className="sobp-augment-group" key={group.rarity}>
-            <div className="sobp-augment-rarity">{getAugmentRarityLabel(group.rarity)}</div>
+            <div className="sobp-augment-rarity">{group.label ?? getAugmentRarityLabel(group.rarity)}</div>
             <div className="sobp-augment-grid">
               {group.items.map((augment) => {
                 const info = getAugmentInfo(augment.id)
+                const detailText = Number.isFinite(augment.winRate)
+                  ? formatAugmentWinRateText(augment, winRateFirst)
+                  : `登场 ${formatPercent(augment.pickRate)} · 均排 ${formatPlace(augment.averagePlace)}`
                 return (
                   <div className="sobp-augment" key={augment.id}>
                     <BuildIcon
                       src={info?.iconPath ?? ''}
                       title={info?.name ?? String(augment.id)}
                       description={info?.description ?? ''}
-                      subtitle={getAugmentRarityLabel(group.rarity)}
-                      size={28}
+                      subtitle={group.label ?? getAugmentRarityLabel(group.rarity)}
+                      size={40}
                       border={getAugmentBorder(info?.rarity)}
                     />
                     <div className="sobp-augment-info">
                       <div className="sobp-augment-name">{info?.name ?? String(augment.id)}</div>
-                      <div className="sobp-augment-meta">
-                        登场 {formatPercent(augment.pickRate)} · 均排 {formatPlace(augment.averagePlace)}
-                      </div>
+                      <div className="sobp-augment-meta">{detailText}</div>
                     </div>
                   </div>
                 )
@@ -494,6 +539,12 @@ function AugmentSection({ title, groups }: { title: string; groups?: BuildRecomm
       </Section>
     </div>
   )
+}
+
+function formatAugmentWinRateText(augment: { pickRate: number; winRate?: number }, winRateFirst: boolean): string {
+  const winRateText = `胜率 ${formatPercent(augment.winRate)}`
+  const pickRateText = `登场 ${formatPercent(augment.pickRate)}`
+  return winRateFirst ? `${winRateText} · ${pickRateText}` : `${pickRateText} · ${winRateText}`
 }
 
 function RankBadge({ rank }: { rank: number }) {

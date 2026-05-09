@@ -153,3 +153,30 @@
   /* ✨ hover 时头像光芒更强 */
   filter: drop-shadow(0 0 4px rgba(200, 170, 110, 0.6));
 }
+
+.sona-entry-update-badge {
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  z-index: 1;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border: 1px solid rgba(240, 230, 210, 0.9);
+  border-radius: 50%;
+  background: #c8aa6e;
+  color: #010a13;
+  font-size: 12px;
+  font-weight: 900;
+  line-height: 1;
+  box-shadow:
+    0 0 8px rgba(200, 170, 110, 0.65),
+    0 0 14px rgba(200, 170, 110, 0.25);
+  pointer-events: none;
+}
+
+.sona-entry-btn--has-update .sona-entry-update-badge {
+  display: flex;
+}

@@ -110,6 +110,7 @@ export function ToolsPage() {
   const [hideRightNavText, setHideRightNavText] = useState(store.get('hideRightNavText'))
   const [windowEffect, setWindowEffect] = useState(store.get('windowEffect'))
   const [champSelectAssist, setChampSelectAssist] = useState(store.get('champSelectAssist'))
+  const [champSelectTierBadge, setChampSelectTierBadge] = useState(store.get('champSelectTierBadge'))
   const [opggBuildRecommendation, setOpggBuildRecommendation] = useState(store.get('opggBuildRecommendation'))
   const [balanceBuffTooltip, setBalanceBuffTooltip] = useState(store.get('balanceBuffTooltip'))
   const [champSelectQuitButton, setChampSelectQuitButton] = useState(store.get('champSelectQuitButton'))
@@ -162,6 +163,7 @@ export function ToolsPage() {
       store.onChange('hideTFT', setHideTFT),
       store.onChange('windowEffect', setWindowEffect),
       store.onChange('champSelectAssist', setChampSelectAssist),
+      store.onChange('champSelectTierBadge', setChampSelectTierBadge),
       store.onChange('opggBuildRecommendation', setOpggBuildRecommendation),
       store.onChange('balanceBuffTooltip', setBalanceBuffTooltip),
       store.onChange('champSelectQuitButton', setChampSelectQuitButton),
@@ -372,6 +374,15 @@ export function ToolsPage() {
           <SonaSwitch
             checked={champSelectAssist}
             onChange={(v) => { setChampSelectAssist(v); store.set('champSelectAssist', v) }}
+          />
+        </SettingCard>
+        <SettingCard
+          title="英雄 T 级角标"
+          description="英雄选择时，在头像左上角显示 OP.GG 英雄强度分级（OP-T5），方便快速判断当前模式强度。"
+        >
+          <SonaSwitch
+            checked={champSelectTierBadge}
+            onChange={(v) => { setChampSelectTierBadge(v); store.set('champSelectTierBadge', v) }}
           />
         </SettingCard>
         <SettingCard

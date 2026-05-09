@@ -12,6 +12,7 @@ import { injector } from '@/lib/InjectorManager'
 import { lcu } from '@/lib/lcu'
 import { installEmberHook } from '@/lib/ember-hook'
 import { registerChromaRules } from '@/lib/features/chroma-unlock'
+import { checkForUpdates } from '@/lib/update-checker'
 import '@/styles/index.css'
 import '@/styles/inject.css'
 import '@/styles/availabilityMenu.css'
@@ -31,6 +32,7 @@ function getRuntime(): SonaRuntime {
       container: null,
       root: null,
       hasShownStartupToast: false,
+      hasShownSpecialDayToast: false,
     }
   }
 
@@ -91,6 +93,7 @@ export function load() {
   registerHotkey()         //  注册 F1 快捷键
   initAssets()             //  初始化装备/技能资源映射（异步，不阻塞）
   mountApp()
+  void checkForUpdates()
 }
 
 /**
@@ -112,6 +115,10 @@ function tryGuardContainer(): boolean {
     logger.warn('Detected host DOM refresh; restored app container')
   }
   return Boolean(runtime.container?.isConnected)
+}
+
+function isSpecialDay(date = new Date()): boolean {
+  return date.getMonth() === 7 && date.getDate() === 21
 }
 
 /**
@@ -138,5 +145,10 @@ function mountApp() {
   if (!runtime.hasShownStartupToast) {
     Toast.success('Sona 已启动 ♫')
     runtime.hasShownStartupToast = true
+  }
+
+  if (!runtime.hasShownSpecialDayToast && isSpecialDay()) {
+    Toast.success('today is a special day! 🎉')
+    runtime.hasShownSpecialDayToast = true
   }
 }

@@ -702,6 +702,33 @@
   min-height: 0;
 }
 
+.sobp-trend-wrap .sobp-section-card {
+  padding: 10px 12px;
+}
+
+.sobp-last-items {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 10px 12px;
+}
+
+.sobp-last-item {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.sobp-last-item-rate {
+  color: #5383e8;
+  font-family: monospace;
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1;
+  text-shadow: 0 0 6px rgb(200 170 110 / 18%);
+}
+
 .sobp-augment-wrap {
   margin-top: 20px;
 }
@@ -712,8 +739,8 @@
 
 .sobp-augment-rarity {
   margin: 2px 0 6px;
-  color: #785a28;
-  font-size: 11px;
+  color: #94610a;
+  font-size: 13px;
   font-weight: 700;
 }
 
@@ -741,15 +768,17 @@
 .sobp-augment-name {
   overflow: hidden;
   color: #f0e6d2;
-  font-size: 12px;
+  font-size: 12.5px;
+  font-weight: 600;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .sobp-augment-meta {
   color: #40db73;
-  font-size: 10.5px;
+  font-size: 11.5px;
   white-space: nowrap;
+  margin-top: 4px;
 }
 
 .sobp-empty {

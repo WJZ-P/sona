@@ -12,10 +12,11 @@ import { injector } from '@/lib/InjectorManager'
 import { createElement } from 'react'
 import { flushSync } from 'react-dom'
 import { createRoot, type Root } from 'react-dom/client'
-import { getQueue, getQueueName } from '@/lib/assets'
+import { getAugmentInfo, getQueue, getQueueName } from '@/lib/assets'
 import { OpggBuildRecommendationPanel, type BuildRecommendation, type RecommendationContext } from '@/components/ui/OpggBuildRecommendationPanel'
 import { lcu, LcuEventUri, type ChampSelectSession, type LCUEventMessage } from '@/lib/lcu'
 import { store } from '@/lib/store'
+import { aramggApi, type AramggChampionRecommendation, type AramggChampionStatEntry, type AramggCoreItemBuild, type AramggMayhemAugments } from '@/lib/aramgg-api'
 import {
   opggApi,
   type OpggAugmentGroup,
@@ -25,6 +26,7 @@ import {
   type OpggNormalModeChampion,
   type OpggPosition,
   type OpggTier,
+  type OpggItemBuild,
 } from '@/lib/opgg-api'
 import type { GameflowPhase } from '@/types/lcu'
 
@@ -169,6 +171,7 @@ function getSelectedOpggTier(): OpggTier {
 }
 
 function getEffectiveOpggTier(context: RecommendationContext): OpggTier {
+  if (isKiwiMode(context)) return 'all'
   return resolveOpggMode(context) === 'arena' ? 'all' : getSelectedOpggTier()
 }
 
@@ -261,6 +264,11 @@ async function loadRecommendation(context: RecommendationContext): Promise<Build
   const mode = resolveOpggMode(context)
   const position = mode === 'ranked' ? (context.position === 'none' ? 'mid' : context.position) : 'none'
   const tier = getEffectiveOpggTier(context)
+
+  if (isKiwiMode(context)) {
+    return loadAramggKiwiRecommendation(context, mode, position, tier)
+  }
+
   const mainChampion = await getChampionWithVersionFallback({
     id: context.championId,
     mode,
@@ -268,22 +276,7 @@ async function loadRecommendation(context: RecommendationContext): Promise<Build
     position,
   })
 
-  let warning: string | undefined
-  let augmentGroups = getAugmentGroups(mainChampion)
-
-  if (isKiwiMode(context) && augmentGroups.length === 0) {
-    try {
-      const arenaChampion = await getChampionWithVersionFallback({
-        id: context.championId,
-        mode: 'arena',
-        tier: 'all',
-      })
-      augmentGroups = getAugmentGroups(arenaChampion)
-    } catch (err) {
-      warning = `KIWI 海克斯推荐请求失败：${err instanceof Error ? err.message : String(err)}`
-      logger.warn('[OPGG] KIWI 海克斯推荐请求失败:', err)
-    }
-  }
+  const augmentGroups = getAugmentGroups(mainChampion)
 
   const normal = isNormalChampion(mainChampion) ? mainChampion : null
   const arena = isArenaChampion(mainChampion) ? mainChampion : null
@@ -302,7 +295,139 @@ async function loadRecommendation(context: RecommendationContext): Promise<Build
     prismItems: arena?.data.prism_items ?? [],
     lastItems: data.last_items ?? [],
     runePages: normal?.data.runes ?? [],
-    augments: augmentGroups.map((group) => ({
+    augments: mapOpggAugments(augmentGroups),
+    meta: getRecommendationMeta(mainChampion),
+  }
+}
+
+async function loadAramggKiwiRecommendation(
+  context: RecommendationContext,
+  mode: OpggMode,
+  position: OpggPosition,
+  tier: OpggTier,
+): Promise<BuildRecommendation | null> {
+  const [opggChampion, aramgg, mayhemAugments] = await Promise.all([
+    getChampionWithVersionFallback({
+      id: context.championId,
+      mode,
+      tier,
+      position,
+    }).catch((err) => {
+      logger.warn('[OPGG] KIWI 基础配装请求失败，将只使用 ARAM.GG 数据:', err)
+      return null
+    }),
+    aramggApi.getChampionRecommendation(context.championId),
+    aramggApi.getMayhemAugmentsZhCn().catch((err) => {
+      logger.warn('[ARAMGG] 海克斯稀有度请求失败，将尝试使用客户端资源兜底:', err)
+      return {} as AramggMayhemAugments
+    }),
+  ])
+
+  const normal = opggChampion && isNormalChampion(opggChampion) ? opggChampion : null
+  const data = opggChampion?.data
+
+  return {
+    mode,
+    modeLabel: getModeLabel(mode, context),
+    version: aramgg.championStats?.version || opggChampion?.meta.version || context.gameVersion || '',
+    position,
+    summary: getAramggSummaryLines(aramgg),
+    summonerSpells: normal?.data.summoner_spells ?? [],
+    starterItems: [],
+    boots: data?.boots ?? [],
+    coreItems: mapAramggCoreItemBuilds(aramgg.coreItemBuilds),
+    prismItems: [],
+    lastItems: mapAramggItems(aramgg.items),
+    runePages: [],
+    augments: mapAramggAugments(aramgg.augments, mayhemAugments),
+    meta: undefined,
+  }
+}
+
+function getAramggSummaryLines(data: AramggChampionRecommendation): string[] {
+  const stats = data.championStats
+  return [
+    `总体胜率 ${formatRate(toNumber(stats?.win_rate))}`,
+    `登场 ${formatRate(toNumber(stats?.pick_rate))}`,
+    `Tier ${stats?.tier || '-'}`,
+  ]
+}
+
+function formatRate(value: number): string {
+  return Number.isFinite(value) ? `${(value * 100).toFixed(1)}%` : '-'
+}
+
+function toNumber(value: unknown): number {
+  const numberValue = typeof value === 'number' ? value : Number(value)
+  return Number.isFinite(numberValue) ? numberValue : 0
+}
+
+function mapAramggCoreItemBuilds(builds: AramggCoreItemBuild[]): OpggItemBuild[] {
+  return builds.map((build) => {
+    const play = toNumber(build.games)
+    const win = toNumber(build.wins)
+    return {
+      ids: build.itemIds.split(',').map((id) => Number(id)).filter((id) => Number.isFinite(id) && id > 0),
+      win,
+      play,
+      pick_rate: toNumber(build.pick_rate),
+    }
+  }).filter((build) => build.ids.length > 0)
+}
+
+function mapAramggItems(items: Record<string, AramggChampionStatEntry>): OpggItemBuild[] {
+  return Object.entries(items)
+    .map(([id, item]) => ({
+      ids: [Number(id)].filter((value) => Number.isFinite(value) && value > 0),
+      win: toNumber(item.num_win_games),
+      play: toNumber(item.num_games),
+      pick_rate: toNumber(item.pick_rate),
+      tier: Number(item.tier),
+    }))
+    .filter((item) => item.ids.length > 0)
+    .sort((a, b) => {
+      const tierDiff = (Number.isFinite(a.tier) ? a.tier : 99) - (Number.isFinite(b.tier) ? b.tier : 99)
+      return tierDiff || b.pick_rate - a.pick_rate
+    })
+    .map(({ tier: _tier, ...item }) => item)
+}
+
+function getAugmentRaritySortValue(rarity: number): number {
+  if (rarity === 8) return 0
+  if (rarity === 4) return 1
+  if (rarity === 1) return 2
+  return 99
+}
+
+function normalizeAugmentRarity(value: unknown): number | null {
+  if (typeof value === 'number' && Number.isFinite(value)) return value
+  if (typeof value !== 'string') return null
+
+  const normalized = value.toLowerCase()
+  if (normalized.includes('prismatic')) return 8
+  if (normalized.includes('gold')) return 4
+  if (normalized.includes('silver')) return 1
+
+  const numeric = Number(value)
+  return Number.isFinite(numeric) ? numeric : null
+}
+
+function normalizeMayhemAugmentRarity(value: unknown, mayhemAugments: AramggMayhemAugments): number | null {
+  if (typeof value !== 'number' || !Number.isFinite(value)) return normalizeAugmentRarity(value)
+
+  const knownRarities = new Set(Object.values(mayhemAugments).map((augment) => augment.rarity))
+  if (knownRarities.has(4) || knownRarities.has(8)) return value
+
+  // Some data dumps use 0/1/2 instead of Riot's 1/4/8 rarity values.
+  if (value === 2) return 8
+  if (value === 1) return 4
+  if (value === 0) return 1
+  return value
+}
+
+function mapOpggAugments(augmentGroups: OpggAugmentGroup[]): BuildRecommendation['augments'] {
+  return augmentGroups
+    .map((group) => ({
       rarity: group.rarity,
       items: group.augments.slice(0, 5).map((augment) => ({
         id: augment.id,
@@ -310,10 +435,45 @@ async function loadRecommendation(context: RecommendationContext): Promise<Build
         averagePlace: augment.total_place / Math.max(augment.play, 1),
         firstPlace: augment.first_place / Math.max(augment.play, 1),
       })),
-    })),
-    meta: getRecommendationMeta(mainChampion),
-    warning,
-  }
+    }))
+    .sort((a, b) => getAugmentRaritySortValue(a.rarity) - getAugmentRaritySortValue(b.rarity))
+}
+
+function getAramggAugmentRarity(augmentId: number, mayhemAugments: AramggMayhemAugments): number | null {
+  return normalizeAugmentRarity(getAugmentInfo(augmentId)?.rarity)
+    ?? normalizeMayhemAugmentRarity(mayhemAugments[String(augmentId)]?.rarity, mayhemAugments)
+}
+
+function mapAramggAugments(augments: Record<string, AramggChampionStatEntry>, mayhemAugments: AramggMayhemAugments): BuildRecommendation['augments'] {
+  const groups = new Map<number, Array<{ id: number; pickRate: number; winRate: number }>>()
+
+  Object.entries(augments).forEach(([id, augment]) => {
+    const augmentId = Number(id)
+    const rarity = getAramggAugmentRarity(augmentId, mayhemAugments)
+    if (!Number.isFinite(augmentId) || rarity == null) return
+
+    const items = groups.get(rarity) ?? []
+    items.push({
+      id: augmentId,
+      pickRate: toNumber(augment.pick_rate),
+      winRate: toNumber(augment.win_rate),
+    })
+    groups.set(rarity, items)
+  })
+
+  return Array.from(groups.entries())
+    .sort(([a], [b]) => getAugmentRaritySortValue(a) - getAugmentRaritySortValue(b))
+    .map(([rarity, items]) => ({
+      rarity,
+      items: items
+        .sort((a, b) => b.winRate - a.winRate || b.pickRate - a.pickRate)
+        .slice(0, 5)
+        .map((augment) => ({
+          id: augment.id,
+          pickRate: augment.pickRate,
+          winRate: augment.winRate,
+        })),
+    }))
 }
 
 function getRecommendationMeta(champion: OpggChampion): BuildRecommendation['meta'] {

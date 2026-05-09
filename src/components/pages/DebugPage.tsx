@@ -22,6 +22,7 @@ export function DebugPage() {
   const [riotId, setRiotId] = useState('')
   const [skinId, setSkinId] = useState('')
   const [lobbyQueueId, setLobbyQueueId] = useState('')
+  const [corsTestUrl, setCorsTestUrl] = useState('')
   const [champSearch, setChampSearch] = useState('')
   const [champSuggestions, setChampSuggestions] = useState<ChampionInfo[]>([])
   const [showChampSuggestions, setShowChampSuggestions] = useState(false)
@@ -148,6 +149,55 @@ export function DebugPage() {
         hint: message.includes('abort')
           ? '请求超时。可能是网络不可达，或客户端环境阻止了外部请求。'
           : '如果这里是 Failed to fetch / NetworkError，且 DevTools Console 有 CORS 字样，说明当前注入页不能直接请求 OP.GG 接口。',
+      }
+    } finally {
+      window.clearTimeout(timer)
+    }
+  }
+
+  const fetchCorsTestUrl = async () => {
+    const rawUrl = corsTestUrl.trim()
+    if (!rawUrl) throw new Error('请输入要测试的 URL')
+
+    const url = new URL(rawUrl)
+    const startedAt = performance.now()
+    const controller = new AbortController()
+    const timer = window.setTimeout(() => controller.abort(), 10000)
+
+    try {
+      const resp = await fetch(url.toString(), {
+        method: 'GET',
+        mode: 'cors',
+        headers: { Accept: '*/*' },
+        signal: controller.signal,
+      })
+      const text = await resp.text()
+      let body: unknown = text
+      try {
+        body = text ? JSON.parse(text) : null
+      } catch {
+        body = text
+      }
+
+      return {
+        url: url.toString(),
+        ok: resp.ok,
+        status: resp.status,
+        statusText: resp.statusText,
+        elapsedMs: Math.round(performance.now() - startedAt),
+        contentType: resp.headers.get('content-type') ?? '',
+        body,
+      }
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err)
+      return {
+        url: url.toString(),
+        ok: false,
+        elapsedMs: Math.round(performance.now() - startedAt),
+        error: message,
+        hint: message.includes('abort')
+          ? '请求超时。可能是网络不可达，或目标站点响应太慢。'
+          : '如果这里是 Failed to fetch / NetworkError，且 DevTools Console 有 CORS 字样，说明当前注入页不能直接跨域请求这个 URL。',
       }
     } finally {
       window.clearTimeout(timer)
@@ -385,6 +435,18 @@ export function DebugPage() {
         <p className="sona-subtitle">
           使用 Akari 同款数据源测试浏览器环境能否直连 OP.GG Champion API。
         </p>
+        <div className="sona-debug-actions" style={{ alignItems: 'center', gap: 8 }}>
+          <div style={{ flex: 1 }}>
+            <SonaInput
+              value={corsTestUrl}
+              onChange={setCorsTestUrl}
+              placeholder="输入要测试跨域 GET 的完整 URL..."
+            />
+          </div>
+          <SonaButton variant="primary" onClick={() => runAndLog('跨域 GET 测试', fetchCorsTestUrl)}>
+            GET 测试
+          </SonaButton>
+        </div>
         <div className="sona-debug-actions">
           <SonaButton variant="primary" onClick={() => runAndLog('OP.GG 版本接口连通性', testOpggConnectivity)}>
             测试 OP.GG API

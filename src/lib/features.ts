@@ -26,6 +26,7 @@ import { updateCustomProfileBg } from '@/lib/features/profile-background'
 import { updateGameAnalysisPopup } from '@/lib/features/game-analysis-popup'
 import { updateAutoReturnToLobby } from '@/lib/features/auto-return-to-lobby'
 import { updateOpggBuildRecommendation } from '@/lib/features/opgg-build-recommendation'
+import { preloadChampSelectTierBadgeData, updateChampSelectTierBadge } from '@/lib/features/champselect-tier-badge'
 import { setAvailabilityHijackEnabled, setHideTFTEnabled, setHideRightNavTextEnabled } from '@/lib/injections'
 
 // ==================== 共享：查询队友胜率 ====================
@@ -646,6 +647,8 @@ function updateSideIndicator(enabled: boolean) {
  * 根据 store 当前值启用功能，并监听后续变化
  */
 export function initFeatures() {
+  preloadChampSelectTierBadgeData()
+
   updateAutoAccept(store.get('autoAcceptMatch'))
   store.onChange('autoAcceptMatch', updateAutoAccept)
 
@@ -666,6 +669,9 @@ export function initFeatures() {
 
   updateChampSelectAssist(store.get('champSelectAssist'))
   store.onChange('champSelectAssist', updateChampSelectAssist)
+
+  updateChampSelectTierBadge(store.get('champSelectTierBadge'))
+  store.onChange('champSelectTierBadge', updateChampSelectTierBadge)
 
   updateOpggBuildRecommendation(store.get('opggBuildRecommendation'))
   store.onChange('opggBuildRecommendation', updateOpggBuildRecommendation)
