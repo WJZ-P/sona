@@ -7,6 +7,7 @@ import { sleep } from '@/lib/utils'
 
 const SONA_FRIEND_GROUP_ATTR = 'data-sona-friend-group'
 const SONA_FRIEND_CHECKED_ATTR = 'data-sona-friend-checked'
+const FRIENDS_URI = '/lol-chat/v1/friends'
 
 /** 用于给同一对局分配相同颜色 */
 const GAME_COLORS = [
@@ -21,8 +22,8 @@ let colorIndex = 0
 
 /** 好友 name → { gameId, gameStatus } 映射缓存（由按需查询填充） */
 let friendInfoMap = new Map<string, { gameId: number; gameStatus: string }>()
-
-
+let friendRefreshTimer: number | null = null
+let friendRefreshInFlight: Promise<void> | null = null
 
 function getGameColor(gameId: string): string {
   if (!gameColorMap.has(gameId)) {
@@ -34,9 +35,22 @@ function getGameColor(gameId: string): string {
 
 /** 异步查询所有好友的游戏状态，建立 name → gameInfo 映射（带重试） */
 async function refreshFriendInfoMap(retries = 5) {
+  if (friendRefreshInFlight) return friendRefreshInFlight
+
+  friendRefreshInFlight = doRefreshFriendInfoMap(retries)
+    .finally(() => {
+      friendRefreshInFlight = null
+    })
+
+  return friendRefreshInFlight
+}
+
+async function doRefreshFriendInfoMap(retries = 5) {
   for (let attempt = 0; attempt <= retries; attempt++) {
     try {
       const friends = await lcu.getFriends()
+      if (!friendSmartGroupRegistered) return
+
       const newMap = new Map<string, { gameId: number; gameStatus: string }>()
 
       for (const f of friends) {
@@ -56,6 +70,7 @@ async function refreshFriendInfoMap(retries = 5) {
 
       friendInfoMap = newMap
       logger.info('[FriendGroup] 刷新好友游戏状态 → %d 人在游戏中 (attempt %d)', newMap.size, attempt)
+      tryInjectFriendSmartGroup()
       return
     } catch (err) {
       if (attempt < retries) {
@@ -66,6 +81,19 @@ async function refreshFriendInfoMap(retries = 5) {
       }
     }
   }
+}
+
+function scheduleFriendInfoRefresh(delay = 250) {
+  if (!friendSmartGroupRegistered) return
+
+  if (friendRefreshTimer != null) {
+    window.clearTimeout(friendRefreshTimer)
+  }
+
+  friendRefreshTimer = window.setTimeout(() => {
+    friendRefreshTimer = null
+    void refreshFriendInfoMap(0)
+  }, delay)
 }
 
 /**
@@ -154,19 +182,38 @@ function tryInjectFriendSmartGroup(): boolean {
 
 
 let friendSmartGroupRegistered = false
+let friendSmartGroupInjected = false
+let friendSmartGroupUnsub: (() => void) | null = null
 
 export function updateFriendSmartGroup(enabled: boolean) {
   if (enabled && !friendSmartGroupRegistered) {
     friendSmartGroupRegistered = true
-    // 先拉好友数据，就绪后再注册注入
-    refreshFriendInfoMap().then(() => {
+
+    injector.register(tryInjectFriendSmartGroup)
+    friendSmartGroupInjected = true
+
+    friendSmartGroupUnsub = lcu.observe(FRIENDS_URI, () => {
+      scheduleFriendInfoRefresh()
+    })
+
+    void refreshFriendInfoMap().then(() => {
       if (friendSmartGroupRegistered) {
-        injector.register(tryInjectFriendSmartGroup)
         logger.info('Friend smart group enabled ✓')
       }
     })
   } else if (!enabled && friendSmartGroupRegistered) {
-    injector.unregister(tryInjectFriendSmartGroup)
+    if (friendSmartGroupInjected) {
+      injector.unregister(tryInjectFriendSmartGroup)
+      friendSmartGroupInjected = false
+    }
+    if (friendSmartGroupUnsub) {
+      friendSmartGroupUnsub()
+      friendSmartGroupUnsub = null
+    }
+    if (friendRefreshTimer != null) {
+      window.clearTimeout(friendRefreshTimer)
+      friendRefreshTimer = null
+    }
     friendSmartGroupRegistered = false
     friendInfoMap.clear()
 

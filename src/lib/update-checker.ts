@@ -33,9 +33,6 @@ const GITHUB_API_RELEASES = 'https://api.github.com/repos/WJZ-P/sona/releases'
 function wrapCorsProxy(targetUrl: string): string {
   return `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`
 }
-// 调试更新页时临时填版本号；发布前保持空字符串。
-const DEBUG_CURRENT_VERSION = '1.0.0'
-
 let state: UpdateState = {
   status: 'idle',
   info: null,
@@ -141,7 +138,7 @@ export function checkForUpdates(): Promise<UpdateState> {
 
   inFlight = fetchLatestRelease()
     .then((release) => {
-      const currentVersion = normalizeVersion(DEBUG_CURRENT_VERSION || __PLUGIN_VERSION__)
+      const currentVersion = normalizeVersion(__PLUGIN_VERSION__)
       const latestVersion = normalizeVersion(release.tag_name ?? '')
       if (!latestVersion || compareVersion(latestVersion, currentVersion) <= 0) {
         const next: UpdateState = { status: 'latest', info: null, error: '' }

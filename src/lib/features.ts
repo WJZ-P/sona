@@ -31,6 +31,8 @@ import { setAvailabilityHijackEnabled, setHideTFTEnabled, setHideRightNavTextEna
 
 // ==================== 共享：查询队友胜率 ====================
 
+type ChampSelectTeamPlayer = ChampSelectSession['myTeam'][number]
+
 interface TeammateStats {
   floor: number
   summonerId: number
@@ -44,6 +46,18 @@ interface TeammateStats {
   avgD: number
   avgA: number
   kdaNum: number
+}
+
+function getPlayerStatsKey(player: Pick<ChampSelectTeamPlayer, 'puuid' | 'summonerId' | 'cellId'>): string {
+  if (player.puuid) return `puuid:${player.puuid}`
+  if (player.summonerId) return `summoner:${player.summonerId}`
+  return `cell:${player.cellId}`
+}
+
+function getTeammateStatsKey(stat: TeammateStats): string {
+  if (stat.puuid) return `puuid:${stat.puuid}`
+  if (stat.summonerId) return `summoner:${stat.summonerId}`
+  return `floor:${stat.floor}`
 }
 
 /** 去重：同一个 ChampSelect 阶段多个功能需要同一份数据时，复用同一轮请求 */
@@ -86,7 +100,7 @@ async function _doFetchTeamStats(): Promise<{ isBlue: boolean; stats: TeammateSt
   )
 
   /** 构造占位元素：主播模式下队友 puuid 为空，无法查询战绩 */
-  const placeholder = (player: typeof session.myTeam[number], i: number): TeammateStats => ({
+  const placeholder = (player: ChampSelectTeamPlayer, i: number): TeammateStats => ({
     floor: i + 1,
     summonerId: player.summonerId,
     puuid: player.puuid,
@@ -182,11 +196,16 @@ import { MatchHistoryModal } from '@/components/ui/MatchHistoryModal'
 const SONA_TIER_ATTR = 'data-sona-tier'
 const SONA_STATS_ATTR = 'data-sona-stats'
 const SONA_CLICK_ATTR = 'data-sona-click'
+const SONA_PLAYER_KEY_ATTR = 'data-sona-player-key'
 
 /** 每个楼层的完整战绩缓存 */
 let floorStats: TeammateStats[] = []
 /** puuid → TeammateStats 映射，用于换楼后按新顺序重建 floorStats */
 let statsByPuuid = new Map<string, TeammateStats>()
+/** summonerId → TeammateStats 映射，用于 puuid 不可用时兜底匹配 */
+let statsBySummonerId = new Map<number, TeammateStats>()
+/** 当前 DOM 展示顺序签名，用于位置互换后触发重绑 */
+let currentChampSelectTeamSignature = ''
 /** 当前选人阶段的队列 ID，用于打开战绩弹窗时自动过滤 */
 let currentChampSelectQueueId = 0
 
@@ -239,6 +258,48 @@ function cleanupMatchModal() {
   }
 }
 
+function getTeamDisplaySignature(session: ChampSelectSession): string {
+  return session.myTeam
+    .map((player) => `${getPlayerStatsKey(player)}:${player.cellId}`)
+    .join('|')
+}
+
+function getCachedStatsForPlayer(player: ChampSelectTeamPlayer, floor: number): TeammateStats {
+  const cached = (player.puuid ? statsByPuuid.get(player.puuid) : undefined)
+    ?? (player.summonerId ? statsBySummonerId.get(player.summonerId) : undefined)
+
+  if (cached) {
+    return {
+      ...cached,
+      floor,
+      gameName: player.gameName || cached.gameName,
+      tagLine: player.tagLine || cached.tagLine,
+      puuid: player.puuid || cached.puuid,
+      summonerId: player.summonerId || cached.summonerId,
+    }
+  }
+
+  return {
+    floor,
+    summonerId: player.summonerId,
+    puuid: player.puuid,
+    gameName: player.gameName,
+    tagLine: player.tagLine,
+    winRate: null,
+    wins: 0,
+    total: 0,
+    avgK: 0,
+    avgD: 0,
+    avgA: 0,
+    kdaNum: 0,
+  }
+}
+
+function buildFloorStatsFromSession(session: ChampSelectSession): TeammateStats[] {
+  return session.myTeam
+    .map((player, index) => getCachedStatsForPlayer(player, index + 1))
+}
+
 /** 已挂载的 React root */
 const mountedRoots: { root: Root; container: HTMLDivElement }[] = []
 
@@ -248,6 +309,20 @@ function tryInjectChampSelectTier(): boolean {
   const wrappers = document.querySelectorAll('.party.visible .summoner-wrapper.visible.left')
   if (wrappers.length === 0 || floorStats.length === 0) return true
 
+  const hasMismatchedBinding = Array.from(wrappers).some((wrapper, i) => {
+    const iconContainer = wrapper.querySelector('.champion-icon-container') as HTMLElement | null
+    const stat = floorStats[i]
+    if (!iconContainer || !stat) return false
+
+    const expectedKey = getTeammateStatsKey(stat)
+    const existingKey = iconContainer.getAttribute(SONA_PLAYER_KEY_ATTR)
+    return Boolean(existingKey && existingKey !== expectedKey)
+  })
+
+  if (hasMismatchedBinding) {
+    cleanupInjectedDOM()
+  }
+
   wrappers.forEach((wrapper, i) => {
     const iconContainer = wrapper.querySelector('.champion-icon-container') as HTMLElement | null
     if (!iconContainer) return
@@ -255,6 +330,8 @@ function tryInjectChampSelectTier(): boolean {
     const stat = floorStats[i]
     if (!stat || stat.winRate == null) return
     const winRate = stat.winRate
+    const playerKey = getTeammateStatsKey(stat)
+    iconContainer.setAttribute(SONA_PLAYER_KEY_ATTR, playerKey)
 
     // ---- 粒子特效 ----
     if (!iconContainer.querySelector('[data-sona-particle]')) {
@@ -285,7 +362,7 @@ function tryInjectChampSelectTier(): boolean {
     if (!iconContainer.hasAttribute(SONA_CLICK_ATTR) && stat.puuid) {
       iconContainer.setAttribute(SONA_CLICK_ATTR, 'true')
       iconContainer.style.cursor = 'pointer'
-      const floorIndex = i
+      const boundPlayerKey = playerKey
       clickHandler = (e: Event) => {
         // 放行 swap 按钮等内部交互元素的点击
         const target = e.target as HTMLElement
@@ -293,7 +370,7 @@ function tryInjectChampSelectTier(): boolean {
 
         e.stopPropagation()
         e.preventDefault()
-        const current = floorStats[floorIndex]
+        const current = floorStats.find((item) => getTeammateStatsKey(item) === boundPlayerKey)
         if (current?.puuid) {
           showMatchHistoryModal(current.puuid, `${current.gameName}#${current.tagLine}`, currentChampSelectQueueId || undefined)
         }
@@ -355,6 +432,8 @@ function unregisterTierInjection() {
   }
   floorStats = []
   statsByPuuid.clear()
+  statsBySummonerId.clear()
+  currentChampSelectTeamSignature = ''
   currentChampSelectQueueId = 0
 
   cleanupInjectedDOM()
@@ -373,9 +452,12 @@ async function applyChampSelectIconEffects() {
     floorStats = stats
     // 建立 puuid → stats 映射，换楼后可用新 myTeam 顺序重建 floorStats
     statsByPuuid.clear()
+    statsBySummonerId.clear()
     for (const s of stats) {
       if (s.puuid) statsByPuuid.set(s.puuid, s)
+      if (s.summonerId) statsBySummonerId.set(s.summonerId, s)
     }
+    currentChampSelectTeamSignature = stats.map(getTeammateStatsKey).join('|')
     registerTierInjection()
 
     logger.info('头像特效数据就绪，%d 位队友，队列 ID: %d', stats.length, currentChampSelectQueueId)
@@ -396,51 +478,21 @@ function onChampSelectUpdate(event: LCUEventMessage) {
   // 只处理 Update 事件
   if (event.eventType !== 'Update') return
   // 数据还没准备好就不处理
-  if (statsByPuuid.size === 0) return
+  if (statsByPuuid.size === 0 && statsBySummonerId.size === 0) return
 
   const session = event.data as ChampSelectSession
   if (!session?.myTeam) return
 
-  // 取 myTeam 中 puuid 列表（按数组顺序 = 楼层顺序）
-  const newPuuidOrder = session.myTeam.map((p) => p.puuid).filter(Boolean)
-  // 当前 floorStats 的 puuid 顺序
-  const currentPuuidOrder = floorStats.map((s) => s.puuid).filter(Boolean)
+  const nextSignature = getTeamDisplaySignature(session)
+  if (nextSignature === currentChampSelectTeamSignature) return
 
-  // 顺序没变，无需重建
-  if (newPuuidOrder.length === currentPuuidOrder.length &&
-      newPuuidOrder.every((p, i) => p === currentPuuidOrder[i])) return
-
-  logger.info('[ChampSelect] 检测到楼层顺序变化，重建 floorStats')
-
-  // 按新 myTeam 顺序从 statsByPuuid 重建 floorStats
-  const newFloorStats: TeammateStats[] = session.myTeam.map((player, i) => {
-    if (player.puuid && statsByPuuid.has(player.puuid)) {
-      const stat = { ...statsByPuuid.get(player.puuid)! }
-      stat.floor = i + 1  // 更新楼层号
-      return stat
-    }
-    // fallback：该玩家无 puuid 或不在缓存中，构造占位
-    return {
-      floor: i + 1,
-      summonerId: player.summonerId,
-      puuid: player.puuid,
-      gameName: player.gameName,
-      tagLine: player.tagLine,
-      winRate: null,
-      wins: 0,
-      total: 0,
-      avgK: 0,
-      avgD: 0,
-      avgA: 0,
-      kdaNum: 0,
-    }
-  })
+  logger.info('[ChampSelect] 检测到队友展示顺序或分路变化，重建头像战绩绑定')
 
   // 清理旧注入并重建
   cleanupInjectedDOM()
-  floorStats = newFloorStats
-  // 注意：不需要重新 registerTierInjection，injector 已经在轮询，
-  // 清理后下一轮 tryInjectChampSelectTier 就会用新的 floorStats 重新注入
+  floorStats = buildFloorStatsFromSession(session)
+  currentChampSelectTeamSignature = nextSignature
+  tryInjectChampSelectTier()
 }
 
 /** 清理已注入的 DOM（但不重置 floorStats / statsByPuuid / 注入注册状态） */
@@ -461,6 +513,7 @@ function cleanupInjectedDOM() {
     ref.iconContainer.style.boxShadow = ''
     ref.iconContainer.removeAttribute(SONA_TIER_ATTR)
     ref.iconContainer.removeAttribute(SONA_CLICK_ATTR)
+    ref.iconContainer.removeAttribute(SONA_PLAYER_KEY_ATTR)
     ref.iconContainer.style.cursor = ''
     ref.playerDetails.removeAttribute(SONA_STATS_ATTR)
     ref.playerDetails.style.cursor = ''

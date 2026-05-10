@@ -20,7 +20,12 @@ import tier3Icon from '@/../assets/tier/t3.svg'
 import tier4Icon from '@/../assets/tier/t4.svg'
 import tier5Icon from '@/../assets/tier/t5.svg'
 
-const THUMBNAIL_SELECTOR = '.champion-grid-champion-thumbnail'
+const BADGE_TARGETS = [
+  { selector: '.champion-grid-champion-thumbnail', size: 22, left: -2, top: 0 },
+  { selector: '.champion-card-component-click-target', size: 22, left: -2, top: 0 },
+  { selector: '.bench-champion-icon', size: 18, left: -2, top: -2 },
+]
+const BADGE_TARGET_SELECTOR = BADGE_TARGETS.map((target) => target.selector).join(',')
 const BADGE_ATTR = 'data-sona-champ-tier-badge'
 const POSITION_ATTR = 'data-sona-original-position'
 const DEFAULT_OPGG_TIER: OpggTier = 'emerald_plus'
@@ -204,13 +209,16 @@ async function loadTierData(session?: ChampSelectSession) {
   }
 }
 
-function extractChampionId(thumbnail: Element): number | null {
+function extractChampionId(target: Element): number | null {
   const candidates = [
-    thumbnail,
-    thumbnail.parentElement,
-    thumbnail.closest('[data-champion-id]'),
-    thumbnail.closest('[data-champion-id-value]'),
-    thumbnail.closest('[data-champion-id-string]'),
+    target,
+    target.parentElement,
+    target.closest('.champion-card-component'),
+    target.closest('.bench-champion'),
+    target.closest('.champion-grid-champion'),
+    target.closest('[data-champion-id]'),
+    target.closest('[data-champion-id-value]'),
+    target.closest('[data-champion-id-string]'),
   ].filter(Boolean) as Element[]
 
   for (const element of candidates) {
@@ -220,23 +228,27 @@ function extractChampionId(thumbnail: Element): number | null {
     }
   }
 
-  const image = thumbnail.querySelector('img[src*="champion-icons"]')
-  const imageMatch = image?.getAttribute('src')?.match(/champion-icons\/(\d+)\.png/)
-  if (imageMatch) return Number(imageMatch[1])
+  for (const element of candidates) {
+    const image = element.querySelector('img[src*="champion-icons"]')
+    const imageMatch = image?.getAttribute('src')?.match(/champion-icons\/(\d+)\.png/)
+    if (imageMatch) return Number(imageMatch[1])
 
-  const htmlMatch = (thumbnail as HTMLElement).outerHTML.match(/champion-icons\/(\d+)\.png/)
-  if (htmlMatch) return Number(htmlMatch[1])
+    const htmlMatch = (element as HTMLElement).outerHTML.match(/champion-icons\/(\d+)\.png/)
+    if (htmlMatch) return Number(htmlMatch[1])
 
-  const styled = thumbnail.querySelector('[style*="champion-icons"]') as HTMLElement | null
-  const styleText = [
-    (thumbnail as HTMLElement).style?.backgroundImage ?? '',
-    styled?.style?.backgroundImage ?? '',
-  ].join(' ')
-  const styleMatch = styleText.match(/champion-icons\/(\d+)\.png/)
-  return styleMatch ? Number(styleMatch[1]) : null
+    const styled = element.querySelector('[style*="champion-icons"]') as HTMLElement | null
+    const styleText = [
+      (element as HTMLElement).style?.backgroundImage ?? '',
+      styled?.style?.backgroundImage ?? '',
+    ].join(' ')
+    const styleMatch = styleText.match(/champion-icons\/(\d+)\.png/)
+    if (styleMatch) return Number(styleMatch[1])
+  }
+
+  return null
 }
 
-function createBadge(tier: number): HTMLImageElement | null {
+function createBadge(tier: number, target: { size: number; left: number; top: number }): HTMLImageElement | null {
   const icon = TIER_ICON_MAP.get(tier)
   const label = TIER_LABEL_MAP.get(tier)
   if (!icon || !label) return null
@@ -248,10 +260,10 @@ function createBadge(tier: number): HTMLImageElement | null {
   badge.title = label
   badge.style.cssText = [
     'position:absolute',
-    'left:-2px',
-    'top:0',
-    'width:22px',
-    'height:22px',
+    `left:${target.left}px`,
+    `top:${target.top}px`,
+    `width:${target.size}px`,
+    `height:${target.size}px`,
     'z-index:8',
     'pointer-events:none',
     'filter:drop-shadow(0 1px 2px rgba(0,0,0,.95))',
@@ -267,16 +279,25 @@ function ensurePositionContext(thumbnail: HTMLElement) {
   thumbnail.style.position = 'relative'
 }
 
+function getOwnBadge(element: HTMLElement): HTMLImageElement | null {
+  return Array.from(element.children).find((child): child is HTMLImageElement => {
+    return child instanceof HTMLImageElement && child.hasAttribute(BADGE_ATTR)
+  }) ?? null
+}
+
 function tryInjectTierBadges(): boolean {
   if (tierByChampionId.size === 0) return true
 
-  const thumbnails = document.querySelectorAll(THUMBNAIL_SELECTOR)
-  thumbnails.forEach((thumbnail) => {
-    if (!(thumbnail instanceof HTMLElement)) return
+  const targets = document.querySelectorAll(BADGE_TARGET_SELECTOR)
+  targets.forEach((element) => {
+    if (!(element instanceof HTMLElement)) return
 
-    const championId = extractChampionId(thumbnail)
+    const targetConfig = BADGE_TARGETS.find((target) => element.matches(target.selector))
+    if (!targetConfig) return
+
+    const championId = extractChampionId(element)
     const tier = championId != null ? tierByChampionId.get(championId) : undefined
-    const existing = thumbnail.querySelector(`[${BADGE_ATTR}]`)
+    const existing = getOwnBadge(element)
 
     if (tier == null) {
       existing?.remove()
@@ -287,11 +308,11 @@ function tryInjectTierBadges(): boolean {
     if (existing instanceof HTMLImageElement && existing.alt === label) return
 
     existing?.remove()
-    const badge = createBadge(tier)
+    const badge = createBadge(tier, targetConfig)
     if (!badge) return
 
-    ensurePositionContext(thumbnail)
-    thumbnail.appendChild(badge)
+    ensurePositionContext(element)
+    element.appendChild(badge)
   })
 
   return true
