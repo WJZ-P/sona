@@ -23,6 +23,7 @@ import { updateAutoHonor } from '@/lib/features/auto-honor'
 import { updateAutoLockChampion } from '@/lib/features/auto-lock-champion'
 import { applyRankDisguise, updateRankDisguise } from '@/lib/features/rank-disguise'
 import { updateCustomProfileBg } from '@/lib/features/profile-background'
+import { updateCustomBanner } from '@/lib/features/custom-banner'
 import { updateGameAnalysisPopup } from '@/lib/features/game-analysis-popup'
 import { updateAutoReturnToLobby } from '@/lib/features/auto-return-to-lobby'
 import { updateOpggBuildRecommendation } from '@/lib/features/opgg-build-recommendation'
@@ -721,10 +722,11 @@ export function initFeatures() {
   store.onChange('sideIndicator', updateSideIndicator)
 
   updateChampSelectAssist(store.get('champSelectAssist'))
-  store.onChange('champSelectAssist', updateChampSelectAssist)
-
-  updateChampSelectTierBadge(store.get('champSelectTierBadge'))
-  store.onChange('champSelectTierBadge', updateChampSelectTierBadge)
+  updateChampSelectTierBadge(store.get('champSelectAssist'))
+  store.onChange('champSelectAssist', (enabled) => {
+    updateChampSelectAssist(enabled)
+    updateChampSelectTierBadge(enabled)
+  })
 
   updateOpggBuildRecommendation(store.get('opggBuildRecommendation'))
   store.onChange('opggBuildRecommendation', updateOpggBuildRecommendation)
@@ -737,6 +739,9 @@ export function initFeatures() {
 
   updateCustomProfileBg(store.get('customProfileBg'))
   store.onChange('customProfileBg', updateCustomProfileBg)
+
+  updateCustomBanner(store.get('customBanner'))
+  store.onChange('customBanner', updateCustomBanner)
 
   updateAutoHonor(store.get('autoHonor'))
   store.onChange('autoHonor', updateAutoHonor)

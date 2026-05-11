@@ -2,7 +2,7 @@
  * 英雄选择网格 T 级角标
  *
  * 在客户端英雄选择网格的 .champion-grid-champion-thumbnail 左上角展示
- * OP.GG 全英雄梯度数据（OP-T5）。功能默认关闭，由 ToolsPage 开关控制。
+gg * OP.GG 全英雄梯度数据（OP-T5）。跟随"英雄选择阶段增强"开关启用。
  */
 
 import { logger } from '@/index'
@@ -21,12 +21,14 @@ import tier4Icon from '@/../assets/tier/t4.svg'
 import tier5Icon from '@/../assets/tier/t5.svg'
 
 const BADGE_TARGETS = [
-  { selector: '.champion-grid-champion-thumbnail', size: 22, left: -2, top: 0 },
-  { selector: '.champion-card-component-click-target', size: 22, left: -2, top: 0 },
-  { selector: '.bench-champion-icon', size: 18, left: -2, top: -2 },
+  { selector: '.champion-grid-champion-thumbnail', size: 22, left: -2, top: 0, showWinRate: false },
+  { selector: '.champion-card-component-click-target', size: 22, left: -2, top: 0, showWinRate: false },
+  { selector: '.bench-champion-icon', size: 18, left: -2, top: -2, showWinRate: true },
 ]
+const PLAYER_ICON_BADGE_TARGET = { size: 20, left: -2, top: 'auto', bottom: -2 }
 const BADGE_TARGET_SELECTOR = BADGE_TARGETS.map((target) => target.selector).join(',')
 const BADGE_ATTR = 'data-sona-champ-tier-badge'
+const WIN_RATE_ATTR = 'data-sona-champ-tier-win-rate'
 const POSITION_ATTR = 'data-sona-original-position'
 const DEFAULT_OPGG_TIER: OpggTier = 'emerald_plus'
 const SELECTABLE_OPGG_TIERS: OpggTier[] = [
@@ -68,14 +70,20 @@ const TIER_LABEL_MAP = new Map<number, string>([
 const PRELOAD_MODES: OpggMode[] = ['ranked', 'aram', 'arena', 'urf', 'nexus_blitz']
 
 interface TierCacheEntry {
-  data?: Map<number, number>
-  promise?: Promise<Map<number, number>>
+  data?: Map<number, ChampionTierStats>
+  promise?: Promise<Map<number, ChampionTierStats>>
+}
+
+interface ChampionTierStats {
+  tier: number | null
+  winRate: number | null
 }
 
 let phaseUnsub: (() => void) | null = null
 let champSelectUnsub: (() => void) | null = null
 let injectRegistered = false
-let tierByChampionId = new Map<number, number>()
+let tierByChampionId = new Map<number, ChampionTierStats>()
+let currentSession: ChampSelectSession | null = null
 let currentCacheKey = ''
 let loadToken = 0
 const tierCache = new Map<string, TierCacheEntry>()
@@ -101,39 +109,62 @@ function getTierCacheKey(mode: OpggMode, tier: OpggTier): string {
   return `${mode}|${tier}`
 }
 
-function getBestRankedTier(champion: OpggRankedDataItem): number | null {
-  const tiers = champion.positions
-    .map((position) => position.stats?.tier_data?.tier)
-    .filter((tier): tier is number => Number.isFinite(tier))
+function getBestRankedStats(champion: OpggRankedDataItem): ChampionTierStats {
+  const rankedPosition = champion.positions
+    .filter((position) => Number.isFinite(position.stats?.tier_data?.tier))
+    .sort((left, right) => left.stats.tier_data.tier - right.stats.tier_data.tier)[0]
 
-  if (tiers.length === 0) {
-    const fallback = champion.average_stats?.tier
-    return typeof fallback === 'number' && Number.isFinite(fallback) ? fallback : null
+  if (rankedPosition) {
+    return {
+      tier: rankedPosition.stats.tier_data.tier,
+      winRate: toValidWinRate(rankedPosition.stats.win_rate),
+    }
   }
 
-  return Math.min(...tiers)
+  return {
+    tier: toValidTier(champion.average_stats?.tier),
+    winRate: toValidWinRate(champion.average_stats?.win_rate),
+  }
 }
 
-function extractTierFromChampion(champion: OpggChampionsTier['data'][number], mode: OpggMode): number | null {
-  const tier = mode === 'ranked'
-    ? getBestRankedTier(champion as OpggRankedDataItem)
-    : champion.average_stats?.tier
+function extractStatsFromChampion(champion: OpggChampionsTier['data'][number], mode: OpggMode): ChampionTierStats {
+  if (mode === 'ranked') {
+    return getBestRankedStats(champion as OpggRankedDataItem)
+  }
 
-  return typeof tier === 'number' && Number.isFinite(tier) && tier >= 0 && tier <= 5 ? tier : null
+  const averageStats = champion.average_stats
+  if (!averageStats) return { tier: null, winRate: null }
+
+  const winRate = 'win_rate' in averageStats
+    ? toValidWinRate(averageStats.win_rate)
+    : toValidWinRate(averageStats.play > 0 ? averageStats.win / averageStats.play : null)
+
+  return {
+    tier: toValidTier(averageStats.tier),
+    winRate,
+  }
 }
 
-function buildTierMap(data: OpggChampionsTier, mode: OpggMode): Map<number, number> {
-  const result = new Map<number, number>()
+function toValidTier(value: unknown): number | null {
+  return typeof value === 'number' && Number.isFinite(value) && value >= 0 && value <= 5 ? value : null
+}
+
+function toValidWinRate(value: unknown): number | null {
+  return typeof value === 'number' && Number.isFinite(value) && value >= 0 ? value : null
+}
+
+function buildTierMap(data: OpggChampionsTier, mode: OpggMode): Map<number, ChampionTierStats> {
+  const result = new Map<number, ChampionTierStats>()
 
   for (const champion of data.data) {
-    const tier = extractTierFromChampion(champion, mode)
-    if (tier != null) result.set(champion.id, tier)
+    const stats = extractStatsFromChampion(champion, mode)
+    if (stats.tier != null || stats.winRate != null) result.set(champion.id, stats)
   }
 
   return result
 }
 
-function ensureTierMap(mode: OpggMode, tier = getEffectiveTier(mode)): Promise<Map<number, number>> {
+function ensureTierMap(mode: OpggMode, tier = getEffectiveTier(mode)): Promise<Map<number, ChampionTierStats>> {
   const cacheKey = getTierCacheKey(mode, tier)
   const cached = tierCache.get(cacheKey)
   if (cached?.data) return Promise.resolve(cached.data)
@@ -185,7 +216,9 @@ async function resolveCurrentContext(session?: ChampSelectSession): Promise<{ mo
 
 async function loadTierData(session?: ChampSelectSession) {
   const token = ++loadToken
-  const { mode, gameMode, queueId } = await resolveCurrentContext(session)
+  const activeSession = session ?? await lcu.getChampSelectSession().catch(() => null)
+  currentSession = activeSession
+  const { mode, gameMode, queueId } = await resolveCurrentContext(activeSession ?? undefined)
   const tier = getEffectiveTier(mode)
   const cacheKey = getTierCacheKey(mode, tier)
 
@@ -248,7 +281,7 @@ function extractChampionId(target: Element): number | null {
   return null
 }
 
-function createBadge(tier: number, target: { size: number; left: number; top: number }): HTMLImageElement | null {
+function createBadge(tier: number, target: { size: number; left: number; top?: number | string; bottom?: number }): HTMLImageElement | null {
   const icon = TIER_ICON_MAP.get(tier)
   const label = TIER_LABEL_MAP.get(tier)
   if (!icon || !label) return null
@@ -261,7 +294,8 @@ function createBadge(tier: number, target: { size: number; left: number; top: nu
   badge.style.cssText = [
     'position:absolute',
     `left:${target.left}px`,
-    `top:${target.top}px`,
+    target.top != null && target.top !== 'auto' ? `top:${target.top}px` : '',
+    target.bottom != null ? `bottom:${target.bottom}px` : '',
     `width:${target.size}px`,
     `height:${target.size}px`,
     'z-index:8',
@@ -269,6 +303,39 @@ function createBadge(tier: number, target: { size: number; left: number; top: nu
     'filter:drop-shadow(0 1px 2px rgba(0,0,0,.95))',
   ].join(';')
   return badge
+}
+
+function normalizeWinRateForDisplay(winRate: number): number {
+  return winRate <= 1 ? winRate * 100 : winRate
+}
+
+function createWinRateText(winRate: number): HTMLSpanElement {
+  const text = document.createElement('span')
+  const displayRate = normalizeWinRateForDisplay(winRate)
+  text.setAttribute(WIN_RATE_ATTR, 'true')
+  text.textContent = `${displayRate.toFixed(1)}%`
+  text.style.cssText = [
+    'position:absolute',
+    'left:50%',
+    'bottom:-12px',
+    'transform:translateX(-50%)',
+    'z-index:12',
+    'pointer-events:none',
+    'font-size:10px',
+    'font-weight:700',
+    'line-height:1',
+    'white-space:nowrap',
+    `color:${displayRate >= 50 ? '#5bbd72' : '#e74c3c'}`,
+    'text-shadow:0 1px 2px rgba(0,0,0,.95),0 0 4px rgba(0,0,0,.85)',
+  ].join(';')
+  return text
+}
+
+function getWinRateHost(element: HTMLElement, showWinRate: boolean): HTMLElement {
+  if (!showWinRate) return element
+
+  const benchContainer = element.closest('.bench-container')
+  return benchContainer instanceof HTMLElement ? benchContainer : element
 }
 
 function ensurePositionContext(thumbnail: HTMLElement) {
@@ -285,6 +352,12 @@ function getOwnBadge(element: HTMLElement): HTMLImageElement | null {
   }) ?? null
 }
 
+function getOwnWinRateText(element: HTMLElement): HTMLSpanElement | null {
+  return Array.from(element.children).find((child): child is HTMLSpanElement => {
+    return child instanceof HTMLSpanElement && child.hasAttribute(WIN_RATE_ATTR)
+  }) ?? null
+}
+
 function tryInjectTierBadges(): boolean {
   if (tierByChampionId.size === 0) return true
 
@@ -296,9 +369,69 @@ function tryInjectTierBadges(): boolean {
     if (!targetConfig) return
 
     const championId = extractChampionId(element)
-    const tier = championId != null ? tierByChampionId.get(championId) : undefined
+    const stats = championId != null ? tierByChampionId.get(championId) : undefined
+    const tier = stats?.tier
+    const winRate = stats?.winRate
     const existing = getOwnBadge(element)
+    const winRateHost = getWinRateHost(element, targetConfig.showWinRate)
+    const existingWinRate = getOwnWinRateText(winRateHost)
 
+    if (!stats) {
+      existing?.remove()
+      existingWinRate?.remove()
+      return
+    }
+
+    if (tier == null) {
+      existing?.remove()
+    } else {
+      const label = TIER_LABEL_MAP.get(tier)
+      if (!(existing instanceof HTMLImageElement && existing.alt === label)) {
+        existing?.remove()
+        const badge = createBadge(tier, targetConfig)
+        if (badge) {
+          ensurePositionContext(element)
+          element.appendChild(badge)
+        }
+      }
+    }
+
+    if (targetConfig.showWinRate && winRate != null) {
+      const nextText = `${normalizeWinRateForDisplay(winRate).toFixed(1)}%`
+      if (existingWinRate?.textContent !== nextText) {
+        existingWinRate?.remove()
+        ensurePositionContext(winRateHost)
+        winRateHost.style.overflow = 'visible'
+        winRateHost.appendChild(createWinRateText(winRate))
+      }
+    } else {
+      existingWinRate?.remove()
+    }
+  })
+
+  tryInjectPlayerIconTierBadges()
+
+  return true
+}
+
+function tryInjectPlayerIconTierBadges() {
+  if (!currentSession?.myTeam) return
+
+  const wrappers = document.querySelectorAll('.party.visible .summoner-wrapper.visible.left')
+  wrappers.forEach((wrapper, index) => {
+    const iconContainer = wrapper.querySelector('.champion-icon-container') as HTMLElement | null
+    if (!iconContainer) return
+
+    const player = currentSession?.myTeam[index]
+    const championId = player ? getSelectedChampionId(player) : 0
+    const existing = getOwnBadge(iconContainer)
+
+    if (!championId) {
+      existing?.remove()
+      return
+    }
+
+    const tier = tierByChampionId.get(championId)?.tier
     if (tier == null) {
       existing?.remove()
       return
@@ -308,18 +441,21 @@ function tryInjectTierBadges(): boolean {
     if (existing instanceof HTMLImageElement && existing.alt === label) return
 
     existing?.remove()
-    const badge = createBadge(tier, targetConfig)
+    const badge = createBadge(tier, PLAYER_ICON_BADGE_TARGET)
     if (!badge) return
 
-    ensurePositionContext(element)
-    element.appendChild(badge)
+    ensurePositionContext(iconContainer)
+    iconContainer.appendChild(badge)
   })
+}
 
-  return true
+function getSelectedChampionId(player: ChampSelectSession['myTeam'][number]): number {
+  return player.championId > 0 ? player.championId : player.championPickIntent > 0 ? player.championPickIntent : 0
 }
 
 function cleanupBadges() {
   document.querySelectorAll(`[${BADGE_ATTR}]`).forEach((badge) => badge.remove())
+  document.querySelectorAll(`[${WIN_RATE_ATTR}]`).forEach((winRate) => winRate.remove())
 
   document.querySelectorAll(`[${POSITION_ATTR}]`).forEach((element) => {
     if (element instanceof HTMLElement) {
@@ -332,6 +468,7 @@ function cleanupBadges() {
 function mount(session?: ChampSelectSession) {
   cleanupBadges()
   tierByChampionId = new Map()
+  currentSession = session ?? null
   currentCacheKey = ''
 
   if (!injectRegistered) {
@@ -346,6 +483,7 @@ function unmount() {
   loadToken++
   currentCacheKey = ''
   tierByChampionId = new Map()
+  currentSession = null
 
   if (injectRegistered) {
     injector.unregister(tryInjectTierBadges)
@@ -368,6 +506,7 @@ export function updateChampSelectTierBadge(enabled: boolean) {
 
     champSelectUnsub = lcu.observe(LcuEventUri.CHAMP_SELECT, (event: LCUEventMessage) => {
       if (event.eventType !== 'Create' && event.eventType !== 'Update') return
+      currentSession = event.data as ChampSelectSession
       if (tierByChampionId.size === 0) {
         void loadTierData(event.data as ChampSelectSession)
       } else {

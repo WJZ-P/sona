@@ -107,6 +107,59 @@ export interface RunePage extends RunePagePayload {
   order?: number
 }
 
+export interface RegaliaBannerInventoryItem {
+  assetPath: string
+  id: string
+  idSecondary: string
+  isSelectable: boolean
+  isTencentOnly: boolean
+  localizedDescription: string
+  localizedName: string
+  regaliaType: string
+}
+
+export interface RegaliaBannerInventoryEntry {
+  isOwned: boolean
+  items: RegaliaBannerInventoryItem[]
+  purchaseDate?: string
+}
+
+export type RegaliaBannerInventory = RegaliaBannerInventoryEntry[]
+
+function isRegaliaBannerInventoryEntry(value: unknown): value is RegaliaBannerInventoryEntry {
+  return Boolean(value && typeof value === 'object' && Array.isArray((value as { items?: unknown }).items))
+}
+
+function normalizeRegaliaBannerInventory(raw: unknown): RegaliaBannerInventory {
+  if (Array.isArray(raw)) {
+    return raw.filter(isRegaliaBannerInventoryEntry)
+  }
+
+  // 国服不同版本可能返回数组，也可能返回以库存项 ID 为 key 的对象；对上层统一成数组。
+  if (raw && typeof raw === 'object') {
+    return Object.values(raw).filter(isRegaliaBannerInventoryEntry)
+  }
+
+  return []
+}
+
+export interface RegaliaInfo {
+  bannerType: string
+  crestType: string
+  highestRankedEntry: unknown | null
+  lastSeasonHighestRank: unknown | null
+  preferredBannerType: string
+  preferredCrestType: string
+  profileIconId: number
+  selectedPrestigeCrest: number
+  summonerLevel: number
+}
+
+export interface ChallengePlayerPreferencesPayload {
+  bannerAccent?: string
+  challengeIds?: Array<string | number>
+}
+
 function patch<T = unknown>(endpoint: string, body?: unknown): Promise<T> {
   return request<T>(endpoint, {
     method: 'PATCH',
@@ -1009,6 +1062,29 @@ class LCUManager {
   /** 获取斗魂竞技场 / 海克斯模式强化符文数据 */
   getAugments(): Promise<Array<{ id: number; nameTRA: string; simpleNameTRA: string; augmentSmallIconPath: string; rarity: string }>> {
     return get('/lol-game-data/assets/v1/cherry-augments.json')
+  }
+
+  // ==================== 旗帜 / 挑战身份 ====================
+
+  /** 获取当前账号拥有的挑战旗帜库存 */
+  async getRegaliaBannerInventory(): Promise<RegaliaBannerInventory> {
+    const raw = await get<unknown>('/lol-regalia/v3/inventory/REGALIA_BANNER')
+    return normalizeRegaliaBannerInventory(raw)
+  }
+
+  /** 获取当前召唤师的 Regalia 装饰配置 */
+  getRegalia(): Promise<RegaliaInfo> {
+    return get<RegaliaInfo>('/lol-regalia/v2/current-summoner/regalia')
+  }
+
+  /** 更新挑战身份偏好，例如展示旗帜、挑战 token 等 */
+  updateChallengePlayerPreferences(payload: ChallengePlayerPreferencesPayload): Promise<void> {
+    return post<void>('/lol-challenges/v1/update-player-preferences', payload)
+  }
+
+  /** 应用挑战旗帜 */
+  applyRegaliaBanner(bannerId: string): Promise<void> {
+    return this.updateChallengePlayerPreferences({ bannerAccent: bannerId })
   }
 
   /** 获取玩家符文页 */

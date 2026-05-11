@@ -1,0 +1,199 @@
+/* ==================== 自定义旗帜选择器 ==================== */
+
+.scb-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+.scb-header {
+  padding: 12px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.scb-title {
+  color: #f0e6d2;
+  font-size: 15px;
+  font-weight: bold;
+  letter-spacing: 2px;
+}
+
+.scb-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.scb-count {
+  color: #c8aa6e;
+  font-size: 14px;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.scb-hint {
+  color: #5c6b73;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.scb-status {
+  color: #c8aa6e;
+  font-size: 13px;
+  font-weight: 600;
+  margin-left: auto;
+  white-space: nowrap;
+}
+
+.scb-grid-wrap {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px 20px 16px;
+}
+
+.scb-grid-wrap::-webkit-scrollbar {
+  width: 4px;
+}
+
+.scb-grid-wrap::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scb-grid-wrap::-webkit-scrollbar-thumb {
+  background: #3c2e16;
+  border-radius: 2px;
+}
+
+.scb-grid-wrap::-webkit-scrollbar-thumb:hover {
+  background: #c8aa6e;
+}
+
+.scb-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 140px);
+  justify-content: center;
+  gap: 16px 18px;
+}
+
+.scb-empty {
+  color: #5c6b73;
+  font-size: 13px;
+  padding: 60px 0;
+  text-align: center;
+}
+
+.scb-card {
+  display: flex;
+  width: 140px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  flex-direction: column;
+  font: inherit;
+  text-align: left;
+}
+
+.scb-card-img-wrap {
+  position: relative;
+  width: 140px;
+  height: 260px;
+  overflow: hidden;
+  border: 2px solid #1e2328;
+  background: #070e17;
+  border-radius: 2px;
+  transition: border-color 0.2s, box-shadow 0.2s, filter 0.2s;
+}
+
+.scb-card:hover .scb-card-img-wrap {
+  border-color: #c8aa6e;
+}
+
+.scb-card--applied .scb-card-img-wrap {
+  border-color: #00e5ff;
+  box-shadow: 0 0 12px rgba(0, 229, 255, 0.3);
+}
+
+.scb-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  transition: filter 0.2s, transform 0.3s;
+}
+
+.scb-card:hover .scb-card-img {
+  filter: brightness(1.08);
+  transform: scale(1.04);
+}
+
+.scb-card-hover {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.28);
+  color: #f0e6d2;
+  font-size: 13px;
+  font-weight: bold;
+  letter-spacing: 2px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+}
+
+.scb-card:hover .scb-card-hover {
+  opacity: 1;
+}
+
+.scb-card-badge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 1px 6px;
+  background: #00e5ff;
+  color: #010a13;
+  font-size: 10px;
+  font-weight: bold;
+}
+
+.scb-card-badge {
+  max-width: 100%;
+}
+
+.scb-card-badge:not(:empty) {
+  background: #785a28;
+  color: #f0e6d2;
+}
+
+.scb-card--applied .scb-card-badge {
+  background: #00e5ff;
+  color: #010a13;
+}
+
+.scb-card-name {
+  margin-top: 6px;
+  color: #a09b8c;
+  font-size: 12px;
+  font-weight: 600;
+  overflow: hidden;
+  text-align: center;
+  text-overflow: ellipsis;
+  transition: color 0.2s;
+  white-space: nowrap;
+}
+
+.scb-card-meta {
+  color: #5c6b73;
+  font-size: 10px;
+  text-align: center;
+}
+
+.scb-card:hover .scb-card-name,
+.scb-card--applied .scb-card-name {
+  color: #f0e6d2;
+}
