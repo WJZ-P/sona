@@ -17,16 +17,18 @@ const TARGET_TAGS = new Set([
 const PATCH_TRIGGER_ATTRS = new Set([
   'banner-id',
   'banner-type',
+  'banner-rank',
   'summoner-id',
   'member-type',
 ])
-const ORIGINAL_ATTRS = ['banner-id', 'banner-type'] as const
+const ORIGINAL_ATTRS = ['banner-id', 'banner-type', 'banner-rank'] as const
 
 interface LocalCustomBannerSelection {
   id: string
   name: string
   assetPath: string
   bannerType: string
+  bannerRank: string
 }
 
 let customBannerRoot: Root | null = null
@@ -51,6 +53,7 @@ function getStoredSelection(): LocalCustomBannerSelection | null {
     name: String(stored.name),
     assetPath: String(stored.assetPath),
     bannerType: stored.bannerType || 'blank',
+    bannerRank: stored.bannerRank || '',
   }
 }
 
@@ -122,6 +125,15 @@ function rememberOriginalAttrs(element: Element) {
   patchedElements.set(element, attrs)
 }
 
+function restoreOriginalAttr(element: Element, attr: (typeof ORIGINAL_ATTRS)[number]) {
+  const originalValue = patchedElements.get(element)?.[attr]
+  if (originalValue == null) {
+    originalRemoveAttribute?.call(element, attr)
+  } else {
+    originalSetAttribute?.call(element, attr, originalValue)
+  }
+}
+
 async function patchRegaliaElement(element: Element, selection: LocalCustomBannerSelection) {
   const ownSummonerId = await getOwnSummonerId()
   if (!shouldPatchElement(element, ownSummonerId)) return
@@ -130,6 +142,11 @@ async function patchRegaliaElement(element: Element, selection: LocalCustomBanne
 
   originalSetAttribute?.call(element, 'banner-id', selection.id)
   originalSetAttribute?.call(element, 'banner-type', selection.bannerType || 'blank')
+  if (selection.bannerRank) {
+    originalSetAttribute?.call(element, 'banner-rank', selection.bannerRank)
+  } else {
+    restoreOriginalAttr(element, 'banner-rank')
+  }
 }
 
 function schedulePatchElement(element: Element) {
@@ -174,6 +191,12 @@ function installRegaliaAttributeHook() {
 
 function getSelectedCustomBanner(): LocalCustomBannerSelection | null {
   return getStoredSelection()
+}
+
+function getSelectedCustomBannerKey(): string | null {
+  const selection = getSelectedCustomBanner()
+  if (!selection) return null
+  return `${selection.id}:${selection.bannerRank || ''}`
 }
 
 function selectCustomBanner(selection: LocalCustomBannerSelection) {
@@ -223,7 +246,7 @@ function showCustomBannerPicker() {
       createElement(CustomBannerPicker, {
         open: false,
         onClose: close,
-        selectedBannerId: getSelectedCustomBanner()?.id ?? null,
+        selectedBannerKey: getSelectedCustomBannerKey(),
         onApplyBanner: selectCustomBanner,
       }),
     )
@@ -233,7 +256,7 @@ function showCustomBannerPicker() {
     createElement(CustomBannerPicker, {
       open: true,
       onClose: close,
-      selectedBannerId: getSelectedCustomBanner()?.id ?? null,
+      selectedBannerKey: getSelectedCustomBannerKey(),
       onApplyBanner: selectCustomBanner,
     }),
   )
@@ -259,6 +282,9 @@ function createNativeButton(): HTMLElement {
   button.textContent = '自定义旗帜'
   button.style.marginLeft = '12px'
   button.style.verticalAlign = 'middle'
+  button.style.height = '24px'
+  button.style.padding = '5px 12px'
+  button.style.marginTop = '-6px' //  看起来不居中，往上挪一点
 
   button.addEventListener('click', (event) => {
     event.stopPropagation()

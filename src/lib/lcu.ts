@@ -404,6 +404,11 @@ class LCUManager {
     return get<SummonerInfo>(`/lol-summoner/v1/alias/lookup?gameName=${encodeURIComponent(gameName)}&tagLine=${encodeURIComponent(tagLine)}`)
   }
 
+  /** 设置当前召唤师头像 */
+  setProfileIcon(profileIconId: number): Promise<unknown> {
+    return put('/lol-summoner/v1/current-summoner/icon', { profileIconId })
+  }
+
   /** 生成基础观战 payload；好友 presence 中有 spectatorKey 时应优先补上。 */
   createSpectatorLaunchPayload(puuid: string, overrides: Partial<SpectatorLaunchPayload> = {}): SpectatorLaunchPayload {
     return {

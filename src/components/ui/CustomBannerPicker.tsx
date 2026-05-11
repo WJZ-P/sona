@@ -9,6 +9,8 @@ interface BannerItem {
   idSecondary: string
   name: string
   assetPath: string
+  bannerRank: string
+  selectionKey: string
   regaliaType: string
   isOwned: boolean
   isSelectable: boolean
@@ -20,11 +22,48 @@ interface BannerItem {
 export interface CustomBannerPickerProps {
   open: boolean
   onClose: () => void
-  selectedBannerId: string | null
-  onApplyBanner: (banner: { id: string; name: string; assetPath: string; bannerType: string }) => void
+  selectedBannerKey: string | null
+  onApplyBanner: (banner: { id: string; name: string; assetPath: string; bannerType: string; bannerRank: string }) => void
 }
 
-function getBannerName(item: RegaliaBannerInventoryItem): string {
+const RANK_NAME_MAP: Record<string, string> = {
+  IRON: '坚韧黑铁',
+  BRONZE: '英勇青铜',
+  SILVER: '不屈白银',
+  GOLD: '荣耀黄金',
+  PLATINUM: '华贵铂金',
+  EMERALD: '流光翡翠',
+  DIAMOND: '璀璨钻石',
+  MASTER: '超凡大师',
+  GRANDMASTER: '傲世宗师',
+  CHALLENGER: '最强王者',
+}
+
+function normalizeRankText(value: string): string {
+  return value.trim().replace(/[\s_-]+/g, '').toUpperCase()
+}
+
+function getBannerRank(item: RegaliaBannerInventoryItem): string {
+  const id = String(item.id)
+  if (id !== '2') return ''
+
+  const candidates = [
+    item.idSecondary,
+    item.localizedName,
+    item.assetPath.split('/').pop() ?? '',
+  ]
+
+  for (const candidate of candidates) {
+    const normalized = normalizeRankText(candidate)
+    const rank = Object.keys(RANK_NAME_MAP).find((key) => normalized.includes(key))
+    if (rank) return rank
+  }
+
+  return ''
+}
+
+function getBannerName(item: RegaliaBannerInventoryItem, bannerRank: string): string {
+  if (bannerRank) return `${RANK_NAME_MAP[bannerRank] ?? bannerRank} 旗帜`
   if (item.localizedName.trim()) return item.localizedName
 
   const filename = item.assetPath
@@ -41,28 +80,30 @@ function flattenInventory(inventory: RegaliaBannerInventoryEntry[]): BannerItem[
   return inventory.flatMap((entry, groupIndex) => {
     return entry.items
       .filter((item) => item.assetPath)
-      .map((item) => ({
-        id: String(item.id),
-        idSecondary: item.idSecondary,
-        name: getBannerName(item),
-        assetPath: item.assetPath,
-        regaliaType: item.regaliaType,
-        isOwned: entry.isOwned,
-        isSelectable: item.isSelectable,
-        isTencentOnly: item.isTencentOnly,
-        purchaseDate: entry.purchaseDate ?? '',
-        groupIndex,
-      }))
+      .map((item) => {
+        const id = String(item.id)
+        const bannerRank = getBannerRank(item)
+        const selectionKey = `${id}:${bannerRank}`
+
+        return {
+          id,
+          idSecondary: item.idSecondary,
+          name: getBannerName(item, bannerRank),
+          assetPath: item.assetPath,
+          bannerRank,
+          selectionKey,
+          regaliaType: item.regaliaType,
+          isOwned: entry.isOwned,
+          isSelectable: item.isSelectable,
+          isTencentOnly: item.isTencentOnly,
+          purchaseDate: entry.purchaseDate ?? '',
+          groupIndex,
+        }
+      })
   })
 }
 
-function getBannerSortValue(banner: BannerItem): number {
-  if (!banner.isOwned) return 2
-  if (!banner.isSelectable) return 1
-  return 0
-}
-
-export function CustomBannerPicker({ open, onClose, selectedBannerId, onApplyBanner }: CustomBannerPickerProps) {
+export function CustomBannerPicker({ open, onClose, selectedBannerKey, onApplyBanner }: CustomBannerPickerProps) {
   const [banners, setBanners] = useState<BannerItem[]>([])
   const [loading, setLoading] = useState(false)
   const [appliedId, setAppliedId] = useState<string | null>(null)
@@ -79,13 +120,12 @@ export function CustomBannerPicker({ open, onClose, selectedBannerId, onApplyBan
         const inventory = await lcu.getRegaliaBannerInventory()
 
         const items = flattenInventory(inventory).sort((a, b) => {
-          return getBannerSortValue(a) - getBannerSortValue(b)
-            || Number(a.id) - Number(b.id)
+          return Number(b.id) - Number(a.id)
             || a.name.localeCompare(b.name)
         })
 
         setBanners(items)
-        setAppliedId(selectedBannerId)
+        setAppliedId(selectedBannerKey)
         logger.info('[CustomBanner] 加载了 %d 个旗帜', items.length)
       } catch (err) {
         logger.error('[CustomBanner] 加载旗帜失败:', err)
@@ -95,7 +135,7 @@ export function CustomBannerPicker({ open, onClose, selectedBannerId, onApplyBan
         setLoading(false)
       }
     })()
-  }, [open, selectedBannerId])
+  }, [open, selectedBannerKey])
 
   const handleApply = (banner: BannerItem) => {
     setStatusMsg(`正在应用 ${banner.name}...`)
@@ -105,8 +145,9 @@ export function CustomBannerPicker({ open, onClose, selectedBannerId, onApplyBan
         name: banner.name,
         assetPath: banner.assetPath,
         bannerType: 'blank',
+        bannerRank: banner.bannerRank,
       })
-      setAppliedId(banner.id)
+      setAppliedId(banner.selectionKey)
       setStatusMsg(`✅ 已本地应用 [${banner.name}]`)
       logger.info('[CustomBanner] 本地旗帜已设置为 %s (id=%s)', banner.name, banner.id)
     } catch (err) {
@@ -121,12 +162,10 @@ export function CustomBannerPicker({ open, onClose, selectedBannerId, onApplyBan
     <Modal open={open} onClose={onClose} width={1080} height={700}>
       <div className="scb-container">
         <div className="scb-header">
-          <span className="scb-title">自定义旗帜</span>
-        </div>
-
-        <div className="scb-toolbar">
-          <span className="scb-count">{banners.length} 个旗帜</span>
-          <span className="scb-hint">仅修改本地显示，其他玩家不可见。</span>
+          <div className="scb-header-main">
+            <span className="scb-title">自定义旗帜</span>
+            <span className="scb-hint">{banners.length} 个旗帜，仅修改本地显示，其他玩家不可见。</span>
+          </div>
           {statusMsg && <span className="scb-status">{statusMsg}</span>}
         </div>
 
@@ -137,8 +176,7 @@ export function CustomBannerPicker({ open, onClose, selectedBannerId, onApplyBan
           )}
           <div className="scb-grid">
             {banners.map((banner) => {
-              const isApplied = appliedId === banner.id
-              const badgeText = isApplied ? '使用中' : !banner.isOwned ? '未拥有' : !banner.isSelectable ? '不可选' : ''
+              const isApplied = appliedId === banner.selectionKey
 
               return (
                 <button
@@ -155,11 +193,10 @@ export function CustomBannerPicker({ open, onClose, selectedBannerId, onApplyBan
                       alt={banner.name}
                       loading="lazy"
                     />
-                    <span className="scb-card-hover">本地应用</span>
-                    {badgeText && <span className="scb-card-badge">{badgeText}</span>}
+                    <span className="scb-card-hover">点击应用</span>
+                    {isApplied && <span className="scb-card-badge">使用中</span>}
                   </span>
                   <span className="scb-card-name">{banner.name}</span>
-                  <span className="scb-card-meta">ID {banner.id}</span>
                 </button>
               )
             })}

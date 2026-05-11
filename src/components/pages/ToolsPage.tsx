@@ -542,7 +542,7 @@ export function ToolsPage() {
         </SettingCard>
         <SettingCard
           title="卸下头像边框"
-          description="移除头像框装饰，恢复干净的头像展示。(需召唤兽等级>=525)"
+          description="移除头像框装饰，恢复干净的头像展示。(需召唤师等级>=525)"
         >
           <SonaButton onClick={async () => {
             try {
@@ -560,6 +560,21 @@ export function ToolsPage() {
           </SonaButton>
         </SettingCard>
         <SettingCard
+          title="卸下头像"
+          description="将召唤师头像恢复为客户端默认头像。"
+        >
+          <SonaButton onClick={async () => {
+            try {
+              await lcu.setProfileIcon(29)
+              logger.info('头像已恢复为默认头像 ✓')
+            } catch (err) {
+              logger.error('恢复默认头像失败:', err)
+            }
+          }}>
+            卸下
+          </SonaButton>
+        </SettingCard>
+        <SettingCard
           title="自定义生涯背景"
           description="增强修改生涯背景弹窗，可以选择任意皮肤作为生涯背景。"
         >
@@ -569,8 +584,8 @@ export function ToolsPage() {
           />
         </SettingCard>
         <SettingCard
-          title="自定义挑战旗帜"
-          description="在挑战身份自定义页加入 Sona 旗帜选择器，可以直接查看并应用已拥有旗帜。"
+          title="自定义旗帜"
+          description="在原有设置旗帜处新增自定义旗帜按钮，更换的旗帜仅自己可见。"
         >
           <SonaSwitch
             checked={customBanner}

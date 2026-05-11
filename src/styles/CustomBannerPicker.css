@@ -8,35 +8,33 @@
 }
 
 .scb-header {
-  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 22px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.scb-header-main {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  min-width: 0;
 }
 
 .scb-title {
   color: #f0e6d2;
-  font-size: 15px;
+  font-size: 17px;
   font-weight: bold;
   letter-spacing: 2px;
 }
 
-.scb-toolbar {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 14px 20px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.scb-count {
-  color: #c8aa6e;
-  font-size: 14px;
-  font-weight: bold;
-  white-space: nowrap;
-}
-
 .scb-hint {
   color: #5c6b73;
-  font-size: 12px;
+  font-size: 13px;
+  overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap;
 }
 
@@ -44,14 +42,14 @@
   color: #c8aa6e;
   font-size: 13px;
   font-weight: 600;
-  margin-left: auto;
+  flex-shrink: 0;
   white-space: nowrap;
 }
 
 .scb-grid-wrap {
   flex: 1;
   overflow-y: auto;
-  padding: 12px 20px 16px;
+  padding: 16px 22px 18px;
 }
 
 .scb-grid-wrap::-webkit-scrollbar {
@@ -73,9 +71,10 @@
 
 .scb-grid {
   display: grid;
-  grid-template-columns: repeat(6, 140px);
-  justify-content: center;
-  gap: 16px 18px;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  justify-items: center;
+  gap: 20px 10px;
+  width: 100%;
 }
 
 .scb-empty {
@@ -87,20 +86,21 @@
 
 .scb-card {
   display: flex;
-  width: 140px;
+  align-items: center;
+  width: 160px;
   padding: 0;
   border: 0;
   background: transparent;
   cursor: pointer;
   flex-direction: column;
   font: inherit;
-  text-align: left;
+  text-align: center;
 }
 
 .scb-card-img-wrap {
   position: relative;
-  width: 140px;
-  height: 260px;
+  width: 170px;
+  height: 340px;
   overflow: hidden;
   border: 2px solid #1e2328;
   background: #070e17;
@@ -118,16 +118,18 @@
 }
 
 .scb-card-img {
+  position: relative;
   width: 100%;
   height: 100%;
+  transform: scale(1.1);
   object-fit: cover;
-  object-position: center top;
+  object-position: center -100px;
   transition: filter 0.2s, transform 0.3s;
 }
 
 .scb-card:hover .scb-card-img {
   filter: brightness(1.08);
-  transform: scale(1.04);
+  transform: scale(1.15);
 }
 
 .scb-card-hover {
@@ -159,15 +161,7 @@
   color: #010a13;
   font-size: 10px;
   font-weight: bold;
-}
-
-.scb-card-badge {
   max-width: 100%;
-}
-
-.scb-card-badge:not(:empty) {
-  background: #785a28;
-  color: #f0e6d2;
 }
 
 .scb-card--applied .scb-card-badge {
@@ -185,12 +179,7 @@
   text-overflow: ellipsis;
   transition: color 0.2s;
   white-space: nowrap;
-}
-
-.scb-card-meta {
-  color: #5c6b73;
-  font-size: 10px;
-  text-align: center;
+  width: 100%;
 }
 
 .scb-card:hover .scb-card-name,

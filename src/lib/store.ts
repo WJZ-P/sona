@@ -81,6 +81,7 @@ export interface SonaConfig {
     name: string
     assetPath: string
     bannerType: string
+    bannerRank: string
   } | null
   /** 隐藏客户端云顶之弈入口 */
   hideTFT: boolean
