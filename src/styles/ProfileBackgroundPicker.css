@@ -10,13 +10,17 @@
 /* ---- 标题 ---- */
 
 .spbg-header {
+  display: flex;
+  align-items: center;
+  gap: 18px;
   padding: 12px 20px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .spbg-title {
+  flex-shrink: 0;
   color: #f0e6d2;
-  font-size: 15px;
+  font-size: 17px;
   font-weight: bold;
   letter-spacing: 2px;
 }
@@ -27,8 +31,8 @@
   display: flex;
   align-items: center;
   gap: 14px;
-  padding: 14px 20px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  flex: 1;
+  min-width: 0;
 }
 
 .spbg-search {

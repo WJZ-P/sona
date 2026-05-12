@@ -6,27 +6,48 @@ import '@/styles/ProfileBackgroundPicker.css'
 
 // ==================== 类型 ====================
 
-/** LCU skins-minimal 接口返回的单个皮肤数据 */
-interface LcuSkinMinimal {
+/** LCU champion inventory / game-data 中的皮肤数据 */
+interface LcuChampionSkin {
   id: number
   name: string
-  championId: number
   isBase: boolean
   disabled: boolean
-  lastSelected: boolean
-  stillObtainable: boolean
-  chromaPath: string
-  splashPath: string
+  splashPath?: string
+  uncenteredSplashPath?: string
   tilePath: string
-  ownership: {
+  ownership?: {
     owned: boolean
     loyaltyReward: boolean
     xboxGPReward: boolean
     rental: Record<string, unknown>
   }
-  skinAugments: {
+  skinAugments?: {
     augments: unknown[]
   }
+  questSkinInfo?: {
+    tiers?: LcuChampionSkinTier[]
+  }
+}
+
+interface LcuChampionSkinTier {
+  id: number
+  name: string
+  stage?: number
+  splashPath?: string
+  uncenteredSplashPath?: string
+  tilePath: string
+  ownership?: {
+    owned: boolean
+  }
+  skinAugments?: {
+    augments: unknown[]
+  }
+}
+
+interface LcuChampionInventoryItem {
+  id: number
+  name?: string
+  skins?: LcuChampionSkin[]
 }
 
 /** 组件内部使用的皮肤项 */
@@ -36,6 +57,47 @@ interface SkinItem {
   championId: number
   champName: string
   tilePath: string
+}
+
+function pickSkinImagePath(skin: Pick<LcuChampionSkin, 'tilePath' | 'uncenteredSplashPath' | 'splashPath'>): string {
+  return skin.tilePath || skin.uncenteredSplashPath || skin.splashPath || ''
+}
+
+function getTierSkinName(parent: LcuChampionSkin, tier: LcuChampionSkinTier): string {
+  if (tier.name) return tier.name
+  if (tier.stage != null) return `${parent.name} 阶段 ${tier.stage}`
+  return parent.name
+}
+
+function appendSkinItem(itemsById: Map<number, SkinItem>, skin: Pick<LcuChampionSkin, 'id' | 'name' | 'tilePath' | 'uncenteredSplashPath' | 'splashPath'>, championId: number, champName: string) {
+  if (!skin.id || itemsById.has(skin.id)) return
+  const tilePath = pickSkinImagePath(skin)
+  if (!tilePath) return
+
+  itemsById.set(skin.id, {
+    id: skin.id,
+    name: skin.name,
+    championId,
+    champName,
+    tilePath,
+  })
+}
+
+function appendChampionSkins(itemsById: Map<number, SkinItem>, champion: Pick<LcuChampionInventoryItem, 'id' | 'name' | 'skins'>, champNameFallback = '') {
+  const championId = Number(champion.id)
+  if (!Number.isFinite(championId) || championId <= 0) return
+
+  const champName = champNameFallback || champion.name || `英雄 ${championId}`
+  for (const skin of champion.skins ?? []) {
+    appendSkinItem(itemsById, skin, championId, champName)
+
+    for (const tier of skin.questSkinInfo?.tiers ?? []) {
+      appendSkinItem(itemsById, {
+        ...tier,
+        name: getTierSkinName(skin, tier),
+      }, championId, champName)
+    }
+  }
 }
 
 // ==================== 组件 ====================
@@ -80,26 +142,18 @@ export function ProfileBackgroundPicker({ open, onClose }: ProfileBackgroundPick
           if (c.id > 0) champMap.set(c.id, { name: c.name })
         }
 
-        // 所有皮肤（不过滤拥有权）
-        const skinsRes = await fetch(`/lol-champions/v1/inventories/${summonerId}/skins-minimal`)
-        if (!skinsRes.ok) throw new Error(`获取皮肤失败 ${skinsRes.status}`)
-        const allSkins = await skinsRes.json() as LcuSkinMinimal[]
+        // 完整英雄库存比 skins-minimal 更全，包含部分特殊/分层皮肤。
+        const championsRes = await fetch(`/lol-champions/v1/inventories/${summonerId}/champions`)
+        if (!championsRes.ok) throw new Error(`获取皮肤失败 ${championsRes.status}`)
+        const championInventory = await championsRes.json() as LcuChampionInventoryItem[]
 
-        const items: SkinItem[] = []
-        for (const s of allSkins) {
-          if (!s.tilePath) continue
-          const champ = champMap.get(s.championId)
-          if (!champ) continue
-          items.push({
-            id: s.id,
-            name: s.name,
-            championId: s.championId,
-            champName: champ.name,
-            tilePath: s.tilePath,
-          })
+        const itemsById = new Map<number, SkinItem>()
+        for (const champion of championInventory) {
+          appendChampionSkins(itemsById, champion, champMap.get(champion.id)?.name)
         }
 
-        items.sort((a, b) => a.champName.localeCompare(b.champName, undefined) || a.id - b.id)
+        const items = Array.from(itemsById.values())
+          .sort((a, b) => a.champName.localeCompare(b.champName, undefined) || a.id - b.id)
         setSkins(items)
         logger.info('[ProfileBg] 加载了 %d 款皮肤', items.length)
       } catch (err) {
@@ -166,24 +220,22 @@ export function ProfileBackgroundPicker({ open, onClose }: ProfileBackgroundPick
   }
 
   return (
-    <Modal open={open} onClose={onClose} width={1100} height={620}>
+    <Modal open={open} onClose={onClose} width={1110} height={620}>
       <div className="spbg-container">
         {/* 标题 */}
         <div className="spbg-header">
           <span className="spbg-title">自定义生涯背景</span>
-        </div>
-
-        {/* 搜索栏 + 状态提示 */}
-        <div className="spbg-toolbar">
-          <input
-            className="spbg-search"
-            type="text"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="搜索英雄或皮肤..."
-          />
-          <span className="spbg-count">{filtered.length} 款皮肤</span>
-          {statusMsg && <span className="spbg-status">{statusMsg}</span>}
+          <div className="spbg-toolbar">
+            <input
+              className="spbg-search"
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="搜索英雄或皮肤..."
+            />
+            <span className="spbg-count">{filtered.length} 款皮肤</span>
+            {statusMsg && <span className="spbg-status">{statusMsg}</span>}
+          </div>
         </div>
 
         {/* 皮肤网格 */}
