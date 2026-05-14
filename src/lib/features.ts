@@ -626,6 +626,23 @@ async function analyzeTeammates() {
 }
 
 let analyzeTeamPowerUnsub: (() => void) | null = null
+let analyzeTeamPowerUpdateUnsub: (() => void) | null = null
+let lastAnalyzedTeamSignature = ''
+
+/** 换楼后重新获取数据并发送聊天消息 */
+function onAnalyzeTeamPowerSwap(event: LCUEventMessage) {
+  if (event.eventType !== 'Update') return
+
+  const session = event.data as ChampSelectSession
+  if (!session?.myTeam) return
+
+  const nextSignature = getTeamDisplaySignature(session)
+  if (nextSignature === lastAnalyzedTeamSignature) return
+
+  logger.info('[AnalyzeTeamPower] 检测到换楼，重新发送队友战绩分析')
+  lastAnalyzedTeamSignature = nextSignature
+  analyzeTeammates()
+}
 
 function updateAnalyzeTeamPower(enabled: boolean) {
   if (enabled && !analyzeTeamPowerUnsub) {
@@ -635,10 +652,16 @@ function updateAnalyzeTeamPower(enabled: boolean) {
         analyzeTeammates()
       }
     })
+    analyzeTeamPowerUpdateUnsub = lcu.observe(LcuEventUri.CHAMP_SELECT, onAnalyzeTeamPowerSwap)
     logger.info('Analyze team power enabled ✓')
   } else if (!enabled && analyzeTeamPowerUnsub) {
     analyzeTeamPowerUnsub()
     analyzeTeamPowerUnsub = null
+    if (analyzeTeamPowerUpdateUnsub) {
+      analyzeTeamPowerUpdateUnsub()
+      analyzeTeamPowerUpdateUnsub = null
+    }
+    lastAnalyzedTeamSignature = ''
     logger.info('Analyze team power disabled')
   }
 }
