@@ -572,8 +572,59 @@ export function getRating(winRate: number, kda: number): string {
   return '☠️ 演员已就位'
 }
 
+/** 将 timer.phase 或自定义阶段映射为中文 */
+function getPhaseLabel(phase: string): string {
+  switch (phase) {
+    case 'PLANNING': return '预选英雄阶段'
+    case 'BAN_PICK': return '禁用/选择阶段'
+    case 'FINALIZATION': return '锁定英雄阶段'
+    case 'trade_swap': return '英雄换楼阶段'
+    default: return '数据刷新'
+  }
+}
+
+const SEPARATOR = '━━━━━━━━'.repeat(2)
+
+/** 统一的队友战绩消息构造与发送 */
+async function sendTeamStatsMessage(stats: TeammateStats[], phaseLabel: string) {
+  const header = `${SEPARATOR} 队友卡池一览（${phaseLabel}）${SEPARATOR}`
+  const chatLines: string[] = [header, '']
+
+  for (const s of stats) {
+    const floor = `${s.floor}楼`
+    if (s.winRate == null) {
+      chatLines.push(`${floor}: 🆕 萌新上线 (无战绩)`)
+      continue
+    }
+    const winRate = s.winRate.toFixed(1)
+    const kdaStr = s.kdaNum >= 99 ? 'Perfect' : s.kdaNum.toFixed(2)
+    const rating = getRating(s.winRate, s.kdaNum)
+    chatLines.push(`${floor}: ${rating} | 胜率${winRate}% | KDA ${kdaStr}`)
+  }
+
+  chatLines.push('')
+  chatLines.push('Sona助手 ♫')
+
+  const msg = chatLines.join('\n')
+  const msgType = store.get('analyzeTeamPowerMsgType') || 'celebration'
+  for (let attempt = 0; attempt < 10; attempt++) {
+    try {
+      await lcu.sendChampSelectMessage(msg, msgType)
+      logger.info('队友分析已发送到聊天框 ✓ （%s）', phaseLabel)
+      break
+    } catch {
+      if (attempt < 9) {
+        await sleep(1000)
+      } else {
+        logger.warn('聊天发送失败，聊天室始终未就绪')
+      }
+    }
+  }
+}
+
 async function analyzeTeammates() {
   try {
+    const session = await lcu.getChampSelectSession()
     const { stats } = await fetchTeamStats()
 
     // 缓存 stats 供换楼后重建消息（避免重复请求 SGP）
@@ -583,50 +634,8 @@ async function analyzeTeammates() {
       if (s.summonerId) analyzeTeamPowerStatsByPuuid.set(`sid:${s.summonerId}`, s)
     }
 
-    logger.info('┌─── 队友战绩分析 ───')
-
-    const chatLines: string[] = ['Sona助手 ♫   队友卡池一览(本模式战绩):\n']
-
-    for (const s of stats) {
-      const floor = `${s.floor}楼`
-      if (s.winRate == null) {
-        logger.info('│ %s — %s#%s — 无近期战绩或查询失败', floor, s.gameName, s.tagLine)
-        chatLines.push(`${floor}: 🆕 萌新上线 (无战绩)`)
-        continue
-      }
-
-      const winRate = s.winRate.toFixed(1)
-      const kdaStr = s.kdaNum >= 99 ? 'Perfect' : s.kdaNum.toFixed(2)
-      const rating = getRating(s.winRate, s.kdaNum)
-
-      logger.info(
-        '│ %s — %s#%s — 近%d场 胜率: %s%% (%d胜%d负) | KDA: %s (%.1f/%.1f/%.1f) | %s',
-        floor, s.gameName, s.tagLine,
-        s.total, winRate, s.wins, s.total - s.wins,
-        kdaStr, s.avgK, s.avgD, s.avgA, rating,
-      )
-
-      chatLines.push(`${floor}: ${rating} | 胜率${winRate}% | KDA ${kdaStr}`)
-    }
-
-    logger.info('└────────────────────')
-
-    // 等待聊天室就绪后发送
-    const msg = chatLines.join('\n')
-    const msgType = store.get('analyzeTeamPowerMsgType') || 'celebration'
-    for (let attempt = 0; attempt < 10; attempt++) {
-      try {
-        await lcu.sendChampSelectMessage(msg, msgType)
-        logger.info('队友分析已发送到聊天框 ✓')
-        break
-      } catch {
-        if (attempt < 9) {
-          await sleep(1000)
-        } else {
-          logger.warn('聊天发送失败，聊天室始终未就绪')
-        }
-      }
-    }
+    const phaseLabel = getPhaseLabel(session.timer?.phase ?? '')
+    await sendTeamStatsMessage(stats, phaseLabel)
   } catch (err) {
     logger.error('队友战绩分析失败:', err)
   }
@@ -645,39 +654,29 @@ async function resendAnalyzeMessageFromCache() {
     const session = await lcu.getChampSelectSession()
     if (!session?.myTeam) return
 
-    const chatLines: string[] = ['Sona助手 ♫   队友卡池一览(本模式战绩):\n']
+    const stats: TeammateStats[] = []
     for (let i = 0; i < session.myTeam.length; i++) {
       const player = session.myTeam[i]
-      const floor = `${i + 1}楼`
       const stat = (player.puuid ? analyzeTeamPowerStatsByPuuid.get(player.puuid) : undefined)
         ?? (player.summonerId ? analyzeTeamPowerStatsByPuuid.get(`sid:${player.summonerId}`) : undefined)
 
-      if (!stat || stat.winRate == null) {
-        chatLines.push(`${floor}: 🆕 萌新上线 (无战绩)`)
-        continue
-      }
-
-      const winRate = stat.winRate.toFixed(1)
-      const kdaStr = stat.kdaNum >= 99 ? 'Perfect' : stat.kdaNum.toFixed(2)
-      const rating = getRating(stat.winRate, stat.kdaNum)
-      chatLines.push(`${floor}: ${rating} | 胜率${winRate}% | KDA ${kdaStr}`)
+      stats.push(stat ?? {
+        floor: i + 1,
+        summonerId: player.summonerId,
+        puuid: player.puuid,
+        gameName: player.gameName,
+        tagLine: player.tagLine,
+        winRate: null,
+        wins: 0,
+        total: 0,
+        avgK: 0,
+        avgD: 0,
+        avgA: 0,
+        kdaNum: 0,
+      })
     }
 
-    const msg = chatLines.join('\n')
-    const msgType = store.get('analyzeTeamPowerMsgType') || 'celebration'
-    for (let attempt = 0; attempt < 10; attempt++) {
-      try {
-        await lcu.sendChampSelectMessage(msg, msgType)
-        logger.info('队友分析已发送到聊天框 ✓')
-        break
-      } catch {
-        if (attempt < 9) {
-          await sleep(1000)
-        } else {
-          logger.warn('聊天发送失败，聊天室始终未就绪')
-        }
-      }
-    }
+    await sendTeamStatsMessage(stats, getPhaseLabel('trade_swap'))
   } catch (err) {
     logger.error('队友战绩分析失败:', err)
   }
@@ -690,8 +689,6 @@ function onAnalyzeTeamPowerSwap(event: LCUEventMessage) {
   const session = event.data as ChampSelectSession
   if (!session) return
 
-  // 换楼时 trades 状态会变化：发起 → ACCEPTED → 消失
-  // 用 trades 的序列化快照检测
   const tradesSnapshot = JSON.stringify(session.trades ?? [])
   if (tradesSnapshot === lastAnalyzedTradesSnapshot) return
 
