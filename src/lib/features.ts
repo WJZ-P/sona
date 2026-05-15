@@ -583,7 +583,7 @@ function getPhaseLabel(phase: string): string {
   }
 }
 
-const SEPARATOR = '━━━━━━━━'.repeat(2)
+const SEPARATOR = '━━━'
 
 /** 统一的队友战绩消息构造与发送 */
 async function sendTeamStatsMessage(stats: TeammateStats[], phaseLabel: string) {
