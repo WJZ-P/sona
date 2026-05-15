@@ -111,6 +111,7 @@ export function ToolsPage() {
   const [windowEffect, setWindowEffect] = useState(store.get('windowEffect'))
   const [champSelectAssist, setChampSelectAssist] = useState(store.get('champSelectAssist'))
   const [opggBuildRecommendation, setOpggBuildRecommendation] = useState(store.get('opggBuildRecommendation'))
+  const [champSelectCounterRecommendation, setChampSelectCounterRecommendation] = useState(store.get('champSelectCounterRecommendation'))
   const [balanceBuffTooltip, setBalanceBuffTooltip] = useState(store.get('balanceBuffTooltip'))
   const [champSelectQuitButton, setChampSelectQuitButton] = useState(store.get('champSelectQuitButton'))
   const [gameAnalysisPopup, setGameAnalysisPopup] = useState(store.get('gameAnalysisPopup'))
@@ -164,6 +165,7 @@ export function ToolsPage() {
       store.onChange('windowEffect', setWindowEffect),
       store.onChange('champSelectAssist', setChampSelectAssist),
       store.onChange('opggBuildRecommendation', setOpggBuildRecommendation),
+      store.onChange('champSelectCounterRecommendation', setChampSelectCounterRecommendation),
       store.onChange('balanceBuffTooltip', setBalanceBuffTooltip),
       store.onChange('champSelectQuitButton', setChampSelectQuitButton),
       store.onChange('gameAnalysisPopup', setGameAnalysisPopup),
@@ -383,6 +385,15 @@ export function ToolsPage() {
           <SonaSwitch
             checked={opggBuildRecommendation}
             onChange={(v) => { setOpggBuildRecommendation(v); store.set('opggBuildRecommendation', v) }}
+          />
+        </SettingCard>
+        <SettingCard
+          title="Counter 英雄推荐"
+          description="排位选人时，根据对方已选英雄，使用 OP.GG global ranked 数据推荐克制英雄。国服只用于读取当前选人。"
+        >
+          <SonaSwitch
+            checked={champSelectCounterRecommendation}
+            onChange={(v) => { setChampSelectCounterRecommendation(v); store.set('champSelectCounterRecommendation', v) }}
           />
         </SettingCard>
         <SettingCard
