@@ -18,6 +18,7 @@ import { lcu, LcuEventUri, type ChampSelectSession, type ItemSet, type ItemSetBl
 import { store } from '@/lib/store'
 import { aramggApi, type AramggChampionRecommendation, type AramggChampionStatEntry, type AramggCoreItemBuild, type AramggMayhemAugments } from '@/lib/aramgg-api'
 import {
+  OPGG_CACHE_CLEARED_EVENT,
   opggApi,
   type OpggAugmentGroup,
   type OpggArenaModeChampion,
@@ -1040,3 +1041,10 @@ export function updateOpggBuildRecommendation(enabled: boolean) {
     logger.info('[OPGG] 配装推荐接管已禁用')
   }
 }
+
+window.addEventListener(OPGG_CACHE_CLEARED_EVENT, () => {
+  recommendationCache.clear()
+  itemSetSyncInFlightKeys.clear()
+  activePanelKey = ''
+  lastAppliedItemSetKey = ''
+})

@@ -9,7 +9,7 @@ import { logger } from '@/index'
 import { injector } from '@/lib/InjectorManager'
 import { getQueue } from '@/lib/assets'
 import { lcu, LcuEventUri, type ChampSelectSession, type LCUEventMessage } from '@/lib/lcu'
-import { opggApi, type OpggChampionsTier, type OpggMode, type OpggRankedDataItem, type OpggTier } from '@/lib/opgg-api'
+import { OPGG_CACHE_CLEARED_EVENT, opggApi, type OpggChampionsTier, type OpggMode, type OpggRankedDataItem, type OpggTier } from '@/lib/opgg-api'
 import { store } from '@/lib/store'
 import type { GameflowPhase } from '@/types/lcu'
 
@@ -530,3 +530,10 @@ export function updateChampSelectTierBadge(enabled: boolean) {
     logger.info('[ChampTier] 英雄选择 T 级角标已禁用')
   }
 }
+
+window.addEventListener(OPGG_CACHE_CLEARED_EVENT, () => {
+  tierCache.clear()
+  currentCacheKey = ''
+  tierByChampionId = new Map()
+  if (currentSession) void loadTierData(currentSession)
+})

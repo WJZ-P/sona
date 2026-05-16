@@ -336,6 +336,15 @@ export class OpggApiError extends Error {
 
 type QueryParams = Record<string, string | number | boolean | null | undefined>
 
+const OPGG_CACHE_PREFIX = 'sona:opgg-cache:v1:'
+const OPGG_CACHE_TTL_MS = 4 * 24 * 60 * 60 * 1000
+export const OPGG_CACHE_CLEARED_EVENT = 'sona:opgg-cache-cleared'
+
+interface OpggCacheEnvelope<T> {
+  cachedAt: number
+  data: T
+}
+
 export class OpggDataApi {
   static readonly BASE_URL = 'https://lol-api-champion.op.gg'
   static readonly DEFAULT_TIMEOUT_MS = 10000
@@ -347,11 +356,15 @@ export class OpggDataApi {
 
   async getChampionsTier(options: OpggGetChampionsTierOptions): Promise<OpggChampionsTier> {
     const { region, mode, tier, version, signal, timeoutMs } = options
-    return this.request(`/api/${region}/champions/${mode}`, {
-      params: { tier, version },
-      signal,
-      timeoutMs,
-    })
+    return withOpggCache(
+      getChampionsTierCacheKey(options),
+      isValidChampionsTier,
+      () => this.request(`/api/${region}/champions/${mode}`, {
+        params: { tier, version },
+        signal,
+        timeoutMs,
+      }),
+    )
   }
 
   async getChampion(options: OpggGetChampionOptions): Promise<OpggChampion> {
@@ -361,11 +374,15 @@ export class OpggDataApi {
       ? `/api/${region}/champions/${mode}/${id}`
       : `/api/${region}/champions/${mode}/${id}/${position ?? 'none'}`
 
-    return this.request(path, {
-      params: { tier, version },
-      signal,
-      timeoutMs,
-    })
+    return withOpggCache(
+      getChampionCacheKey(options),
+      isValidChampion,
+      () => this.request(path, {
+        params: { tier, version },
+        signal,
+        timeoutMs,
+      }),
+    )
   }
 
   async getARAMBalance(options: OpggRequestOptions = {}): Promise<OpggARAMBalance> {
@@ -423,6 +440,89 @@ function parseJson(text: string): unknown {
     return JSON.parse(text)
   } catch {
     return text
+  }
+}
+
+function getChampionsTierCacheKey(options: OpggGetChampionsTierOptions): string {
+  const version = options.version || 'latest'
+  return `${OPGG_CACHE_PREFIX}champions-tier:${options.region}:${options.mode}:${options.tier}:${version}`
+}
+
+function getChampionCacheKey(options: OpggGetChampionOptions): string {
+  const position = options.mode === 'aram' ? 'none' : options.position ?? 'none'
+  const version = options.version || 'latest'
+  return `${OPGG_CACHE_PREFIX}champion:${options.region}:${options.mode}:${options.id}:${position}:${options.tier}:${version}`
+}
+
+async function withOpggCache<T>(
+  key: string,
+  validate: (value: unknown) => value is T,
+  fetcher: () => Promise<T>,
+): Promise<T> {
+  const cached = readOpggCache(key, validate)
+  if (cached) return cached
+
+  const fresh = await fetcher()
+  if (validate(fresh)) writeOpggCache(key, fresh)
+  return fresh
+}
+
+function readOpggCache<T>(key: string, validate: (value: unknown) => value is T): T | null {
+  try {
+    const raw = localStorage.getItem(key)
+    if (!raw) return null
+
+    const envelope = JSON.parse(raw) as Partial<OpggCacheEnvelope<unknown>>
+    if (typeof envelope.cachedAt !== 'number' || Date.now() - envelope.cachedAt > OPGG_CACHE_TTL_MS) {
+      localStorage.removeItem(key)
+      return null
+    }
+
+    if (!validate(envelope.data)) {
+      localStorage.removeItem(key)
+      return null
+    }
+
+    return envelope.data
+  } catch {
+    localStorage.removeItem(key)
+    return null
+  }
+}
+
+function writeOpggCache<T>(key: string, data: T) {
+  try {
+    const envelope: OpggCacheEnvelope<T> = {
+      cachedAt: Date.now(),
+      data,
+    }
+    localStorage.setItem(key, JSON.stringify(envelope))
+  } catch {
+    // Ignore quota or unavailable storage errors; OP.GG requests still work without persistent cache.
+  }
+}
+
+function isValidChampionsTier(value: unknown): value is OpggChampionsTier {
+  return Boolean(value && typeof value === 'object' && Array.isArray((value as { data?: unknown }).data))
+}
+
+function isValidChampion(value: unknown): value is OpggChampion {
+  return Boolean(value && typeof value === 'object' && (value as { data?: unknown }).data && (value as { meta?: unknown }).meta)
+}
+
+export function clearOpggCache(): number {
+  const keys: string[] = []
+  try {
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i)
+      if (key?.startsWith(OPGG_CACHE_PREFIX)) keys.push(key)
+    }
+
+    keys.forEach((key) => localStorage.removeItem(key))
+    window.dispatchEvent(new CustomEvent(OPGG_CACHE_CLEARED_EVENT))
+    return keys.length
+  } catch {
+    return -1
   }
 }
 

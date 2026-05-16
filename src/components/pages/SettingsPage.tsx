@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import { SettingCard, SettingGroup } from '@/components/ui/SettingCard'
 import { SonaSwitch } from '@/components/ui/SonaSwitch'
 import { SonaSelect } from '@/components/ui/SonaSelect'
+import { SonaButton } from '@/components/ui/SonaButton'
+import { clearOpggCache } from '@/lib/opgg-api'
 import { store } from '@/lib/store'
 import '@/styles/SettingsPage.css'
 
@@ -17,6 +19,7 @@ export function SettingsPage() {
   const [developerMode, setDeveloperMode] = useState(store.get('developerMode'))
   const [hotkey, setHotkey] = useState(store.get('hotkey'))
   const [globalParticle, setGlobalParticle] = useState(store.get('globalParticle'))
+  const [opggCacheStatus, setOpggCacheStatus] = useState('')
 
   useEffect(() => {
     const unsubs = [
@@ -63,6 +66,20 @@ export function SettingsPage() {
             checked={developerMode}
             onChange={(v) => { setDeveloperMode(v); store.set('developerMode', v) }}
           />
+        </SettingCard>
+        <SettingCard
+          title="清空 OP.GG 缓存"
+          description="清除本地保存的 OP.GG 推荐出装、英雄 T 级和 Counter 数据；下次使用时会重新请求。"
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <SonaButton onClick={() => {
+              const count = clearOpggCache()
+              setOpggCacheStatus(count >= 0 ? `已清空 ${count} 条缓存` : '清空失败')
+            }}>
+              清空
+            </SonaButton>
+            {opggCacheStatus && <span className="sona-subtitle">{opggCacheStatus}</span>}
+          </div>
         </SettingCard>
       </SettingGroup>
     </div>

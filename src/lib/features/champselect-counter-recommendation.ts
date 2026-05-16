@@ -4,6 +4,7 @@ import { getChampionById } from '@/lib/assets'
 import { injector } from '@/lib/InjectorManager'
 import { lcu, LcuEventUri, type ChampSelectSession, type LCUEventMessage } from '@/lib/lcu'
 import {
+  OPGG_CACHE_CLEARED_EVENT,
   opggApi,
   type OpggRankedChampionsSummary,
   type OpggRankedDataItem,
@@ -468,3 +469,14 @@ export function updateChampSelectCounterRecommendation(enabled: boolean) {
     logger.info('[CounterPick] 选人 counter 建议已禁用')
   }
 }
+
+window.addEventListener(OPGG_CACHE_CLEARED_EVENT, () => {
+  rankedSummaryPromise = null
+  rankedSummaryCache = null
+  rankedSummaryCacheTier = null
+  lastSuggestionSignature = ''
+  suggestionsByEnemyId = new Map()
+  counterDataState = 'loading'
+  counterDataMessage = ''
+  if (currentSession) void refreshCounterRecommendations(currentSession)
+})
