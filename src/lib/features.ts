@@ -26,6 +26,7 @@ import { updateCustomProfileBg } from '@/lib/features/profile-background'
 import { updateCustomBanner } from '@/lib/features/custom-banner'
 import { updateGameAnalysisPopup } from '@/lib/features/game-analysis-popup'
 import { updateAutoReturnToLobby } from '@/lib/features/auto-return-to-lobby'
+import { updateFixLcuWindow } from '@/lib/features/fix-lcu-window'
 import { updateOpggBuildRecommendation } from '@/lib/features/opgg-build-recommendation'
 import { preloadChampSelectTierBadgeData, updateChampSelectTierBadge } from '@/lib/features/champselect-tier-badge'
 import { setAvailabilityHijackEnabled, setHideTFTEnabled, setHideRightNavTextEnabled } from '@/lib/injections'
@@ -572,60 +573,130 @@ export function getRating(winRate: number, kda: number): string {
   return '☠️ 演员已就位'
 }
 
+/** 将 timer.phase 或自定义阶段映射为中文 */
+function getPhaseLabel(phase: string): string {
+  switch (phase) {
+    case 'PLANNING': return '预选英雄阶段'
+    case 'BAN_PICK': return '禁用/选择阶段'
+    case 'FINALIZATION': return '锁定英雄阶段'
+    case 'trade_swap': return '英雄换楼阶段'
+    default: return '数据刷新'
+  }
+}
+
+const SEPARATOR = '━━━'
+
+/** 统一的队友战绩消息构造与发送 */
+async function sendTeamStatsMessage(stats: TeammateStats[], phaseLabel: string) {
+  const header = `${SEPARATOR} 队友卡池一览（${phaseLabel}）${SEPARATOR}`
+  const chatLines: string[] = [header, '']
+
+  for (const s of stats) {
+    const floor = `${s.floor}楼`
+    if (s.winRate == null) {
+      chatLines.push(`${floor}: 🆕 萌新上线 (无战绩)`)
+      continue
+    }
+    const winRate = s.winRate.toFixed(1)
+    const kdaStr = s.kdaNum >= 99 ? 'Perfect' : s.kdaNum.toFixed(2)
+    const rating = getRating(s.winRate, s.kdaNum)
+    chatLines.push(`${floor}: ${rating} | 胜率${winRate}% | KDA ${kdaStr}`)
+  }
+
+  chatLines.push('')
+  chatLines.push('Sona助手 ♫')
+
+  const msg = chatLines.join('\n')
+  const msgType = store.get('analyzeTeamPowerMsgType') || 'celebration'
+  for (let attempt = 0; attempt < 10; attempt++) {
+    try {
+      await lcu.sendChampSelectMessage(msg, msgType)
+      logger.info('队友分析已发送到聊天框 ✓ （%s）', phaseLabel)
+      break
+    } catch {
+      if (attempt < 9) {
+        await sleep(1000)
+      } else {
+        logger.warn('聊天发送失败，聊天室始终未就绪')
+      }
+    }
+  }
+}
+
 async function analyzeTeammates() {
   try {
+    const session = await lcu.getChampSelectSession()
     const { stats } = await fetchTeamStats()
 
-    logger.info('┌─── 队友战绩分析 ───')
-
-    const chatLines: string[] = ['Sona助手 ♫   队友卡池一览(本模式战绩):\n']
-
+    // 缓存 stats 供换楼后重建消息（避免重复请求 SGP）
+    analyzeTeamPowerStatsByPuuid.clear()
     for (const s of stats) {
-      const floor = `${s.floor}楼`
-      if (s.winRate == null) {
-        logger.info('│ %s — %s#%s — 无近期战绩或查询失败', floor, s.gameName, s.tagLine)
-        chatLines.push(`${floor}: 🆕 萌新上线 (无战绩)`)
-        continue
-      }
-
-      const winRate = s.winRate.toFixed(1)
-      const kdaStr = s.kdaNum >= 99 ? 'Perfect' : s.kdaNum.toFixed(2)
-      const rating = getRating(s.winRate, s.kdaNum)
-
-      logger.info(
-        '│ %s — %s#%s — 近%d场 胜率: %s%% (%d胜%d负) | KDA: %s (%.1f/%.1f/%.1f) | %s',
-        floor, s.gameName, s.tagLine,
-        s.total, winRate, s.wins, s.total - s.wins,
-        kdaStr, s.avgK, s.avgD, s.avgA, rating,
-      )
-
-      chatLines.push(`${floor}: ${rating} | 胜率${winRate}% | KDA ${kdaStr}`)
+      if (s.puuid) analyzeTeamPowerStatsByPuuid.set(s.puuid, s)
+      if (s.summonerId) analyzeTeamPowerStatsByPuuid.set(`sid:${s.summonerId}`, s)
     }
 
-    logger.info('└────────────────────')
-
-    // 等待聊天室就绪后发送
-    const msg = chatLines.join('\n')
-    const msgType = store.get('analyzeTeamPowerMsgType') || 'celebration'
-    for (let attempt = 0; attempt < 10; attempt++) {
-      try {
-        await lcu.sendChampSelectMessage(msg, msgType)
-        logger.info('队友分析已发送到聊天框 ✓')
-        break
-      } catch {
-        if (attempt < 9) {
-          await sleep(1000)
-        } else {
-          logger.warn('聊天发送失败，聊天室始终未就绪')
-        }
-      }
-    }
+    const phaseLabel = getPhaseLabel(session.timer?.phase ?? '')
+    await sendTeamStatsMessage(stats, phaseLabel)
   } catch (err) {
     logger.error('队友战绩分析失败:', err)
   }
 }
 
 let analyzeTeamPowerUnsub: (() => void) | null = null
+let analyzeTeamPowerUpdateUnsub: (() => void) | null = null
+/** 上次发送聊天消息时的 trades 快照，换楼会导致 trades 变化从而触发重发 */
+let lastAnalyzedTradesSnapshot = ''
+/** puuid → TeammateStats 缓存，换楼后直接从缓存重建消息，避免重复请求 SGP */
+const analyzeTeamPowerStatsByPuuid = new Map<string, TeammateStats>()
+
+/** 根据 myTeam 顺序 + 缓存的 stats 构造聊天消息并发送 */
+async function resendAnalyzeMessageFromCache() {
+  try {
+    const session = await lcu.getChampSelectSession()
+    if (!session?.myTeam) return
+
+    const stats: TeammateStats[] = []
+    for (let i = 0; i < session.myTeam.length; i++) {
+      const player = session.myTeam[i]
+      const stat = (player.puuid ? analyzeTeamPowerStatsByPuuid.get(player.puuid) : undefined)
+        ?? (player.summonerId ? analyzeTeamPowerStatsByPuuid.get(`sid:${player.summonerId}`) : undefined)
+
+      stats.push(stat ?? {
+        floor: i + 1,
+        summonerId: player.summonerId,
+        puuid: player.puuid,
+        gameName: player.gameName,
+        tagLine: player.tagLine,
+        winRate: null,
+        wins: 0,
+        total: 0,
+        avgK: 0,
+        avgD: 0,
+        avgA: 0,
+        kdaNum: 0,
+      })
+    }
+
+    await sendTeamStatsMessage(stats, getPhaseLabel('trade_swap'))
+  } catch (err) {
+    logger.error('队友战绩分析失败:', err)
+  }
+}
+
+/** 监听 CHAMP_SELECT Update，通过 trades 变化检测换楼 */
+function onAnalyzeTeamPowerSwap(event: LCUEventMessage) {
+  if (event.eventType !== 'Update') return
+
+  const session = event.data as ChampSelectSession
+  if (!session) return
+
+  const tradesSnapshot = JSON.stringify(session.trades ?? [])
+  if (tradesSnapshot === lastAnalyzedTradesSnapshot) return
+
+  logger.info('[AnalyzeTeamPower] 检测到换楼，重新发送队友战绩分析')
+  lastAnalyzedTradesSnapshot = tradesSnapshot
+  resendAnalyzeMessageFromCache()
+}
 
 function updateAnalyzeTeamPower(enabled: boolean) {
   if (enabled && !analyzeTeamPowerUnsub) {
@@ -635,10 +706,17 @@ function updateAnalyzeTeamPower(enabled: boolean) {
         analyzeTeammates()
       }
     })
+    analyzeTeamPowerUpdateUnsub = lcu.observe(LcuEventUri.CHAMP_SELECT, onAnalyzeTeamPowerSwap)
     logger.info('Analyze team power enabled ✓')
   } else if (!enabled && analyzeTeamPowerUnsub) {
     analyzeTeamPowerUnsub()
     analyzeTeamPowerUnsub = null
+    if (analyzeTeamPowerUpdateUnsub) {
+      analyzeTeamPowerUpdateUnsub()
+      analyzeTeamPowerUpdateUnsub = null
+    }
+    lastAnalyzedTradesSnapshot = ''
+    analyzeTeamPowerStatsByPuuid.clear()
     logger.info('Analyze team power disabled')
   }
 }
@@ -772,6 +850,8 @@ export function initFeatures() {
 
   updateAutoReturnToLobby(store.get('autoReturnToLobby'))
   store.onChange('autoReturnToLobby', updateAutoReturnToLobby)
+  updateFixLcuWindow(store.get('fixLcuWindow'))
+  store.onChange('fixLcuWindow', updateFixLcuWindow)
   store.onChange('autoReturnMode', () => {
     // 模式变化时，如果功能已启用，重新注册以应用新模式
     if (store.get('autoReturnToLobby')) {

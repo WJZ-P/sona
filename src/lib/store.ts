@@ -138,6 +138,8 @@ export interface SonaConfig {
   autoReturnToLobby: boolean
   /** 自动返回模式: queue=自动排队, lobby=仅返回房间 */
   autoReturnMode: string
+  /** 修复客户端窗口异常（最小化恢复或子窗口尺寸异常时自动校正） */
+  fixLcuWindow: boolean
 }
 
 
@@ -192,6 +194,7 @@ const DEFAULT_CONFIG: SonaConfig = {
   gameAnalysisPopup: false,
   autoReturnToLobby: false,
   autoReturnMode: 'queue',
+  fixLcuWindow: false,
 }
 
 

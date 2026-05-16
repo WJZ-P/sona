@@ -19,6 +19,9 @@ function getGlobalParticleHost(): HTMLElement | null {
  * 必须等待客户端主视图宿主就绪后才挂载，避免首启时被 loading/iframe 层遮挡
  */
 function tryInjectGlobalParticle(): boolean {
+  // 只在 LCU 主窗口挂载粒子特效，跳过子窗口（如 Wegame 对局助手、天赋选择弹窗）
+  if (window.innerWidth < 800 || window.innerHeight < 550) return true
+
   const host = getGlobalParticleHost()
   if (!host) return false
 
@@ -49,8 +52,9 @@ function tryInjectGlobalParticle(): boolean {
   }> = []
 
   const resize = () => {
-    canvas.width = window.innerWidth
-    canvas.height = window.innerHeight
+    // 限制 canvas 最大尺寸，防止 CEF 子窗口（如 Wegame 对局助手）被异常撑大
+    canvas.width = Math.min(window.innerWidth, 1920)
+    canvas.height = Math.min(window.innerHeight, 1200)
   }
 
   const initParticles = () => {
