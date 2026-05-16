@@ -108,6 +108,7 @@ export function ToolsPage() {
   const [benchNoCooldown, setBenchNoCooldown] = useState(store.get('benchNoCooldown'))
   const [hideTFT, setHideTFT] = useState(store.get('hideTFT'))
   const [hideRightNavText, setHideRightNavText] = useState(store.get('hideRightNavText'))
+  const [fixLcuWindow, setFixLcuWindow] = useState(store.get('fixLcuWindow'))
   const [windowEffect, setWindowEffect] = useState(store.get('windowEffect'))
   const [champSelectAssist, setChampSelectAssist] = useState(store.get('champSelectAssist'))
   const [opggBuildRecommendation, setOpggBuildRecommendation] = useState(store.get('opggBuildRecommendation'))
@@ -163,6 +164,7 @@ export function ToolsPage() {
       store.onChange('unlockChromas', setUnlockChromas),
       store.onChange('benchNoCooldown', setBenchNoCooldown),
       store.onChange('hideTFT', setHideTFT),
+      store.onChange('fixLcuWindow', setFixLcuWindow),
       store.onChange('windowEffect', setWindowEffect),
       store.onChange('champSelectAssist', setChampSelectAssist),
       store.onChange('opggBuildRecommendation', setOpggBuildRecommendation),
@@ -642,6 +644,15 @@ export function ToolsPage() {
           <SonaSwitch
             checked={hideRightNavText}
             onChange={(v) => { setHideRightNavText(v); store.set('hideRightNavText', v) }}
+          />
+        </SettingCard>
+        <SettingCard
+          title="窗口异常修复"
+          description="自动修复客户端最小化恢复或子窗口（Wegame 对局助手）尺寸异常的问题。"
+        >
+          <SonaSwitch
+            checked={fixLcuWindow}
+            onChange={(v) => { setFixLcuWindow(v); store.set('fixLcuWindow', v) }}
           />
         </SettingCard>
         <SettingCard
