@@ -436,7 +436,13 @@ function createManagedItemSet(context: RecommendationContext, recommendation: Bu
 function isSameManagedItemSetContext(itemSet: ItemSet, nextItemSet: ItemSet): boolean {
   if (itemSet.uid === nextItemSet.uid) return true
   if (itemSet.title === nextItemSet.title) return true
-  return itemSet.title?.startsWith(SONA_ITEM_SET_TITLE_PREFIX) === true
+
+  const nextChampionId = nextItemSet.associatedChampions[0]
+  const isSonaManagedTitle = itemSet.title?.startsWith(SONA_ITEM_SET_TITLE_PREFIX) === true
+  const isSameChampion = Array.isArray(itemSet.associatedChampions)
+    && itemSet.associatedChampions.includes(nextChampionId)
+
+  return isSonaManagedTitle && isSameChampion
 }
 
 function isCurrentRecommendationContext(context: RecommendationContext): boolean {

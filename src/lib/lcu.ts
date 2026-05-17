@@ -1165,16 +1165,40 @@ class LCUManager {
     return put<RunePage>(`/lol-perks/v1/pages/${id}`, page)
   }
 
-  /** 创建或更新同名符文页，并设为当前使用页 */
+  /** 删除指定符文页 */
+  deleteRunePage(id: number): Promise<void> {
+    return del<void>(`/lol-perks/v1/pages/${id}`)
+  }
+
+  /** 创建或更新 Sona 管理的符文页，并设为当前使用页 */
   async applyRunePage(page: Omit<RunePagePayload, 'current'>): Promise<RunePage> {
     const payload: RunePagePayload = {
       ...page,
       current: true,
     }
     const pages = await this.getRunePages()
+    const isEditable = (p: RunePage) => p.isEditable !== false
+    const isSonaManaged = (p: RunePage) => /\s-\s*Sona$/i.test(p.name)
+    const cleanupDuplicateSonaPages = async (keepId: number) => {
+      await Promise.allSettled(
+        pages
+          .filter((p) => p.id !== keepId && isSonaManaged(p) && p.isDeletable !== false)
+          .map((p) => this.deleteRunePage(p.id)),
+      )
+    }
+
     const existing = pages.find((p) => p.name === page.name && p.isEditable !== false)
     if (existing) {
-      return this.updateRunePage(existing.id, payload)
+      const updated = await this.updateRunePage(existing.id, payload)
+      await cleanupDuplicateSonaPages(existing.id)
+      return updated
+    }
+
+    const managed = pages.find((p) => isSonaManaged(p) && isEditable(p))
+    if (managed) {
+      const updated = await this.updateRunePage(managed.id, payload)
+      await cleanupDuplicateSonaPages(managed.id)
+      return updated
     }
 
     try {
