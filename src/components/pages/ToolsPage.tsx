@@ -169,6 +169,8 @@ export function ToolsPage() {
   const [sideIndicatorMsgType, setSideIndicatorMsgType] = useState(store.get('sideIndicatorMsgType'))
   const [friendSmartGroup, setFriendSmartGroup] = useState(store.get('friendSmartGroup'))
   const [enhancedFriendGameStatus, setEnhancedFriendGameStatus] = useState(store.get('enhancedFriendGameStatus'))
+  const [lobbyEnhancement, setLobbyEnhancement] = useState(store.get('lobbyEnhancement'))
+  const [lobbyEnhancementFetchCount, setLobbyEnhancementFetchCount] = useState(store.get('lobbyEnhancementFetchCount'))
   const [customProfileBg, setCustomProfileBg] = useState(store.get('customProfileBg'))
   const [customBanner, setCustomBanner] = useState(store.get('customBanner'))
   const [rankQueue, setRankQueue] = useState(store.get('rankQueue'))
@@ -222,6 +224,8 @@ export function ToolsPage() {
       store.onChange('sideIndicator', setSideIndicator),
       store.onChange('friendSmartGroup', setFriendSmartGroup),
       store.onChange('enhancedFriendGameStatus', setEnhancedFriendGameStatus),
+      store.onChange('lobbyEnhancement', setLobbyEnhancement),
+      store.onChange('lobbyEnhancementFetchCount', setLobbyEnhancementFetchCount),
       store.onChange('customProfileBg', setCustomProfileBg),
       store.onChange('customBanner', setCustomBanner),
       store.onChange('autoHonor', setAutoHonor),
@@ -744,7 +748,7 @@ export function ToolsPage() {
         </SettingCard>
         <SettingCard
           title="开黑好友标记"
-          description="开黑中的好友用同样颜色标记，看看谁在偷偷开黑！"
+          description="好友列表中，开黑中的好友在右侧用同样颜色标记，看看谁在偷偷开黑！"
         >
           <SonaSwitch
             checked={friendSmartGroup}
@@ -753,11 +757,29 @@ export function ToolsPage() {
         </SettingCard>
         <SettingCard
           title="增强游戏中好友状态"
-          description="好友游戏中时，在右侧好友列表显示游戏模式和实时对局时长。"
+          description="好友游戏中时，在右侧好友列表显示游戏模式和对局时长。"
         >
           <SonaSwitch
             checked={enhancedFriendGameStatus}
             onChange={(v) => { setEnhancedFriendGameStatus(v); store.set('enhancedFriendGameStatus', v) }}
+          />
+        </SettingCard>
+        <SettingCard
+          title="组队界面增强"
+          description="开启后，组队界面点击头像即可查看召唤师战绩，且旗帜上方显示近期表现。"
+        >
+          <SonaSelect
+            value={String(lobbyEnhancementFetchCount)}
+            onChange={(v) => { setLobbyEnhancementFetchCount(Number(v)); store.set('lobbyEnhancementFetchCount', Number(v)) }}
+            options={[
+              { value: '20', label: '近20局' },
+              { value: '50', label: '近50局' },
+              { value: '100', label: '近100局' },
+            ]}
+          />
+          <SonaSwitch
+            checked={lobbyEnhancement}
+            onChange={(v) => { setLobbyEnhancement(v); store.set('lobbyEnhancement', v) }}
           />
         </SettingCard>
       </SettingGroup>

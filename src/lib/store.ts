@@ -94,6 +94,10 @@ export interface SonaConfig {
   friendSmartGroup: boolean
   /** 增强游戏中好友状态（显示模式、英雄和实时对局时长） */
   enhancedFriendGameStatus: boolean
+  /** 组队界面增强（点击成员头像查看战绩，并显示近期表现） */
+  lobbyEnhancement: boolean
+  /** 组队界面增强查询局数（20/50/100），默认50 */
+  lobbyEnhancementFetchCount: number
   /** 自定义生涯背景 */
   customProfileBg: boolean
   /** 无视他人生涯隐私（XHR 响应改写，需重启生效） */
@@ -179,6 +183,8 @@ const DEFAULT_CONFIG: SonaConfig = {
   globalParticle: false,
   friendSmartGroup: false,
   enhancedFriendGameStatus: true,
+  lobbyEnhancement: true,
+  lobbyEnhancementFetchCount: 50,
   hideTFT: false,
   hideRightNavText: false,
   customProfileBg: false,
