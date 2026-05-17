@@ -24,7 +24,7 @@ import { lcu } from '@/lib/lcu'
 import { type OpggItemBuild, type OpggMode, type OpggPosition, type OpggRuneBuild, type OpggTier } from '@/lib/opgg-api'
 import '@/styles/OpggBuildRecommendationPanel.css'
 
-const MAX_RECOMMENDATION_ROWS = 3
+const MAX_RECOMMENDATION_ROWS = 5
 const RANKED_MINI_CREST_BASE = '/fe/lol-static-assets/images/ranked-mini-crests'
 const OPGG_TIER_BASE_OPTIONS: Array<{ value: OpggTier; label: string }> = [
   { value: 'all', label: '全部段位' },

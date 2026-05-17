@@ -362,7 +362,7 @@ function buildItemSetBlocks(recommendation: BuildRecommendation): ItemSetBlock[]
     appendItemSetBlock(blocks, `${blocks.length + 1}. 棱彩装备`, flattenItemBuilds(prismItems))
   }
 
-  coreItems.slice(0, 3).forEach((build, index) => {
+  coreItems.slice(0, 5).forEach((build, index) => {
     appendItemSetBlock(blocks, `${blocks.length + 1}. 核心装 ${index + 1}`, build.ids)
   })
 
