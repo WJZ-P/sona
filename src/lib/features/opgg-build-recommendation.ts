@@ -226,8 +226,17 @@ function getSmartRuneKey(context: RecommendationContext): string | null {
   return `${context.championId}:${modeKey}`
 }
 
+function getSmartSpellModeKey(context: RecommendationContext): string | null {
+  const rawMode = context.gameMode.toLowerCase()
+  if (rawMode === 'kiwi') return 'kiwi'
+
+  return resolveOpggMode(context)
+}
+
 function getSmartSpellKey(context: RecommendationContext): string | null {
-  return getSmartRuneKey(context)
+  const modeKey = getSmartSpellModeKey(context)
+  if (!modeKey || context.championId <= 0) return null
+  return `${context.championId}:${modeKey}`
 }
 
 function isValidRunePage(page: Pick<RunePagePayload, 'primaryStyleId' | 'subStyleId' | 'selectedPerkIds'>): boolean {
@@ -624,8 +633,14 @@ async function applySavedSmartSummonerSpells(context: RecommendationContext): Pr
 
 async function applySavedSmartLoadout(context: RecommendationContext): Promise<void> {
   const [runeRestored, spellsRestored] = await Promise.all([
-    applySavedSmartRunePage(context),
-    applySavedSmartSummonerSpells(context),
+    applySavedSmartRunePage(context).catch((err) => {
+      logger.warn('[OPGG] 智能符文自动恢复失败:', err)
+      return false
+    }),
+    applySavedSmartSummonerSpells(context).catch((err) => {
+      logger.warn('[OPGG] 智能召唤师技能自动恢复失败:', err)
+      return false
+    }),
   ])
 
   if (!runeRestored && !spellsRestored) return
