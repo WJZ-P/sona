@@ -251,6 +251,22 @@
     rgba(9, 20, 40, 0.45);
 }
 
+.sona-avatar-dropzone--active {
+  border-color: rgba(200, 170, 110, 0.82);
+  background:
+    linear-gradient(135deg, rgba(200, 170, 110, 0.18), transparent 42%),
+    rgba(9, 20, 40, 0.72);
+  box-shadow:
+    inset 0 0 0 1px rgba(200, 170, 110, 0.24),
+    0 0 18px rgba(200, 170, 110, 0.18);
+}
+
+.sona-avatar-dropzone--active .sona-avatar-dropzone-plus {
+  border-color: rgba(200, 170, 110, 0.72);
+  background: rgba(200, 170, 110, 0.16);
+  box-shadow: 0 0 14px rgba(200, 170, 110, 0.16);
+}
+
 .sona-avatar-dropzone--empty {
   display: flex;
   align-items: center;
@@ -269,12 +285,12 @@
 }
 
 .sona-avatar-dropzone-plus {
-  width: 42px;
-  height: 42px;
+  width: 54px;
+  height: 54px;
   border: 1px solid rgba(200, 170, 110, 0.38);
-  border-radius: 50%;
+  border-radius: 4px;
   color: #c8aa6e;
-  font-size: 28px;
+  font-size: 50px;
   line-height: 38px;
   text-align: center;
   background: rgba(30, 35, 40, 0.45);

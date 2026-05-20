@@ -1,4 +1,4 @@
-import { useState, type DragEvent } from 'react'
+import { useRef, useState, type DragEvent } from 'react'
 import { SettingCard, SettingGroup } from '@/components/ui/SettingCard'
 import { SonaButton } from '@/components/ui/SonaButton'
 import { SonaInput } from '@/components/ui/SonaInput'
@@ -7,6 +7,8 @@ import '@/styles/SettingsPage.css'
 
 const IMAGE_EXTENSIONS = new Set(['png', 'jpg', 'jpeg', 'webp', 'gif', 'svg', 'bmp', 'ico'])
 const ASSET_DRAG_MIME = 'application/x-sona-asset-path'
+const DRAG_SCROLL_EDGE_SIZE = 76
+const DRAG_SCROLL_MAX_SPEED = 20
 
 function isImageFile(fileName: string): boolean {
   const ext = fileName.split('.').pop()?.toLowerCase()
@@ -27,10 +29,14 @@ function getAssetUrl(assetPath: string): string {
 }
 
 export function BeautifyPage() {
+  const scrollRef = useRef<HTMLDivElement>(null)
+  const dragScrollFrameRef = useRef<number | null>(null)
+  const dragPointerYRef = useRef<number | null>(null)
   const [assetPathInput, setAssetPathInput] = useState('')
   const [assetPaths, setAssetPaths] = useState(() => store.get('beautifyAssetPaths'))
   const [customAvatarAssetPaths, setCustomAvatarAssetPaths] = useState(() => store.get('customAvatarAssetPaths'))
   const [assetMessage, setAssetMessage] = useState('请输入 assets 目录下的相对路径，例： 你在 assets中放了一张 avatar.png 图片，那么请输入 avatar.png。\n如果你在assets中创建了一个文件夹并命名为icons，在其中放了一张 avatar.png 那么请输入 icons/avatar.png。')
+  const [isAvatarDropActive, setIsAvatarDropActive] = useState(false)
 
   const saveAssetPaths = (paths: string[]) => {
     setAssetPaths(paths)
@@ -98,32 +104,102 @@ export function BeautifyPage() {
     setAssetMessage(`已从自定义头像移除：${assetPath}`)
   }
 
+  const stopDragAutoScroll = () => {
+    dragPointerYRef.current = null
+    setIsAvatarDropActive(false)
+    if (dragScrollFrameRef.current != null) {
+      cancelAnimationFrame(dragScrollFrameRef.current)
+      dragScrollFrameRef.current = null
+    }
+  }
+
+  const runDragAutoScroll = () => {
+    dragScrollFrameRef.current = null
+
+    const scrollEl = scrollRef.current
+    const pointerY = dragPointerYRef.current
+    if (!scrollEl || pointerY == null) return
+
+    const rect = scrollEl.getBoundingClientRect()
+    let speed = 0
+
+    if (pointerY < rect.top + DRAG_SCROLL_EDGE_SIZE) {
+      const intensity = (rect.top + DRAG_SCROLL_EDGE_SIZE - pointerY) / DRAG_SCROLL_EDGE_SIZE
+      speed = -DRAG_SCROLL_MAX_SPEED * Math.min(intensity, 1)
+    } else if (pointerY > rect.bottom - DRAG_SCROLL_EDGE_SIZE) {
+      const intensity = (pointerY - (rect.bottom - DRAG_SCROLL_EDGE_SIZE)) / DRAG_SCROLL_EDGE_SIZE
+      speed = DRAG_SCROLL_MAX_SPEED * Math.min(intensity, 1)
+    }
+
+    if (speed !== 0) {
+      scrollEl.scrollTop += speed
+    }
+
+    dragScrollFrameRef.current = requestAnimationFrame(runDragAutoScroll)
+  }
+
+  const updateDragAutoScroll = (clientY: number) => {
+    dragPointerYRef.current = clientY
+    if (dragScrollFrameRef.current == null) {
+      dragScrollFrameRef.current = requestAnimationFrame(runDragAutoScroll)
+    }
+  }
+
   const handleAssetDragStart = (event: DragEvent<HTMLDivElement>, assetPath: string) => {
     event.dataTransfer.effectAllowed = 'copy'
     event.dataTransfer.setData(ASSET_DRAG_MIME, assetPath)
     event.dataTransfer.setData('text/plain', assetPath)
+    updateDragAutoScroll(event.clientY)
   }
 
   const handleAvatarDragOver = (event: DragEvent<HTMLDivElement>) => {
     event.preventDefault()
     event.dataTransfer.dropEffect = 'copy'
+    setIsAvatarDropActive(true)
+    updateDragAutoScroll(event.clientY)
+  }
+
+  const handleAvatarDragLeave = (event: DragEvent<HTMLDivElement>) => {
+    if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
+      setIsAvatarDropActive(false)
+    }
   }
 
   const handleAvatarDrop = (event: DragEvent<HTMLDivElement>) => {
     event.preventDefault()
+    setIsAvatarDropActive(false)
+    stopDragAutoScroll()
     const assetPath = event.dataTransfer.getData(ASSET_DRAG_MIME) || event.dataTransfer.getData('text/plain')
     addCustomAvatarAssetPath(assetPath)
   }
 
+  const handlePageDragOver = (event: DragEvent<HTMLDivElement>) => {
+    if (!event.dataTransfer.types.includes(ASSET_DRAG_MIME) && !event.dataTransfer.types.includes('text/plain')) return
+
+    event.preventDefault()
+    updateDragAutoScroll(event.clientY)
+  }
+
   return (
-    <div className="sona-settings">
+    <div
+      className="sona-settings"
+      ref={scrollRef}
+      onDragOver={handlePageDragOver}
+      onDragEnd={stopDragAutoScroll}
+      onDrop={stopDragAutoScroll}
+    >
       <h2 className="sona-settings-title">美化</h2>
 
       {assetPaths.length > 0 && (
         <SettingGroup title="自定义头像">
           <div
-            className={`sona-avatar-dropzone${customAvatarAssetPaths.length === 0 ? ' sona-avatar-dropzone--empty' : ''}`}
+            className={[
+              'sona-avatar-dropzone',
+              customAvatarAssetPaths.length === 0 ? 'sona-avatar-dropzone--empty' : '',
+              isAvatarDropActive ? 'sona-avatar-dropzone--active' : '',
+            ].filter(Boolean).join(' ')}
             onDragOver={handleAvatarDragOver}
+            onDragLeave={handleAvatarDragLeave}
             onDrop={handleAvatarDrop}
           >
             {customAvatarAssetPaths.length > 0 ? (
