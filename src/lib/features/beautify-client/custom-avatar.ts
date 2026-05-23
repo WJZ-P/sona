@@ -1,5 +1,6 @@
 import { injector } from '@/lib/InjectorManager'
 import { lcu } from '@/lib/lcu'
+import { resolvePluginAssetUrl } from '@/lib/plugin-resolver'
 import { store } from '@/lib/store'
 
 const FRIEND_AVATAR_SELECTOR = 'lol-uikit-radial-progress img.icon-image'
@@ -30,7 +31,7 @@ const originalFriendImageSrc = new WeakMap<HTMLImageElement, string | null>()
 const originalRegaliaProfileIconUrl = new WeakMap<Element, string | null>()
 
 function getAssetUrl(assetPath: string): string {
-  return `//plugins/sona/assets/${assetPath.split('/').map(encodeURIComponent).join('/')}`
+  return resolvePluginAssetUrl(assetPath)
 }
 
 function getCurrentAvatarUrl(): string {

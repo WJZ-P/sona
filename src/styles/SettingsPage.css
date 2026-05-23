@@ -186,11 +186,13 @@
   cursor: grabbing;
 }
 
-.sona-asset-card img {
+.sona-asset-card img,
+.sona-asset-card video {
   display: block;
   width: 100%;
   height: 86px;
   object-fit: contain;
+  pointer-events: none;
   background: rgba(0, 0, 0, 0.24);
   border: 1px solid rgba(120, 90, 40, 0.28);
 }
@@ -337,11 +339,13 @@
   color: #f0e6d2;
 }
 
-.sona-wallpaper-card img {
+.sona-wallpaper-card img,
+.sona-wallpaper-card video {
   display: block;
   width: 100%;
   aspect-ratio: 16 / 9;
   object-fit: cover;
+  pointer-events: none;
   background: rgba(0, 0, 0, 0.24);
   border: 1px solid rgba(120, 90, 40, 0.36);
   border-radius: 4px;
@@ -434,6 +438,16 @@
   border: 1px dashed rgba(240, 230, 210, 0.5);
   pointer-events: none;
   box-shadow: 0 0 0 999px rgba(1, 10, 19, 0.12);
+}
+
+.sona-wallpaper-adjust-frame video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform-origin: center center;
+  pointer-events: none;
 }
 
 .sona-wallpaper-adjust-controls {

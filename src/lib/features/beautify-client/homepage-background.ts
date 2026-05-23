@@ -1,8 +1,11 @@
 import { injector } from '@/lib/InjectorManager'
 import type { BeautifyGlassConfig } from '@/lib/features/beautify-client/social-sidebar-glass'
+import { resolvePluginAssetUrl } from '@/lib/plugin-resolver'
 
 const VIEWPORT_ROOT_SELECTOR = 'section#rcp-fe-viewport-root'
 const HOMEPAGE_BACKGROUND_STYLE_ID = 'sona-homepage-background-style'
+const HOMEPAGE_VIDEO_ATTR = 'data-sona-homepage-background-video'
+const VIDEO_EXTENSIONS = new Set(['mp4', 'webm', 'ogg', 'ogv', 'mov', 'm4v'])
 
 export interface HomepageBackgroundAdjustment {
   scale: number
@@ -11,7 +14,12 @@ export interface HomepageBackgroundAdjustment {
 }
 
 function getAssetUrl(assetPath: string): string {
-  return `//plugins/sona/assets/${assetPath.split('/').map(encodeURIComponent).join('/')}`
+  return resolvePluginAssetUrl(assetPath)
+}
+
+function isVideoAsset(assetPath: string): boolean {
+  const ext = assetPath.split('.').pop()?.toLowerCase()
+  return Boolean(ext && VIDEO_EXTENSIONS.has(ext))
 }
 
 function escapeCssUrl(value: string): string {
@@ -33,6 +41,7 @@ function ensureHomepageBackgroundStyle() {
   if (!currentAssetPath) return
 
   const assetUrl = escapeCssUrl(getAssetUrl(currentAssetPath))
+  const isVideo = isVideoAsset(currentAssetPath)
   const blur = clamp(glassConfig.blur, 0, 40)
   const opacity = clamp(glassConfig.opacity, 0, 100) / 100
   const adjustment = adjustments[currentAssetPath] ?? { scale: 1, offsetX: 0, offsetY: 0 }
@@ -52,10 +61,23 @@ function ensureHomepageBackgroundStyle() {
   style.textContent = `
     ${VIEWPORT_ROOT_SELECTOR} {
       position: relative !important;
-      background-image: url("${assetUrl}") !important;
-      background-size: ${backgroundSize} !important;
-      background-position: ${backgroundPositionX} ${backgroundPositionY} !important;
+      ${isVideo ? 'z-index: 0 !important;' : ''}
+      ${isVideo ? 'background: transparent !important;' : `background-image: url("${assetUrl}") !important;`}
+      ${isVideo ? '' : `background-size: ${backgroundSize} !important;`}
+      ${isVideo ? '' : `background-position: ${backgroundPositionX} ${backgroundPositionY} !important;`}
       background-repeat: no-repeat !important;
+    }
+
+    ${VIEWPORT_ROOT_SELECTOR} > video[${HOMEPAGE_VIDEO_ATTR}] {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transform: translate(${offsetX}%, ${offsetY}%) scale(${scale});
+      transform-origin: center center;
+      pointer-events: none;
+      z-index: -1;
     }
 
     ${VIEWPORT_ROOT_SELECTOR}::before {
@@ -71,8 +93,41 @@ function ensureHomepageBackgroundStyle() {
   `
 }
 
+function ensureHomepageBackgroundVideo() {
+  const viewportRoot = document.querySelector<HTMLElement>(VIEWPORT_ROOT_SELECTOR)
+  if (!viewportRoot || !currentAssetPath || !isVideoAsset(currentAssetPath)) {
+    removeHomepageBackgroundVideo()
+    return
+  }
+
+  const assetUrl = getAssetUrl(currentAssetPath)
+  let video = viewportRoot.querySelector<HTMLVideoElement>(`video[${HOMEPAGE_VIDEO_ATTR}]`)
+  if (!video) {
+    video = document.createElement('video')
+    video.setAttribute(HOMEPAGE_VIDEO_ATTR, 'true')
+    video.muted = true
+    video.loop = true
+    video.autoplay = true
+    video.playsInline = true
+    video.preload = 'auto'
+    viewportRoot.prepend(video)
+  }
+
+  if (video.getAttribute('src') !== assetUrl) {
+    video.src = assetUrl
+  }
+  void video.play().catch(() => {})
+}
+
+function removeHomepageBackgroundVideo() {
+  document
+    .querySelector<HTMLVideoElement>(`${VIEWPORT_ROOT_SELECTOR} > video[${HOMEPAGE_VIDEO_ATTR}]`)
+    ?.remove()
+}
+
 function tryApplyHomepageBackground(): boolean {
   ensureHomepageBackgroundStyle()
+  ensureHomepageBackgroundVideo()
 
   return true
 }
@@ -92,8 +147,10 @@ export function updateBeautifyHomepageBackground(assetPath: string | null) {
     registered = false
     injector.unregister(tryApplyHomepageBackground)
     document.getElementById(HOMEPAGE_BACKGROUND_STYLE_ID)?.remove()
+    removeHomepageBackgroundVideo()
   } else if (!assetPath) {
     document.getElementById(HOMEPAGE_BACKGROUND_STYLE_ID)?.remove()
+    removeHomepageBackgroundVideo()
   }
 }
 

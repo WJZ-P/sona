@@ -10,6 +10,7 @@ import { registerHotkey } from '@/lib/modal'
 import { initAssets } from '@/lib/assets'
 import { injector } from '@/lib/InjectorManager'
 import { lcu } from '@/lib/lcu'
+import { initPluginResolver } from '@/lib/plugin-resolver'
 import { installEmberHook } from '@/lib/ember-hook'
 import { registerChromaRules } from '@/lib/features/chroma-unlock'
 import { checkForUpdates } from '@/lib/update-checker'
@@ -75,6 +76,7 @@ let penguContext: PenguContext | null = null
  */
 export function init(context: PenguContext) {
   penguContext = context
+  initPluginResolver(import.meta.url, context)
   installAdBlockXhrRules()
   lcu.bindContext(context)
 

@@ -5,10 +5,12 @@ import { SonaButton } from '@/components/ui/SonaButton'
 import { SonaInput } from '@/components/ui/SonaInput'
 import { SonaSlider } from '@/components/ui/SonaSlider'
 import { SonaSwitch } from '@/components/ui/SonaSwitch'
+import { getPluginAssetsFolderPath, resolvePluginAssetUrl } from '@/lib/plugin-resolver'
 import { store } from '@/lib/store'
 import '@/styles/SettingsPage.css'
 
 const IMAGE_EXTENSIONS = new Set(['png', 'jpg', 'jpeg', 'webp', 'gif', 'svg', 'bmp', 'ico'])
+const VIDEO_EXTENSIONS = new Set(['mp4', 'webm', 'ogg', 'ogv', 'mov', 'm4v'])
 const ASSET_DRAG_MIME = 'application/x-sona-asset-path'
 const DRAG_SCROLL_EDGE_SIZE = 76
 const DRAG_SCROLL_MAX_SPEED = 20
@@ -35,6 +37,15 @@ function isImageFile(fileName: string): boolean {
   return Boolean(ext && IMAGE_EXTENSIONS.has(ext))
 }
 
+function isVideoFile(fileName: string): boolean {
+  const ext = fileName.split('.').pop()?.toLowerCase()
+  return Boolean(ext && VIDEO_EXTENSIONS.has(ext))
+}
+
+function isSupportedMediaFile(fileName: string): boolean {
+  return isImageFile(fileName) || isVideoFile(fileName)
+}
+
 function normalizeAssetPath(value: string): string {
   return value
     .trim()
@@ -45,7 +56,7 @@ function normalizeAssetPath(value: string): string {
 }
 
 function getAssetUrl(assetPath: string): string {
-  return `//plugins/sona/assets/${assetPath.split('/').map(encodeURIComponent).join('/')}`
+  return resolvePluginAssetUrl(assetPath)
 }
 
 function getWallpaperBackgroundSize(adjustment: WallpaperAdjustment): string {
@@ -152,8 +163,8 @@ export function BeautifyPage() {
       setAssetMessage('请输入 assets 目录内的相对路径，不要输入完整 URL。')
       return
     }
-    if (!isImageFile(nextPath)) {
-      setAssetMessage('目前只支持录入图片资源：png/jpg/jpeg/webp/gif/svg/bmp/ico。')
+    if (!isSupportedMediaFile(nextPath)) {
+      setAssetMessage('目前只支持录入图片或视频资源：png/jpg/jpeg/webp/gif/svg/bmp/ico/mp4/webm/ogg/ogv/mov/m4v。')
       return
     }
     if (assetPaths.includes(nextPath)) {
@@ -184,7 +195,7 @@ export function BeautifyPage() {
 
   const applyHomepageBackgroundAssetPath = (assetPath: string) => {
     if (!assetPaths.includes(assetPath)) {
-      setAssetMessage('只能使用资源列表中已录入的图片作为主页壁纸。')
+      setAssetMessage('只能使用资源列表中已录入的资源作为主页壁纸。')
       return
     }
 
@@ -194,7 +205,11 @@ export function BeautifyPage() {
 
   const addHomepageBackgroundAssetPath = (assetPath: string) => {
     if (!assetPaths.includes(assetPath)) {
-      setAssetMessage('只能添加资源列表中已录入的图片作为主页壁纸。')
+      setAssetMessage('只能添加资源列表中已录入的资源作为主页壁纸。')
+      return
+    }
+    if (!isSupportedMediaFile(assetPath)) {
+      setAssetMessage('主页壁纸仅支持图片或视频资源。')
       return
     }
 
@@ -289,6 +304,10 @@ export function BeautifyPage() {
   const addCustomAvatarAssetPath = (assetPath: string) => {
     if (!assetPaths.includes(assetPath)) {
       setAssetMessage('只能添加资源列表中已录入的图片。')
+      return
+    }
+    if (!isImageFile(assetPath)) {
+      setAssetMessage('自定义头像仅支持图片资源，视频只能用于主页壁纸。')
       return
     }
     if (customAvatarAssetPaths.includes(assetPath)) {
@@ -524,7 +543,16 @@ export function BeautifyPage() {
                         >
                           调整
                         </button>
-                        <img src={getAssetUrl(assetPath)} alt={assetPath} />
+                        {isVideoFile(assetPath) ? (
+                          <video
+                            src={getAssetUrl(assetPath)}
+                            muted
+                            preload="metadata"
+                            playsInline
+                          />
+                        ) : (
+                          <img src={getAssetUrl(assetPath)} alt={assetPath} />
+                        )}
                         <span className="sona-wallpaper-card-name">{assetPath}</span>
                         <span className="sona-wallpaper-card-action">点击应用</span>
                       </div>
@@ -534,7 +562,7 @@ export function BeautifyPage() {
               ) : (
                 <div className="sona-avatar-dropzone-placeholder">
                   <div className="sona-avatar-dropzone-plus">+</div>
-                  <div>从下方资源列表拖动图片到这里，以添加主页壁纸</div>
+                  <div>从下方资源列表拖动图片或视频到这里，以添加主页壁纸</div>
                 </div>
               )}
             </div>
@@ -648,7 +676,16 @@ export function BeautifyPage() {
                   >
                     ×
                   </button>
-                  <img src={getAssetUrl(assetPath)} alt={assetPath} />
+                  {isVideoFile(assetPath) ? (
+                    <video
+                      src={getAssetUrl(assetPath)}
+                      muted
+                      preload="metadata"
+                      playsInline
+                    />
+                  ) : (
+                    <img src={getAssetUrl(assetPath)} alt={assetPath} />
+                  )}
                   <span>{assetPath}</span>
                 </div>
               ))}
@@ -661,13 +698,13 @@ export function BeautifyPage() {
           title="资源目录"
           description="打开 Sona 的 assets 目录，你的自定义图片、视频等资源应该放在这里。"
         >
-          <SonaButton onClick={() => window.openPluginsFolder('sona/assets')}>
+          <SonaButton onClick={() => window.openPluginsFolder(getPluginAssetsFolderPath())}>
             打开 assets 目录
           </SonaButton>
         </SettingCard>
         <SettingCard
           title="录入资源"
-          description="输入相对于 assets 目录的图片路径，Sona 会保存到资源列表并展示预览。"
+          description="输入相对于 assets 目录的图片或视频路径，Sona 会保存到资源列表并展示预览。"
         >
           <div className="sona-asset-path-row">
             <SonaInput
@@ -707,19 +744,33 @@ export function BeautifyPage() {
                 onPointerUp={handleWallpaperFramePointerEnd}
                 onPointerCancel={handleWallpaperFramePointerEnd}
                 onWheel={handleWallpaperFrameWheel}
-                style={{
-                  backgroundImage: `url("${getAssetUrl(editingWallpaperAssetPath)}")`,
-                  backgroundSize: getWallpaperBackgroundSize(draftWallpaperAdjustment),
-                  backgroundPosition: getWallpaperBackgroundPosition(draftWallpaperAdjustment),
-                  backgroundRepeat: 'no-repeat',
-                }}
+                style={isVideoFile(editingWallpaperAssetPath)
+                  ? undefined
+                  : {
+                      backgroundImage: `url("${getAssetUrl(editingWallpaperAssetPath)}")`,
+                      backgroundSize: getWallpaperBackgroundSize(draftWallpaperAdjustment),
+                      backgroundPosition: getWallpaperBackgroundPosition(draftWallpaperAdjustment),
+                      backgroundRepeat: 'no-repeat',
+                    }}
               >
+                {isVideoFile(editingWallpaperAssetPath) && (
+                  <video
+                    src={getAssetUrl(editingWallpaperAssetPath)}
+                    muted
+                    loop
+                    autoPlay
+                    playsInline
+                    style={{
+                      transform: `translate(${draftWallpaperAdjustment.offsetX}%, ${draftWallpaperAdjustment.offsetY}%) scale(${draftWallpaperAdjustment.scale})`,
+                    }}
+                  />
+                )}
                 <div className="sona-wallpaper-adjust-frame-guide" />
               </div>
 
               <div className="sona-wallpaper-adjust-controls">
                 <div className="sona-wallpaper-adjust-hint">
-                  按住拖动调整位置，滚动鼠标滚轮缩放图片
+                  按住拖动调整位置，滚动鼠标滚轮缩放资源
                 </div>
               </div>
             </div>

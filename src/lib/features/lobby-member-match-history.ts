@@ -246,7 +246,6 @@ function ensureStatsOverlay(identity: HTMLElement): HTMLDivElement {
     'top:12px',
     'left:50%',
     'transform:translateX(-50%)',
-    'z-index:5',
     'display:flex',
     'align-items:center',
     'gap:4px',

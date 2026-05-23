@@ -11,6 +11,7 @@ import { aramggApi } from '@/lib/aramgg-api'
 import { searchChampions, type ChampionInfo, getChampionBalanceMeta, getAllChampionBalances } from '@/lib/assets'
 import { openOpggBuildRecommendationDebugPanel } from '@/lib/features/opgg-build-recommendation'
 import { opggApi } from '@/lib/opgg-api'
+import { getPluginAssetsFolderPath } from '@/lib/plugin-resolver'
 import { logger } from '@/index'
 import '@/styles/SettingsPage.css'
 
@@ -254,6 +255,223 @@ export function DebugPage() {
     return aramggApi.getMayhemAugmentsZhCn()
   }
 
+  const readFetchBody = async (resp: Response) => {
+    const text = await resp.text()
+    try {
+      return text ? JSON.parse(text) : null
+    } catch {
+      return text
+    }
+  }
+
+  const previewToken = (token: string) => {
+    return token.length > 24 ? `${token.slice(0, 12)}...${token.slice(-8)}` : token
+  }
+
+  const normalizeTokenPayload = (payload: unknown): string => {
+    if (typeof payload === 'string') return payload.trim().replace(/^"|"$/g, '')
+    if (!payload || typeof payload !== 'object') return ''
+
+    const record = payload as Record<string, unknown>
+    const candidates = [
+      record.accessToken,
+      record.access_token,
+      record.token,
+      record.idToken,
+      record.id_token,
+    ]
+
+    return candidates.find((value): value is string => typeof value === 'string' && value.length > 0) ?? ''
+  }
+
+  const collectTokenFromPayload = (tokens: Array<Record<string, unknown>>, source: string, payload: unknown) => {
+    const pushToken = (tokenType: string, value: unknown) => {
+      if (typeof value !== 'string' || !value.trim()) return
+      const token = value.trim().replace(/^"|"$/g, '')
+      if (!token || tokens.some((item) => item.token === token)) return
+      tokens.push({
+        source,
+        tokenType,
+        token,
+        tokenPreview: previewToken(token),
+        length: token.length,
+      })
+    }
+
+    if (typeof payload === 'string') {
+      pushToken('raw', payload)
+      return
+    }
+    if (!payload || typeof payload !== 'object') return
+
+    const record = payload as Record<string, unknown>
+    pushToken('accessToken', record.accessToken)
+    pushToken('access_token', record.access_token)
+    pushToken('token', record.token)
+    pushToken('idToken', record.idToken)
+    pushToken('id_token', record.id_token)
+  }
+
+  const fetchLocalAuthPayload = async (endpoint: string) => {
+    const resp = await fetch(endpoint)
+    const body = await readFetchBody(resp)
+
+    return {
+      endpoint,
+      ok: resp.ok,
+      status: resp.status,
+      statusText: resp.statusText,
+      body,
+    }
+  }
+
+  const fetchRsoAccessToken = async () => {
+    const resp = await fetch('/lol-rso-auth/v1/authorization/access-token')
+    const body = await readFetchBody(resp)
+
+    return {
+      ok: resp.ok,
+      status: resp.status,
+      statusText: resp.statusText,
+      token: resp.ok ? normalizeTokenPayload(body) : '',
+      bodyPreview: resp.ok ? undefined : body,
+    }
+  }
+
+  const fetchRiotUserinfoWithToken = async (source: string, token: string) => {
+    if (!token) {
+      return { source, ok: false, error: '没有拿到可用 token' }
+    }
+
+    const startedAt = performance.now()
+    const controller = new AbortController()
+    const timer = window.setTimeout(() => controller.abort(), 10000)
+
+    try {
+      const resp = await fetch('https://auth.riotgames.com/userinfo', {
+        method: 'GET',
+        mode: 'cors',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/json',
+        },
+        signal: controller.signal,
+      })
+      const body = await readFetchBody(resp)
+
+      return {
+        source,
+        ok: resp.ok,
+        status: resp.status,
+        statusText: resp.statusText,
+        elapsedMs: Math.round(performance.now() - startedAt),
+        tokenPreview: previewToken(token),
+        body,
+      }
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err)
+      return {
+        source,
+        ok: false,
+        elapsedMs: Math.round(performance.now() - startedAt),
+        tokenPreview: previewToken(token),
+        error: message,
+        hint: message.includes('abort')
+          ? '请求超时。'
+          : '如果是 Failed to fetch / NetworkError，可能是 CORS 或客户端环境阻止了直接请求 auth.riotgames.com。',
+      }
+    } finally {
+      window.clearTimeout(timer)
+    }
+  }
+
+  const collectUserinfoTokenCandidates = async () => {
+    const tokens: Array<Record<string, unknown>> = []
+    const endpoints = [
+      '/lol-rso-auth/v1/authorization/access-token',
+      '/lol-rso-auth/v1/authorization/id-token',
+      '/lol-rso-auth/v1/authorization',
+      '/lol-league-session/v1/league-session-token',
+      '/entitlements/v1/token',
+    ]
+
+    const localResults = await Promise.all(
+      endpoints.map((endpoint) => fetchLocalAuthPayload(endpoint)
+        .then((result) => {
+          collectTokenFromPayload(tokens, endpoint, result.body)
+          return {
+            endpoint,
+            ok: result.ok,
+            status: result.status,
+            statusText: result.statusText,
+          }
+        })
+        .catch((err) => ({
+          endpoint,
+          ok: false,
+          error: err instanceof Error ? err.message : String(err),
+        }))),
+    )
+
+    return {
+      tips: [
+        '这些 token 只用于本地调试，不要发给别人。',
+        '优先把 /lol-rso-auth/v1/authorization/access-token 的 token 填进 test/riot-userinfo.mjs 测试。',
+        '如果 Vercel/Node 脚本返回 200，后续服务端鉴权可以用对应 token 请求 Riot UserInfo。',
+      ],
+      localResults,
+      tokens,
+    }
+  }
+
+  const testRiotUserinfoAuth = async () => {
+    const result: Record<string, unknown> = {}
+
+    const [entitlementsToken, rsoTokenResult, localUserinfoResult] = await Promise.all([
+      lcu.getEntitlementsToken().catch((err) => ({
+        error: err instanceof Error ? err.message : String(err),
+        accessToken: '',
+      })),
+      fetchRsoAccessToken().catch((err) => ({
+        ok: false,
+        status: 0,
+        statusText: '',
+        token: '',
+        bodyPreview: err instanceof Error ? err.message : String(err),
+      })),
+      fetch('/lol-rso-auth/v1/authorization/userinfo')
+        .then(async (resp) => ({
+          ok: resp.ok,
+          status: resp.status,
+          statusText: resp.statusText,
+          body: await readFetchBody(resp),
+        }))
+        .catch((err) => ({
+          ok: false,
+          error: err instanceof Error ? err.message : String(err),
+        })),
+    ])
+
+    const entitlementsAccessToken = 'accessToken' in entitlementsToken ? entitlementsToken.accessToken : ''
+    const rsoAccessToken = rsoTokenResult.token
+
+    result.localLcuUserinfo = localUserinfoResult
+    result.entitlementsAccessToken = entitlementsAccessToken
+      ? { tokenPreview: previewToken(entitlementsAccessToken), subject: 'subject' in entitlementsToken ? entitlementsToken.subject : undefined }
+      : entitlementsToken
+    result.rsoAccessToken = {
+      ok: rsoTokenResult.ok,
+      status: rsoTokenResult.status,
+      statusText: rsoTokenResult.statusText,
+      tokenPreview: rsoAccessToken ? previewToken(rsoAccessToken) : '',
+      bodyPreview: rsoTokenResult.bodyPreview,
+    }
+    result.officialUserinfoWithEntitlementsToken = await fetchRiotUserinfoWithToken('entitlements.accessToken', entitlementsAccessToken)
+    result.officialUserinfoWithRsoToken = await fetchRiotUserinfoWithToken('rso.authorization.access-token', rsoAccessToken)
+
+    return result
+  }
+
   const fetchOpggDebugBuildData = async () => {
     const championId = await getOpggDebugChampionId()
     const mode = 'ranked'
@@ -348,7 +566,7 @@ export function DebugPage() {
           <SonaButton variant="primary" onClick={() => beautifyImageInputRef.current?.click()}>
             选择图片
           </SonaButton>
-          <SonaButton onClick={() => window.openPluginsFolder('sona/assets')}>
+          <SonaButton onClick={() => window.openPluginsFolder(getPluginAssetsFolderPath())}>
             打开 assets 目录
           </SonaButton>
           {beautifyImagePreview && (
@@ -511,9 +729,9 @@ export function DebugPage() {
         </div>
       </SettingGroup>
 
-      <SettingGroup title="SGP Token & 直连调试">
+      <SettingGroup title="鉴权 Token & 直连调试">
         <p className="sona-subtitle">
-          测试从 LCU 获取 SGP 所需的 Token，并尝试直接请求 SGP 战绩接口。
+          测试从 LCU 获取 SGP / RSO 所需的 Token，并尝试请求 Riot UserInfo 与 SGP 战绩接口。
         </p>
         <div className="sona-debug-actions">
           <SonaButton variant="primary" onClick={() => runAndLog('Entitlements Token', () => lcu.getEntitlementsToken())}>
@@ -521,6 +739,12 @@ export function DebugPage() {
           </SonaButton>
           <SonaButton onClick={() => runAndLog('League Session Token', () => lcu.getLeagueSessionToken())}>
             获取 Session Token
+          </SonaButton>
+          <SonaButton onClick={() => runAndLog('收集 UserInfo Token 候选', collectUserinfoTokenCandidates)}>
+            收集 UserInfo Token
+          </SonaButton>
+          <SonaButton variant="primary" onClick={() => runAndLog('Riot UserInfo 鉴权测试', testRiotUserinfoAuth)}>
+            测试 UserInfo 鉴权
           </SonaButton>
           <SonaButton onClick={() => runAndLog('SGP Server ID (从 issuer 解析)', () => lcu.getSgpServerId())}>
             解析 SGP Server ID
