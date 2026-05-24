@@ -6,7 +6,9 @@ import { getSonaAvatarUrls, uploadSonaAvatar } from '@/lib/sona-service'
 import { store } from '@/lib/store'
 import type { ChatFriend } from '@/lib/lcu'
 
-const FRIEND_AVATAR_SELECTOR = 'lol-uikit-radial-progress img.icon-image'
+const OWN_SOCIAL_AVATAR_SELECTOR = '.lol-social-avatar.identity-icon img.icon-image'
+const FRIEND_ROSTER_SCROLL_SELECTOR = '.roster-scrollable.ember-view'
+const FRIEND_MEMBER_AVATAR_SELECTOR = '.lol-social-avatar.member-icon img.icon-image'
 const REGALIA_PARTY_ANY_HOST_SELECTOR = 'lol-regalia-parties-v2-element'
 const REGALIA_HOVERCARD_HOST_SELECTOR = 'lol-regalia-hovercard-v2-element'
 const REGALIA_PROFILE_HOST_SELECTOR = 'lol-regalia-profile-v2-element'
@@ -29,6 +31,8 @@ let friendPuuidMapPromise: Promise<void> | null = null
 let friendPuuidMapUpdatedAt = 0
 let friendAvatarUnsub: (() => void) | null = null
 let friendAvatarRefreshTimer: number | null = null
+let lastFriendAvatarDebugAt = 0
+let lastFriendAvatarDebugSignature = ''
 const friendImageObservers = new Map<HTMLImageElement, MutationObserver>()
 const regaliaElementObservers = new Map<Element, MutationObserver>()
 const regaliaPartyHostObservers = new Map<Element, MutationObserver>()
@@ -57,6 +61,10 @@ function getCurrentAvatarUrl(): string {
 }
 
 function normalizePuuid(value: string | null | undefined): string {
+  return (value ?? '').trim().toLowerCase()
+}
+
+function normalizeFriendNameKey(value: string | null | undefined): string {
   return (value ?? '').trim().toLowerCase()
 }
 
@@ -89,13 +97,11 @@ function indexFriendPuuid(friend: ChatFriend) {
   if (!puuid) return
 
   const keys = [
-    friend.name,
     friend.gameName,
-    friend.gameName && friend.gameTag ? `${friend.gameName}#${friend.gameTag}` : '',
   ]
 
   keys.forEach((key) => {
-    const normalized = key?.trim()
+    const normalized = normalizeFriendNameKey(key)
     if (normalized) friendPuuidByName.set(normalized, puuid)
   })
 }
@@ -105,13 +111,54 @@ function getFriendImagePuuid(image: HTMLImageElement): string {
   if (attrPuuid) return attrPuuid
 
   const member = image.closest(SOCIAL_MEMBER_SELECTOR)
-  const name = member?.querySelector(SOCIAL_MEMBER_NAME_SELECTOR)?.textContent?.trim()
+  const name = normalizeFriendNameKey(member?.querySelector(SOCIAL_MEMBER_NAME_SELECTOR)?.textContent)
   if (!name) return ''
 
   const cached = friendPuuidByName.get(name)
   if (cached) return cached
 
   return ''
+}
+
+interface FriendAvatarCandidate {
+  image: HTMLImageElement
+  memberName: string
+  puuid: string
+}
+
+function queryFriendRosterMembers(): Element[] {
+  const members = new Set<Element>()
+
+  document
+    .querySelectorAll(`${FRIEND_ROSTER_SCROLL_SELECTOR} ${SOCIAL_MEMBER_SELECTOR}`)
+    .forEach((member) => members.add(member))
+
+  document.querySelectorAll(FRIEND_ROSTER_SCROLL_SELECTOR).forEach((scrollRoot) => {
+    scrollRoot.querySelectorAll('.ember-view').forEach((containerParent) => {
+      const listContainer = containerParent.firstElementChild
+      if (!listContainer) return
+
+      Array.from(listContainer.children).forEach((card) => {
+        const member = card.matches(SOCIAL_MEMBER_SELECTOR)
+          ? card
+          : card.querySelector(SOCIAL_MEMBER_SELECTOR)
+        if (member) members.add(member)
+      })
+    })
+  })
+
+  return [...members]
+}
+
+function queryFriendAvatarCandidates(): FriendAvatarCandidate[] {
+  return queryFriendRosterMembers().map((member) => {
+    const memberName = member.querySelector(SOCIAL_MEMBER_NAME_SELECTOR)?.textContent?.trim() ?? ''
+    const puuid = friendPuuidByName.get(normalizeFriendNameKey(memberName)) ?? ''
+    const image = member.querySelector<HTMLImageElement>(FRIEND_MEMBER_AVATAR_SELECTOR)
+
+    if (!image) return null
+    return { image, memberName, puuid }
+  }).filter((candidate): candidate is FriendAvatarCandidate => Boolean(candidate))
 }
 
 function persistRemoteAvatarCacheEntry(puuid: string, avatarUrl: string | null) {
@@ -229,6 +276,46 @@ function getAvatarUrlForPuuid(puuid: string): string | null | undefined {
   }
 
   return undefined
+}
+
+function logFriendAvatarApplyDebug(stats: {
+  scanned: number
+  patched: number
+  alreadyPatched: number
+  restored: number
+  missingPuuid: number
+  missingAvatar: number
+  pendingAvatar: number
+  patchedNames: string[]
+}) {
+  const signature = [
+    stats.scanned,
+    stats.patched,
+    stats.alreadyPatched,
+    stats.restored,
+    stats.missingPuuid,
+    stats.missingAvatar,
+    stats.pendingAvatar,
+    stats.patchedNames.join(','),
+  ].join(':')
+  const now = Date.now()
+  if (signature === lastFriendAvatarDebugSignature && now - lastFriendAvatarDebugAt < 2000) return
+
+  lastFriendAvatarDebugSignature = signature
+  lastFriendAvatarDebugAt = now
+  logger.info(
+    '[CustomAvatar] 好友栏头像扫描：扫描 %d 个，成功替换 %d 个，已是目标头像 %d 个，恢复 %d 个，缺少 PUUID %d 个，无远程头像 %d 个，等待缓存 %d 个',
+    stats.scanned,
+    stats.patched,
+    stats.alreadyPatched,
+    stats.restored,
+    stats.missingPuuid,
+    stats.missingAvatar,
+    stats.pendingAvatar,
+  )
+  if (stats.patchedNames.length > 0) {
+    logger.info('[CustomAvatar] 好友栏头像成功替换：%s', stats.patchedNames.join('、'))
+  }
 }
 
 function getOwnPuuid(): string {
@@ -465,16 +552,54 @@ function queryRegaliaAvatarElements(): RegaliaAvatarCandidate[] {
 
 function applyCustomAvatar(): boolean {
   let changed = false
+  const friendAvatarStats = {
+    scanned: 0,
+    patched: 0,
+    alreadyPatched: 0,
+    restored: 0,
+    missingPuuid: 0,
+    missingAvatar: 0,
+    pendingAvatar: 0,
+    patchedNames: [] as string[],
+  }
 
-  document.querySelectorAll<HTMLImageElement>(FRIEND_AVATAR_SELECTOR).forEach((image) => {
-    const puuid = getFriendImagePuuid(image) || (image.closest(SOCIAL_MEMBER_SELECTOR) ? '' : getOwnPuuid())
+  const ownPuuid = getOwnPuuid()
+  const ownAvatarUrl = getCurrentAvatarUrl()
+  if (ownPuuid && ownAvatarUrl) {
+    document.querySelectorAll<HTMLImageElement>(OWN_SOCIAL_AVATAR_SELECTOR).forEach((image) => {
+      changed = patchFriendAvatar(image, ownAvatarUrl, ownPuuid) || changed
+    })
+  }
+
+  queryFriendAvatarCandidates().forEach(({ image, memberName, puuid }) => {
+    friendAvatarStats.scanned += 1
+    if (!puuid) {
+      friendAvatarStats.missingPuuid += 1
+      return
+    }
+
     const avatarUrl = getAvatarUrlForPuuid(puuid)
     if (avatarUrl) {
-      changed = patchFriendAvatar(image, avatarUrl, puuid) || changed
+      const patched = patchFriendAvatar(image, avatarUrl, puuid)
+      if (patched) {
+        friendAvatarStats.patched += 1
+        if (memberName) friendAvatarStats.patchedNames.push(memberName)
+      } else {
+        friendAvatarStats.alreadyPatched += 1
+      }
+      changed = patched || changed
     } else if (avatarUrl === null && patchedFriendImagePuuid.get(image) === puuid) {
-      changed = restoreFriendAvatar(image) || changed
+      const restored = restoreFriendAvatar(image)
+      if (restored) friendAvatarStats.restored += 1
+      changed = restored || changed
+    } else if (avatarUrl === null) {
+      friendAvatarStats.missingAvatar += 1
+    } else {
+      friendAvatarStats.pendingAvatar += 1
     }
   })
+
+  logFriendAvatarApplyDebug(friendAvatarStats)
 
   queryRegaliaAvatarElements().forEach(({ element, puuid }) => {
     const avatarUrl = getAvatarUrlForPuuid(puuid)

@@ -19,6 +19,7 @@ const PATCH_TRIGGER_ATTRS = new Set([
   'banner-type',
   'banner-rank',
   'summoner-id',
+  'puuid',
   'member-type',
 ])
 const ORIGINAL_ATTRS = ['banner-id', 'banner-type', 'banner-rank'] as const
@@ -36,6 +37,8 @@ let customBannerContainer: HTMLDivElement | null = null
 let customBannerRegistered = false
 let ownSummonerIdPromise: Promise<string> | null = null
 let ownSummonerIdCache = ''
+let ownPuuidPromise: Promise<string> | null = null
+let ownPuuidCache = ''
 let hookInstalled = false
 let patchEnabled = false
 let originalSetAttribute: typeof Element.prototype.setAttribute | null = null
@@ -78,6 +81,23 @@ async function getOwnSummonerId(): Promise<string> {
   return ownSummonerIdPromise
 }
 
+async function getOwnPuuid(): Promise<string> {
+  if (ownPuuidCache) return ownPuuidCache
+
+  ownPuuidPromise ??= lcu.getSummonerInfo()
+    .then((summoner) => {
+      ownPuuidCache = String(summoner.puuid || '').toLowerCase()
+      return ownPuuidCache
+    })
+    .catch((err) => {
+      ownPuuidPromise = null
+      logger.warn('[CustomBanner] 获取当前玩家 PUUID 失败: %o', err)
+      return ''
+    })
+
+  return ownPuuidPromise
+}
+
 function getElementTagName(element: Element): string {
   return element.tagName.toLowerCase()
 }
@@ -93,8 +113,7 @@ function getRootHost(element: Element): Element | null {
 
 function getOwnerElement(element: Element): Element {
   const host = getRootHost(element)
-  if (host && isTargetElement(host)) return host
-  return element
+  return host ?? element
 }
 
 function hasDifferentSummonerId(element: Element, ownSummonerId: string): boolean {
@@ -102,13 +121,20 @@ function hasDifferentSummonerId(element: Element, ownSummonerId: string): boolea
   return Boolean(ownSummonerId && summonerId && summonerId !== ownSummonerId)
 }
 
-function shouldPatchElement(element: Element, ownSummonerId: string): boolean {
+function hasDifferentPuuid(element: Element, ownPuuid: string): boolean {
+  const puuid = element.getAttribute('puuid')
+  return Boolean(ownPuuid && puuid && puuid.toLowerCase() !== ownPuuid)
+}
+
+function shouldPatchElement(element: Element, ownSummonerId: string, ownPuuid: string): boolean {
   if (!isTargetElement(element)) return false
 
   const owner = getOwnerElement(element)
   const memberType = owner.getAttribute('member-type')
   if (memberType && memberType !== 'current-player') return false
 
+  if (hasDifferentPuuid(owner, ownPuuid)) return false
+  if (owner !== element && hasDifferentPuuid(element, ownPuuid)) return false
   if (hasDifferentSummonerId(owner, ownSummonerId)) return false
   if (owner !== element && hasDifferentSummonerId(element, ownSummonerId)) return false
 
@@ -134,9 +160,21 @@ function restoreOriginalAttr(element: Element, attr: (typeof ORIGINAL_ATTRS)[num
   }
 }
 
+function restoreElementPatch(element: Element) {
+  if (!patchedElements.has(element)) return
+
+  ORIGINAL_ATTRS.forEach((attr) => {
+    restoreOriginalAttr(element, attr)
+  })
+  patchedElements.delete(element)
+}
+
 async function patchRegaliaElement(element: Element, selection: LocalCustomBannerSelection) {
-  const ownSummonerId = await getOwnSummonerId()
-  if (!shouldPatchElement(element, ownSummonerId)) return
+  const [ownSummonerId, ownPuuid] = await Promise.all([getOwnSummonerId(), getOwnPuuid()])
+  if (!shouldPatchElement(element, ownSummonerId, ownPuuid)) {
+    restoreElementPatch(element)
+    return
+  }
 
   rememberOriginalAttrs(element)
 
