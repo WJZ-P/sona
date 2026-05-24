@@ -13,6 +13,7 @@ export function NexusPage() {
   const { t } = useI18n()
   const [unlockStatus, setUnlockStatus] = useState(store.get('unlockStatus'))
   const [unlockAvailability, setUnlockAvailability] = useState(store.get('unlockAvailability'))
+  const [lockOfflineStatus, setLockOfflineStatus] = useState(store.get('lockOfflineStatus'))
   const [friendSmartGroup, setFriendSmartGroup] = useState(store.get('friendSmartGroup'))
   const [enhancedFriendGameStatus, setEnhancedFriendGameStatus] = useState(store.get('enhancedFriendGameStatus'))
   const [customProfileBg, setCustomProfileBg] = useState(store.get('customProfileBg'))
@@ -26,6 +27,7 @@ export function NexusPage() {
     const unsubs = [
       store.onChange('unlockStatus', setUnlockStatus),
       store.onChange('unlockAvailability', setUnlockAvailability),
+      store.onChange('lockOfflineStatus', setLockOfflineStatus),
       store.onChange('friendSmartGroup', setFriendSmartGroup),
       store.onChange('enhancedFriendGameStatus', setEnhancedFriendGameStatus),
       store.onChange('customProfileBg', setCustomProfileBg),
@@ -118,9 +120,23 @@ export function NexusPage() {
         >
           <SonaSwitch
             checked={unlockAvailability}
-            onChange={(v) => { setUnlockAvailability(v); store.set('unlockAvailability', v) }}
+            onChange={(v) => {
+              setUnlockAvailability(v)
+              store.set('unlockAvailability', v)
+            }}
           />
         </SettingCard>
+        {unlockAvailability && (
+          <SettingCard
+            title="尝试锁定隐身状态"
+            description="切换为隐身后，如果客户端自动回退到离开或在线，会立即尝试改回隐身。"
+          >
+            <SonaSwitch
+              checked={lockOfflineStatus}
+              onChange={(v) => { setLockOfflineStatus(v); store.set('lockOfflineStatus', v) }}
+            />
+          </SettingCard>
+        )}
         <SettingCard
           title={t('tools.removeCrest.title')}
           description={t('tools.removeCrest.description')}

@@ -35,6 +35,8 @@ export interface SonaConfig {
   unlockStatus: boolean
   /** 解锁在线状态切换（接管客户端状态按钮，支持"隐身/手机在线"等） */
   unlockAvailability: boolean
+  /** Try to keep offline status when the client automatically changes it to away/chat. */
+  lockOfflineStatus: boolean
   /** 大乱斗无CD换英雄 */
   benchNoCooldown: boolean
   /** 侧边栏收缩状态 */
@@ -208,6 +210,7 @@ const DEFAULT_CONFIG: SonaConfig = {
   developerMode: false,
   unlockStatus: true,
   unlockAvailability: false,
+  lockOfflineStatus: false,
   benchNoCooldown: false,
   sidebarCollapsed: false,
   availability: 'chat',
