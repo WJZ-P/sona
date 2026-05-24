@@ -4,6 +4,7 @@ import { lcu, LcuEventUri } from '@/lib/lcu'
 import type { LCUEventMessage, GameflowPhase, ChampSelectSession } from '@/lib/lcu'
 import { sleep } from '@/lib/utils'
 import { getChampionById } from '@/lib/assets'
+import { translate } from '@/i18n'
 
 // ==================== 秒抢英雄 ====================
 
@@ -13,8 +14,8 @@ import { getChampionById } from '@/lib/assets'
 async function notifyAutoLockSuccess(championId: number, isLock: boolean) {
   const champInfo = getChampionById(championId)
   const champName = champInfo?.name || `英雄#${championId}`
-  const action = isLock ? '自动锁定' : '自动预选'
-  const msg = `Sona助手 ♫   ${action}: ${champName}`
+  const action = isLock ? translate('champSelect.autoLock.lock') : translate('champSelect.autoLock.preselect')
+  const msg = translate('champSelect.autoLock.message', { action, championName: champName })
   try {
     await lcu.sendChampSelectMessage(msg, 'celebration')
   } catch {

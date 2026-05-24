@@ -30,6 +30,7 @@ import {
   type OpggItemBuild,
 } from '@/lib/opgg-api'
 import type { GameflowPhase } from '@/types/lcu'
+import { translate } from '@/i18n'
 
 const TARGET_SELECTOR = '.toggle-ability-previews-button'
 const HIJACK_ATTR = 'data-sona-opgg-build-hijacked'
@@ -552,7 +553,7 @@ async function upsertRecommendedItemSet(context: RecommendationContext, recommen
 
   logger.info('[OPGG] 自动装备集已同步：%s，blocks=%d', nextItemSet.title, nextItemSet.blocks.length)
   const championName = getChampionName(context.championId)
-  lcu.sendChampSelectMessage(`${championName} 出装已配备 - Sona`, 'celebration').catch((err) => {
+  lcu.sendChampSelectMessage(translate('opgg.chat.buildReady', { championName }), 'celebration').catch((err) => {
     logger.warn('[OPGG] 自动装备集聊天提示发送失败:', err)
   })
 }
@@ -657,10 +658,10 @@ async function applySavedSmartLoadout(context: RecommendationContext): Promise<v
   const championName = getChampionName(context.championId)
   const modeLabel = getContextModeLabel(context)
   const restoredText = runeRestored && spellsRestored
-    ? '符文 & 召唤师技能'
-    : runeRestored ? '符文' : '召唤师技能'
+    ? translate('opgg.restored.runesAndSpells')
+    : runeRestored ? translate('opgg.restored.runes') : translate('opgg.restored.spells')
 
-  lcu.sendChampSelectMessage(`${championName} ${modeLabel} ${restoredText}已恢复 - Sona`, 'celebration').catch((err) => {
+  lcu.sendChampSelectMessage(translate('opgg.chat.restored', { championName, modeLabel, restoredText }), 'celebration').catch((err) => {
     logger.warn('[OPGG] 智能配置聊天提示发送失败:', err)
   })
 }

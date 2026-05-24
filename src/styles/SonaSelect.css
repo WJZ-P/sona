@@ -66,7 +66,8 @@
 .sona-select-dropdown {
   position: absolute;
   z-index: 50;
-  width: 100%;
+  width: max-content;
+  min-width: max(100%, 100px);
   margin-top: 4px;
   background: #010a13;
   border: 1px solid #785a28;
@@ -109,13 +110,16 @@
   cursor: pointer;
   transition: all 0.15s ease;
   text-align: left;
+  white-space: nowrap;
 }
 
 .sona-select-option-label {
   display: inline-flex;
+  flex: 0 0 auto;
   min-width: 0;
   align-items: center;
   gap: 8px;
+  white-space: nowrap;
 }
 
 .sona-select-option:hover {

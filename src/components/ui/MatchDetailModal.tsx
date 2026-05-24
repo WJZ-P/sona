@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { Modal } from '@/components/ui/Modal'
 import { lcu } from '@/lib/lcu'
 import { getChampIcon, getItemIcon, getSpellIcon, getPerkIcon, getPerkStyleIcon, getQueueName, getMapName } from '@/lib/assets'
+import { translate, useI18n } from '@/i18n'
 import type { MatchDetail, Participant, ParticipantIdentity, MatchTeam } from '@/types/lcu'
 import blueTurretIcon from '@/../assets/game-statistic-icons/Blue_Turret_icon.png'
 import redTurretIcon from '@/../assets/game-statistic-icons/Red_Turret_icon.png'
@@ -90,13 +91,13 @@ function getIdentity(identityMap: Map<number, ParticipantIdentity>, participantI
 }
 
 function getUnrankedInfo(): RankInfo {
-  return { rankText: '未定级', rankColor: RANK_COLORS.UNRANKED }
+  return { rankText: translate('rank.UNRANKED'), rankColor: RANK_COLORS.UNRANKED }
 }
 
 function getRankInfoFromTier(tier: string): RankInfo {
   if (!tier || tier === 'UNRANKED') return getUnrankedInfo()
   return {
-    rankText: RANK_NAMES[tier] ?? tier,
+    rankText: translate(`rank.${tier}` as Parameters<typeof translate>[0]),
     rankColor: RANK_COLORS[tier] ?? RANK_COLORS.UNRANKED,
   }
 }
@@ -113,7 +114,7 @@ function parseRankInfo(ranked: unknown, fallbackTier = ''): RankInfo {
   type QueueKey = 'RANKED_SOLO_5x5' | 'RANKED_FLEX_SR'
   const candidates: { key: QueueKey; label: string; tier: string; division: string }[] = []
 
-  for (const [key, label] of [['RANKED_SOLO_5x5', '单双'], ['RANKED_FLEX_SR', '灵活']] as [QueueKey, string][]) {
+  for (const [key, label] of [['RANKED_SOLO_5x5', translate('rank.queue.RANKED_SOLO_5x5')], ['RANKED_FLEX_SR', translate('rank.queue.RANKED_FLEX_SR')]] as [QueueKey, string][]) {
     const queue = queues[key]
     if (!queue) continue
     const tier = (queue.tier as string) ?? ''
@@ -131,7 +132,7 @@ function parseRankInfo(ranked: unknown, fallbackTier = ''): RankInfo {
 
   const best = candidates[0]
   return {
-    rankText: `${RANK_NAMES[best.tier] ?? best.tier}${best.division && best.division !== 'NA' ? ` ${best.division}` : ''} ${best.label}`,
+    rankText: `${translate(`rank.${best.tier}` as Parameters<typeof translate>[0])}${best.division && best.division !== 'NA' ? ` ${best.division}` : ''} ${best.label}`,
     rankColor: RANK_COLORS[best.tier] ?? RANK_COLORS.UNRANKED,
   }
 }
@@ -191,14 +192,14 @@ function ParticipantRow({
   const maxKdaValue = Math.max(stats.kills, stats.deaths, stats.assists)
   const damageWidth = maxDamage > 0 ? Math.max(6, Math.round((stats.totalDamageDealtToChampions / maxDamage) * 100)) : 0
   const topDamage = maxDamage > 0 && stats.totalDamageDealtToChampions === maxDamage
-  const name = identity ? `${identity.gameName}#${identity.tagLine}` : `玩家 ${participant.participantId}`
+  const name = identity ? `${identity.gameName}#${identity.tagLine}` : translate('matchDetail.playerFallback', { id: participant.participantId })
   const cs = stats.totalMinionsKilled + stats.neutralMinionsKilled
   const displayRank = rankInfo ?? getRankInfoFromTier(participant.highestAchievedSeasonTier)
 
   const handleCopyName = () => {
     if (!identity) return
     navigator.clipboard.writeText(name).then(() => {
-      Toast.success('已复制ID')
+      Toast.success(translate('matchDetail.copyId'))
     })
   }
 
@@ -220,7 +221,7 @@ function ParticipantRow({
 
       <div className="smd-player-identity" title={name}>
         <button className="smd-player-name" onClick={handleCopyName} type="button">
-          <span>{identity?.gameName ?? `玩家 ${participant.participantId}`}</span>
+          <span>{identity?.gameName ?? translate('matchDetail.playerFallback', { id: participant.participantId })}</span>
         </button>
         <strong className="smd-kda">
           {renderKdaValue(stats.kills, stats.kills === maxKdaValue)}
@@ -277,6 +278,7 @@ export interface MatchDetailModalProps {
 }
 
 export function MatchDetailModal({ open, onClose, gameId, focusPuuid }: MatchDetailModalProps) {
+  const { t } = useI18n()
   const [detail, setDetail] = useState<MatchDetail | null>(null)
   const [rankMap, setRankMap] = useState<Map<string, RankInfo>>(new Map())
   const [iconMaps, setIconMaps] = useState<IconMaps>({
@@ -307,7 +309,7 @@ export function MatchDetailModal({ open, onClose, gameId, focusPuuid }: MatchDet
         if (!cancelled) setRankMap(new Map(rankEntries))
       })
       .catch(() => {
-        if (!cancelled) setError('加载单局详情失败')
+        if (!cancelled) setError(t('matchDetail.error'))
       })
       .finally(() => {
         if (!cancelled) setLoading(false)
@@ -316,7 +318,7 @@ export function MatchDetailModal({ open, onClose, gameId, focusPuuid }: MatchDet
     return () => {
       cancelled = true
     }
-  }, [open, gameId])
+  }, [open, gameId, t])
 
   useEffect(() => {
     if (!open) return
@@ -365,8 +367,8 @@ export function MatchDetailModal({ open, onClose, gameId, focusPuuid }: MatchDet
       <section className={`smd-team ${isRed ? 'smd-team--red' : 'smd-team--blue'} ${won ? 'smd-win' : 'smd-loss'}`}>
         <div className={`smd-team-header ${isRed ? 'smd-team-header--red' : 'smd-team-header--blue'}`}>
           <div>
-            <strong>{teamId === 100 ? '蓝色方' : '红色方'}</strong>
-            <span>{won ? '胜利' : '失败'}</span>
+            <strong>{teamId === 100 ? t('matchDetail.team.blue') : t('matchDetail.team.red')}</strong>
+            <span>{won ? t('common.win') : t('common.loss')}</span>
           </div>
           <TeamSummary team={team} participants={participants} isRed={isRed} />
         </div>
@@ -396,13 +398,13 @@ export function MatchDetailModal({ open, onClose, gameId, focusPuuid }: MatchDet
       <div className="smd-container">
         <div className="smd-header">
           <div className="smd-title-line">
-            <span className="smd-title">❖ 单局战报详情</span>
+            <span className="smd-title">{t('matchDetail.reportTitle')}</span>
             {detail && (
               <div className="smd-meta">
                 <span>{getQueueName(detail.queueId)}</span>
                 <span>{getMapName(detail.mapId)}</span>
-                <span>时长 {formatDuration(detail.gameDuration)}</span>
-                <span>开始 {formatStartTime(detail.gameCreation)}</span>
+                <span>{t('matchDetail.duration', { duration: formatDuration(detail.gameDuration) })}</span>
+                <span>{t('matchDetail.start', { time: formatStartTime(detail.gameCreation) })}</span>
                 <span>{formatDate(detail.gameCreation)}</span>
                 <span>ID:{detail.gameId}</span>
               </div>
@@ -411,7 +413,7 @@ export function MatchDetailModal({ open, onClose, gameId, focusPuuid }: MatchDet
         </div>
 
         <div className="smd-body">
-          {loading && <div className="smd-empty">加载中...</div>}
+          {loading && <div className="smd-empty">{t('matchDetail.loading')}</div>}
           {error && <div className="smd-empty smd-error">{error}</div>}
           {!loading && !error && detail && (
             <div className="smd-teams">

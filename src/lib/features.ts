@@ -38,6 +38,7 @@ import { updateGameModeFilter } from '@/lib/features/game-mode-filter'
 import { preloadChampSelectTierBadgeData, updateChampSelectTierBadge } from '@/lib/features/champselect-tier-badge'
 import { setAvailabilityHijackEnabled, setHideTFTEnabled, setHideRightNavTextEnabled } from '@/lib/injections'
 import { calculateSonaPlayerStrengthScore, shouldSkipSonaStrengthGame, type SonaPlayerStrengthScore } from '@/lib/player-strength-score'
+import { translate } from '@/i18n'
 
 // ==================== 共享：查询队友胜率 ====================
 
@@ -578,23 +579,29 @@ function updateChampSelectAssist(enabled: boolean) {
  * 根据胜率和 KDA 给出 LOL 风格幽默评价
  */
 export function getRating(winRate: number, kda: number): string {
-  if (winRate >= 75 && kda >= 4.5) return '👑 峡谷通天代'
-  if (winRate >= 70) return '🚀 降维来炸鱼'
-  if (winRate >= 65) return '🔥 绝对真大腿'
-  if (winRate >= 60) return '⚔️ 绝活哥出列'
-  if (winRate >= 56) return '✨ 稳健老司机'
-  if (winRate >= 52) return '🛡️ 上分好帮手'
-  if (winRate >= 48) return '🎲 峡谷摇摆人'
-  if (winRate >= 45) return '🫠 默默抗压中'
-  if (winRate >= 41) return '🍂 随缘在补位'
-  if (winRate >= 37) return '💀 连败渡劫中'
-  if (winRate >= 33) return '🤡 敌方突破口'
-  if (winRate >= 28) return '💸 峡谷提款机'
-  if (winRate >= 20) return '🏳️ 投降发起人'
-  return '☠️ 演员已就位'
+  if (winRate >= 75 && kda >= 4.5) return translate('champSelect.rating.godlike')
+  if (winRate >= 70) return translate('champSelect.rating.smurf')
+  if (winRate >= 65) return translate('champSelect.rating.hardCarry')
+  if (winRate >= 60) return translate('champSelect.rating.specialist')
+  if (winRate >= 56) return translate('champSelect.rating.steady')
+  if (winRate >= 52) return translate('champSelect.rating.helper')
+  if (winRate >= 48) return translate('champSelect.rating.swing')
+  if (winRate >= 45) return translate('champSelect.rating.holding')
+  if (winRate >= 41) return translate('champSelect.rating.autofill')
+  if (winRate >= 37) return translate('champSelect.rating.losing')
+  if (winRate >= 33) return translate('champSelect.rating.breakpoint')
+  if (winRate >= 28) return translate('champSelect.rating.atm')
+  if (winRate >= 20) return translate('champSelect.rating.surrender')
+  return translate('champSelect.rating.actor')
 }
 
-const TEAM_POWER_TITLES = ['🦄 独角马', '🏇 上等马', '🐎 中等马', '🐴 下等马', '🐂 纯牛马'] as const
+const TEAM_POWER_TITLE_KEYS = [
+  'strength.teamTier.ace',
+  'strength.teamTier.high',
+  'strength.teamTier.mid',
+  'strength.teamTier.low',
+  'strength.teamTier.burden',
+] as const
 
 function assignTeamPowerTitles(stats: TeammateStats[]): Map<string, string> {
   const ranked = [...stats]
@@ -603,7 +610,7 @@ function assignTeamPowerTitles(stats: TeammateStats[]): Map<string, string> {
 
   const titles = new Map<string, string>()
   ranked.forEach((stat, index) => {
-    titles.set(getTeammateStatsKey(stat), TEAM_POWER_TITLES[Math.min(index, TEAM_POWER_TITLES.length - 1)])
+    titles.set(getTeammateStatsKey(stat), translate(TEAM_POWER_TITLE_KEYS[Math.min(index, TEAM_POWER_TITLE_KEYS.length - 1)]))
   })
 
   return titles
@@ -615,20 +622,20 @@ async function analyzeTeammates() {
 
     logger.info('┌─── 队友战绩分析 ───')
 
-    const chatLines: string[] = [`Sona助手 ♫   队友卡池一览(本模式近${fetchCount}场战绩):\n`]
+    const chatLines: string[] = [translate('champSelect.teamAnalysis.header', { count: fetchCount })]
     const teamPowerTitles = assignTeamPowerTitles(stats)
 
     for (const s of stats) {
-      const floor = `${s.floor}楼`
+      const floor = translate('champSelect.teamAnalysis.floor', { floor: s.floor })
       if (s.winRate == null) {
         logger.info('│ %s — %s#%s — 无近期战绩或查询失败', floor, s.gameName, s.tagLine)
-        chatLines.push(`${floor}: 🆕 萌新上线|胜率--|综合评分--`)
+        chatLines.push(translate('champSelect.teamAnalysis.emptyLine', { floor }))
         continue
       }
 
       const winRate = s.winRate.toFixed(1)
       const kdaStr = s.kdaNum >= 99 ? 'Perfect' : s.kdaNum.toFixed(2)
-      const title = teamPowerTitles.get(getTeammateStatsKey(s)) ?? '🆕 萌新上线'
+      const title = teamPowerTitles.get(getTeammateStatsKey(s)) ?? translate('strength.teamTier.newbie')
       const scoreText = s.strengthScore ? s.strengthScore.score.toFixed(1) : '--'
 
       logger.info(
@@ -638,7 +645,7 @@ async function analyzeTeammates() {
         kdaStr, s.avgK, s.avgD, s.avgA, scoreText, title,
       )
 
-      chatLines.push(`${floor}: ${title}|胜率${winRate}%|KDA${kdaStr}|综合评分${scoreText}`)
+      chatLines.push(translate('champSelect.teamAnalysis.line', { floor, title, winRate, kda: kdaStr, score: scoreText }))
     }
 
     logger.info('└────────────────────')
@@ -689,12 +696,12 @@ async function sendSideIndicator() {
     const session = await lcu.getChampSelectSession()
     const localPlayer = session.myTeam.find((p) => p.cellId === session.localPlayerCellId)
     const isBlue = localPlayer ? localPlayer.cellId < 5 : true
-    const sideText = isBlue ? '🔵 蓝方 (左下方)' : '🔴 红方 (右上方)'
+    const sideText = isBlue ? translate('champSelect.side.blue') : translate('champSelect.side.red')
 
     // 注意：选人阶段暂时拿不到本局大乱斗随机地图。
     // 实测 /lol-gameflow/v1/session 的 map.gameMutator / mapMutator 在 ChampSelect 阶段为空字符串，
     // 客户端应当是进入游戏后才知道本局随机到嚎哭深渊、屠夫之桥或莲华栈桥，因此这里不展示地图名。
-    const msg = `Sona助手 ♫   本局${sideText}`
+    const msg = translate('champSelect.side.message', { side: sideText })
     const msgType = store.get('sideIndicatorMsgType') || 'celebration'
     for (let attempt = 0; attempt < 10; attempt++) {
       try {

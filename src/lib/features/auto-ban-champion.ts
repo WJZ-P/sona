@@ -4,11 +4,12 @@ import { lcu, LcuEventUri } from '@/lib/lcu'
 import type { ChampSelectSession, GameflowPhase, LCUEventMessage } from '@/lib/lcu'
 import { sleep } from '@/lib/utils'
 import { getChampionById } from '@/lib/assets'
+import { translate } from '@/i18n'
 
 async function notifyAutoBanSuccess(championId: number) {
   const champInfo = getChampionById(championId)
   const champName = champInfo?.name || `英雄#${championId}`
-  const msg = `Sona助手 ♫   自动 Ban: ${champName}`
+  const msg = translate('champSelect.autoBan.message', { championName: champName })
 
   try {
     await lcu.sendChampSelectMessage(msg, 'celebration')

@@ -4,6 +4,7 @@ import { lcu } from '@/lib/lcu'
 import { resolvePluginAssetUrl } from '@/lib/plugin-resolver'
 import { getSonaAvatarUrls, uploadSonaAvatar } from '@/lib/sona-service'
 import { store } from '@/lib/store'
+import { translate } from '@/i18n'
 import type { ChatFriend } from '@/lib/lcu'
 
 const OWN_SOCIAL_AVATAR_SELECTOR = '.lol-social-avatar.identity-icon img.icon-image'
@@ -675,7 +676,7 @@ export async function syncCustomAvatarAssetPath(assetPath: string) {
   remoteAvatarCache.set(ownPuuid, avatarUrl)
   persistRemoteAvatarCacheEntry(ownPuuid, avatarUrl)
   scheduleApplyCustomAvatar()
-  await lcu.sendNotification('Sona 头像同步成功', '你的自定义头像已经同步到云端，好友重启客户端后即可看到。').catch(() => {})
+  await lcu.sendNotification(translate('notification.avatarSync.title'), translate('notification.avatarSync.details')).catch(() => {})
 
   return avatarUrl
 }

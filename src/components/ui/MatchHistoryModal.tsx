@@ -3,6 +3,7 @@ import { Modal } from '@/components/ui/Modal'
 import { MatchDetailModal } from '@/components/ui/MatchDetailModal'
 import { lcu, queueIdToTag } from '@/lib/lcu'
 import { getChampIcon, getItemIcon, getSpellIcon, getPerkIcon, getPerkStyleIcon, getQueueName, getMapName, getPlayableQueues } from '@/lib/assets'
+import { translate, useI18n } from '@/i18n'
 import type { SgpGameSummaryLol, SgpParticipantLol } from '@/types/sgp'
 import '@/styles/MatchHistoryModal.css'
 
@@ -24,9 +25,9 @@ function formatDate(timestamp: number): string {
 
   const time = date.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit', hour12: false })
 
-  if (diffDays === 0) return `今天 ${time}`
-  if (diffDays === 1) return `昨天 ${time}`
-  if (diffDays === 2) return `前天 ${time}`
+  if (diffDays === 0) return `${translate('common.today')} ${time}`
+  if (diffDays === 1) return `${translate('common.yesterday')} ${time}`
+  if (diffDays === 2) return `${translate('common.dayBeforeYesterday')} ${time}`
   return date.toLocaleDateString(undefined, { month: '2-digit', day: '2-digit' }) + ' ' + time
 }
 
@@ -100,7 +101,7 @@ function parseSgpMatch(game: SgpGameSummaryLol, puuid: string): MatchRowData | n
 
 function MatchRow({ match, onOpenDetail }: { match: MatchRowData; onOpenDetail: (gameId: number) => void }) {
   const statusClass = match.win ? 'smh-win' : 'smh-loss'
-  const statusText = match.win ? '胜利' : '失败'
+  const statusText = match.win ? translate('common.win') : translate('common.loss')
   const [copied, setCopied] = useState(false)
 
   const handleCopyGameId = (e: ReactMouseEvent) => {
@@ -123,7 +124,7 @@ function MatchRow({ match, onOpenDetail }: { match: MatchRowData; onOpenDetail: 
           onOpenDetail(match.gameId)
         }
       }}
-      title="点击查看单局详情"
+      title={translate('matchHistory.clickDetail')}
     >
       <div className="smh-row-left">
         <div className="smh-champion">
@@ -209,6 +210,7 @@ export interface MatchHistoryModalProps {
  * 下拉切换模式时会重新请求 SGP，而非前端过滤。
  */
 export function MatchHistoryModal({ open, onClose, puuid, playerName, queueId: defaultQueueId }: MatchHistoryModalProps) {
+  const { t } = useI18n()
   const [matches, setMatches] = useState<MatchRowData[]>([])
   const [loading, setLoading] = useState(false)
   const [loadingMore, setLoadingMore] = useState(false)
@@ -265,11 +267,11 @@ export function MatchHistoryModal({ open, onClose, puuid, playerName, queueId: d
       // 返回数量少于请求数量，说明没有更多了
       if (games.length < INITIAL_FETCH) setHasMore(false)
     } catch {
-      setError('查询战绩失败')
+      setError(t('matchHistory.error', { error: '' }).trim())
     } finally {
       setLoading(false)
     }
-  }, [puuid])
+  }, [puuid, t])
 
   // 加载更多
   const loadMore = useCallback(async () => {
@@ -350,13 +352,13 @@ export function MatchHistoryModal({ open, onClose, puuid, playerName, queueId: d
 
   const currentFilterLabel = filterQueueId > 0
     ? (queueOptions.find(q => q.id === filterQueueId)?.name ?? getQueueName(filterQueueId))
-    : '全部模式'
+    : t('matchHistory.filter.all')
 
   return (
     <Modal open={open} onClose={onClose} width={860} height={620}>
       <div className="smh-container">
         <div className="smh-header">
-          <span className="smh-title">❖ {playerName} 的近期战报</span>
+          <span className="smh-title">{t('matchHistory.title', { playerName })}</span>
           <div className="smh-filter" ref={filterRef}>
             <button
               className={`smh-filter-trigger${filterOpen ? ' smh-filter-trigger--open' : ''}`}
@@ -375,7 +377,7 @@ export function MatchHistoryModal({ open, onClose, puuid, playerName, queueId: d
                   onClick={() => handleFilterChange(0)}
                   type="button"
                 >
-                  全部模式
+                  {t('matchHistory.filter.all')}
                 </button>
                 {queueOptions.map((q) => (
                   <button
@@ -392,18 +394,18 @@ export function MatchHistoryModal({ open, onClose, puuid, playerName, queueId: d
           </div>
         </div>
         <div className="smh-list" ref={listRef}>
-          {loading && <div className="smh-empty">加载中...</div>}
+          {loading && <div className="smh-empty">{t('matchHistory.loading')}</div>}
           {error && <div className="smh-empty smh-error">{error}</div>}
           {!loading && !error && matches.length === 0 && (
-            <div className="smh-empty">{filterQueueId > 0 ? '该模式暂无战绩，试试切换模式' : '暂无战绩'}</div>
+            <div className="smh-empty">{t('matchHistory.empty')}</div>
           )}
           {matches.map((m) => (
             <MatchRow key={m.gameId} match={m} onOpenDetail={setDetailGameId} />
           ))}
-          {loadingMore && <div className="smh-empty">加载更多...</div>}
+          {loadingMore && <div className="smh-empty">{t('matchHistory.loadingMore')}</div>}
           {!loading && !error && matches.length > 0 && (
             <div className="smh-empty smh-no-more">
-              {hasMore ? '↓ 下滑加载更多' : `— 共 ${matches.length} 条战绩 —`}
+              {hasMore ? t('matchHistory.loadMore') : t('matchHistory.noMore', { count: matches.length })}
             </div>
           )}
         </div>

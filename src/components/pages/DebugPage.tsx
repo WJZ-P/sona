@@ -13,9 +13,11 @@ import { openOpggBuildRecommendationDebugPanel } from '@/lib/features/opgg-build
 import { opggApi } from '@/lib/opgg-api'
 import { getPluginAssetsFolderPath } from '@/lib/plugin-resolver'
 import { logger } from '@/index'
+import { useI18n } from '@/i18n'
 import '@/styles/SettingsPage.css'
 
 export function DebugPage() {
+  const { t } = useI18n()
   const [output, setOutput] = useState('')
   const [gameId, setGameId] = useState('')
   const [puuid, setPuuid] = useState('')
@@ -546,11 +548,11 @@ export function DebugPage() {
 
   return (
     <div className="sona-settings">
-      <h2 className="sona-settings-title">调试面板</h2>
+      <h2 className="sona-settings-title">{t('debug.title')}</h2>
 
-      <SettingGroup title="美化客户端相关">
+      <SettingGroup title={t('debug.group.beautify')}>
         <p className="sona-subtitle">
-          测试客户端环境能否通过文件选择器读取本地图片；当前仅用于预览，不会写入磁盘或修改头像。也可以打开 assets 目录，手动放入自定义图片。
+          {t('debug.beautify.description')}
         </p>
         <input
           ref={beautifyImageInputRef}
@@ -564,14 +566,14 @@ export function DebugPage() {
         />
         <div className="sona-debug-actions">
           <SonaButton variant="primary" onClick={() => beautifyImageInputRef.current?.click()}>
-            选择图片
+            {t('debug.beautify.chooseImage')}
           </SonaButton>
           <SonaButton onClick={() => window.openPluginsFolder(getPluginAssetsFolderPath())}>
-            打开 assets 目录
+            {t('beautify.assets.openFolder')}
           </SonaButton>
           {beautifyImagePreview && (
             <SonaButton variant="secondary" onClick={() => setBeautifyImagePreview(null)}>
-              清除预览
+              {t('debug.beautify.clearPreview')}
             </SonaButton>
           )}
         </div>
@@ -580,47 +582,47 @@ export function DebugPage() {
             <div className="sona-debug-image-meta">
               {beautifyImagePreview.name} · {beautifyImagePreview.type} · {formatBytes(beautifyImagePreview.size)}
             </div>
-            <img src={beautifyImagePreview.src} alt="本地图片预览" />
+            <img src={beautifyImagePreview.src} alt={t('debug.beautify.chooseImage')} />
           </div>
         )}
       </SettingGroup>
 
-      <SettingGroup title="LCU API 测试">
+      <SettingGroup title={t('debug.group.lcu')}>
         <div className="sona-debug-actions">
           <SonaButton onClick={() => runAndLog('获取召唤师信息', () => lcu.getSummonerInfo())}>
-            获取召唤师信息
+            {t('debug.action.summonerInfo')}
           </SonaButton>
           <SonaButton onClick={() => runAndLog('获取在线状态', () => lcu.getChatMe())}>
-            获取在线状态
+            {t('debug.action.chatMe')}
           </SonaButton>
           <SonaButton onClick={() => runAndLog('获取游戏流程', () => lcu.getGameflowPhase())}>
-            游戏流程阶段
+            {t('debug.action.gameflow')}
           </SonaButton>
           <SonaButton onClick={() => runAndLog('获取聊天会话', () => lcu.getChatConversations())}>
-            聊天会话列表
+            {t('debug.action.chatSessions')}
           </SonaButton>
           <SonaButton onClick={() => runAndLog('旗帜库存 (REGALIA_BANNER)', fetchRegaliaBanners)}>
-            旗帜库存
+            {t('debug.action.bannerInventory')}
           </SonaButton>
         </div>
       </SettingGroup>
 
-      <SettingGroup title="英雄选择 (ARAM)">
+      <SettingGroup title={t('debug.group.champSelect')}>
         <div className="sona-debug-actions">
           <SonaButton onClick={() => runAndLog('ARAM 重随', () => lcu.reroll())}>
-            重随英雄
+            {t('debug.action.reroll')}
           </SonaButton>
           <SonaButton onClick={() => runAndLog('英雄选择会话', () => lcu.getChampSelectSession())}>
-            选人 Session
+            {t('debug.action.champSession')}
           </SonaButton>
           <SonaButton onClick={() => runAndLog('GameFlow Session', () => lcu.getGameflowSession())}>
             GameFlow Session
           </SonaButton>
           <SonaButton onClick={() => runAndLog('共享池英雄', () => lcu.getBenchChampions())}>
-            Bench 英雄
+            {t('debug.action.bench')}
           </SonaButton>
           <SonaButton onClick={() => runAndLog('可选英雄列表', () => lcu.getPickableChampionIds())}>
-            可选英雄
+            {t('debug.action.pickable')}
           </SonaButton>
           {/* 秒退功能暂时注释掉——目前 /lol-lobby-team-builder/champ-select/v1/session/quit 实测不生效，
               仍在寻找可用接口。找到之前不暴露入口，免得误导玩家以为能用 */}
@@ -637,7 +639,7 @@ export function DebugPage() {
           </SonaButton>
           */}
         </div>
-        <p className="sona-subtitle">点击选取共享池对应槽位的英雄</p>
+        <p className="sona-subtitle">{t('debug.hint.benchSlots')}</p>
         <div className="sona-debug-actions">
           {Array.from({ length: 10 }, (_, i) => (
             <SonaButton key={i} style={{ minWidth: 40, padding: '6px 0' }} onClick={() => runAndLog(`Bench 换英雄 (槽位 ${i + 1})`, async () => {
@@ -653,13 +655,13 @@ export function DebugPage() {
         </div>
       </SettingGroup>
 
-      <SettingGroup title="信息查询">
+      <SettingGroup title={t('debug.group.lookup')}>
         <div className="sona-debug-actions" style={{ alignItems: 'flex-end', gap: 8 }}>
           <div style={{ flex: 1 }}>
             <SonaInput
               value={riotId}
               onChange={setRiotId}
-              placeholder="名字#Tag (例: 丨一疾风剑豪一丨#77772)"
+              placeholder={t('debug.placeholder.riotId')}
             />
           </div>
           <SonaButton onClick={() => {
@@ -667,12 +669,12 @@ export function DebugPage() {
             if (parts.length !== 2 || !parts[0] || !parts[1]) { setOutput('❌ 格式: 名字#Tag'); return }
             runAndLog(`查询召唤师 ${riotId}`, () => lcu.getSummonerByRiotId(parts[0], parts[1]))
           }}>
-            查询 PUUID
+            {t('debug.action.queryPuuid')}
           </SonaButton>
         </div>
       </SettingGroup>
 
-      <SettingGroup title="战绩查询">
+      <SettingGroup title={t('debug.group.matchHistory')}>
         <div className="sona-debug-actions">
           <SonaButton variant="primary" onClick={() => runAndLog('贪婪拉取 100 条战绩', async () => {
             const me = await lcu.getSummonerInfo()
@@ -694,14 +696,14 @@ export function DebugPage() {
             <SonaInput
               value={puuid}
               onChange={setPuuid}
-              placeholder="输入 PUUID 查他人战绩..."
+              placeholder={t('debug.placeholder.puuid')}
             />
           </div>
           <SonaButton onClick={() => {
             if (!puuid.trim()) { setOutput('❌ 请输入 PUUID'); return }
             runAndLog(`战绩 (${puuid.slice(0, 8)}...)`, () => lcu.getMatchHistory(puuid.trim()))
           }}>
-            查询战绩
+            {t('debug.action.queryMatch')}
           </SonaButton>
         </div>
         <div className="sona-debug-actions" style={{ marginTop: 8, alignItems: 'flex-end', gap: 8 }}>
@@ -709,7 +711,7 @@ export function DebugPage() {
             <SonaInput
               value={gameId}
               onChange={setGameId}
-              placeholder="输入 Game ID..."
+              placeholder={t('debug.placeholder.gameId')}
             />
           </div>
           <SonaButton onClick={() => {
@@ -717,21 +719,21 @@ export function DebugPage() {
             if (!id) { setOutput('❌ 请输入有效的 Game ID'); return }
             runAndLog(`对局详情 #${id}`, () => lcu.getMatchDetail(id))
           }}>
-            对局详情
+            {t('debug.action.matchDetail')}
           </SonaButton>
           <SonaButton onClick={() => {
             const id = Number(gameId)
             if (!id) { setOutput('❌ 请输入有效的 Game ID'); return }
             runAndLog(`时间线 #${id}`, () => lcu.getMatchTimeline(id))
           }}>
-            时间线
+            {t('debug.action.timeline')}
           </SonaButton>
         </div>
       </SettingGroup>
 
-      <SettingGroup title="鉴权 Token & 直连调试">
+      <SettingGroup title={t('debug.group.auth')}>
         <p className="sona-subtitle">
-          测试从 LCU 获取 SGP / RSO 所需的 Token，并尝试请求 Riot UserInfo 与 SGP 战绩接口。
+          {t('debug.hint.auth')}
         </p>
         <div className="sona-debug-actions">
           <SonaButton variant="primary" onClick={() => runAndLog('Entitlements Token', () => lcu.getEntitlementsToken())}>
@@ -797,16 +799,16 @@ export function DebugPage() {
         </div>
       </SettingGroup>
 
-      <SettingGroup title="OP.GG API 连通性">
+      <SettingGroup title={t('debug.group.opgg')}>
         <p className="sona-subtitle">
-          使用 Akari 同款数据源测试浏览器环境能否直连 OP.GG Champion API。
+          {t('debug.hint.opgg')}
         </p>
         <div className="sona-debug-actions" style={{ alignItems: 'center', gap: 8 }}>
           <div style={{ flex: 1 }}>
             <SonaInput
               value={corsTestUrl}
               onChange={setCorsTestUrl}
-              placeholder="输入要测试跨域 GET 的完整 URL..."
+              placeholder={t('debug.placeholder.corsUrl')}
             />
           </div>
           <SonaButton variant="primary" onClick={() => runAndLog('跨域 GET 测试', fetchCorsTestUrl)}>
@@ -896,19 +898,19 @@ export function DebugPage() {
             拉起 ranked 面板
           </SonaButton>
         </div>
-        <p className="sona-subtitle">单英雄接口和面板预览优先使用「游戏资源」里选择的英雄；未选择时尝试当前选人英雄，最后用兰博 68 兜底。</p>
+        <p className="sona-subtitle">{t('debug.hint.opggChampion')}</p>
       </SettingGroup>
 
-      <SettingGroup title="聊天调试">
+      <SettingGroup title={t('debug.group.chat')}>
         <p className="sona-subtitle">
-          向当前英雄选择聊天框发送指定类型的消息。celebration / system / information 仅自己可见，chat 所有人可见。
+          {t('debug.hint.chat')}
         </p>
         <div className="sona-debug-actions" style={{ gap: 8 }}>
           <div style={{ flex: 1 }}>
             <SonaInput
               value={chatMsg}
               onChange={setChatMsg}
-              placeholder="输入要发送的消息..."
+              placeholder={t('debug.placeholder.chat')}
             />
           </div>
           <SonaSelect
@@ -925,30 +927,30 @@ export function DebugPage() {
             if (!chatMsg.trim()) { setOutput('❌ 请输入消息'); return }
             runAndLog(`发送聊天 [${chatMsgType}] (${chatMsg.length}字)`, () => lcu.sendChampSelectMessage(chatMsg, chatMsgType))
           }}>
-            发送
+            {t('debug.action.send')}
           </SonaButton>
         </div>
-        <p className="sona-subtitle">字数: {chatMsg.length}</p>
+        <p className="sona-subtitle">{t('debug.label.charCount', { count: chatMsg.length })}</p>
       </SettingGroup>
 
-      <SettingGroup title="客户端操作">
+      <SettingGroup title={t('debug.group.client')}>
         <div className="sona-debug-actions">
           <SonaButton onClick={() => window.openDevTools()}>
-            打开 DevTools
+            {t('debug.action.openDevtools')}
           </SonaButton>
           <SonaButton onClick={() => window.openPluginsFolder()}>
-            打开插件目录
+            {t('debug.action.openPluginFolder')}
           </SonaButton>
           <SonaButton variant="secondary" onClick={() => window.reloadClient()}>
-            重载客户端
+            {t('debug.action.reloadClient')}
           </SonaButton>
           <SonaButton onClick={() => setGameAnalysisOpen(true)}>
-            对局分析面板
+            {t('debug.action.gameAnalysis')}
           </SonaButton>
         </div>
       </SettingGroup>
 
-      <SettingGroup title="游戏资源">
+      <SettingGroup title={t('debug.group.assets')}>
         <div className="sona-debug-actions">
           <SonaButton onClick={() => runAndLog('物品列表 (items.json)', () => lcu.getItems())}>
             物品图标
@@ -970,7 +972,7 @@ export function DebugPage() {
                 setChampSuggestions(results)
                 setShowChampSuggestions(results.length > 0)
               }}
-              placeholder="搜索英雄 (名字/称号/英文名)"
+              placeholder={t('debug.placeholder.champion')}
             />
             {showChampSuggestions && champSuggestions.length > 0 && (
               <div className="sona-champ-suggest">
@@ -999,7 +1001,7 @@ export function DebugPage() {
               const res = await fetch(`/lol-game-data/assets/v1/champions/${selectedChampId}.json`); return res.json()
             })
           }}>
-            查询完整数据
+            {t('debug.action.fullChampionData')}
           </SonaButton>
         </div>
         <div className="sona-debug-actions" style={{ marginTop: 8 }}>
@@ -1032,13 +1034,13 @@ export function DebugPage() {
         </div>
       </SettingGroup>
 
-      <SettingGroup title="回放调试">
+      <SettingGroup title={t('debug.group.replay')}>
         <div className="sona-debug-actions" style={{ alignItems: 'flex-end', gap: 8 }}>
           <div style={{ flex: 1 }}>
             <SonaInput
               value={gameId}
               onChange={setGameId}
-              placeholder="输入 Game ID..."
+              placeholder={t('debug.placeholder.gameId')}
             />
           </div>
           <SonaButton onClick={() => {
@@ -1062,7 +1064,7 @@ export function DebugPage() {
               return res.ok ? '✅ 已发送观看请求' : `❌ ${res.status} ${await res.text()}`
             })
           }}>
-            直接观看
+            {t('debug.action.watchDirectly')}
           </SonaButton>
           <SonaButton variant="secondary" onClick={() => {
             const id = Number(gameId)
@@ -1076,12 +1078,12 @@ export function DebugPage() {
               return res.ok ? '✅ 已发送下载请求' : `❌ ${res.status} ${await res.text()}`
             })
           }}>
-            下载
+            {t('debug.action.download')}
           </SonaButton>
         </div>
       </SettingGroup>
 
-      <SettingGroup title="荣誉 & 点赞">
+      <SettingGroup title={t('debug.group.honor')}>
         <div className="sona-debug-actions">
           <SonaButton onClick={() => runAndLog('荣誉选票 (ballot)', async () => {
             const res = await fetch('/lol-honor-v2/v1/ballot'); return res.json()
@@ -1124,7 +1126,7 @@ export function DebugPage() {
         </div>
       </SettingGroup>
 
-      <SettingGroup title="房间 & 组队">
+      <SettingGroup title={t('debug.group.lobby')}>
         <div className="sona-debug-actions">
           <SonaButton onClick={() => runAndLog('房间信息 (lobby)', async () => {
             const res = await fetch('/lol-lobby/v2/lobby'); return res.json()
@@ -1147,7 +1149,7 @@ export function DebugPage() {
             <SonaInput
               value={lobbyQueueId}
               onChange={setLobbyQueueId}
-              placeholder="输入 Queue ID (如 450=大乱斗)"
+              placeholder={t('debug.placeholder.queueId')}
             />
           </div>
           <SonaButton variant="primary" onClick={() => {
@@ -1160,7 +1162,7 @@ export function DebugPage() {
         </div>
       </SettingGroup>
 
-      <SettingGroup title="头像框 & 头像">
+      <SettingGroup title={t('debug.group.avatar')}>
         <div className="sona-debug-actions">
           <SonaButton onClick={() => runAndLog('Regalia v2', () => lcu.getRegalia())}>
             查看 Regalia
@@ -1183,7 +1185,7 @@ export function DebugPage() {
       </SettingGroup>
 
 
-      <SettingGroup title="生涯背景">
+      <SettingGroup title={t('debug.group.profileBg')}>
         <div className="sona-debug-actions">
           <SonaButton onClick={() => runAndLog('summoner-profile', async () => {
             const res = await fetch('/lol-summoner/v1/current-summoner/summoner-profile'); return res.json()
@@ -1213,7 +1215,7 @@ export function DebugPage() {
             <SonaInput
               value={skinId}
               onChange={setSkinId}
-              placeholder="输入皮肤 ID (如 777058)"
+              placeholder={t('debug.placeholder.skinId')}
             />
           </div>
           <SonaButton variant="primary" onClick={() => {
@@ -1233,7 +1235,7 @@ export function DebugPage() {
         </div>
       </SettingGroup>
 
-      <SettingGroup title="客户端配置">
+      <SettingGroup title={t('debug.group.clientConfig')}>
         <div className="sona-debug-actions">
           <SonaButton onClick={() => runAndLog('常规设置 (game-settings)', () => lcu.getGameSettings())}>
             常规设置
@@ -1252,7 +1254,7 @@ export function DebugPage() {
         </div>
       </SettingGroup>
 
-      <SettingGroup title="区域 & 炫彩">
+      <SettingGroup title={t('debug.group.region')}>
         <div className="sona-debug-actions">
           <SonaButton onClick={() => runAndLog('区域语言', async () => {
             const res = await fetch('/riotclient/region-locale'); return res.json()
@@ -1289,15 +1291,15 @@ export function DebugPage() {
         </div>
       </SettingGroup>
 
-      <SettingGroup title="Store 调试">
+      <SettingGroup title={t('debug.group.store')}>
         <SettingCard title="当前配置快照" description="查看所有持久化配置的当前值">
           <SonaButton onClick={() => setOutput(JSON.stringify(store.getAll(), null, 2))}>
-            查看
+            {t('debug.action.view')}
           </SonaButton>
         </SettingCard>
         <SettingCard title="重置所有配置" description="将所有配置恢复为默认值">
           <SonaButton variant="secondary" onClick={() => { store.resetAll(); setOutput('✅ 已重置所有配置') }}>
-            重置
+            {t('common.reset')}
           </SonaButton>
         </SettingCard>
       </SettingGroup>

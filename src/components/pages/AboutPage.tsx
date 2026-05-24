@@ -1,10 +1,13 @@
 import '@/styles/AboutPage.css'
 import { InfoCard } from '@/components/ui/InfoCard'
 import { ZapIcon, CodeIcon, BoxIcon, GitHubIcon } from '@/components/ui/icons'
+import { useI18n } from '@/i18n'
 
 declare const __PLUGIN_VERSION__: string
 
 export function AboutPage() {
+  const { t } = useI18n()
+
   return (
     <div className="sona-about">
       <div className="sona-about-header">
@@ -13,23 +16,23 @@ export function AboutPage() {
       </div>
 
       <p className="sona-about-desc">
-        Sona 是一款基于 React + Vite 构建的英雄联盟客户端增强插件，运行在 Pengu Loader 之上，提供丰富的自定义功能。
+        {t('about.description')}
       </p>
 
       {/* 信息卡片 + 技术栈 并排 */}
       <div className="sona-about-row">
         <div className="sona-about-cards">
-          <InfoCard icon={<ZapIcon />} label="插件" value={`Sona v${__PLUGIN_VERSION__}`} />
-          <InfoCard icon={<CodeIcon />} label="框架" value="React + Vite" />
+          <InfoCard icon={<ZapIcon />} label={t('about.card.plugin')} value={`Sona v${__PLUGIN_VERSION__}`} />
+          <InfoCard icon={<CodeIcon />} label={t('about.card.framework')} value="React + Vite" />
           <InfoCard
             icon={<BoxIcon />}
-            label="加载器"
+            label={t('about.card.loader')}
             value={`Pengu Loader ${typeof Pengu !== 'undefined' ? Pengu.version : '1.1.6'}`}
           />
         </div>
 
         <div className="sona-about-section sona-about-tech">
-          <h3 className="sona-about-section-title">技术栈</h3>
+          <h3 className="sona-about-section-title">{t('about.techStack')}</h3>
           <ul className="sona-about-list">
             <li>React 19 + TypeScript</li>
             <li>Vite 6</li>
@@ -52,7 +55,7 @@ export function AboutPage() {
       </div>
 
       <div className="sona-about-section">
-        <h3 className="sona-about-section-title">开源协议</h3>
+        <h3 className="sona-about-section-title">{t('about.license')}</h3>
         <p className="sona-about-text">AGPL-3.0</p>
       </div>
 

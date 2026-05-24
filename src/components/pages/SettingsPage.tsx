@@ -3,6 +3,7 @@ import { SettingCard, SettingGroup } from '@/components/ui/SettingCard'
 import { SonaSwitch } from '@/components/ui/SonaSwitch'
 import { SonaSelect } from '@/components/ui/SonaSelect'
 import { store } from '@/lib/store'
+import { useI18n, type SonaLocaleSetting } from '@/i18n'
 import '@/styles/SettingsPage.css'
 
 const hotkeyOptions = [
@@ -14,9 +15,15 @@ const hotkeyOptions = [
 ]
 
 export function SettingsPage() {
+  const { localeSetting, setLocaleSetting, t } = useI18n()
   const [developerMode, setDeveloperMode] = useState(store.get('developerMode'))
   const [hotkey, setHotkey] = useState(store.get('hotkey'))
   const [globalParticle, setGlobalParticle] = useState(store.get('globalParticle'))
+  const localeOptions = [
+    { value: 'auto', label: t('settings.language.auto') },
+    { value: 'zh-CN', label: t('settings.language.zhCN') },
+    { value: 'en-US', label: t('settings.language.enUS') },
+  ]
 
   useEffect(() => {
     const unsubs = [
@@ -29,12 +36,22 @@ export function SettingsPage() {
 
   return (
     <div className="sona-settings">
-      <h2 className="sona-settings-title">设置</h2>
+      <h2 className="sona-settings-title">{t('settings.title')}</h2>
 
-      <SettingGroup title="通用">
+      <SettingGroup title={t('settings.group.general')}>
         <SettingCard
-          title="面板快捷键"
-          description="随时按下快捷键打开/关闭 Sona 面板。"
+          title={t('settings.language.title')}
+          description={t('settings.language.description')}
+        >
+          <SonaSelect
+            options={localeOptions}
+            value={localeSetting}
+            onChange={(v) => setLocaleSetting(v as SonaLocaleSetting)}
+          />
+        </SettingCard>
+        <SettingCard
+          title={t('settings.hotkey.title')}
+          description={t('settings.hotkey.description')}
         >
           <SonaSelect
             options={hotkeyOptions}
@@ -43,8 +60,8 @@ export function SettingsPage() {
           />
         </SettingCard>
         <SettingCard
-          title="全局粒子美化"
-          description="为客户端添加星光粒子背景效果 ✨"
+          title={t('settings.globalParticle.title')}
+          description={t('settings.globalParticle.description')}
         >
           <SonaSwitch
             checked={globalParticle}
@@ -54,10 +71,10 @@ export function SettingsPage() {
       </SettingGroup>
 
 
-      <SettingGroup title="高级选项">
+      <SettingGroup title={t('settings.group.advanced')}>
         <SettingCard
-          title="开发者模式"
-          description="启用调试面板，你最好知道你在做什么 ( ˘•ω•˘ )◞⚠"
+          title={t('settings.developerMode.title')}
+          description={t('settings.developerMode.description')}
         >
           <SonaSwitch
             checked={developerMode}

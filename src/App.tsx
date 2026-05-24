@@ -14,21 +14,23 @@ import { HomeIcon, GamepadIcon, PaletteIcon, SettingsIcon, InfoIcon, BugIcon, Za
 import { onModalVisibilityChange, isModalVisible, closeModal } from '@/lib/modal'
 import { store } from '@/lib/store'
 import { getUpdateState, onUpdateStateChange, type UpdateState } from '@/lib/update-checker'
+import { useI18n } from '@/i18n'
+import type { TranslationKey } from '@/i18n'
 
-const baseSidebarItems: SidebarItem[] = [
-  { id: 'home', icon: <HomeIcon />, label: '主页' },
-  { id: 'tools', icon: <GamepadIcon />, label: '工具' },
-  { id: 'beautify', icon: <PaletteIcon />, label: '美化' },
-  { id: 'settings', icon: <SettingsIcon />, label: '设置' },
-  { id: 'about', icon: <InfoIcon />, label: '关于' },
+const baseSidebarItemConfigs: Array<Omit<SidebarItem, 'label'> & { labelKey: TranslationKey }> = [
+  { id: 'home', icon: <HomeIcon />, labelKey: 'nav.home' },
+  { id: 'tools', icon: <GamepadIcon />, labelKey: 'nav.tools' },
+  { id: 'beautify', icon: <PaletteIcon />, labelKey: 'nav.beautify' },
+  { id: 'settings', icon: <SettingsIcon />, labelKey: 'nav.settings' },
+  { id: 'about', icon: <InfoIcon />, labelKey: 'nav.about' },
 ]
 
-const debugSidebarItem: SidebarItem = {
-  id: 'debug', icon: <BugIcon />, label: '调试',
+const debugSidebarItemConfig: Omit<SidebarItem, 'label'> & { labelKey: TranslationKey } = {
+  id: 'debug', icon: <BugIcon />, labelKey: 'nav.debug',
 }
 
-const updateSidebarItem: SidebarItem = {
-  id: 'update', icon: <ZapIcon />, label: '检测到新版本',
+const updateSidebarItemConfig: Omit<SidebarItem, 'label'> & { labelKey: TranslationKey } = {
+  id: 'update', icon: <ZapIcon />, labelKey: 'nav.updateAvailable',
 }
 
 function PageContent({ pageId }: { pageId: string }) {
@@ -53,6 +55,7 @@ function PageContent({ pageId }: { pageId: string }) {
 }
 
 export function App() {
+  const { t } = useI18n()
   const [visible, setVisible] = useState(isModalVisible())
   const [activePageId, setActivePageId] = useState(() => (getUpdateState().status === 'available' ? 'update' : 'home'))
   const [sidebarCollapsed, setSidebarCollapsed] = useState(store.get('sidebarCollapsed'))
@@ -92,11 +95,17 @@ export function App() {
 
   // 动态构建侧边栏项目
   const sidebarItems = useMemo(() => {
+    const makeItem = (item: Omit<SidebarItem, 'label'> & { labelKey: TranslationKey }): SidebarItem => ({
+      id: item.id,
+      icon: item.icon,
+      label: t(item.labelKey),
+    })
+    const baseItems = baseSidebarItemConfigs.map(makeItem)
     const items = updateState.status === 'available'
-      ? [updateSidebarItem, ...baseSidebarItems]
-      : baseSidebarItems
-    return devMode ? [...items, debugSidebarItem] : items
-  }, [devMode, updateState.status])
+      ? [makeItem(updateSidebarItemConfig), ...baseItems]
+      : baseItems
+    return devMode ? [...items, makeItem(debugSidebarItemConfig)] : items
+  }, [devMode, t, updateState.status])
 
   const handleClose = () => {
     closeModal()

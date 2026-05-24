@@ -45,6 +45,8 @@ export interface SonaConfig {
   statusMessage: Record<string, string>
   /** 面板快捷键 */
   hotkey: string
+  /** 界面语言：auto=跟随客户端 html lang */
+  locale: 'auto' | 'zh-CN' | 'en-US'
   /** 窗口视觉特效 */
   windowEffect: string
   /** 英雄选择玩家头像交互（点击队友头像展示历史数据） */
@@ -199,6 +201,7 @@ const DEFAULT_CONFIG: SonaConfig = {
   availability: 'chat',
   statusMessage: {},
   hotkey: 'F1',
+  locale: 'auto',
   windowEffect: 'none',
   champSelectAssist: false,
   opggBuildRecommendation: false,

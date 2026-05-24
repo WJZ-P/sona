@@ -8,6 +8,7 @@ import { SonaSwitch } from '@/components/ui/SonaSwitch'
 import { syncCustomAvatarAssetPath } from '@/lib/features/beautify-client/custom-avatar'
 import { getPluginAssetsFolderPath, resolvePluginAssetUrl } from '@/lib/plugin-resolver'
 import { store } from '@/lib/store'
+import { useI18n } from '@/i18n'
 import '@/styles/SettingsPage.css'
 
 const IMAGE_EXTENSIONS = new Set(['png', 'jpg', 'jpeg', 'webp', 'gif', 'svg', 'bmp', 'ico'])
@@ -73,6 +74,7 @@ function clampNumber(value: number, min: number, max: number): number {
 }
 
 export function BeautifyPage() {
+  const { t } = useI18n()
   const scrollRef = useRef<HTMLDivElement>(null)
   const wallpaperFrameRef = useRef<HTMLDivElement>(null)
   const wallpaperDragStartRef = useRef<WallpaperDragStart | null>(null)
@@ -94,7 +96,7 @@ export function BeautifyPage() {
   const [glassOpacity, setGlassOpacity] = useState(() => store.get('beautifyGlassOpacity'))
   const [assetPaths, setAssetPaths] = useState(() => store.get('beautifyAssetPaths'))
   const [customAvatarAssetPaths, setCustomAvatarAssetPaths] = useState(() => store.get('customAvatarAssetPaths'))
-  const [assetMessage, setAssetMessage] = useState('请输入 assets 目录下的相对路径，例： 你在 assets中放了一张 avatar.png 图片，那么请输入 avatar.png。\n如果你在assets中创建了一个文件夹并命名为icons，在其中放了一张 avatar.png 那么请输入 icons/avatar.png。')
+  const [assetMessage, setAssetMessage] = useState(() => t('beautify.assets.instructions'))
   const [editingWallpaperAssetPath, setEditingWallpaperAssetPath] = useState<string | null>(null)
   const [draftWallpaperAdjustment, setDraftWallpaperAdjustment] = useState<WallpaperAdjustment>(DEFAULT_WALLPAPER_ADJUSTMENT)
   const [isHomepageBackgroundDropActive, setIsHomepageBackgroundDropActive] = useState(false)
@@ -159,30 +161,30 @@ export function BeautifyPage() {
     const nextPath = normalizeAssetPath(assetPathInput)
 
     if (!nextPath) {
-      setAssetMessage('请输入资源路径。')
+      setAssetMessage(t('beautify.status.assetInputRequired'))
       return
     }
     if (nextPath.includes('..')) {
-      setAssetMessage('路径不能包含 ..。')
+      setAssetMessage(t('beautify.status.assetPathInvalid'))
       return
     }
     if (/^[a-z]+:\/\//i.test(nextPath)) {
-      setAssetMessage('请输入 assets 目录内的相对路径，不要输入完整 URL。')
+      setAssetMessage(t('beautify.status.assetUrlRejected'))
       return
     }
     if (!isSupportedMediaFile(nextPath)) {
-      setAssetMessage('目前只支持录入图片或视频资源：png/jpg/jpeg/webp/gif/svg/bmp/ico/mp4/webm/ogg/ogv/mov/m4v。')
+      setAssetMessage(t('beautify.status.assetUnsupported'))
       return
     }
     if (assetPaths.includes(nextPath)) {
-      setAssetMessage('这个资源已经录入过了。')
+      setAssetMessage(t('beautify.status.assetDuplicate'))
       return
     }
 
     const nextPaths = [...assetPaths, nextPath]
     saveAssetPaths(nextPaths)
     setAssetPathInput('')
-    setAssetMessage(`已录入资源：${nextPath}`)
+    setAssetMessage(t('beautify.status.assetAdded', { path: nextPath }))
   }
 
   const removeAssetPath = (assetPath: string) => {
@@ -200,26 +202,26 @@ export function BeautifyPage() {
     if (homepageBackgroundAssetPath === assetPath) {
       saveHomepageBackgroundAssetPath(nextHomepageBackgroundAssetPaths[0] ?? null)
     }
-    setAssetMessage(`已移除资源：${assetPath}`)
+    setAssetMessage(t('beautify.status.assetRemoved', { path: assetPath }))
   }
 
   const applyHomepageBackgroundAssetPath = (assetPath: string) => {
     if (!assetPaths.includes(assetPath)) {
-      setAssetMessage('只能使用资源列表中已录入的资源作为主页壁纸。')
+      setAssetMessage(t('beautify.status.wallpaperListOnly'))
       return
     }
 
     saveHomepageBackgroundAssetPath(assetPath)
-    setAssetMessage(`已设置主页壁纸：${assetPath}`)
+    setAssetMessage(t('beautify.status.wallpaperApplied', { path: assetPath }))
   }
 
   const addHomepageBackgroundAssetPath = (assetPath: string) => {
     if (!assetPaths.includes(assetPath)) {
-      setAssetMessage('只能添加资源列表中已录入的资源作为主页壁纸。')
+      setAssetMessage(t('beautify.status.wallpaperAddListOnly'))
       return
     }
     if (!isSupportedMediaFile(assetPath)) {
-      setAssetMessage('主页壁纸仅支持图片或视频资源。')
+      setAssetMessage(t('beautify.status.wallpaperMediaOnly'))
       return
     }
 
@@ -241,7 +243,7 @@ export function BeautifyPage() {
     if (homepageBackgroundAssetPath === assetPath) {
       saveHomepageBackgroundAssetPath(nextPaths[0] ?? null)
     }
-    setAssetMessage(`已从主页壁纸移除：${assetPath}`)
+    setAssetMessage(t('beautify.status.wallpaperRemoved', { path: assetPath }))
   }
 
   const openHomepageBackgroundAdjustModal = (assetPath: string) => {
@@ -263,7 +265,7 @@ export function BeautifyPage() {
       [editingWallpaperAssetPath]: draftWallpaperAdjustment,
     }
     saveHomepageBackgroundAdjustments(nextAdjustments)
-    setAssetMessage(`已保存主页壁纸取景：${editingWallpaperAssetPath}`)
+    setAssetMessage(t('beautify.status.wallpaperSaved', { path: editingWallpaperAssetPath }))
     closeHomepageBackgroundAdjustModal()
   }
 
@@ -317,29 +319,29 @@ export function BeautifyPage() {
   const syncCustomAvatarAssetPathToCloud = async (assetPath: string) => {
     try {
       await syncCustomAvatarAssetPath(assetPath)
-      setAssetMessage(`已同步自定义头像：${assetPath}`)
+      setAssetMessage(t('beautify.status.avatarSynced', { path: assetPath }))
     } catch (err) {
-      setAssetMessage(`本地头像已应用，但同步失败：${err instanceof Error ? err.message : String(err)}`)
+      setAssetMessage(t('beautify.status.avatarSyncFailed', { error: err instanceof Error ? err.message : String(err) }))
     }
   }
 
   const addCustomAvatarAssetPath = (assetPath: string) => {
     if (!assetPaths.includes(assetPath)) {
-      setAssetMessage('只能添加资源列表中已录入的图片。')
+      setAssetMessage(t('beautify.status.avatarListOnly'))
       return
     }
     if (!isImageFile(assetPath)) {
-      setAssetMessage('自定义头像仅支持图片资源，视频只能用于主页壁纸。')
+      setAssetMessage(t('beautify.status.avatarImageOnly'))
       return
     }
     if (customAvatarAssetPaths.includes(assetPath)) {
-      setAssetMessage('这张图片已经在自定义头像列表里了。')
+      setAssetMessage(t('beautify.status.avatarDuplicate'))
       return
     }
 
     const shouldSync = customAvatarAssetPaths.length === 0
     saveCustomAvatarAssetPaths([...customAvatarAssetPaths, assetPath])
-    setAssetMessage(`已添加到自定义头像：${assetPath}`)
+    setAssetMessage(t('beautify.status.avatarAdded', { path: assetPath }))
     if (shouldSync) {
       void syncCustomAvatarAssetPathToCloud(assetPath)
     }
@@ -350,7 +352,7 @@ export function BeautifyPage() {
     const nextActivePath = nextPaths[0]
     const shouldSyncNext = customAvatarAssetPaths[0] === assetPath && Boolean(nextActivePath)
     saveCustomAvatarAssetPaths(nextPaths)
-    setAssetMessage(`已从自定义头像移除：${assetPath}`)
+    setAssetMessage(t('beautify.status.avatarRemoved', { path: assetPath }))
     if (shouldSyncNext && nextActivePath) {
       void syncCustomAvatarAssetPathToCloud(nextActivePath)
     }
@@ -360,7 +362,7 @@ export function BeautifyPage() {
     if (!customAvatarAssetPaths.includes(assetPath)) return
 
     if (customAvatarAssetPaths[0] === assetPath) {
-      setAssetMessage(`当前已应用头像：${assetPath}`)
+      setAssetMessage(t('beautify.status.avatarCurrent', { path: assetPath }))
       void syncCustomAvatarAssetPathToCloud(assetPath)
       return
     }
@@ -370,7 +372,7 @@ export function BeautifyPage() {
       ...customAvatarAssetPaths.filter((path) => path !== assetPath),
     ]
     saveCustomAvatarAssetPaths(nextPaths)
-    setAssetMessage(`已应用自定义头像：${assetPath}`)
+    setAssetMessage(t('beautify.status.avatarApplied', { path: assetPath }))
     void syncCustomAvatarAssetPathToCloud(assetPath)
   }
 
@@ -480,12 +482,12 @@ export function BeautifyPage() {
       onDragEnd={stopDragAutoScroll}
       onDrop={stopDragAutoScroll}
     >
-      <h2 className="sona-settings-title">美化</h2>
+      <h2 className="sona-settings-title">{t('beautify.title')}</h2>
 
-      <SettingGroup title="客户端美化">
+      <SettingGroup title={t('beautify.group.client')}>
         <SettingCard
-          title="壁纸模式"
-          description="隐藏首页活动中心，并清空右侧栏背景，让自定义背景更干净。关闭后会恢复客户端默认显示。"
+          title={t('beautify.wallpaperMode.title')}
+          description={t('beautify.wallpaperMode.description')}
         >
           <SonaSwitch
             checked={beautifyWallpaperMode}
@@ -493,12 +495,12 @@ export function BeautifyPage() {
           />
         </SettingCard>
         <SettingCard
-          title="好友栏毛玻璃参数"
-          description="调整右侧好友栏和壁纸模式侧栏的毛玻璃效果。"
+          title={t('beautify.glass.title')}
+          description={t('beautify.glass.description')}
         >
           <div className="sona-glass-settings">
             <SonaSlider
-              label="模糊"
+              label={t('beautify.slider.blur')}
               value={glassBlur}
               min={0}
               max={30}
@@ -506,7 +508,7 @@ export function BeautifyPage() {
               onChange={updateGlassBlur}
             />
             <SonaSlider
-              label="底色"
+              label={t('beautify.slider.opacity')}
               value={glassOpacity}
               min={0}
               max={80}
@@ -519,7 +521,7 @@ export function BeautifyPage() {
 
       {assetPaths.length > 0 && (
         <>
-          <SettingGroup title="主页壁纸">
+          <SettingGroup title={t('beautify.group.wallpaper')}>
             <div
               className={[
                 'sona-wallpaper-dropzone',
@@ -551,7 +553,7 @@ export function BeautifyPage() {
                             applyHomepageBackgroundAssetPath(assetPath)
                           }
                         }}
-                        aria-label={`应用 ${assetPath} 为主页壁纸`}
+                        aria-label={`${t('common.apply')} ${assetPath}`}
                       >
                         <button
                           className="sona-asset-card-remove"
@@ -561,7 +563,7 @@ export function BeautifyPage() {
                             removeHomepageBackgroundAssetPath(assetPath)
                           }}
                           onKeyDown={(event) => event.stopPropagation()}
-                          aria-label={`移除主页壁纸 ${assetPath}`}
+                          aria-label={`${t('common.remove')} ${assetPath}`}
                         >
                           ×
                         </button>
@@ -573,9 +575,9 @@ export function BeautifyPage() {
                             openHomepageBackgroundAdjustModal(assetPath)
                           }}
                           onKeyDown={(event) => event.stopPropagation()}
-                          aria-label={`调整主页壁纸 ${assetPath}`}
+                          aria-label={`${t('beautify.wallpaper.adjust')} ${assetPath}`}
                         >
-                          调整
+                          {t('beautify.wallpaper.adjust')}
                         </button>
                         {isVideoFile(assetPath) ? (
                           <video
@@ -588,7 +590,7 @@ export function BeautifyPage() {
                           <img src={getAssetUrl(assetPath)} alt={assetPath} />
                         )}
                         <span className="sona-wallpaper-card-name">{assetPath}</span>
-                        <span className="sona-wallpaper-card-action">点击应用</span>
+                        <span className="sona-wallpaper-card-action">{t('beautify.wallpaper.clickApply')}</span>
                       </div>
                     )
                   })}
@@ -596,23 +598,23 @@ export function BeautifyPage() {
               ) : (
                 <div className="sona-avatar-dropzone-placeholder">
                   <div className="sona-avatar-dropzone-plus">+</div>
-                  <div>从下方资源列表拖动图片或视频到这里，以添加主页壁纸</div>
+                  <div>{t('beautify.wallpaper.dropHint')}</div>
                 </div>
               )}
             </div>
             <SettingCard
-              title="随机壁纸"
-              description="每次启动客户端时，从上方主页壁纸列表随机应用新的壁纸。"
+              title={t('beautify.wallpaper.random.title')}
+              description={t('beautify.wallpaper.random.description')}
             >
               <SonaSwitch
                 checked={homepageBackgroundRandom}
                 onChange={toggleHomepageBackgroundRandom}
               />
             </SettingCard>
-            <SettingCard title="主页壁纸效果">
+            <SettingCard title={t('beautify.wallpaper.effect')}>
               <div className="sona-glass-settings">
                 <SonaSlider
-                  label="模糊"
+                  label={t('beautify.slider.blur')}
                   value={homepageBackgroundBlur}
                   min={0}
                   max={30}
@@ -620,7 +622,7 @@ export function BeautifyPage() {
                   onChange={updateHomepageBackgroundBlur}
                 />
                 <SonaSlider
-                  label="底色"
+                  label={t('beautify.slider.opacity')}
                   value={homepageBackgroundOpacity}
                   min={0}
                   max={80}
@@ -631,7 +633,7 @@ export function BeautifyPage() {
             </SettingCard>
           </SettingGroup>
 
-          <SettingGroup title="自定义头像">
+          <SettingGroup title={t('beautify.group.avatar')}>
             <div
               className={[
                 'sona-avatar-dropzone',
@@ -663,7 +665,7 @@ export function BeautifyPage() {
                             applyCustomAvatarAssetPath(assetPath)
                           }
                         }}
-                        aria-label={`应用 ${assetPath} 为自定义头像`}
+                        aria-label={`${t('common.apply')} ${assetPath}`}
                       >
                         <button
                           className="sona-asset-card-remove"
@@ -673,13 +675,13 @@ export function BeautifyPage() {
                             removeCustomAvatarAssetPath(assetPath)
                           }}
                           onKeyDown={(event) => event.stopPropagation()}
-                          aria-label={`移除 ${assetPath}`}
+                          aria-label={`${t('common.remove')} ${assetPath}`}
                         >
                           ×
                         </button>
                         <img src={getAssetUrl(assetPath)} alt={assetPath} />
                         <span className="sona-avatar-card-name">{assetPath}</span>
-                        <span className="sona-avatar-card-action">点击应用</span>
+                        <span className="sona-avatar-card-action">{t('beautify.wallpaper.clickApply')}</span>
                       </div>
                     )
                   })}
@@ -687,7 +689,7 @@ export function BeautifyPage() {
               ) : (
                 <div className="sona-avatar-dropzone-placeholder">
                   <div className="sona-avatar-dropzone-plus">+</div>
-                  <div>从下方资源列表拖动图片到这里，以添加自定义头像</div>
+                  <div>{t('beautify.avatar.dropHint')}</div>
                 </div>
               )}
             </div>
@@ -695,11 +697,11 @@ export function BeautifyPage() {
         </>
       )}
 
-      <SettingGroup title="资源管理">
+      <SettingGroup title={t('beautify.group.assets')}>
         <div className="sona-asset-browser">
           <div className="sona-asset-browser-header">
-            <span className="sona-asset-browser-title">资源列表</span>
-            {assetPaths.length > 0 && <span className="sona-asset-browser-hint">拖动图片到上方功能区即可复制使用</span>}
+            <span className="sona-asset-browser-title">{t('beautify.assets.browserTitle')}</span>
+            {assetPaths.length > 0 && <span className="sona-asset-browser-hint">{t('beautify.assets.dragHint')}</span>}
           </div>
           <p className="sona-asset-browser-status">{assetMessage}</p>
           {assetPaths.length > 0 ? (
@@ -715,7 +717,7 @@ export function BeautifyPage() {
                     className="sona-asset-card-remove"
                     type="button"
                     onClick={() => removeAssetPath(assetPath)}
-                    aria-label={`移除 ${assetPath}`}
+                    aria-label={`${t('common.remove')} ${assetPath}`}
                   >
                     ×
                   </button>
@@ -734,32 +736,32 @@ export function BeautifyPage() {
               ))}
             </div>
           ) : (
-            <p className="sona-asset-empty">还没有录入资源。</p>
+            <p className="sona-asset-empty">{t('beautify.assets.empty')}</p>
           )}
         </div>
         <SettingCard
-          title="资源目录"
-          description="打开 Sona 的 assets 目录，你的自定义图片、视频等资源应该放在这里。"
+          title={t('beautify.assets.folderTitle')}
+          description={t('beautify.assets.folderDescription')}
         >
           <SonaButton onClick={() => window.openPluginsFolder(getPluginAssetsFolderPath())}>
-            打开 assets 目录
+            {t('beautify.assets.openFolder')}
           </SonaButton>
         </SettingCard>
         <SettingCard
-          title="录入资源"
-          description="输入相对于 assets 目录的图片或视频路径，Sona 会保存到资源列表并展示预览。"
+          title={t('beautify.assets.inputTitle')}
+          description={t('beautify.assets.inputDescription')}
         >
           <div className="sona-asset-path-row">
             <SonaInput
               value={assetPathInput}
               onChange={setAssetPathInput}
-              placeholder="例如 avatar.png"
+              placeholder={t('beautify.assets.examplePlaceholder')}
               onKeyDown={(event) => {
                 if (event.key === 'Enter') addAssetPath()
               }}
             />
             <SonaButton onClick={addAssetPath}>
-              录入
+              {t('beautify.assets.add')}
             </SonaButton>
           </div>
         </SettingCard>
@@ -773,7 +775,7 @@ export function BeautifyPage() {
       >
         <div className="sona-wallpaper-adjust-modal">
           <div className="sona-wallpaper-adjust-header">
-            <h3>调整主页壁纸取景</h3>
+            <h3>{t('beautify.wallpaper.adjustTitle')}</h3>
             <span>{editingWallpaperAssetPath}</span>
           </div>
 
@@ -813,7 +815,7 @@ export function BeautifyPage() {
 
               <div className="sona-wallpaper-adjust-controls">
                 <div className="sona-wallpaper-adjust-hint">
-                  按住拖动调整位置，滚动鼠标滚轮缩放资源
+                  {t('beautify.wallpaper.adjustHint')}
                 </div>
               </div>
             </div>
@@ -821,13 +823,13 @@ export function BeautifyPage() {
 
           <div className="sona-wallpaper-adjust-actions">
             <SonaButton onClick={resetHomepageBackgroundAdjustment}>
-              重置
+              {t('common.reset')}
             </SonaButton>
             <SonaButton onClick={closeHomepageBackgroundAdjustModal}>
-              取消
+              {t('common.cancel')}
             </SonaButton>
             <SonaButton onClick={saveHomepageBackgroundAdjustment}>
-              保存取景
+              {t('beautify.wallpaper.saveCrop')}
             </SonaButton>
           </div>
         </div>
