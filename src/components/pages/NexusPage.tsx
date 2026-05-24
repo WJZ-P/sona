@@ -53,57 +53,61 @@ export function NexusPage() {
           />
         </SettingCard>
         {rankDisguise && (
-          <SettingCard
-            title={t('tools.group.rankDisguise')}
-            description={t('tools.rankDisguise.description')}
-          >
-            <div className="sona-debug-actions" style={{ alignItems: 'center' }}>
-              <div style={{ minWidth: 140 }}>
-                <SonaSelect
-                  options={[
-                    { value: 'RANKED_SOLO_5x5', label: t('rank.queue.RANKED_SOLO_5x5') },
-                    { value: 'RANKED_FLEX_SR', label: t('rank.queue.RANKED_FLEX_SR') },
-                    { value: 'RANKED_FLEX_TT', label: t('rank.queue.RANKED_FLEX_TT') },
-                    { value: 'RANKED_TFT', label: t('rank.queue.RANKED_TFT') },
-                    { value: 'RANKED_TFT_DOUBLE_UP', label: t('rank.queue.RANKED_TFT_DOUBLE_UP') },
-                    { value: 'RANKED_TFT_TURBO', label: t('rank.queue.RANKED_TFT_TURBO') },
-                  ]}
-                  value={rankQueue}
-                  onChange={(v) => { setRankQueue(v); store.set('rankQueue', v) }}
-                />
-              </div>
-              <div style={{ minWidth: 130 }}>
-                <SonaSelect
-                  options={[
-                { value: 'CHALLENGER', label: t('rank.CHALLENGER') },
-                { value: 'GRANDMASTER', label: t('rank.GRANDMASTER') },
-                { value: 'MASTER', label: t('rank.MASTER') },
-                { value: 'DIAMOND', label: t('rank.DIAMOND') },
-                { value: 'EMERALD', label: t('rank.EMERALD') },
-                { value: 'PLATINUM', label: t('rank.PLATINUM') },
-                { value: 'GOLD', label: t('rank.GOLD') },
-                { value: 'SILVER', label: t('rank.SILVER') },
-                { value: 'BRONZE', label: t('rank.BRONZE') },
-                { value: 'IRON', label: t('rank.IRON') },
-                  ]}
-                  value={rankTier}
-                  onChange={(v) => { setRankTier(v); store.set('rankTier', v) }}
-                />
-              </div>
-              <div style={{ minWidth: 80 }}>
-                <SonaSelect
-                  options={[
-                    { value: 'I', label: 'I' },
-                    { value: 'II', label: 'II' },
-                    { value: 'III', label: 'III' },
-                    { value: 'IV', label: 'IV' },
-                  ]}
-                  value={rankDivision}
-                  onChange={(v) => { setRankDivision(v); store.set('rankDivision', v) }}
-                />
-              </div>
+          <div className="sona-setting-switch-panel">
+            <div className="sona-setting-panel-section">
+              <SettingCard
+                title={t('tools.group.rankDisguise')}
+                description={t('tools.rankDisguise.description')}
+              >
+                <div className="sona-debug-actions" style={{ alignItems: 'center' }}>
+                  <div style={{ minWidth: 140 }}>
+                    <SonaSelect
+                      options={[
+                        { value: 'RANKED_SOLO_5x5', label: t('rank.queue.RANKED_SOLO_5x5') },
+                        { value: 'RANKED_FLEX_SR', label: t('rank.queue.RANKED_FLEX_SR') },
+                        { value: 'RANKED_FLEX_TT', label: t('rank.queue.RANKED_FLEX_TT') },
+                        { value: 'RANKED_TFT', label: t('rank.queue.RANKED_TFT') },
+                        { value: 'RANKED_TFT_DOUBLE_UP', label: t('rank.queue.RANKED_TFT_DOUBLE_UP') },
+                        { value: 'RANKED_TFT_TURBO', label: t('rank.queue.RANKED_TFT_TURBO') },
+                      ]}
+                      value={rankQueue}
+                      onChange={(v) => { setRankQueue(v); store.set('rankQueue', v) }}
+                    />
+                  </div>
+                  <div style={{ minWidth: 130 }}>
+                    <SonaSelect
+                      options={[
+                        { value: 'CHALLENGER', label: t('rank.CHALLENGER') },
+                        { value: 'GRANDMASTER', label: t('rank.GRANDMASTER') },
+                        { value: 'MASTER', label: t('rank.MASTER') },
+                        { value: 'DIAMOND', label: t('rank.DIAMOND') },
+                        { value: 'EMERALD', label: t('rank.EMERALD') },
+                        { value: 'PLATINUM', label: t('rank.PLATINUM') },
+                        { value: 'GOLD', label: t('rank.GOLD') },
+                        { value: 'SILVER', label: t('rank.SILVER') },
+                        { value: 'BRONZE', label: t('rank.BRONZE') },
+                        { value: 'IRON', label: t('rank.IRON') },
+                      ]}
+                      value={rankTier}
+                      onChange={(v) => { setRankTier(v); store.set('rankTier', v) }}
+                    />
+                  </div>
+                  <div style={{ minWidth: 80 }}>
+                    <SonaSelect
+                      options={[
+                        { value: 'I', label: 'I' },
+                        { value: 'II', label: 'II' },
+                        { value: 'III', label: 'III' },
+                        { value: 'IV', label: 'IV' },
+                      ]}
+                      value={rankDivision}
+                      onChange={(v) => { setRankDivision(v); store.set('rankDivision', v) }}
+                    />
+                  </div>
+                </div>
+              </SettingCard>
             </div>
-          </SettingCard>
+          </div>
         )}
         <SettingCard
           title={t('tools.unlockStatus.title')}
@@ -127,15 +131,19 @@ export function NexusPage() {
           />
         </SettingCard>
         {unlockAvailability && (
-          <SettingCard
-            title="尝试锁定隐身状态"
-            description="切换为隐身后，如果客户端自动回退到离开或在线，会立即尝试改回隐身。"
-          >
-            <SonaSwitch
-              checked={lockOfflineStatus}
-              onChange={(v) => { setLockOfflineStatus(v); store.set('lockOfflineStatus', v) }}
-            />
-          </SettingCard>
+          <div className="sona-setting-switch-panel">
+            <div className="sona-setting-panel-section">
+              <SettingCard
+                title="尝试锁定隐身状态"
+                description="切换为隐身后，如果客户端自动回退到离开或在线，会立即尝试改回隐身。"
+              >
+                <SonaSwitch
+                  checked={lockOfflineStatus}
+                  onChange={(v) => { setLockOfflineStatus(v); store.set('lockOfflineStatus', v) }}
+                />
+              </SettingCard>
+            </div>
+          </div>
         )}
         <SettingCard
           title={t('tools.removeCrest.title')}

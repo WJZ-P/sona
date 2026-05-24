@@ -319,24 +319,6 @@ function subscribeChatMeSync() {
       return
     }
 
-    const savedAvailability = store.get('availability') as Availability
-    if (
-      store.get('unlockAvailability')
-      && store.get('lockOfflineStatus')
-      && savedAvailability === 'offline'
-      && (me.availability === 'away' || me.availability === 'chat')
-    ) {
-      logger.info('[Availability] Offline lock corrected client fallback: %s -> offline', me.availability)
-      try {
-        await lcu.setAvailability('offline')
-        currentAvailability = 'offline'
-      } catch (err) {
-        currentAvailability = me.availability
-        logger.warn('[Availability] Offline lock correction failed:', err)
-      }
-      return
-    }
-
     // 同步签名：启动延迟校验保护期内不写 store，避免把客户端回退/头像零宽补写
     // 这类临时状态误认为玩家主动改签名。
     if (statusPersistencePausedForVerify) {

@@ -163,40 +163,44 @@ export function AutomationPage() {
           />
         </SettingCard>
         {autoAccept && (
-          <SettingCard
-            title={t('tools.autoAcceptDelay.title')}
-            description={t('tools.autoAcceptDelay.description')}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <div style={{ width: 80 }}>
-                <SonaInput
-                  value={autoAcceptDelayMin}
-                  onChange={(v) => {
-                    // 毫秒只收整数
-                    const cleaned = v.replace(/[^\d]/g, '')
-                    setAutoAcceptDelayMin(cleaned)
-                    const n = parseInt(cleaned, 10)
-                    store.set('autoAcceptDelayMin', Number.isFinite(n) ? n : 0)
-                  }}
-                  placeholder="最小"
-                />
-              </div>
-              <span style={{ color: '#a09b8c', fontSize: 13 }}>—</span>
-              <div style={{ width: 80 }}>
-                <SonaInput
-                  value={autoAcceptDelayMax}
-                  onChange={(v) => {
-                    const cleaned = v.replace(/[^\d]/g, '')
-                    setAutoAcceptDelayMax(cleaned)
-                    const n = parseInt(cleaned, 10)
-                    store.set('autoAcceptDelayMax', Number.isFinite(n) ? n : 0)
-                  }}
-                  placeholder="最大"
-                />
-              </div>
-              <span style={{ color: '#a09b8c', fontSize: 13 }}>毫秒</span>
+          <div className="sona-setting-switch-panel">
+            <div className="sona-setting-panel-section">
+              <SettingCard
+                title={t('tools.autoAcceptDelay.title')}
+                description={t('tools.autoAcceptDelay.description')}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <div style={{ width: 80 }}>
+                    <SonaInput
+                      value={autoAcceptDelayMin}
+                      onChange={(v) => {
+                        // 毫秒只收整数
+                        const cleaned = v.replace(/[^\d]/g, '')
+                        setAutoAcceptDelayMin(cleaned)
+                        const n = parseInt(cleaned, 10)
+                        store.set('autoAcceptDelayMin', Number.isFinite(n) ? n : 0)
+                      }}
+                      placeholder="最小"
+                    />
+                  </div>
+                  <span style={{ color: '#a09b8c', fontSize: 13 }}>—</span>
+                  <div style={{ width: 80 }}>
+                    <SonaInput
+                      value={autoAcceptDelayMax}
+                      onChange={(v) => {
+                        const cleaned = v.replace(/[^\d]/g, '')
+                        setAutoAcceptDelayMax(cleaned)
+                        const n = parseInt(cleaned, 10)
+                        store.set('autoAcceptDelayMax', Number.isFinite(n) ? n : 0)
+                      }}
+                      placeholder="最大"
+                    />
+                  </div>
+                  <span style={{ color: '#a09b8c', fontSize: 13 }}>毫秒</span>
+                </div>
+              </SettingCard>
             </div>
-          </SettingCard>
+          </div>
         )}
         <SettingCard
           title={t('tools.autoReturn.title')}
@@ -234,7 +238,7 @@ export function AutomationPage() {
           />
         </SettingCard>
         {autoLockChampion && (
-          <div style={{ padding: '0 12px 12px', display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <div className="sona-setting-switch-panel">
             <div className="sona-debug-actions" style={{ alignItems: 'flex-start', gap: 8 }}>
               <div style={{ flex: 1, position: 'relative' }} ref={champSuggestRef}>
                 <SonaInput
@@ -294,7 +298,7 @@ export function AutomationPage() {
           />
         </SettingCard>
         {autoBanChampion && (
-          <div style={{ padding: '0 12px 12px', display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <div className="sona-setting-switch-panel">
             <div className="sona-debug-actions" style={{ alignItems: 'flex-start', gap: 8 }}>
               <div style={{ flex: 1, position: 'relative' }} ref={banChampSuggestRef}>
                 <SonaInput

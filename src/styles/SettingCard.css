@@ -101,6 +101,34 @@
   gap: 8px;
 }
 
+.sona-setting-switch-panel .sona-setting-card {
+  padding: 10px 14px;
+  background: rgba(1, 10, 19, 0.28);
+  border-color: rgba(60, 46, 22, 0.45);
+}
+
+.sona-setting-switch-panel .sona-setting-card:hover {
+  transform: translateX(1px);
+}
+
+.sona-setting-switch-panel .sona-setting-card-info {
+  padding-right: 14px;
+}
+
+.sona-setting-switch-panel .sona-setting-card-title {
+  margin-bottom: 3px;
+  font-size: 12px;
+}
+
+.sona-setting-switch-panel .sona-setting-card-desc {
+  font-size: 10.5px;
+  line-height: 1.45;
+}
+
+.sona-setting-switch-panel .sona-setting-card-action {
+  gap: 8px;
+}
+
 .sona-setting-panel-title {
   margin: 6px 0 2px;
   color: #c8aa6e;

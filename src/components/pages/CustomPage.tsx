@@ -988,200 +988,202 @@ export function CustomPage() {
           />
         </SettingCard>
         {beautifyWallpaperMode && (
-          <>
-            <SettingCard
-              title={t('beautify.glass.title')}
-              description={t('beautify.glass.description')}
-            >
-              <div className="sona-glass-settings">
-                <SonaSlider
-                  label={t('beautify.slider.blur')}
-                  value={glassBlur}
-                  min={0}
-                  max={30}
-                  unit="px"
-                  onChange={updateGlassBlur}
-                />
-                <SonaSlider
-                  label={t('beautify.slider.opacity')}
-                  value={glassOpacity}
-                  min={0}
-                  max={80}
-                  unit="%"
-                  onChange={updateGlassOpacity}
-                />
-              </div>
-            </SettingCard>
-            <div
-              className={[
-                'sona-wallpaper-dropzone',
-                homepageBackgroundAssetPaths.length === 0 ? 'sona-wallpaper-dropzone--empty' : '',
-                isHomepageBackgroundDropActive ? 'sona-wallpaper-dropzone--active' : '',
-              ].filter(Boolean).join(' ')}
-              onDragOver={handleHomepageBackgroundDragOver}
-              onDragLeave={handleHomepageBackgroundDragLeave}
-              onDrop={handleHomepageBackgroundDrop}
-            >
-              {homepageBackgroundAssetPaths.length > 0 ? (
-                <div className="sona-wallpaper-grid">
-                  {homepageBackgroundAssetPaths.map((assetPath) => {
-                    const isApplied = homepageBackgroundAssetPath === assetPath
-
-                    return (
-                      <div
-                        className={[
-                          'sona-wallpaper-card',
-                          isApplied ? 'sona-wallpaper-card--applied' : '',
-                        ].filter(Boolean).join(' ')}
-                        key={assetPath}
-                        role="button"
-                        tabIndex={0}
-                        onClick={() => applyHomepageBackgroundAssetPath(assetPath)}
-                        onKeyDown={(event) => {
-                          if (event.key === 'Enter' || event.key === ' ') {
-                            event.preventDefault()
-                            applyHomepageBackgroundAssetPath(assetPath)
-                          }
-                        }}
-                        aria-label={`${t('common.apply')} ${assetPath}`}
-                      >
-                        <button
-                          className="sona-asset-card-remove"
-                          type="button"
-                          onClick={(event) => {
-                            event.stopPropagation()
-                            removeHomepageBackgroundAssetPath(assetPath)
-                          }}
-                          onKeyDown={(event) => event.stopPropagation()}
-                          aria-label={`${t('common.remove')} ${assetPath}`}
-                        >
-                          ×
-                        </button>
-                        <button
-                          className="sona-wallpaper-card-edit"
-                          type="button"
-                          onClick={(event) => {
-                            event.stopPropagation()
-                            openHomepageBackgroundAdjustModal(assetPath)
-                          }}
-                          onKeyDown={(event) => event.stopPropagation()}
-                          aria-label={`${t('beautify.wallpaper.adjust')} ${assetPath}`}
-                        >
-                          {t('beautify.wallpaper.adjust')}
-                        </button>
-                        {isVideoFile(assetPath) ? (
-                          <div className="sona-wallpaper-video-preview">
-                            <img
-                              src={getAssetUrl(getVideoPosterAssetPath(assetPath))}
-                              alt=""
-                              onError={(event) => {
-                                event.currentTarget.classList.remove('sona-wallpaper-video-poster--loaded')
-                                event.currentTarget.parentElement?.classList.add('sona-wallpaper-video-preview--empty')
-                              }}
-                              onLoad={(event) => {
-                                event.currentTarget.classList.add('sona-wallpaper-video-poster--loaded')
-                                event.currentTarget.parentElement?.classList.remove('sona-wallpaper-video-preview--empty')
-                              }}
-                            />
-                            <span>{t('beautify.media.video')}</span>
-                          </div>
-                        ) : (
-                          <img src={getAssetUrl(assetPath)} alt={assetPath} />
-                        )}
-                        <span className="sona-wallpaper-card-name">{assetPath}</span>
-                        <span className="sona-wallpaper-card-action">{t('beautify.wallpaper.clickApply')}</span>
-                      </div>
-                    )
-                  })}
-                  <button
-                    className="sona-wallpaper-add-card"
-                    type="button"
-                    onClick={() => setShowHomepageBackgroundInput((show) => !show)}
-                    aria-label={showHomepageBackgroundInput ? t('common.cancel') : t('beautify.assets.add')}
-                  >
-                    <span
-                      className={[
-                        'sona-wallpaper-add-card-plus',
-                        showHomepageBackgroundInput ? 'sona-wallpaper-add-mark--minus' : '',
-                      ].filter(Boolean).join(' ')}
-                      aria-hidden="true"
-                    />
-                    <span>{showHomepageBackgroundInput ? t('common.cancel') : t('beautify.assets.add')}</span>
-                  </button>
-                </div>
-              ) : (
-                <div className="sona-avatar-dropzone-placeholder">
-                  <button
-                    className="sona-wallpaper-add-trigger"
-                    type="button"
-                    onClick={() => setShowHomepageBackgroundInput((show) => !show)}
-                    aria-label={showHomepageBackgroundInput ? t('common.cancel') : t('beautify.assets.add')}
-                  >
-                    <span
-                      className={showHomepageBackgroundInput ? 'sona-wallpaper-add-mark--minus' : ''}
-                      aria-hidden="true"
-                    />
-                  </button>
-                  <div>{showHomepageBackgroundInput ? t('common.cancel') : t('beautify.wallpaper.dropHint')}</div>
-                </div>
-              )}
-            </div>
-            {showHomepageBackgroundInput && (
+          <div className="sona-setting-switch-panel">
+            <div className="sona-setting-panel-section">
               <SettingCard
-                title={t('beautify.assets.inputTitle')}
-                description={t('beautify.assets.inputDescription')}
+                title={t('beautify.glass.title')}
+                description={t('beautify.glass.description')}
               >
-                <div className="sona-wallpaper-add-form">
-                  <div className="sona-asset-path-row">
-                    <SonaInput
-                      value={assetPathInput}
-                      onChange={setAssetPathInput}
-                      placeholder={t('beautify.assets.examplePlaceholder')}
-                      onKeyDown={(event) => {
-                        if (event.key === 'Enter') addHomepageBackgroundInputPath()
-                      }}
-                    />
-                    <SonaButton onClick={addHomepageBackgroundInputPath}>
-                      {t('beautify.assets.add')}
-                    </SonaButton>
-                    <SonaButton onClick={() => window.openPluginsFolder(getPluginAssetsFolderPath())}>
-                      {t('beautify.assets.openFolder')}
-                    </SonaButton>
-                  </div>
-                  <p className="sona-asset-browser-status">{assetMessage}</p>
+                <div className="sona-glass-settings">
+                  <SonaSlider
+                    label={t('beautify.slider.blur')}
+                    value={glassBlur}
+                    min={0}
+                    max={30}
+                    unit="px"
+                    onChange={updateGlassBlur}
+                  />
+                  <SonaSlider
+                    label={t('beautify.slider.opacity')}
+                    value={glassOpacity}
+                    min={0}
+                    max={80}
+                    unit="%"
+                    onChange={updateGlassOpacity}
+                  />
                 </div>
               </SettingCard>
-            )}
-            <SettingCard
-              title={t('beautify.wallpaper.random.title')}
-              description={t('beautify.wallpaper.random.description')}
-            >
-              <SonaSwitch
-                checked={homepageBackgroundRandom}
-                onChange={toggleHomepageBackgroundRandom}
-              />
-            </SettingCard>
-            <SettingCard title={t('beautify.wallpaper.effect')}>
-              <div className="sona-glass-settings">
-                <SonaSlider
-                  label={t('beautify.slider.blur')}
-                  value={homepageBackgroundBlur}
-                  min={0}
-                  max={30}
-                  unit="px"
-                  onChange={updateHomepageBackgroundBlur}
-                />
-                <SonaSlider
-                  label={t('beautify.slider.opacity')}
-                  value={homepageBackgroundOpacity}
-                  min={0}
-                  max={80}
-                  unit="%"
-                  onChange={updateHomepageBackgroundOpacity}
-                />
+              <div
+                className={[
+                  'sona-wallpaper-dropzone',
+                  homepageBackgroundAssetPaths.length === 0 ? 'sona-wallpaper-dropzone--empty' : '',
+                  isHomepageBackgroundDropActive ? 'sona-wallpaper-dropzone--active' : '',
+                ].filter(Boolean).join(' ')}
+                onDragOver={handleHomepageBackgroundDragOver}
+                onDragLeave={handleHomepageBackgroundDragLeave}
+                onDrop={handleHomepageBackgroundDrop}
+              >
+                {homepageBackgroundAssetPaths.length > 0 ? (
+                  <div className="sona-wallpaper-grid">
+                    {homepageBackgroundAssetPaths.map((assetPath) => {
+                      const isApplied = homepageBackgroundAssetPath === assetPath
+
+                      return (
+                        <div
+                          className={[
+                            'sona-wallpaper-card',
+                            isApplied ? 'sona-wallpaper-card--applied' : '',
+                          ].filter(Boolean).join(' ')}
+                          key={assetPath}
+                          role="button"
+                          tabIndex={0}
+                          onClick={() => applyHomepageBackgroundAssetPath(assetPath)}
+                          onKeyDown={(event) => {
+                            if (event.key === 'Enter' || event.key === ' ') {
+                              event.preventDefault()
+                              applyHomepageBackgroundAssetPath(assetPath)
+                            }
+                          }}
+                          aria-label={`${t('common.apply')} ${assetPath}`}
+                        >
+                          <button
+                            className="sona-asset-card-remove"
+                            type="button"
+                            onClick={(event) => {
+                              event.stopPropagation()
+                              removeHomepageBackgroundAssetPath(assetPath)
+                            }}
+                            onKeyDown={(event) => event.stopPropagation()}
+                            aria-label={`${t('common.remove')} ${assetPath}`}
+                          >
+                            ×
+                          </button>
+                          <button
+                            className="sona-wallpaper-card-edit"
+                            type="button"
+                            onClick={(event) => {
+                              event.stopPropagation()
+                              openHomepageBackgroundAdjustModal(assetPath)
+                            }}
+                            onKeyDown={(event) => event.stopPropagation()}
+                            aria-label={`${t('beautify.wallpaper.adjust')} ${assetPath}`}
+                          >
+                            {t('beautify.wallpaper.adjust')}
+                          </button>
+                          {isVideoFile(assetPath) ? (
+                            <div className="sona-wallpaper-video-preview">
+                              <img
+                                src={getAssetUrl(getVideoPosterAssetPath(assetPath))}
+                                alt=""
+                                onError={(event) => {
+                                  event.currentTarget.classList.remove('sona-wallpaper-video-poster--loaded')
+                                  event.currentTarget.parentElement?.classList.add('sona-wallpaper-video-preview--empty')
+                                }}
+                                onLoad={(event) => {
+                                  event.currentTarget.classList.add('sona-wallpaper-video-poster--loaded')
+                                  event.currentTarget.parentElement?.classList.remove('sona-wallpaper-video-preview--empty')
+                                }}
+                              />
+                              <span>{t('beautify.media.video')}</span>
+                            </div>
+                          ) : (
+                            <img src={getAssetUrl(assetPath)} alt={assetPath} />
+                          )}
+                          <span className="sona-wallpaper-card-name">{assetPath}</span>
+                          <span className="sona-wallpaper-card-action">{t('beautify.wallpaper.clickApply')}</span>
+                        </div>
+                      )
+                    })}
+                    <button
+                      className="sona-wallpaper-add-card"
+                      type="button"
+                      onClick={() => setShowHomepageBackgroundInput((show) => !show)}
+                      aria-label={showHomepageBackgroundInput ? t('common.cancel') : t('beautify.assets.add')}
+                    >
+                      <span
+                        className={[
+                          'sona-wallpaper-add-card-plus',
+                          showHomepageBackgroundInput ? 'sona-wallpaper-add-mark--minus' : '',
+                        ].filter(Boolean).join(' ')}
+                        aria-hidden="true"
+                      />
+                      <span>{showHomepageBackgroundInput ? t('common.cancel') : t('beautify.assets.add')}</span>
+                    </button>
+                  </div>
+                ) : (
+                  <div className="sona-avatar-dropzone-placeholder">
+                    <button
+                      className="sona-wallpaper-add-trigger"
+                      type="button"
+                      onClick={() => setShowHomepageBackgroundInput((show) => !show)}
+                      aria-label={showHomepageBackgroundInput ? t('common.cancel') : t('beautify.assets.add')}
+                    >
+                      <span
+                        className={showHomepageBackgroundInput ? 'sona-wallpaper-add-mark--minus' : ''}
+                        aria-hidden="true"
+                      />
+                    </button>
+                    <div>{showHomepageBackgroundInput ? t('common.cancel') : t('beautify.wallpaper.dropHint')}</div>
+                  </div>
+                )}
               </div>
-            </SettingCard>
-          </>
+              {showHomepageBackgroundInput && (
+                <SettingCard
+                  title={t('beautify.assets.inputTitle')}
+                  description={t('beautify.assets.inputDescription')}
+                >
+                  <div className="sona-wallpaper-add-form">
+                    <div className="sona-asset-path-row">
+                      <SonaInput
+                        value={assetPathInput}
+                        onChange={setAssetPathInput}
+                        placeholder={t('beautify.assets.examplePlaceholder')}
+                        onKeyDown={(event) => {
+                          if (event.key === 'Enter') addHomepageBackgroundInputPath()
+                        }}
+                      />
+                      <SonaButton onClick={addHomepageBackgroundInputPath}>
+                        {t('beautify.assets.add')}
+                      </SonaButton>
+                      <SonaButton onClick={() => window.openPluginsFolder(getPluginAssetsFolderPath())}>
+                        {t('beautify.assets.openFolder')}
+                      </SonaButton>
+                    </div>
+                    <p className="sona-asset-browser-status">{assetMessage}</p>
+                  </div>
+                </SettingCard>
+              )}
+              <SettingCard
+                title={t('beautify.wallpaper.random.title')}
+                description={t('beautify.wallpaper.random.description')}
+              >
+                <SonaSwitch
+                  checked={homepageBackgroundRandom}
+                  onChange={toggleHomepageBackgroundRandom}
+                />
+              </SettingCard>
+              <SettingCard title={t('beautify.wallpaper.effect')}>
+                <div className="sona-glass-settings">
+                  <SonaSlider
+                    label={t('beautify.slider.blur')}
+                    value={homepageBackgroundBlur}
+                    min={0}
+                    max={30}
+                    unit="px"
+                    onChange={updateHomepageBackgroundBlur}
+                  />
+                  <SonaSlider
+                    label={t('beautify.slider.opacity')}
+                    value={homepageBackgroundOpacity}
+                    min={0}
+                    max={80}
+                    unit="%"
+                    onChange={updateHomepageBackgroundOpacity}
+                  />
+                </div>
+              </SettingCard>
+            </div>
+          </div>
         )}
       </SettingGroup>
 
@@ -1196,142 +1198,144 @@ export function CustomPage() {
           />
         </SettingCard>
         {customAvatarMode && (
-          <>
-            <div
-              className={[
-                'sona-avatar-dropzone',
-                customAvatarAssetPaths.length === 0 ? 'sona-avatar-dropzone--empty' : '',
-                isAvatarDropActive ? 'sona-avatar-dropzone--active' : '',
-              ].filter(Boolean).join(' ')}
-              onDragOver={handleAvatarDragOver}
-              onDragLeave={handleAvatarDragLeave}
-              onDrop={handleAvatarDrop}
-            >
-              {customAvatarAssetPaths.length > 0 ? (
-                <div className="sona-avatar-grid">
-                  {customAvatarAssetPaths.map((assetPath) => {
-                    const isApplied = (customAvatarActiveAssetPath ?? customAvatarAssetPaths[0]) === assetPath
-                    const adjustment = customAvatarAdjustments[assetPath] ?? DEFAULT_AVATAR_ADJUSTMENT
+          <div className="sona-setting-switch-panel">
+            <div className="sona-setting-panel-section">
+              <div
+                className={[
+                  'sona-avatar-dropzone',
+                  customAvatarAssetPaths.length === 0 ? 'sona-avatar-dropzone--empty' : '',
+                  isAvatarDropActive ? 'sona-avatar-dropzone--active' : '',
+                ].filter(Boolean).join(' ')}
+                onDragOver={handleAvatarDragOver}
+                onDragLeave={handleAvatarDragLeave}
+                onDrop={handleAvatarDrop}
+              >
+                {customAvatarAssetPaths.length > 0 ? (
+                  <div className="sona-avatar-grid">
+                    {customAvatarAssetPaths.map((assetPath) => {
+                      const isApplied = (customAvatarActiveAssetPath ?? customAvatarAssetPaths[0]) === assetPath
+                      const adjustment = customAvatarAdjustments[assetPath] ?? DEFAULT_AVATAR_ADJUSTMENT
 
-                    return (
-                      <div
-                        className={[
-                          'sona-avatar-card',
-                          isApplied ? 'sona-avatar-card--applied' : '',
-                        ].filter(Boolean).join(' ')}
-                        key={assetPath}
-                        role="button"
-                        tabIndex={0}
-                        onClick={() => applyCustomAvatarAssetPath(assetPath)}
-                        onKeyDown={(event) => {
-                          if (event.key === 'Enter' || event.key === ' ') {
-                            event.preventDefault()
-                            applyCustomAvatarAssetPath(assetPath)
-                          }
-                        }}
-                        aria-label={`${t('common.apply')} ${assetPath}`}
-                      >
-                        <button
-                          className="sona-asset-card-remove"
-                          type="button"
-                          onClick={(event) => {
-                            event.stopPropagation()
-                            removeCustomAvatarAssetPath(assetPath)
+                      return (
+                        <div
+                          className={[
+                            'sona-avatar-card',
+                            isApplied ? 'sona-avatar-card--applied' : '',
+                          ].filter(Boolean).join(' ')}
+                          key={assetPath}
+                          role="button"
+                          tabIndex={0}
+                          onClick={() => applyCustomAvatarAssetPath(assetPath)}
+                          onKeyDown={(event) => {
+                            if (event.key === 'Enter' || event.key === ' ') {
+                              event.preventDefault()
+                              applyCustomAvatarAssetPath(assetPath)
+                            }
                           }}
-                          onKeyDown={(event) => event.stopPropagation()}
-                          aria-label={`${t('common.remove')} ${assetPath}`}
+                          aria-label={`${t('common.apply')} ${assetPath}`}
                         >
-                          ×
-                        </button>
-                        <button
-                          className="sona-wallpaper-card-edit"
-                          type="button"
-                          onClick={(event) => {
-                            event.stopPropagation()
-                            openCustomAvatarAdjustModal(assetPath)
-                          }}
-                          onKeyDown={(event) => event.stopPropagation()}
-                          aria-label={`${t('beautify.wallpaper.adjust')} ${assetPath}`}
-                        >
-                          {t('beautify.wallpaper.adjust')}
-                        </button>
-                        <div className="sona-avatar-card-preview">
-                          <div
-                            className="sona-avatar-preview-stage"
-                            style={getAvatarPreviewStageStyle(assetPath, adjustment)}
+                          <button
+                            className="sona-asset-card-remove"
+                            type="button"
+                            onClick={(event) => {
+                              event.stopPropagation()
+                              removeCustomAvatarAssetPath(assetPath)
+                            }}
+                            onKeyDown={(event) => event.stopPropagation()}
+                            aria-label={`${t('common.remove')} ${assetPath}`}
                           >
-                            <img
-                              src={getAssetUrl(assetPath)}
-                              alt={assetPath}
-                              onLoad={(event) => updateAvatarImageSize(assetPath, event.currentTarget)}
-                            />
+                            ×
+                          </button>
+                          <button
+                            className="sona-wallpaper-card-edit"
+                            type="button"
+                            onClick={(event) => {
+                              event.stopPropagation()
+                              openCustomAvatarAdjustModal(assetPath)
+                            }}
+                            onKeyDown={(event) => event.stopPropagation()}
+                            aria-label={`${t('beautify.wallpaper.adjust')} ${assetPath}`}
+                          >
+                            {t('beautify.wallpaper.adjust')}
+                          </button>
+                          <div className="sona-avatar-card-preview">
+                            <div
+                              className="sona-avatar-preview-stage"
+                              style={getAvatarPreviewStageStyle(assetPath, adjustment)}
+                            >
+                              <img
+                                src={getAssetUrl(assetPath)}
+                                alt={assetPath}
+                                onLoad={(event) => updateAvatarImageSize(assetPath, event.currentTarget)}
+                              />
+                            </div>
                           </div>
+                          <span className="sona-avatar-card-name">{assetPath}</span>
+                          <span className="sona-avatar-card-action">{t('beautify.wallpaper.clickApply')}</span>
                         </div>
-                        <span className="sona-avatar-card-name">{assetPath}</span>
-                        <span className="sona-avatar-card-action">{t('beautify.wallpaper.clickApply')}</span>
-                      </div>
-                    )
-                  })}
-                  <button
-                    className="sona-wallpaper-add-card"
-                    type="button"
-                    onClick={() => setShowAvatarInput((show) => !show)}
-                    aria-label={showAvatarInput ? t('common.cancel') : t('beautify.assets.add')}
-                  >
-                    <span
-                      className={[
-                        'sona-wallpaper-add-card-plus',
-                        showAvatarInput ? 'sona-wallpaper-add-mark--minus' : '',
-                      ].filter(Boolean).join(' ')}
-                      aria-hidden="true"
-                    />
-                    <span>{showAvatarInput ? t('common.cancel') : t('beautify.assets.add')}</span>
-                  </button>
-                </div>
-              ) : (
-                <div className="sona-avatar-dropzone-placeholder">
-                  <button
-                    className="sona-wallpaper-add-trigger"
-                    type="button"
-                    onClick={() => setShowAvatarInput((show) => !show)}
-                    aria-label={showAvatarInput ? t('common.cancel') : t('beautify.assets.add')}
-                  >
-                    <span
-                      className={showAvatarInput ? 'sona-wallpaper-add-mark--minus' : ''}
-                      aria-hidden="true"
-                    />
-                  </button>
-                  <div>{showAvatarInput ? t('common.cancel') : t('beautify.avatar.dropHint')}</div>
-                </div>
+                      )
+                    })}
+                    <button
+                      className="sona-wallpaper-add-card"
+                      type="button"
+                      onClick={() => setShowAvatarInput((show) => !show)}
+                      aria-label={showAvatarInput ? t('common.cancel') : t('beautify.assets.add')}
+                    >
+                      <span
+                        className={[
+                          'sona-wallpaper-add-card-plus',
+                          showAvatarInput ? 'sona-wallpaper-add-mark--minus' : '',
+                        ].filter(Boolean).join(' ')}
+                        aria-hidden="true"
+                      />
+                      <span>{showAvatarInput ? t('common.cancel') : t('beautify.assets.add')}</span>
+                    </button>
+                  </div>
+                ) : (
+                  <div className="sona-avatar-dropzone-placeholder">
+                    <button
+                      className="sona-wallpaper-add-trigger"
+                      type="button"
+                      onClick={() => setShowAvatarInput((show) => !show)}
+                      aria-label={showAvatarInput ? t('common.cancel') : t('beautify.assets.add')}
+                    >
+                      <span
+                        className={showAvatarInput ? 'sona-wallpaper-add-mark--minus' : ''}
+                        aria-hidden="true"
+                      />
+                    </button>
+                    <div>{showAvatarInput ? t('common.cancel') : t('beautify.avatar.dropHint')}</div>
+                  </div>
+                )}
+              </div>
+              {showAvatarInput && (
+                <SettingCard
+                  title={t('beautify.avatar.inputTitle')}
+                  description={t('beautify.avatar.inputDescription')}
+                >
+                  <div className="sona-wallpaper-add-form">
+                    <div className="sona-asset-path-row">
+                      <SonaInput
+                        value={assetPathInput}
+                        onChange={setAssetPathInput}
+                        placeholder={t('beautify.assets.examplePlaceholder')}
+                        onKeyDown={(event) => {
+                          if (event.key === 'Enter') addCustomAvatarInputPath()
+                        }}
+                      />
+                      <SonaButton onClick={addCustomAvatarInputPath}>
+                        {t('beautify.assets.add')}
+                      </SonaButton>
+                      <SonaButton onClick={() => window.openPluginsFolder(getPluginAssetsFolderPath())}>
+                        {t('beautify.assets.openFolder')}
+                      </SonaButton>
+                    </div>
+                    <p className="sona-asset-browser-status">{assetMessage}</p>
+                  </div>
+                </SettingCard>
               )}
             </div>
-            {showAvatarInput && (
-              <SettingCard
-                title={t('beautify.avatar.inputTitle')}
-                description={t('beautify.avatar.inputDescription')}
-              >
-                <div className="sona-wallpaper-add-form">
-                  <div className="sona-asset-path-row">
-                    <SonaInput
-                      value={assetPathInput}
-                      onChange={setAssetPathInput}
-                      placeholder={t('beautify.assets.examplePlaceholder')}
-                      onKeyDown={(event) => {
-                        if (event.key === 'Enter') addCustomAvatarInputPath()
-                      }}
-                    />
-                    <SonaButton onClick={addCustomAvatarInputPath}>
-                      {t('beautify.assets.add')}
-                    </SonaButton>
-                    <SonaButton onClick={() => window.openPluginsFolder(getPluginAssetsFolderPath())}>
-                      {t('beautify.assets.openFolder')}
-                    </SonaButton>
-                  </div>
-                  <p className="sona-asset-browser-status">{assetMessage}</p>
-                </div>
-              </SettingCard>
-            )}
-          </>
+          </div>
         )}
       </SettingGroup>
 
