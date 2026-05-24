@@ -756,6 +756,24 @@ function syncHomepageBackgroundGlassConfig() {
   })
 }
 
+function pickRandomHomepageBackgroundOnStartup() {
+  if (!store.get('beautifyHomepageBackgroundRandom')) return
+
+  const assetPaths = store.get('beautifyHomepageBackgroundAssetPaths').filter(Boolean)
+  if (assetPaths.length === 0) return
+
+  const lastAssetPath = store.get('beautifyHomepageBackgroundLastRandomAssetPath')
+  const candidates = assetPaths.length > 1
+    ? assetPaths.filter((assetPath) => assetPath !== lastAssetPath)
+    : assetPaths
+  const selectedAssetPath = candidates[Math.floor(Math.random() * candidates.length)]
+  if (!selectedAssetPath) return
+
+  store.set('beautifyHomepageBackgroundAssetPath', selectedAssetPath)
+  store.set('beautifyHomepageBackgroundLastRandomAssetPath', selectedAssetPath)
+  logger.info('[HomepageBackground] 随机启动壁纸：%s', selectedAssetPath)
+}
+
 export function initFeatures() {
   preloadChampSelectTierBadgeData()
 
@@ -822,6 +840,7 @@ export function initFeatures() {
   store.onChange('beautifyHomepageBackgroundOpacity', syncHomepageBackgroundGlassConfig)
   updateBeautifyHomepageBackgroundAdjustments(store.get('beautifyHomepageBackgroundAdjustments'))
   store.onChange('beautifyHomepageBackgroundAdjustments', updateBeautifyHomepageBackgroundAdjustments)
+  pickRandomHomepageBackgroundOnStartup()
   updateBeautifyHomepageBackground(store.get('beautifyHomepageBackgroundAssetPath'))
   store.onChange('beautifyHomepageBackgroundAssetPath', updateBeautifyHomepageBackground)
 

@@ -81,6 +81,7 @@ export function BeautifyPage() {
   const [assetPathInput, setAssetPathInput] = useState('')
   const [beautifyWallpaperMode, setBeautifyWallpaperMode] = useState(() => store.get('beautifyWallpaperMode'))
   const [homepageBackgroundAssetPath, setHomepageBackgroundAssetPath] = useState(() => store.get('beautifyHomepageBackgroundAssetPath'))
+  const [homepageBackgroundRandom, setHomepageBackgroundRandom] = useState(() => store.get('beautifyHomepageBackgroundRandom'))
   const [homepageBackgroundAssetPaths, setHomepageBackgroundAssetPaths] = useState(() => {
     const paths = store.get('beautifyHomepageBackgroundAssetPaths')
     const activePath = store.get('beautifyHomepageBackgroundAssetPath')
@@ -117,6 +118,11 @@ export function BeautifyPage() {
   const saveHomepageBackgroundAssetPaths = (paths: string[]) => {
     setHomepageBackgroundAssetPaths(paths)
     store.set('beautifyHomepageBackgroundAssetPaths', paths)
+  }
+
+  const toggleHomepageBackgroundRandom = (enabled: boolean) => {
+    setHomepageBackgroundRandom(enabled)
+    store.set('beautifyHomepageBackgroundRandom', enabled)
   }
 
   const saveHomepageBackgroundAdjustments = (adjustments: Record<string, WallpaperAdjustment>) => {
@@ -188,6 +194,9 @@ export function BeautifyPage() {
     saveHomepageBackgroundAssetPaths(nextHomepageBackgroundAssetPaths)
     saveHomepageBackgroundAdjustments(nextHomepageBackgroundAdjustments)
     saveCustomAvatarAssetPaths(customAvatarAssetPaths.filter((path) => path !== assetPath))
+    if (store.get('beautifyHomepageBackgroundLastRandomAssetPath') === assetPath) {
+      store.set('beautifyHomepageBackgroundLastRandomAssetPath', null)
+    }
     if (homepageBackgroundAssetPath === assetPath) {
       saveHomepageBackgroundAssetPath(nextHomepageBackgroundAssetPaths[0] ?? null)
     }
@@ -226,6 +235,9 @@ export function BeautifyPage() {
     delete nextAdjustments[assetPath]
     saveHomepageBackgroundAssetPaths(nextPaths)
     saveHomepageBackgroundAdjustments(nextAdjustments)
+    if (store.get('beautifyHomepageBackgroundLastRandomAssetPath') === assetPath) {
+      store.set('beautifyHomepageBackgroundLastRandomAssetPath', null)
+    }
     if (homepageBackgroundAssetPath === assetPath) {
       saveHomepageBackgroundAssetPath(nextPaths[0] ?? null)
     }
@@ -588,6 +600,15 @@ export function BeautifyPage() {
                 </div>
               )}
             </div>
+            <SettingCard
+              title="随机壁纸"
+              description="每次启动客户端时，从上方主页壁纸列表随机应用新的壁纸。"
+            >
+              <SonaSwitch
+                checked={homepageBackgroundRandom}
+                onChange={toggleHomepageBackgroundRandom}
+              />
+            </SettingCard>
             <SettingCard title="主页壁纸效果">
               <div className="sona-glass-settings">
                 <SonaSlider
