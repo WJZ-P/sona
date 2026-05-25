@@ -88,6 +88,27 @@
   min-width: 50px;
 }
 
+.sona-setting-switch-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 0 12px 12px;
+}
+
+.sona-setting-panel-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sona-setting-panel-title {
+  margin: 6px 0 2px;
+  color: #c8aa6e;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
 /* ---- 通用小标题/说明文字 ---- */
 .sona-subtitle {
   margin: 8px 0 4px;

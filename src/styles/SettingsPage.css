@@ -152,6 +152,35 @@
   white-space: nowrap;
 }
 
+.sona-wallpaper-add-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: min(760px, 100%);
+}
+
+.sona-setting-card:has(.sona-wallpaper-add-form) {
+  align-items: flex-start;
+}
+
+.sona-setting-card:has(.sona-wallpaper-add-form) .sona-setting-card-info {
+  flex: 0 0 180px;
+}
+
+.sona-setting-card:has(.sona-wallpaper-add-form) .sona-setting-card-action {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.sona-wallpaper-add-form .sona-asset-path-row {
+  width: 100%;
+  min-width: 0;
+}
+
+.sona-wallpaper-add-form .sona-asset-browser-status {
+  margin: 0;
+}
+
 .sona-asset-empty {
   margin: 10px 0 0;
   color: #785a28;
@@ -210,6 +239,7 @@
 
 .sona-asset-card-remove {
   position: absolute;
+  z-index: 3;
   top: 4px;
   right: 4px;
   width: 22px;
@@ -314,6 +344,7 @@
 
 .sona-wallpaper-card-edit {
   position: absolute;
+  z-index: 3;
   top: 4px;
   left: 4px;
   height: 22px;
@@ -329,7 +360,8 @@
   transition: opacity 0.15s ease, background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 }
 
-.sona-wallpaper-card:hover .sona-wallpaper-card-edit {
+.sona-wallpaper-card:hover .sona-wallpaper-card-edit,
+.sona-avatar-card:hover .sona-wallpaper-card-edit {
   opacity: 1;
 }
 
@@ -376,6 +408,65 @@
 
 .sona-wallpaper-card:hover .sona-wallpaper-card-action {
   display: block;
+}
+
+.sona-wallpaper-add-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 132px;
+  padding: 8px;
+  border: 1px dashed rgba(200, 170, 110, 0.32);
+  border-radius: 4px;
+  background: rgba(30, 35, 40, 0.32);
+  color: #a09b8c;
+  font-size: 12px;
+  cursor: pointer;
+  transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+}
+
+.sona-wallpaper-add-card:hover,
+.sona-wallpaper-add-card:focus-visible {
+  transform: translateY(-2px);
+  border-color: rgba(200, 170, 110, 0.62);
+  background: rgba(30, 35, 40, 0.58);
+  color: #f0e6d2;
+  outline: none;
+}
+
+.sona-wallpaper-add-card-plus {
+  position: relative;
+  width: 52px;
+  height: 52px;
+  border: 1px solid rgba(200, 170, 110, 0.38);
+  border-radius: 4px;
+  color: #c8aa6e;
+  background: rgba(1, 10, 19, 0.35);
+}
+
+.sona-wallpaper-add-card-plus::before,
+.sona-wallpaper-add-card-plus::after,
+.sona-wallpaper-add-trigger > span::before,
+.sona-wallpaper-add-trigger > span::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 34px;
+  height: 7px;
+  background: currentColor;
+  transform: translate(-50%, -50%);
+}
+
+.sona-wallpaper-add-card-plus::after,
+.sona-wallpaper-add-trigger > span::after {
+  transform: translate(-50%, -50%) rotate(90deg);
+}
+
+.sona-wallpaper-add-mark--minus::after {
+  display: none;
 }
 
 .sona-wallpaper-adjust-modal {
@@ -448,6 +539,47 @@
   object-fit: cover;
   transform-origin: center center;
   pointer-events: none;
+}
+
+.sona-avatar-adjust-frame {
+  position: relative;
+  overflow: hidden;
+  touch-action: none;
+  width: min(360px, 100%);
+  aspect-ratio: 1;
+  margin: 0 auto;
+  background:
+    linear-gradient(135deg, rgba(200, 170, 110, 0.04), transparent 34%),
+    rgba(1, 10, 19, 0.62);
+  border: 1px dashed rgba(200, 170, 110, 0.48);
+  cursor: move;
+  user-select: none;
+}
+
+.sona-avatar-preview-stage {
+  position: absolute;
+  transform-origin: center center;
+  pointer-events: none;
+}
+
+.sona-avatar-preview-stage img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  object-fit: fill;
+  pointer-events: none;
+}
+
+.sona-avatar-adjust-mask {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  pointer-events: none;
+  box-shadow:
+    inset 0 0 0 1px rgba(240, 230, 210, 0.56),
+    0 0 0 999px rgba(1, 10, 19, 0.38);
 }
 
 .sona-wallpaper-adjust-controls {
@@ -531,6 +663,44 @@
   background: rgba(30, 35, 40, 0.45);
 }
 
+.sona-wallpaper-add-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100px;
+  height: 100px;
+  padding: 0;
+  border: 1px solid rgba(200, 170, 110, 0.38);
+  border-radius: 6px;
+  background: rgba(30, 35, 40, 0.45);
+  color: #c8aa6e;
+  font-size: 78px;
+  cursor: pointer;
+  transition: background 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease, color 0.18s ease;
+}
+
+.sona-wallpaper-add-trigger:hover,
+.sona-wallpaper-add-trigger:focus-visible {
+  border-color: rgba(200, 170, 110, 0.72);
+  background: rgba(200, 170, 110, 0.12);
+  box-shadow: 0 0 14px rgba(200, 170, 110, 0.16);
+  color: #f0e6d2;
+  outline: none;
+}
+
+.sona-wallpaper-add-trigger > span {
+  position: relative;
+  width: 68px;
+  height: 68px;
+  color: inherit;
+}
+
+.sona-wallpaper-add-trigger > span::before,
+.sona-wallpaper-add-trigger > span::after {
+  width: 58px;
+  height: 9px;
+}
+
 .sona-avatar-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(112px, 1fr));
@@ -568,11 +738,13 @@
   opacity: 1;
 }
 
-.sona-avatar-card img {
+.sona-avatar-card-preview {
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
   display: block;
   width: 100%;
   aspect-ratio: 1;
-  object-fit: cover;
   border: 1px solid rgba(120, 90, 40, 0.36);
   border-radius: 50%;
   background: rgba(0, 0, 0, 0.24);

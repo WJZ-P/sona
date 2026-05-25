@@ -854,7 +854,10 @@ export function initFeatures() {
   store.onChange('customBanner', updateCustomBanner)
 
   updateBeautifyCustomAvatar()
+  store.onChange('customAvatarMode', updateBeautifyCustomAvatar)
   store.onChange('customAvatarAssetPaths', updateBeautifyCustomAvatar)
+  store.onChange('customAvatarActiveAssetPath', updateBeautifyCustomAvatar)
+  store.onChange('customAvatarAdjustments', updateBeautifyCustomAvatar)
 
   initSocialSidebarGlass()
   syncSocialSidebarGlassConfig()

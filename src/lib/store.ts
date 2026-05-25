@@ -120,8 +120,18 @@ export interface SonaConfig {
   beautifyGlassOpacity: number
   /** 美化资源：用户手动录入的 assets 相对路径列表 */
   beautifyAssetPaths: string[]
+  /** 自定义头像开关 */
+  customAvatarMode: boolean
   /** 自定义头像资源：从美化资源区复制引用的 assets 相对路径列表 */
   customAvatarAssetPaths: string[]
+  /** 当前应用的自定义头像资源路径 */
+  customAvatarActiveAssetPath: string | null
+  /** 自定义头像取景参数：key 为 assets 相对路径 */
+  customAvatarAdjustments: Record<string, {
+    scale: number
+    offsetX: number
+    offsetY: number
+  }>
   /** 好友可见自定义头像缓存：key 为 PUUID，value 为远端图片直链 */
   customAvatarRemoteCache: Record<string, string>
   /** 好友智能分组（开黑好友用同样颜色的border-right展示） */
@@ -232,7 +242,10 @@ const DEFAULT_CONFIG: SonaConfig = {
   beautifyGlassBlur: 14,
   beautifyGlassOpacity: 28,
   beautifyAssetPaths: [],
+  customAvatarMode: false,
   customAvatarAssetPaths: [],
+  customAvatarActiveAssetPath: null,
+  customAvatarAdjustments: {},
   customAvatarRemoteCache: {},
   friendSmartGroup: false,
   enhancedFriendGameStatus: true,

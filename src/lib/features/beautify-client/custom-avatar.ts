@@ -31,6 +31,9 @@ const VOICE_PUUID_ATTR = 'voice-puuid'
 const SOCIAL_MEMBER_SELECTOR = '[class*="lol-social-roster-member"]'
 const SOCIAL_MEMBER_NAME_SELECTOR = '.member-name'
 const FRIENDS_URI = '/lol-chat/v1/friends'
+const AVATAR_OUTPUT_SIZE = 96
+const FALLBACK_PROFILE_ICON_ID = 0
+const DEFAULT_AVATAR_ADJUSTMENT = { scale: 1, offsetX: 0, offsetY: 0 }
 
 let customAvatarRegistered = false
 let customAvatarObserver: MutationObserver | null = null
@@ -43,6 +46,11 @@ let friendAvatarUnsub: (() => void) | null = null
 let ownStatusUnsub: (() => void) | null = null
 let friendAvatarRefreshTimer: number | null = null
 let ownStatusRestorePromise: Promise<void> | null = null
+let defaultProfileIconUrlPromise: Promise<string> | null = null
+let localAvatarObjectUrl: string | null = null
+let localAvatarCacheKey = ''
+const localAvatarBuildPromises = new Map<string, Promise<string>>()
+const failedLocalAvatarCacheKeys = new Set<string>()
 const friendImageObservers = new Map<HTMLImageElement, MutationObserver>()
 const regaliaElementObservers = new Map<Element, MutationObserver>()
 const regaliaPartyHostObservers = new Map<Element, MutationObserver>()
@@ -52,8 +60,14 @@ const regaliaShadowRootObservers = new Map<ShadowRoot, MutationObserver>()
 const patchedFriendImages = new Set<HTMLImageElement>()
 const patchedRegaliaElements = new Set<Element>()
 const originalFriendImageSrc = new WeakMap<HTMLImageElement, string | null>()
+const originalFriendImageStyle = new WeakMap<HTMLImageElement, {
+  borderRadius: string
+  objectFit: string
+  objectPosition: string
+}>()
 const originalRegaliaProfileIconUrl = new WeakMap<Element, string | null>()
 const originalRegaliaSummonerIconBackgroundImage = new WeakMap<Element, string | null>()
+const originalRegaliaProfileIconProperty = new WeakMap<Element, string | null>()
 const patchedFriendImagePuuid = new WeakMap<HTMLImageElement, string>()
 const patchedRegaliaElementPuuid = new WeakMap<Element, string>()
 const remoteAvatarCache = new Map<string, string | null>(
@@ -66,9 +80,161 @@ function getAssetUrl(assetPath: string): string {
   return resolvePluginAssetUrl(assetPath)
 }
 
+function getProfileIconUrl(profileIconId: number): string {
+  return `/lol-game-data/assets/v1/profile-icons/${profileIconId}.jpg`
+}
+
+function getDefaultProfileIconUrl(): Promise<string> {
+  const fallbackProfileIconUrl = getProfileIconUrl(FALLBACK_PROFILE_ICON_ID)
+
+  defaultProfileIconUrlPromise ??= lcu.getSummonerInfo()
+    .then((summoner) => {
+      ownPuuidCache = normalizePuuid(summoner.puuid)
+      return summoner.profileIconId ? getProfileIconUrl(summoner.profileIconId) : fallbackProfileIconUrl
+    })
+    .catch((err) => {
+      defaultProfileIconUrlPromise = null
+      logger.warn('[CustomAvatarSync] 获取默认头像失败:', err)
+      return fallbackProfileIconUrl
+    })
+
+  return defaultProfileIconUrlPromise
+}
+
+function getCurrentAvatarAssetPath(): string {
+  const assetPaths = store.get('customAvatarAssetPaths')
+  const activePath = store.get('customAvatarActiveAssetPath')
+  return activePath && assetPaths.includes(activePath) ? activePath : assetPaths[0] ?? ''
+}
+
+function getAvatarAdjustment(assetPath: string) {
+  return store.get('customAvatarAdjustments')[assetPath] ?? DEFAULT_AVATAR_ADJUSTMENT
+}
+
+function getLocalAvatarCacheKey(assetPath: string): string {
+  const adjustment = getAvatarAdjustment(assetPath)
+  return `${assetPath}:${adjustment.scale}:${adjustment.offsetX}:${adjustment.offsetY}`
+}
+
+function clampNumber(value: number, min: number, max: number): number {
+  return Math.min(Math.max(value, min), max)
+}
+
+function getAvatarOffsetLimit(imageWidth: number, imageHeight: number, scale: number) {
+  const aspectRatio = imageWidth / imageHeight
+  const coverWidthRatio = (aspectRatio >= 1 ? aspectRatio : 1) * scale
+  const coverHeightRatio = (aspectRatio >= 1 ? 1 : 1 / aspectRatio) * scale
+
+  return {
+    maxOffsetX: Math.max(0, ((coverWidthRatio - 1) / 2) * 100),
+    maxOffsetY: Math.max(0, ((coverHeightRatio - 1) / 2) * 100),
+  }
+}
+
+function loadImage(src: string): Promise<HTMLImageElement> {
+  return new Promise((resolve, reject) => {
+    const image = new Image()
+    image.onload = () => resolve(image)
+    image.onerror = () => reject(new Error(`Failed to load image: ${src}`))
+    image.src = src
+  })
+}
+
+async function loadImageFromAsset(assetPath: string): Promise<HTMLImageElement> {
+  const response = await fetch(getAssetUrl(assetPath))
+  if (!response.ok) {
+    throw new Error(`Failed to load avatar asset: ${response.status} ${response.statusText}`)
+  }
+
+  const objectUrl = URL.createObjectURL(await response.blob())
+  try {
+    return await loadImage(objectUrl)
+  } finally {
+    URL.revokeObjectURL(objectUrl)
+  }
+}
+
+export async function createCustomAvatarImageBlob(assetPath: string): Promise<Blob> {
+  const adjustment = getAvatarAdjustment(assetPath)
+  const image = await loadImageFromAsset(assetPath)
+  const canvas = document.createElement('canvas')
+  canvas.width = AVATAR_OUTPUT_SIZE
+  canvas.height = AVATAR_OUTPUT_SIZE
+  const context = canvas.getContext('2d')
+  if (!context) throw new Error('Unable to create avatar canvas.')
+
+  const baseSize = Math.max(canvas.width / image.naturalWidth, canvas.height / image.naturalHeight)
+  const drawWidth = image.naturalWidth * baseSize * adjustment.scale
+  const drawHeight = image.naturalHeight * baseSize * adjustment.scale
+  const { maxOffsetX, maxOffsetY } = getAvatarOffsetLimit(image.naturalWidth, image.naturalHeight, adjustment.scale)
+  const offsetX = clampNumber(adjustment.offsetX, -maxOffsetX, maxOffsetX)
+  const offsetY = clampNumber(adjustment.offsetY, -maxOffsetY, maxOffsetY)
+  const drawX = (canvas.width - drawWidth) / 2 + (offsetX / 100) * canvas.width
+  const drawY = (canvas.height - drawHeight) / 2 + (offsetY / 100) * canvas.height
+  context.clearRect(0, 0, canvas.width, canvas.height)
+  context.drawImage(image, drawX, drawY, drawWidth, drawHeight)
+
+  return new Promise<Blob>((resolve, reject) => {
+    canvas.toBlob((result) => {
+      if (result) resolve(result)
+      else reject(new Error('Unable to export avatar canvas.'))
+    }, 'image/png')
+  })
+}
+
+function clearLocalAvatarObjectUrl() {
+  if (localAvatarObjectUrl) {
+    URL.revokeObjectURL(localAvatarObjectUrl)
+    localAvatarObjectUrl = null
+  }
+  localAvatarCacheKey = ''
+}
+
+function buildLocalAvatarUrl(assetPath: string, cacheKey: string): Promise<string> {
+  if (failedLocalAvatarCacheKeys.has(cacheKey)) return Promise.resolve(localAvatarObjectUrl ?? '')
+
+  const existingPromise = localAvatarBuildPromises.get(cacheKey)
+  if (existingPromise) return existingPromise
+
+  const buildPromise = createCustomAvatarImageBlob(assetPath)
+    .then((blob) => {
+      if (!store.get('customAvatarMode')) return ''
+      if (getCurrentAvatarAssetPath() !== assetPath) return ''
+      if (getLocalAvatarCacheKey(assetPath) !== cacheKey) return ''
+
+      clearLocalAvatarObjectUrl()
+      localAvatarObjectUrl = URL.createObjectURL(blob)
+      localAvatarCacheKey = cacheKey
+      failedLocalAvatarCacheKeys.delete(cacheKey)
+      return localAvatarObjectUrl
+    })
+    .catch((err) => {
+      failedLocalAvatarCacheKeys.add(cacheKey)
+      logger.warn('[CustomAvatarSync] 生成本地裁切头像失败:', err)
+      return localAvatarObjectUrl ?? ''
+    })
+    .finally(() => {
+      localAvatarBuildPromises.delete(cacheKey)
+      if (getCurrentAvatarAssetPath() === assetPath && getLocalAvatarCacheKey(assetPath) === cacheKey && !failedLocalAvatarCacheKeys.has(cacheKey)) {
+        scheduleApplyCustomAvatar()
+      }
+    })
+
+  localAvatarBuildPromises.set(cacheKey, buildPromise)
+  return buildPromise
+}
+
 function getCurrentAvatarUrl(): string {
-  const [assetPath] = store.get('customAvatarAssetPaths')
-  return assetPath ? getAssetUrl(assetPath) : ''
+  const assetPath = getCurrentAvatarAssetPath()
+  if (!assetPath) return ''
+
+  const cacheKey = getLocalAvatarCacheKey(assetPath)
+  if (localAvatarObjectUrl && localAvatarCacheKey === cacheKey) {
+    return localAvatarObjectUrl
+  }
+
+  void buildLocalAvatarUrl(assetPath, cacheKey)
+  return localAvatarObjectUrl ?? ''
 }
 
 function normalizePuuid(value: string | null | undefined): string {
@@ -467,6 +633,15 @@ function restoreFriendAvatar(image: HTMLImageElement): boolean {
   const original = originalFriendImageSrc.get(image)
   if (original == null) image.removeAttribute('src')
   else image.setAttribute('src', original)
+
+  const originalStyle = originalFriendImageStyle.get(image)
+  if (originalStyle) {
+    image.style.objectFit = originalStyle.objectFit
+    image.style.objectPosition = originalStyle.objectPosition
+    image.style.borderRadius = originalStyle.borderRadius
+    originalFriendImageStyle.delete(image)
+  }
+
   patchedFriendImages.delete(image)
   patchedFriendImagePuuid.delete(image)
   return true
@@ -478,6 +653,17 @@ function patchFriendAvatar(image: HTMLImageElement, avatarUrl: string, puuid: st
   if (!originalFriendImageSrc.has(image)) {
     originalFriendImageSrc.set(image, image.getAttribute('src'))
   }
+  if (!originalFriendImageStyle.has(image)) {
+    originalFriendImageStyle.set(image, {
+      borderRadius: image.style.borderRadius,
+      objectFit: image.style.objectFit,
+      objectPosition: image.style.objectPosition,
+    })
+  }
+
+  image.style.objectFit = 'cover'
+  image.style.objectPosition = 'center'
+  image.style.borderRadius = '50%'
 
   if (image.getAttribute('src') === avatarUrl) return false
 
@@ -494,15 +680,23 @@ function restoreRegaliaAvatar(element: Element): boolean {
 
   if (originalRegaliaProfileIconUrl.has(element)) {
     const original = originalRegaliaProfileIconUrl.get(element)
+    const regaliaElement = element as unknown as { profileIconUrl?: string }
+    const originalProperty = originalRegaliaProfileIconProperty.get(element)
     if (original == null) element.removeAttribute(PROFILE_ICON_ATTR)
     else element.setAttribute(PROFILE_ICON_ATTR, original)
-    ;(element as unknown as { profileIconUrl?: string }).profileIconUrl = original ?? ''
+    if (originalProperty == null) {
+      delete regaliaElement.profileIconUrl
+    } else {
+      regaliaElement.profileIconUrl = originalProperty
+    }
+    element.dispatchEvent(new CustomEvent('profile-icon-url-changed', { bubbles: true, composed: true }))
     originalRegaliaProfileIconUrl.delete(element)
+    originalRegaliaProfileIconProperty.delete(element)
     changed = true
   }
 
   if (originalRegaliaSummonerIconBackgroundImage.has(element)) {
-    const icon = getRegaliaSummonerIconElement(element)
+    const icon = getRegaliaSummonerIconElement(element, false)
     const original = originalRegaliaSummonerIconBackgroundImage.get(element)
     if (icon) icon.style.backgroundImage = original ?? ''
     originalRegaliaSummonerIconBackgroundImage.delete(element)
@@ -523,6 +717,10 @@ function patchRegaliaAvatar(element: Element, avatarUrl: string, puuid: string):
 
   if (!originalRegaliaProfileIconUrl.has(element)) {
     originalRegaliaProfileIconUrl.set(element, element.getAttribute(PROFILE_ICON_ATTR))
+    originalRegaliaProfileIconProperty.set(
+      element,
+      (element as unknown as { profileIconUrl?: string }).profileIconUrl ?? null,
+    )
   }
 
   if (element.getAttribute(PROFILE_ICON_ATTR) === avatarUrl) return false
@@ -534,11 +732,11 @@ function patchRegaliaAvatar(element: Element, avatarUrl: string, puuid: string):
   return true
 }
 
-function getRegaliaSummonerIconElement(element: Element): HTMLElement | null {
+function getRegaliaSummonerIconElement(element: Element, shouldObserve = true): HTMLElement | null {
   const shadowRoot = (element as HTMLElement).shadowRoot
   if (!shadowRoot) return null
 
-  observeRegaliaShadowRoot(shadowRoot)
+  if (shouldObserve) observeRegaliaShadowRoot(shadowRoot)
   return shadowRoot.querySelector<HTMLElement>(REGALIA_SUMMONER_ICON_SELECTOR)
 }
 
@@ -601,7 +799,7 @@ interface RegaliaAvatarCandidate {
   puuid: string
 }
 
-function queryRegaliaAvatarElements(): RegaliaAvatarCandidate[] {
+function queryRegaliaAvatarElements(shouldObserve = true): RegaliaAvatarCandidate[] {
   const candidates = new Map<Element, RegaliaAvatarCandidate>()
   const visitedRoots = new Set<ParentNode>()
 
@@ -615,7 +813,7 @@ function queryRegaliaAvatarElements(): RegaliaAvatarCandidate[] {
     if (visitedRoots.has(root)) return
     visitedRoots.add(root)
 
-    if (root instanceof ShadowRoot) {
+    if (root instanceof ShadowRoot && shouldObserve) {
       observeRegaliaShadowRoot(root)
     }
 
@@ -627,9 +825,9 @@ function queryRegaliaAvatarElements(): RegaliaAvatarCandidate[] {
       const shadowRoot = host.shadowRoot
       if (!shadowRoot) return
 
-      if (host.matches(REGALIA_PARTY_ANY_HOST_SELECTOR)) {
+      if (shouldObserve && host.matches(REGALIA_PARTY_ANY_HOST_SELECTOR)) {
         observeRegaliaPartyHost(host)
-      } else if (host.matches(REGALIA_HOVERCARD_HOST_SELECTOR) || host.matches(REGALIA_PROFILE_HOST_SELECTOR)) {
+      } else if (shouldObserve && (host.matches(REGALIA_HOVERCARD_HOST_SELECTOR) || host.matches(REGALIA_PROFILE_HOST_SELECTOR))) {
         observeRegaliaHovercardHost(host)
       }
 
@@ -723,6 +921,54 @@ function restorePatchedAvatars() {
     restoreRegaliaAvatar(element)
   })
   patchedRegaliaElements.clear()
+}
+
+function patchRegaliaAvatarUrl(element: Element, avatarUrl: string) {
+  element.setAttribute(PROFILE_ICON_ATTR, avatarUrl)
+  ;(element as unknown as { profileIconUrl?: string }).profileIconUrl = avatarUrl
+  element.dispatchEvent(new CustomEvent('profile-icon-url-changed', { bubbles: true, composed: true }))
+}
+
+function applyDefaultOwnAvatarUrl(defaultAvatarUrl: string): boolean {
+  const ownPuuid = getOwnPuuid()
+  if (!defaultAvatarUrl || !ownPuuid) return false
+
+  let changed = false
+  document.querySelectorAll<HTMLImageElement>(OWN_SOCIAL_AVATAR_SELECTOR).forEach((image) => {
+    if (image.getAttribute('src') !== defaultAvatarUrl) {
+      image.setAttribute('src', defaultAvatarUrl)
+      changed = true
+    }
+    image.style.objectFit = 'cover'
+    image.style.objectPosition = 'center'
+    image.style.borderRadius = '50%'
+  })
+
+  queryRegaliaAvatarElements(false).forEach(({ element, puuid }) => {
+    if (normalizePuuid(puuid) !== ownPuuid) return
+    if (element.getAttribute(PROFILE_ICON_ATTR) !== defaultAvatarUrl) {
+      patchRegaliaAvatarUrl(element, defaultAvatarUrl)
+      changed = true
+    }
+  })
+
+  return changed
+}
+
+function restorePatchedAvatarsToDefault() {
+  restorePatchedAvatars()
+  void getDefaultProfileIconUrl().then((defaultAvatarUrl) => {
+    if (store.get('customAvatarMode')) return
+    applyDefaultOwnAvatarUrl(defaultAvatarUrl)
+  })
+}
+
+function restoreOwnAvatarToDefaultWhenNoCustomAvatar() {
+  void getDefaultProfileIconUrl().then((defaultAvatarUrl) => {
+    if (!store.get('customAvatarMode')) return
+    if (getCurrentAvatarAssetPath()) return
+    applyDefaultOwnAvatarUrl(defaultAvatarUrl)
+  })
 }
 
 function restoreOwnPatchedAvatars(ownPuuid: string): boolean {
@@ -821,24 +1067,38 @@ function disableCustomAvatar() {
     customAvatarRaf = 0
   }
 
-  restorePatchedAvatars()
+  restorePatchedAvatarsToDefault()
 }
 
 export function updateBeautifyCustomAvatar() {
+  if (!store.get('customAvatarMode')) {
+    clearLocalAvatarObjectUrl()
+    disableCustomAvatar()
+    void clearAvatarUrlFromStatusMessage().catch((err) => {
+      logger.warn('[CustomAvatarSync] 清理简介头像同步信息失败:', err)
+    })
+    return
+  }
+
   enableCustomAvatar()
-  if (store.get('customAvatarAssetPaths').length === 0) {
+  const currentAssetPath = getCurrentAvatarAssetPath()
+  if (!currentAssetPath) {
+    clearLocalAvatarObjectUrl()
     const ownPuuid = getOwnPuuid()
     if (ownPuuid) restoreOwnPatchedAvatars(ownPuuid)
+    restoreOwnAvatarToDefaultWhenNoCustomAvatar()
     scheduleApplyCustomAvatar()
     void clearAvatarUrlFromStatusMessage().catch((err) => {
       logger.warn('[CustomAvatarSync] 清理简介头像同步信息失败:', err)
     })
   } else {
+    getCurrentAvatarUrl()
+    scheduleApplyCustomAvatar()
     void ensureOwnAvatarStatusPayload()
   }
 }
 
-export async function syncCustomAvatarAssetPath(assetPath: string) {
+export async function syncCustomAvatarAssetPath(assetPath: string, imageOverride?: Blob) {
   const ownPuuid = getOwnPuuid() || await lcu.getSummonerInfo()
     .then((summoner) => {
       ownPuuidCache = normalizePuuid(summoner.puuid)
@@ -849,12 +1109,12 @@ export async function syncCustomAvatarAssetPath(assetPath: string) {
     throw new Error('无法获取当前玩家 PUUID。')
   }
 
-  const assetResponse = await fetch(getAssetUrl(assetPath))
-  if (!assetResponse.ok) {
+  const assetResponse = imageOverride ? null : await fetch(getAssetUrl(assetPath))
+  if (assetResponse && !assetResponse.ok) {
     throw new Error(`读取头像资源失败：${assetResponse.status} ${assetResponse.statusText}`)
   }
 
-  const image = await assetResponse.blob()
+  const image = imageOverride ?? await assetResponse!.blob()
   const avatarUrl = await uploadAvatarToImgbb(image)
   remoteAvatarCache.set(ownPuuid, avatarUrl)
   persistRemoteAvatarCacheEntry(ownPuuid, avatarUrl)
