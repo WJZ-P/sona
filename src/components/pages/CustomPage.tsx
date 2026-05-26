@@ -617,6 +617,9 @@ export function CustomPage() {
     const isActivePath = (customAvatarActiveAssetPath ?? customAvatarAssetPaths[0]) === assetPath
     const nextActivePath = isActivePath ? nextPaths[0] ?? null : customAvatarActiveAssetPath
     removeAssetPathEverywhere(assetPath)
+    if (nextPaths.length === 0) {
+      saveCustomAvatarActiveAssetPath(null)
+    }
     setAssetMessage(t('beautify.status.avatarRemoved', { path: assetPath }))
     if (isActivePath && nextActivePath) {
       scheduleCustomAvatarSync(nextActivePath)

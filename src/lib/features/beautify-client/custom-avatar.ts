@@ -963,7 +963,11 @@ function restorePatchedAvatarsToDefault() {
   })
 }
 
-function restoreOwnAvatarToDefaultWhenNoCustomAvatar() {
+function restoreOwnAvatarsToDefault() {
+  clearLocalAvatarObjectUrl()
+  const ownPuuid = getOwnPuuid()
+  if (ownPuuid) restoreOwnPatchedAvatars(ownPuuid)
+
   void getDefaultProfileIconUrl().then((defaultAvatarUrl) => {
     if (!store.get('customAvatarMode')) return
     if (getCurrentAvatarAssetPath()) return
@@ -1083,10 +1087,7 @@ export function updateBeautifyCustomAvatar() {
   enableCustomAvatar()
   const currentAssetPath = getCurrentAvatarAssetPath()
   if (!currentAssetPath) {
-    clearLocalAvatarObjectUrl()
-    const ownPuuid = getOwnPuuid()
-    if (ownPuuid) restoreOwnPatchedAvatars(ownPuuid)
-    restoreOwnAvatarToDefaultWhenNoCustomAvatar()
+    restoreOwnAvatarsToDefault()
     scheduleApplyCustomAvatar()
     void clearAvatarUrlFromStatusMessage().catch((err) => {
       logger.warn('[CustomAvatarSync] 清理简介头像同步信息失败:', err)
