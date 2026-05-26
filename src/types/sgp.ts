@@ -356,9 +356,16 @@ export const SGP_SERVERS: Record<string, { matchHistory: string | null; common: 
   LA2:  { matchHistory: 'https://usw2-red.pp.sgp.pvp.net',   common: 'https://las-red.lol.sgp.pvp.net' },
   OC1:  { matchHistory: 'https://apse1-red.pp.sgp.pvp.net',  common: 'https://oce-red.lol.sgp.pvp.net' },
   EUW:  { matchHistory: 'https://euc1-red.pp.sgp.pvp.net',   common: 'https://euw-red.lol.sgp.pvp.net' },
+  EUN1: { matchHistory: 'https://euc1-red.pp.sgp.pvp.net',   common: 'https://eun1-red.lol.sgp.pvp.net' },
   TR1:  { matchHistory: 'https://euc1-red.pp.sgp.pvp.net',   common: 'https://tr-red.lol.sgp.pvp.net' },
   RU:   { matchHistory: 'https://euc1-red.pp.sgp.pvp.net',   common: 'https://ru-red.lol.sgp.pvp.net' },
   PBE:  { matchHistory: 'https://usw2-red.pp.sgp.pvp.net',   common: 'https://pbe-red.lol.sgp.pvp.net' },
+
+  // issuer fallback 有时只能解析到 regional PP 集群，保留 match-history 能力即可。
+  EUC1:  { matchHistory: 'https://euc1-red.pp.sgp.pvp.net',   common: null },
+  USW2:  { matchHistory: 'https://usw2-red.pp.sgp.pvp.net',   common: null },
+  APSE1: { matchHistory: 'https://apse1-red.pp.sgp.pvp.net',  common: null },
+  APNE1: { matchHistory: 'https://apne1-red.pp.sgp.pvp.net',  common: null },
 }
 
 /** 国服大区互通列表 —— 同一个 JWT Token 可查询以下所有大区的战绩 */

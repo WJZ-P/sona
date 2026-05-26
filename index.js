@@ -12086,9 +12086,15 @@ const yh = {
   LA2: { matchHistory: "https://usw2-red.pp.sgp.pvp.net", common: "https://las-red.lol.sgp.pvp.net" },
   OC1: { matchHistory: "https://apse1-red.pp.sgp.pvp.net", common: "https://oce-red.lol.sgp.pvp.net" },
   EUW: { matchHistory: "https://euc1-red.pp.sgp.pvp.net", common: "https://euw-red.lol.sgp.pvp.net" },
+  EUN1: { matchHistory: "https://euc1-red.pp.sgp.pvp.net", common: "https://eun1-red.lol.sgp.pvp.net" },
   TR1: { matchHistory: "https://euc1-red.pp.sgp.pvp.net", common: "https://tr-red.lol.sgp.pvp.net" },
   RU: { matchHistory: "https://euc1-red.pp.sgp.pvp.net", common: "https://ru-red.lol.sgp.pvp.net" },
-  PBE: { matchHistory: "https://usw2-red.pp.sgp.pvp.net", common: "https://pbe-red.lol.sgp.pvp.net" }
+  PBE: { matchHistory: "https://usw2-red.pp.sgp.pvp.net", common: "https://pbe-red.lol.sgp.pvp.net" },
+  // issuer fallback 有时只能解析到 regional PP 集群，保留 match-history 能力即可。
+  EUC1: { matchHistory: "https://euc1-red.pp.sgp.pvp.net", common: null },
+  USW2: { matchHistory: "https://usw2-red.pp.sgp.pvp.net", common: null },
+  APSE1: { matchHistory: "https://apse1-red.pp.sgp.pvp.net", common: null },
+  APNE1: { matchHistory: "https://apne1-red.pp.sgp.pvp.net", common: null }
 };
 function ar(a) {
   return a > 0 ? `q_${a}` : "";
@@ -12141,6 +12147,9 @@ function Ic(a) {
 const hk = {
   // 外服 platformId 含数字后缀但 SGP_SERVERS key 不含
   EUW1: "EUW",
+  EUN: "EUN1",
+  EUNE: "EUN1",
+  EUN1: "EUN1",
   RU1: "RU",
   // 命令行 --region 可能不含数字但 SGP_SERVERS key 含数字
   NA: "NA1",
@@ -12706,13 +12715,13 @@ class yk {
    * 1. 优先使用 `/lol-chat/v1/me` 的 `platformId`，这是 Pengu 环境中最接近 Akari
    *    `--region` / `--rso_platform_id` 的来源。
    * 2. Fallback：从 Entitlements Token 的 issuer 解析。
-   * 3. 所有解析结果都必须命中 Akari 同款 `SGP_SERVERS` 配置，否则继续 fallback。
+   * 3. 所有解析结果都必须命中 `SGP_SERVERS` 配置，否则继续 fallback。
    *
    * 已知问题（对比 LeagueAkari）：
    * - LeagueAkari 从 LeagueClient.exe 命令行参数 `--region` / `--rso_platform_id` 获取，
    *   这是官方数据源，最可靠。但 Pengu Loader 插件无法访问命令行参数。
    * - 国服部分大区 issuer 不含 `k8s`（如联盟一区 NJ100），旧正则会匹配失败。
-   * - 外服 issuer 子域名可能与 SGP_SERVERS key 不一致（如 EUW1 → EUW）。
+   * - 外服 issuer 子域名可能与 SGP_SERVERS key 不一致（如 EUW1 → EUW、EUNE → EUN1）。
    */
   async getSgpServerId() {
     const s = await this._parseSgpServerIdFromPlatformId();
@@ -22823,7 +22832,7 @@ function $M({ pageId: a }) {
       return /* @__PURE__ */ c.jsx(Jb, {});
   }
 }
-function e3() {
+function eN() {
   const { t: a } = Ct(), [s, i] = T.useState(iM()), [o, u] = T.useState(() => sl().status === "available" ? "update" : "home"), [m, f] = T.useState(A.get("sidebarCollapsed")), [h, p] = T.useState(A.get("developerMode")), [y, S] = T.useState(() => sl());
   T.useEffect(() => vE((B) => {
     var W;
@@ -22872,13 +22881,13 @@ function e3() {
     }
   );
 }
-const t3 = {
+const tN = {
   info: { badge: "INFO", color: "#43b581", method: "log" },
   warn: { badge: "WARN", color: "#faa61a", method: "warn" },
   error: { badge: "ERROR", color: "#f04747", method: "error" },
   debug: { badge: "DEBUG", color: "#7289da", method: "debug" }
 };
-function a3(a) {
+function aN(a) {
   const {
     name: s,
     version: i,
@@ -22908,7 +22917,7 @@ function a3(a) {
     );
   }
   function h(p, y, ...S) {
-    const { badge: w, color: k, method: z } = t3[p], B = [
+    const { badge: w, color: k, method: z } = tN[p], B = [
       "color: #fff",
       `background: ${o}`,
       "padding: 2px 6px",
@@ -22942,7 +22951,7 @@ function a3(a) {
 const el = [];
 let u1 = !1;
 const bi = Symbol("SonaEmberWrapped"), d1 = "__sonaAppliedRules";
-function n3(a, s, i) {
+function nN(a, s, i) {
   const o = a[s];
   if (typeof o != "function") return !1;
   const u = a[bi] ?? /* @__PURE__ */ new Set();
@@ -22953,7 +22962,7 @@ function n3(a, s, i) {
     return i.call(this, h, f);
   }, u.add(s), a[bi] = u, !0;
 }
-function s3(a) {
+function sN(a) {
   const s = [];
   for (const i of a)
     if (i && typeof i == "object") {
@@ -22964,7 +22973,7 @@ function s3(a) {
     }
   return s;
 }
-function l3(a, s, i, o) {
+function lN(a, s, i, o) {
   var m;
   let u = s;
   if (o.mixin)
@@ -22979,7 +22988,7 @@ function l3(a, s, i, o) {
       const f = u.proto(), h = f[d1] ?? /* @__PURE__ */ new Set();
       if (!h.has(o.name)) {
         for (const p of o.wraps)
-          n3(f, p.name, p.replacement) && v.info("[EmberHook] wrap applied: %s.%s", o.name, p.name);
+          nN(f, p.name, p.replacement) && v.info("[EmberHook] wrap applied: %s.%s", o.name, p.name);
         h.add(o.name), f[d1] = h;
       }
     } catch (f) {
@@ -22987,7 +22996,7 @@ function l3(a, s, i, o) {
     }
   return u;
 }
-function i3(a) {
+function iN(a) {
   const s = a.Component;
   if (!s || typeof s.extend != "function") {
     v.warn("[EmberHook] Ember.Component.extend 不存在，放弃");
@@ -23001,7 +23010,7 @@ function i3(a) {
     let m = o(...u);
     if (el.length > 0) {
       let f = null;
-      const h = () => (f === null && (f = s3(u)), f);
+      const h = () => (f === null && (f = sN(u)), f);
       for (const p of el) {
         const y = p.matcher;
         let S = !1;
@@ -23012,13 +23021,13 @@ function i3(a) {
             v.warn("[EmberHook] matcher 函数抛错 (%s): %o", p.name, w), S = !1;
           }
         else y === "*" ? S = !0 : S = h().includes(y);
-        S && (m = l3(a, m, u, p));
+        S && (m = lN(a, m, u, p));
       }
     }
     return m;
   }, i[bi] = !0, v.info("[EmberHook] ✅ Ember.Component.extend 已被劫持（当前规则数: %d）", el.length);
 }
-function o3(a) {
+function oN(a) {
   if (u1) {
     v.warn("[EmberHook] installEmberHook 已经被调用过，忽略");
     return;
@@ -23039,7 +23048,7 @@ function o3(a) {
       const f = u(...m);
       return Promise.resolve(f).then((h) => {
         try {
-          i3(h);
+          iN(h);
         } catch (p) {
           v.warn("[EmberHook] hookComponentExtend 异常: %o", p);
         }
@@ -23048,7 +23057,7 @@ function o3(a) {
     }, o[bi] = !0, v.info("[EmberHook] 🎯 已劫持 rcp-fe-ember-libs.getEmber，等客户端首次调用...");
   }, !0);
 }
-function r3(a) {
+function rN(a) {
   const s = el.findIndex((i) => i.name === a.name);
   if (s >= 0)
     el[s] = a, v.info("[EmberHook] 更新规则: %s", a.name);
@@ -23058,12 +23067,12 @@ function r3(a) {
     v.info("[EmberHook] 新增规则: %s (matcher=%s)，当前共 %d 条", a.name, i, el.length);
   }
 }
-function c3() {
+function cN() {
   if (!A.get("unlockChromas")) {
     v.info("[ChromaUnlock] 开关已关闭，跳过注册");
     return;
   }
-  r3({
+  rN({
     name: "unlock-chromas",
     matcher: "collections-sub-nav-component",
     mixin: () => ({
@@ -23083,17 +23092,17 @@ function ep() {
     loggedRuleIds: /* @__PURE__ */ new Set()
   }), window.__SONA_XHR_HOOK_STATE__;
 }
-function u3(a) {
+function uN(a) {
   const s = ep();
-  m3();
+  mN();
   const i = s.rules.findIndex((o) => o.id === a.id);
-  return i >= 0 ? s.rules[i] = a : s.rules.push(a), () => d3(a.id);
+  return i >= 0 ? s.rules[i] = a : s.rules.push(a), () => dN(a.id);
 }
-function d3(a) {
+function dN(a) {
   const s = ep(), i = s.rules.findIndex((o) => o.id === a);
   i >= 0 && s.rules.splice(i, 1);
 }
-function m3() {
+function mN() {
   const a = ep();
   a.installed || (XMLHttpRequest.prototype.open = function(i, o, u = !0) {
     const m = {
@@ -23101,30 +23110,30 @@ function m3() {
       url: String(o),
       async: u !== !1
     };
-    return a.metaByRequest.set(this, m), f3(this, a, m), Reflect.apply(a.originalOpen, this, arguments);
+    return a.metaByRequest.set(this, m), fN(this, a, m), Reflect.apply(a.originalOpen, this, arguments);
   }, a.installed = !0, console.info("[Sona][XHR] Hook installed"));
 }
-function f3(a, s, i) {
+function fN(a, s, i) {
   const o = a, u = s.originalSendByRequest.get(a);
   u && (o.send = u);
   const m = o.send;
   s.originalSendByRequest.set(a, m), o.send = function() {
-    const h = s.metaByRequest.get(this) ?? i, p = g3(s, h);
+    const h = s.metaByRequest.get(this) ?? i, p = gN(s, h);
     if ((p == null ? void 0 : p.action) === "networkError") {
-      v3(s, h, p), y3(this, h);
+      vN(s, h, p), yN(this, h);
       return;
     }
-    return (p == null ? void 0 : p.action) === "rewriteResponse" && (A3(s, h, p), b3(this, h, p)), Reflect.apply(m, this, arguments);
+    return (p == null ? void 0 : p.action) === "rewriteResponse" && (AN(s, h, p), bN(this, h, p)), Reflect.apply(m, this, arguments);
   };
 }
-function g3(a, s) {
+function gN(a, s) {
   for (const i of a.rules)
-    if (h3(i, s))
+    if (hN(i, s))
       return i;
   return null;
 }
-function h3(a, s) {
-  const i = p3(s.url), o = a.match;
+function hN(a, s) {
+  const i = pN(s.url), o = a.match;
   if (typeof o == "string")
     return i.includes(o);
   if (o instanceof RegExp)
@@ -23135,7 +23144,7 @@ function h3(a, s) {
     return console.warn("[Sona][XHR] Rule matcher failed: %s", a.id, u), !1;
   }
 }
-function p3(a) {
+function pN(a) {
   const s = /* @__PURE__ */ new Set([a]);
   try {
     const i = new URL(a, window.location.href);
@@ -23144,13 +23153,13 @@ function p3(a) {
   }
   return [...s];
 }
-function y3(a, s) {
+function yN(a, s) {
   const i = () => {
     Wa(a, "readyState", XMLHttpRequest.DONE), Wa(a, "status", 0), Wa(a, "statusText", ""), Wa(a, "responseURL", s.url), Wa(a, "response", ""), Wa(a, "responseText", ""), og(a, "readystatechange"), og(a, "error"), og(a, "loadend");
   };
   typeof queueMicrotask == "function" ? queueMicrotask(i) : window.setTimeout(i, 0);
 }
-function b3(a, s, i) {
+function bN(a, s, i) {
   let o = !1;
   const u = () => {
     if (o || a.readyState !== XMLHttpRequest.DONE) return;
@@ -23178,14 +23187,14 @@ function og(a, s) {
     console.warn("[Sona][XHR] Failed to dispatch %s event", s, i);
   }
 }
-function v3(a, s, i) {
+function vN(a, s, i) {
   a.loggedRuleIds.has(i.id) || (a.loggedRuleIds.add(i.id), console.info('[Sona][XHR] Blocked request by rule "%s": %s %s', i.id, s.method, s.url));
 }
-function A3(a, s, i) {
+function AN(a, s, i) {
   a.loggedRuleIds.has(i.id) || (a.loggedRuleIds.add(i.id), console.info('[Sona][XHR] Rewrote response by rule "%s": %s %s', i.id, s.method, s.url));
 }
 let m1 = !1;
-const S3 = [
+const SN = [
   {
     id: "tencent-welive-match-popup",
     action: "networkError",
@@ -23193,12 +23202,12 @@ const S3 = [
     match: "https://log.welive.qq.com/send"
   }
 ];
-function E3() {
-  m1 || (m1 = !0, S3.forEach(u3));
+function EN() {
+  m1 || (m1 = !0, SN.forEach(uN));
 }
-const T3 = "Sona", C3 = "1.4.0", f1 = "sona-root", v = a3({
-  name: T3,
-  version: C3
+const TN = "Sona", CN = "1.4.0", f1 = "sona-root", v = aN({
+  name: TN,
+  version: CN
 });
 function NE() {
   return window.__SONA_RUNTIME__ || (window.__SONA_RUNTIME__ = {
@@ -23211,35 +23220,35 @@ function NE() {
 function IE(a) {
   (document.body ?? document.documentElement).appendChild(a);
 }
-function k3(a) {
+function kN(a) {
   const s = document.getElementById(f1);
   return s instanceof HTMLDivElement && (a.container = s), a.container || (a.container = document.createElement("div"), a.container.id = f1, v.info("Created app container")), a.container.isConnected || (IE(a.container), v.warn("App container was missing from DOM and has been reattached")), a.container;
 }
 let jE = null;
-function N3(a) {
-  jE = a, Jk(import.meta.url, a), E3(), j.bindContext(a), o3(a), c3(), v.printBanner();
+function NN(a) {
+  jE = a, Jk(import.meta.url, a), EN(), j.bindContext(a), oN(a), cN(), v.printBanner();
 }
-function I3() {
-  v.info("Plugin loading..."), wM(), KM(), cM(), Sk(), R3(), SE();
+function IN() {
+  v.info("Plugin loading..."), wM(), KM(), cM(), Sk(), RN(), SE();
 }
-function j3() {
+function jN() {
   return jE;
 }
-function w3() {
+function wN() {
   var s, i;
   const a = NE();
   return (s = a.container) != null && s.isConnected ? !0 : (a.container && (IE(a.container), v.warn("Detected host DOM refresh; restored app container")), !!((i = a.container) != null && i.isConnected));
 }
-function x3(a = /* @__PURE__ */ new Date()) {
+function xN(a = /* @__PURE__ */ new Date()) {
   return a.getMonth() === 7 && a.getDate() === 21;
 }
-function R3() {
-  const a = NE(), s = k3(a);
-  ke.register(w3), a.root ? v.info("Reusing existing React root") : (a.root = tn.createRoot(s), v.info("Created React root")), a.root.render(/* @__PURE__ */ c.jsx(e3, {})), v.info("Mounted ✓ (container connected: %s)", String(s.isConnected)), a.hasShownStartupToast || (Toast.success("Sona 已启动 ♫"), a.hasShownStartupToast = !0), !a.hasShownSpecialDayToast && x3() && (Toast.success("today is a special day! 🎉"), a.hasShownSpecialDayToast = !0);
+function RN() {
+  const a = NE(), s = kN(a);
+  ke.register(wN), a.root ? v.info("Reusing existing React root") : (a.root = tn.createRoot(s), v.info("Created React root")), a.root.render(/* @__PURE__ */ c.jsx(eN, {})), v.info("Mounted ✓ (container connected: %s)", String(s.isConnected)), a.hasShownStartupToast || (Toast.success("Sona 已启动 ♫"), a.hasShownStartupToast = !0), !a.hasShownSpecialDayToast && xN() && (Toast.success("today is a special day! 🎉"), a.hasShownSpecialDayToast = !0);
 }
 export {
-  j3 as getContext,
-  N3 as init,
-  I3 as load,
+  jN as getContext,
+  NN as init,
+  IN as load,
   v as logger
 };

@@ -216,6 +216,7 @@ function del<T = unknown>(endpoint: string): Promise<T> {
  *
  * 解决 platformId 与 SGP_SERVERS key 不一致的问题：
  * - EUW1 (platformId) → EUW (SGP_SERVERS key)
+ * - EUN / EUNE → EUN1 (北欧东欧服)
  * - RU1 → RU
  * - NA → NA1 (命令行 --region 可能不含数字)
  *
@@ -225,6 +226,9 @@ function del<T = unknown>(endpoint: string): Promise<T> {
 const PLATFORM_ID_TO_SGP_KEY: Record<string, string> = {
   // 外服 platformId 含数字后缀但 SGP_SERVERS key 不含
   EUW1: 'EUW',
+  EUN: 'EUN1',
+  EUNE: 'EUN1',
+  EUN1: 'EUN1',
   RU1: 'RU',
   // 命令行 --region 可能不含数字但 SGP_SERVERS key 含数字
   NA: 'NA1',
@@ -948,13 +952,13 @@ class LCUManager {
    * 1. 优先使用 `/lol-chat/v1/me` 的 `platformId`，这是 Pengu 环境中最接近 Akari
    *    `--region` / `--rso_platform_id` 的来源。
    * 2. Fallback：从 Entitlements Token 的 issuer 解析。
-   * 3. 所有解析结果都必须命中 Akari 同款 `SGP_SERVERS` 配置，否则继续 fallback。
+   * 3. 所有解析结果都必须命中 `SGP_SERVERS` 配置，否则继续 fallback。
    *
    * 已知问题（对比 LeagueAkari）：
    * - LeagueAkari 从 LeagueClient.exe 命令行参数 `--region` / `--rso_platform_id` 获取，
    *   这是官方数据源，最可靠。但 Pengu Loader 插件无法访问命令行参数。
    * - 国服部分大区 issuer 不含 `k8s`（如联盟一区 NJ100），旧正则会匹配失败。
-   * - 外服 issuer 子域名可能与 SGP_SERVERS key 不一致（如 EUW1 → EUW）。
+   * - 外服 issuer 子域名可能与 SGP_SERVERS key 不一致（如 EUW1 → EUW、EUNE → EUN1）。
    */
   async getSgpServerId(): Promise<string> {
     // Akari 以客户端启动参数为准；Pengu 内优先使用 ChatMe.platformId 近似它。
@@ -962,7 +966,7 @@ class LCUManager {
     if (fromPlatformId) return fromPlatformId
 
     // Fallback: 从 issuer 解析。外服 issuer 有时是 euc1/apne1/usw2/apse1 这类路由集群，
-    // 不是 SGP_SERVERS key；normalizeSgpServerKey 会过滤掉这些不受支持的结果。
+    // 这些 regional key 只保留 match-history 能力，不代表精确 platform。
     const fromIssuer = this._parseSgpServerIdFromIssuer()
     if (fromIssuer) return fromIssuer
 
