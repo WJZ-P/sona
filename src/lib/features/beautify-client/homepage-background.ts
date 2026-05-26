@@ -14,7 +14,7 @@ export interface HomepageBackgroundAdjustment {
 }
 
 function getAssetUrl(assetPath: string): string {
-  return resolvePluginAssetUrl(assetPath)
+  return resolvePluginAssetUrl(assetPath, 'wallpapers')
 }
 
 function isVideoAsset(assetPath: string): boolean {

@@ -1,4 +1,7 @@
 const FALLBACK_PLUGIN_FOLDER = 'sona'
+const PLUGIN_ASSET_ROOTS = ['avatars', 'wallpapers'] as const
+
+export type PluginAssetRoot = typeof PLUGIN_ASSET_ROOTS[number]
 
 let pluginBaseUrl = `//plugins/${FALLBACK_PLUGIN_FOLDER}/`
 let pluginFolderName = FALLBACK_PLUGIN_FOLDER
@@ -17,6 +20,20 @@ function normalizePath(value: string): string {
 
 function trimQueryAndHash(value: string): string {
   return value.split(/[?#]/, 1)[0] ?? value
+}
+
+function normalizePluginAssetPath(value: string): string {
+  return normalizePath(value)
+    .trim()
+    .replace(/^["']|["']$/g, '')
+    .replace(/^\.\/+/, '')
+    .replace(/^assets\/+/i, '')
+    .replace(/^\/+/, '')
+}
+
+function stripPluginAssetRoot(assetPath: string): string {
+  const rootPattern = new RegExp(`^(?:${PLUGIN_ASSET_ROOTS.join('|')})/+`, 'i')
+  return assetPath.replace(rootPattern, '')
 }
 
 function extractPluginBaseUrl(value: string): string | null {
@@ -77,15 +94,21 @@ export function initPluginResolver(metaUrl?: string, context?: PenguContext) {
   })
 }
 
-export function resolvePluginAssetUrl(assetPath: string): string {
-  const normalizedPath = normalizePath(assetPath)
-    .replace(/^\.\/+/, '')
-    .replace(/^assets\/+/i, '')
-    .replace(/^\/+/, '')
+export function withPluginAssetRoot(assetPath: string, root: PluginAssetRoot): string {
+  const normalizedPath = normalizePluginAssetPath(assetPath)
+  if (!normalizedPath) return ''
+
+  return `${root}/${stripPluginAssetRoot(normalizedPath)}`
+}
+
+export function resolvePluginAssetUrl(assetPath: string, root?: PluginAssetRoot): string {
+  const normalizedPath = root
+    ? withPluginAssetRoot(assetPath, root)
+    : normalizePluginAssetPath(assetPath)
 
   return `${pluginBaseUrl}assets/${normalizedPath.split('/').map(encodeURIComponent).join('/')}`
 }
 
-export function getPluginAssetsFolderPath(): string {
-  return `${pluginFolderName}/assets`
+export function getPluginAssetsFolderPath(root?: PluginAssetRoot): string {
+  return `${pluginFolderName}/assets${root ? `/${root}` : ''}`
 }

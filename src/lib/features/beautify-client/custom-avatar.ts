@@ -77,7 +77,7 @@ const friendPuuidByName = new Map<string, string>()
 const knownFriendPuuids = new Set<string>()
 
 function getAssetUrl(assetPath: string): string {
-  return resolvePluginAssetUrl(assetPath)
+  return resolvePluginAssetUrl(assetPath, 'avatars')
 }
 
 function getProfileIconUrl(profileIconId: number): string {

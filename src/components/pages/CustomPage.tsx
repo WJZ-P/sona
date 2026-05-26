@@ -6,7 +6,7 @@ import { SonaInput } from '@/components/ui/SonaInput'
 import { SonaSlider } from '@/components/ui/SonaSlider'
 import { SonaSwitch } from '@/components/ui/SonaSwitch'
 import { createCustomAvatarImageBlob, syncCustomAvatarAssetPath } from '@/lib/features/beautify-client/custom-avatar'
-import { getPluginAssetsFolderPath, resolvePluginAssetUrl } from '@/lib/plugin-resolver'
+import { getPluginAssetsFolderPath, resolvePluginAssetUrl, withPluginAssetRoot, type PluginAssetRoot } from '@/lib/plugin-resolver'
 import { store } from '@/lib/store'
 import { useI18n } from '@/i18n'
 import '@/styles/SettingsPage.css'
@@ -85,20 +85,28 @@ function normalizeAssetPath(value: string): string {
     .replace(/\\/g, '/')
 
   const lowerPath = normalized.toLowerCase()
-  const sonaAssetsMarker = '/sona/assets/'
-  const sonaAssetsIndex = lowerPath.lastIndexOf(sonaAssetsMarker)
-  if (sonaAssetsIndex >= 0) {
-    normalized = normalized.slice(sonaAssetsIndex + sonaAssetsMarker.length)
+  for (const marker of ['/sona/assets/', '/sona/avatars/', '/sona/wallpapers/']) {
+    const markerIndex = lowerPath.lastIndexOf(marker)
+    if (markerIndex >= 0) {
+      normalized = normalized.slice(markerIndex + marker.length)
+      break
+    }
   }
 
   return normalized
     .replace(/^\.\/+/, '')
     .replace(/^assets\/+/i, '')
+    .replace(/^avatars\/+/i, '')
+    .replace(/^wallpapers\/+/i, '')
     .replace(/^\/+/, '')
 }
 
-function getAssetUrl(assetPath: string): string {
-  return resolvePluginAssetUrl(assetPath)
+function getAssetUrl(assetPath: string, root: PluginAssetRoot): string {
+  return resolvePluginAssetUrl(assetPath, root)
+}
+
+function normalizeRootedAssetPath(assetPath: string, root: PluginAssetRoot): string {
+  return withPluginAssetRoot(normalizeAssetPath(assetPath), root)
 }
 
 function getVideoPosterAssetPath(assetPath: string): string {
@@ -368,7 +376,7 @@ export function CustomPage() {
   }
 
   const addHomepageBackgroundAssetPath = (assetPath: string) => {
-    const nextPath = normalizeAssetPath(assetPath)
+    const nextPath = normalizeRootedAssetPath(assetPath, 'wallpapers')
 
     if (!nextPath) {
       setAssetMessage(t('beautify.status.assetInputRequired'))
@@ -697,7 +705,7 @@ export function CustomPage() {
   }
 
   const addCustomAvatarAssetPath = (assetPath: string) => {
-    const nextPath = normalizeAssetPath(assetPath)
+    const nextPath = normalizeRootedAssetPath(assetPath, 'avatars')
 
     if (!nextPath) {
       setAssetMessage(t('beautify.status.assetInputRequired'))
@@ -1073,7 +1081,7 @@ export function CustomPage() {
                           {isVideoFile(assetPath) ? (
                             <div className="sona-wallpaper-video-preview">
                               <img
-                                src={getAssetUrl(getVideoPosterAssetPath(assetPath))}
+                                src={getAssetUrl(getVideoPosterAssetPath(assetPath), 'wallpapers')}
                                 alt=""
                                 onError={(event) => {
                                   event.currentTarget.classList.remove('sona-wallpaper-video-poster--loaded')
@@ -1087,7 +1095,7 @@ export function CustomPage() {
                               <span>{t('beautify.media.video')}</span>
                             </div>
                           ) : (
-                            <img src={getAssetUrl(assetPath)} alt={assetPath} />
+                            <img src={getAssetUrl(assetPath, 'wallpapers')} alt={assetPath} />
                           )}
                           <span className="sona-wallpaper-card-name">{assetPath}</span>
                           <span className="sona-wallpaper-card-action">{t('beautify.wallpaper.clickApply')}</span>
@@ -1145,7 +1153,7 @@ export function CustomPage() {
                       <SonaButton onClick={addHomepageBackgroundInputPath}>
                         {t('beautify.assets.add')}
                       </SonaButton>
-                      <SonaButton onClick={() => window.openPluginsFolder(getPluginAssetsFolderPath())}>
+                      <SonaButton onClick={() => window.openPluginsFolder(getPluginAssetsFolderPath('wallpapers'))}>
                         {t('beautify.assets.openFolder')}
                       </SonaButton>
                     </div>
@@ -1264,7 +1272,7 @@ export function CustomPage() {
                               style={getAvatarPreviewStageStyle(assetPath, adjustment)}
                             >
                               <img
-                                src={getAssetUrl(assetPath)}
+                                src={getAssetUrl(assetPath, 'avatars')}
                                 alt={assetPath}
                                 onLoad={(event) => updateAvatarImageSize(assetPath, event.currentTarget)}
                               />
@@ -1326,7 +1334,7 @@ export function CustomPage() {
                       <SonaButton onClick={addCustomAvatarInputPath}>
                         {t('beautify.assets.add')}
                       </SonaButton>
-                      <SonaButton onClick={() => window.openPluginsFolder(getPluginAssetsFolderPath())}>
+                      <SonaButton onClick={() => window.openPluginsFolder(getPluginAssetsFolderPath('avatars'))}>
                         {t('beautify.assets.openFolder')}
                       </SonaButton>
                     </div>
@@ -1368,7 +1376,7 @@ export function CustomPage() {
                 >
                   {isVideoFile(editingWallpaperAssetPath) ? (
                     <video
-                      src={getAssetUrl(editingWallpaperAssetPath)}
+                      src={getAssetUrl(editingWallpaperAssetPath, 'wallpapers')}
                       muted
                       loop
                       autoPlay
@@ -1383,7 +1391,7 @@ export function CustomPage() {
                     />
                   ) : (
                     <img
-                      src={getAssetUrl(editingWallpaperAssetPath)}
+                      src={getAssetUrl(editingWallpaperAssetPath, 'wallpapers')}
                       alt={editingWallpaperAssetPath}
                       onLoad={(event) =>
                         updateWallpaperMediaSize(
@@ -1476,7 +1484,7 @@ export function CustomPage() {
                   style={getAvatarPreviewStageStyle(editingAvatarAssetPath, draftAvatarAdjustment)}
                 >
                   <img
-                    src={getAssetUrl(editingAvatarAssetPath)}
+                    src={getAssetUrl(editingAvatarAssetPath, 'avatars')}
                     alt={editingAvatarAssetPath}
                     onLoad={(event) => updateAvatarImageSize(editingAvatarAssetPath, event.currentTarget)}
                   />
