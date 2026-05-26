@@ -15,7 +15,6 @@ import { logger } from '@/index'
 
 const IMAGE_EXTENSIONS = new Set(['png', 'jpg', 'jpeg', 'webp', 'gif', 'svg', 'bmp', 'ico'])
 const VIDEO_EXTENSIONS = new Set(['mp4', 'webm', 'ogg', 'ogv', 'mov', 'm4v'])
-const ASSET_DRAG_MIME = 'application/x-sona-asset-path'
 const DRAG_SCROLL_EDGE_SIZE = 76
 const DRAG_SCROLL_MAX_SPEED = 20
 const DEFAULT_WALLPAPER_ADJUSTMENT = { scale: 1, offsetX: 0, offsetY: 0 }
@@ -56,7 +55,7 @@ interface AvatarDragStart {
 
 interface PendingSharedAssetRemoval {
   assetPath: string
-  source: 'asset' | 'wallpaper' | 'avatar'
+  source: 'wallpaper' | 'avatar'
 }
 
 function isImageFile(fileName: string): boolean {
@@ -260,36 +259,6 @@ export function CustomPage() {
     store.set('beautifyHomepageBackgroundOpacity', value)
   }
 
-  const addAssetPath = () => {
-    const nextPath = normalizeAssetPath(assetPathInput)
-
-    if (!nextPath) {
-      setAssetMessage(t('beautify.status.assetInputRequired'))
-      return
-    }
-    if (nextPath.includes('..')) {
-      setAssetMessage(t('beautify.status.assetPathInvalid'))
-      return
-    }
-    if (/^[a-z]+:\/\//i.test(nextPath)) {
-      setAssetMessage(t('beautify.status.assetUrlRejected'))
-      return
-    }
-    if (!isSupportedMediaFile(nextPath)) {
-      setAssetMessage(t('beautify.status.assetUnsupported'))
-      return
-    }
-    if (assetPaths.includes(nextPath)) {
-      setAssetMessage(t('beautify.status.assetDuplicate'))
-      return
-    }
-
-    const nextPaths = [...assetPaths, nextPath]
-    saveAssetPaths(nextPaths)
-    setAssetPathInput('')
-    setAssetMessage(t('beautify.status.assetAdded', { path: nextPath }))
-  }
-
   const addHomepageBackgroundInputPath = () => {
     if (addHomepageBackgroundAssetPath(assetPathInput)) {
       setAssetPathInput('')
@@ -335,17 +304,6 @@ export function CustomPage() {
     if (homepageBackgroundAssetPath === assetPath) {
       saveHomepageBackgroundAssetPath(nextHomepageBackgroundAssetPaths[0] ?? null)
     }
-  }
-
-  const removeAssetPathConfirmed = (assetPath: string) => {
-    removeAssetPathEverywhere(assetPath)
-    setAssetMessage(t('beautify.status.assetRemoved', { path: assetPath }))
-  }
-
-  const removeAssetPath = (assetPath: string) => {
-    if (!requestSharedAssetRemoval(assetPath, 'asset')) return
-
-    removeAssetPathConfirmed(assetPath)
   }
 
   const applyHomepageBackgroundAssetPath = (assetPath: string) => {
@@ -682,9 +640,7 @@ export function CustomPage() {
     if (!pending) return
 
     setPendingSharedAssetRemoval(null)
-    if (pending.source === 'asset') {
-      removeAssetPathConfirmed(pending.assetPath)
-    } else if (pending.source === 'wallpaper') {
+    if (pending.source === 'wallpaper') {
       removeHomepageBackgroundAssetPathConfirmed(pending.assetPath)
     } else {
       removeCustomAvatarAssetPathConfirmed(pending.assetPath)
@@ -747,13 +703,6 @@ export function CustomPage() {
     }
   }
 
-  const handleAssetDragStart = (event: DragEvent<HTMLDivElement>, assetPath: string) => {
-    event.dataTransfer.effectAllowed = 'copy'
-    event.dataTransfer.setData(ASSET_DRAG_MIME, assetPath)
-    event.dataTransfer.setData('text/plain', assetPath)
-    updateDragAutoScroll(event.clientY)
-  }
-
   const handleAvatarDragOver = (event: DragEvent<HTMLDivElement>) => {
     event.preventDefault()
     event.dataTransfer.dropEffect = 'copy'
@@ -784,7 +733,7 @@ export function CustomPage() {
     event.preventDefault()
     setIsHomepageBackgroundDropActive(false)
     stopDragAutoScroll()
-    const assetPath = event.dataTransfer.getData(ASSET_DRAG_MIME) || event.dataTransfer.getData('text/plain')
+    const assetPath = event.dataTransfer.getData('text/plain')
     addHomepageBackgroundAssetPath(assetPath)
   }
 
@@ -792,15 +741,8 @@ export function CustomPage() {
     event.preventDefault()
     setIsAvatarDropActive(false)
     stopDragAutoScroll()
-    const assetPath = event.dataTransfer.getData(ASSET_DRAG_MIME) || event.dataTransfer.getData('text/plain')
+    const assetPath = event.dataTransfer.getData('text/plain')
     addCustomAvatarAssetPath(assetPath)
-  }
-
-  const handlePageDragOver = (event: DragEvent<HTMLDivElement>) => {
-    if (!event.dataTransfer.types.includes(ASSET_DRAG_MIME) && !event.dataTransfer.types.includes('text/plain')) return
-
-    event.preventDefault()
-    updateDragAutoScroll(event.clientY)
   }
   const effectOptions = [
     { value: 'none', label: t('option.windowEffect.none') },
@@ -841,7 +783,6 @@ export function CustomPage() {
     <div
       className="sona-settings"
       ref={scrollRef}
-      onDragOver={handlePageDragOver}
       onDragEnd={stopDragAutoScroll}
       onDrop={stopDragAutoScroll}
     >
@@ -1262,71 +1203,6 @@ export function CustomPage() {
             )}
           </>
         )}
-      </SettingGroup>
-
-      <SettingGroup title={t('beautify.group.assets')}>
-        <div className="sona-asset-browser">
-          <div className="sona-asset-browser-header">
-            <span className="sona-asset-browser-title">{t('beautify.assets.browserTitle')}</span>
-            {assetPaths.length > 0 && <span className="sona-asset-browser-hint">{t('beautify.assets.dragHint')}</span>}
-          </div>
-          <p className="sona-asset-browser-status">{assetMessage}</p>
-          {assetPaths.length > 0 ? (
-            <div className="sona-asset-grid">
-              {assetPaths.map((assetPath) => (
-                <div
-                  className="sona-asset-card"
-                  key={assetPath}
-                  draggable
-                  onDragStart={(event) => handleAssetDragStart(event, assetPath)}
-                >
-                  <button
-                    className="sona-asset-card-remove"
-                    type="button"
-                    onClick={() => removeAssetPath(assetPath)}
-                    aria-label={`${t('common.remove')} ${assetPath}`}
-                  >
-                    ×
-                  </button>
-                  {isVideoFile(assetPath) ? (
-                    <img src={getAssetUrl(getVideoPosterAssetPath(assetPath))} alt={assetPath} />
-                  ) : (
-                    <img src={getAssetUrl(assetPath)} alt={assetPath} />
-                  )}
-                  <span>{assetPath}</span>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p className="sona-asset-empty">{t('beautify.assets.empty')}</p>
-          )}
-        </div>
-        <SettingCard
-          title={t('beautify.assets.folderTitle')}
-          description={t('beautify.assets.folderDescription')}
-        >
-          <SonaButton onClick={() => window.openPluginsFolder(getPluginAssetsFolderPath())}>
-            {t('beautify.assets.openFolder')}
-          </SonaButton>
-        </SettingCard>
-        <SettingCard
-          title={t('beautify.assets.inputTitle')}
-          description={t('beautify.assets.inputDescription')}
-        >
-          <div className="sona-asset-path-row">
-            <SonaInput
-              value={assetPathInput}
-              onChange={setAssetPathInput}
-              placeholder={t('beautify.assets.examplePlaceholder')}
-              onKeyDown={(event) => {
-                if (event.key === 'Enter') addAssetPath()
-              }}
-            />
-            <SonaButton onClick={addAssetPath}>
-              {t('beautify.assets.add')}
-            </SonaButton>
-          </div>
-        </SettingCard>
       </SettingGroup>
 
       <Modal
