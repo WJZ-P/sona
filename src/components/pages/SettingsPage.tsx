@@ -2,7 +2,9 @@ import { useState, useEffect } from 'react'
 import { SettingCard, SettingGroup } from '@/components/ui/SettingCard'
 import { SonaSwitch } from '@/components/ui/SonaSwitch'
 import { SonaSelect } from '@/components/ui/SonaSelect'
+import { SonaButton } from '@/components/ui/SonaButton'
 import { store } from '@/lib/store'
+import { checkForUpdates, clearSkippedUpdateVersion } from '@/lib/update-checker'
 import { useI18n, type SonaLocaleSetting } from '@/i18n'
 import '@/styles/SettingsPage.css'
 
@@ -19,6 +21,7 @@ export function SettingsPage() {
   const [developerMode, setDeveloperMode] = useState(store.get('developerMode'))
   const [hotkey, setHotkey] = useState(store.get('hotkey'))
   const [globalParticle, setGlobalParticle] = useState(store.get('globalParticle'))
+  const [skippedUpdateVersion, setSkippedUpdateVersion] = useState(store.get('skippedUpdateVersion'))
   const localeOptions = [
     { value: 'auto', label: t('settings.language.auto') },
     { value: 'zh-CN', label: t('settings.language.zhCN') },
@@ -30,6 +33,7 @@ export function SettingsPage() {
       store.onChange('developerMode', setDeveloperMode),
       store.onChange('hotkey', setHotkey),
       store.onChange('globalParticle', setGlobalParticle),
+      store.onChange('skippedUpdateVersion', setSkippedUpdateVersion),
     ]
     return () => unsubs.forEach((fn) => fn())
   }, [])
@@ -68,6 +72,19 @@ export function SettingsPage() {
             onChange={(v) => { setGlobalParticle(v); store.set('globalParticle', v) }}
           />
         </SettingCard>
+        {skippedUpdateVersion && (
+          <SettingCard
+            title={t('settings.skippedUpdate.title', { version: skippedUpdateVersion })}
+            description={t('settings.skippedUpdate.description')}
+          >
+            <SonaButton onClick={() => {
+              clearSkippedUpdateVersion()
+              void checkForUpdates()
+            }}>
+              {t('settings.skippedUpdate.clear')}
+            </SonaButton>
+          </SettingCard>
+        )}
       </SettingGroup>
 
 

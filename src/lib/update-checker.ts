@@ -2,6 +2,7 @@ declare const __PLUGIN_VERSION__: string
 
 import { logger } from '@/index'
 import { lcu } from '@/lib/lcu'
+import { store } from '@/lib/store'
 
 export interface UpdateInfo {
   currentVersion: string
@@ -85,6 +86,10 @@ function compareVersion(a: string, b: string): number {
   return 0
 }
 
+function getSkippedUpdateVersion(): string {
+  return normalizeVersion(store.get('skippedUpdateVersion') ?? '')
+}
+
 async function fetchLatestRelease(): Promise<GithubReleaseResponse> {
   const errors: string[] = []
   const candidates: Array<{ url: string; kind: 'single' | 'array' }> = [
@@ -140,9 +145,21 @@ export function checkForUpdates(): Promise<UpdateState> {
     .then((release) => {
       const currentVersion = normalizeVersion(__PLUGIN_VERSION__)
       const latestVersion = normalizeVersion(release.tag_name ?? '')
+      const skippedVersion = getSkippedUpdateVersion()
+      if (skippedVersion && compareVersion(currentVersion, skippedVersion) >= 0) {
+        store.set('skippedUpdateVersion', null)
+      }
+
       if (!latestVersion || compareVersion(latestVersion, currentVersion) <= 0) {
         const next: UpdateState = { status: 'latest', info: null, error: '' }
         setState(next)
+        return next
+      }
+
+      if (latestVersion === skippedVersion) {
+        const next: UpdateState = { status: 'latest', info: null, error: '' }
+        setState(next)
+        logger.info('[Update] 已跳过版本 %s，本次不再提示。', latestVersion)
         return next
       }
 
@@ -175,6 +192,28 @@ export function checkForUpdates(): Promise<UpdateState> {
     })
 
   return inFlight
+}
+
+export function skipUpdateVersion(version: string): UpdateState {
+  const normalizedVersion = normalizeVersion(version)
+  if (!normalizedVersion) return getUpdateState()
+
+  store.set('skippedUpdateVersion', normalizedVersion)
+  notifiedVersion = normalizedVersion
+
+  if (state.info?.latestVersion === normalizedVersion) {
+    setState({ status: 'latest', info: null, error: '' })
+  } else {
+    emit()
+  }
+
+  logger.info('[Update] 跳过版本更新提醒: %s', normalizedVersion)
+  return getUpdateState()
+}
+
+export function clearSkippedUpdateVersion() {
+  store.set('skippedUpdateVersion', null)
+  notifiedVersion = ''
 }
 
 function notifyUpdateAvailable(currentVersion: string, latestVersion: string) {

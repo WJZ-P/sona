@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { SonaButton } from '@/components/ui/SonaButton'
-import { checkForUpdates, getReleasePageUrl, getUpdateState, onUpdateStateChange, type UpdateState } from '@/lib/update-checker'
+import { checkForUpdates, getReleasePageUrl, getUpdateState, onUpdateStateChange, skipUpdateVersion, type UpdateState } from '@/lib/update-checker'
 import { useI18n } from '@/i18n'
 import '@/styles/UpdatePage.css'
 
@@ -66,6 +66,9 @@ export function UpdatePage() {
               </SonaButton>
               <SonaButton onClick={() => openUrl(QUARK_URL)} disabled={!QUARK_URL}>
                 {t('update.quark')}
+              </SonaButton>
+              <SonaButton onClick={() => skipUpdateVersion(info.latestVersion)}>
+                {t('update.skipVersion', { version: info.latestVersion })}
               </SonaButton>
             </div>
           </div>

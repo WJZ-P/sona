@@ -47,6 +47,8 @@ export interface SonaConfig {
   hotkey: string
   /** 界面语言：auto=跟随客户端 html lang */
   locale: 'auto' | 'zh-CN' | 'en-US'
+  /** 已跳过提醒的 Sona 版本号 */
+  skippedUpdateVersion: string | null
   /** 窗口视觉特效 */
   windowEffect: string
   /** 英雄选择玩家头像交互（点击队友头像展示历史数据） */
@@ -202,6 +204,7 @@ const DEFAULT_CONFIG: SonaConfig = {
   statusMessage: {},
   hotkey: 'F1',
   locale: 'auto',
+  skippedUpdateVersion: null,
   windowEffect: 'none',
   champSelectAssist: false,
   opggBuildRecommendation: false,

@@ -839,28 +839,37 @@ export function updateBeautifyCustomAvatar() {
 }
 
 export async function syncCustomAvatarAssetPath(assetPath: string) {
-  const ownPuuid = getOwnPuuid() || await lcu.getSummonerInfo()
-    .then((summoner) => {
-      ownPuuidCache = normalizePuuid(summoner.puuid)
-      return ownPuuidCache
-    })
+  try {
+    const ownPuuid = getOwnPuuid() || await lcu.getSummonerInfo()
+      .then((summoner) => {
+        ownPuuidCache = normalizePuuid(summoner.puuid)
+        return ownPuuidCache
+      })
 
-  if (!ownPuuid) {
-    throw new Error('无法获取当前玩家 PUUID。')
+    if (!ownPuuid) {
+      throw new Error('无法获取当前玩家 PUUID。')
+    }
+
+    const assetResponse = await fetch(getAssetUrl(assetPath))
+    if (!assetResponse.ok) {
+      throw new Error(`读取头像资源失败：${assetResponse.status} ${assetResponse.statusText}`)
+    }
+
+    const image = await assetResponse.blob()
+    const avatarUrl = await uploadAvatarToImgbb(image)
+    remoteAvatarCache.set(ownPuuid, avatarUrl)
+    persistRemoteAvatarCacheEntry(ownPuuid, avatarUrl)
+    await writeAvatarUrlToStatusMessage(avatarUrl, getSavedOwnVisibleStatusMessage())
+    scheduleApplyCustomAvatar()
+    await lcu.sendNotification(translate('notification.avatarSync.title'), translate('notification.avatarSync.details')).catch(() => {})
+
+    return avatarUrl
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err)
+    await lcu.sendNotification(
+      translate('notification.avatarSyncFailed.title'),
+      translate('notification.avatarSyncFailed.details', { error: message }),
+    ).catch(() => {})
+    throw err
   }
-
-  const assetResponse = await fetch(getAssetUrl(assetPath))
-  if (!assetResponse.ok) {
-    throw new Error(`读取头像资源失败：${assetResponse.status} ${assetResponse.statusText}`)
-  }
-
-  const image = await assetResponse.blob()
-  const avatarUrl = await uploadAvatarToImgbb(image)
-  remoteAvatarCache.set(ownPuuid, avatarUrl)
-  persistRemoteAvatarCacheEntry(ownPuuid, avatarUrl)
-  await writeAvatarUrlToStatusMessage(avatarUrl, getSavedOwnVisibleStatusMessage())
-  scheduleApplyCustomAvatar()
-  await lcu.sendNotification(translate('notification.avatarSync.title'), translate('notification.avatarSync.details')).catch(() => {})
-
-  return avatarUrl
 }

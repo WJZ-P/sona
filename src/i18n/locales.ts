@@ -40,6 +40,9 @@ export const zhCN = {
   'settings.hotkey.description': '随时按下快捷键打开/关闭 Sona 面板。',
   'settings.globalParticle.title': '全局粒子美化',
   'settings.globalParticle.description': '为客户端添加星光粒子背景效果',
+  'settings.skippedUpdate.title': '已跳过 v{version} 版本更新',
+  'settings.skippedUpdate.description': 'Sona 不会再提示这个版本；恢复提醒后会重新检查更新。',
+  'settings.skippedUpdate.clear': '恢复更新提醒',
   'settings.developerMode.title': '开发者模式',
   'settings.developerMode.description': '启用调试面板，你最好知道你在做什么 ( ˘•ω•˘ )◞⚠',
   'select.placeholder': '请选择...',
@@ -60,6 +63,7 @@ export const zhCN = {
   'update.openRelease': '打开 Release',
   'update.groupFile': '官方QQ群：1097295981',
   'update.quark': '夸克网盘',
+  'update.skipVersion': '跳过 v{version}',
   'update.checking': '正在检查更新...',
   'update.checkFailed': '检查更新失败：{error}',
   'update.none': '当前没有检测到新版本。',
@@ -413,6 +417,8 @@ export const zhCN = {
   'debug.placeholder.skinId': '输入皮肤 ID (如 777058)',
   'notification.avatarSync.title': 'Sona 头像同步成功',
   'notification.avatarSync.details': '自定义头像同步完成',
+  'notification.avatarSyncFailed.title': 'Sona 头像同步失败',
+  'notification.avatarSyncFailed.details': '好友暂时可能看不到你的自定义头像：{error}',
 } as const
 
 export const enUS: Record<keyof typeof zhCN, string> = {
@@ -457,6 +463,9 @@ export const enUS: Record<keyof typeof zhCN, string> = {
   'settings.hotkey.description': 'Press the hotkey anytime to open or close the Sona panel.',
   'settings.globalParticle.title': 'Global Particles',
   'settings.globalParticle.description': 'Add a starlight particle background effect to the client.',
+  'settings.skippedUpdate.title': 'Skipped v{version} update',
+  'settings.skippedUpdate.description': 'Sona will not remind you about this version again. Restore reminders to check updates again.',
+  'settings.skippedUpdate.clear': 'Restore Reminder',
   'settings.developerMode.title': 'Developer Mode',
   'settings.developerMode.description': 'Enable the debug panel. Make sure you know what you are doing ( ˘•ω•˘ )◞⚠!',
   'select.placeholder': 'Please select...',
@@ -477,6 +486,7 @@ export const enUS: Record<keyof typeof zhCN, string> = {
   'update.openRelease': 'Open Release',
   'update.groupFile': 'QQ Group: 1097295981',
   'update.quark': 'Quark Drive',
+  'update.skipVersion': 'Skip v{version}',
   'update.checking': 'Checking for updates...',
   'update.checkFailed': 'Update check failed: {error}',
   'update.none': 'No new version detected.',
@@ -830,6 +840,8 @@ export const enUS: Record<keyof typeof zhCN, string> = {
   'debug.placeholder.skinId': 'Skin ID (e.g. 777058)',
   'notification.avatarSync.title': 'Sona avatar synced',
   'notification.avatarSync.details': 'Your avatar was synced successfully',
+  'notification.avatarSyncFailed.title': 'Sona avatar sync failed',
+  'notification.avatarSyncFailed.details': 'Friends may not see your custom avatar for now: {error}',
 }
 
 export const locales = {
