@@ -41,6 +41,7 @@ const SONA_ITEM_SET_TITLE_PREFIX = '[Sona]'
 const HEALTH_POTION_ID = 2003
 const ITEM_SET_ASSOCIATED_MAPS = [11, 12, 30]
 const RUNE_PAGES_EVENT_URI = '/lol-perks/v1/pages'
+const CURRENT_RUNE_PAGE_EVENT_URI = '/lol-perks/v1/currentpage'
 const RUNE_APPLY_SUPPRESS_MS = 1500
 const SPELL_APPLY_SUPPRESS_MS = 1500
 const SMART_LOADOUT_RESTORE_DEBOUNCE_MS = 500
@@ -77,6 +78,7 @@ const MAX_RECOMMENDATION_CACHE_SIZE = 8
 let phaseUnsub: (() => void) | null = null
 let champSelectUnsub: (() => void) | null = null
 let runePagesUnsub: (() => void) | null = null
+let currentRunePageUnsub: (() => void) | null = null
 let championLockPollTimer: number | null = null
 let championLockPollAttempts = 0
 let injectRegistered = false
@@ -102,6 +104,7 @@ let lastAppliedRuneKey = ''
 let lastAppliedSpellKey = ''
 let suppressRuneSaveUntil = 0
 let suppressSpellSaveUntil = 0
+let lastAutoAppliedRuneSignature = ''
 let smartLoadoutRestoreTimer: number | null = null
 let pendingSmartLoadoutContext: RecommendationContext | null = null
 let lastObservedSpellKey = ''
@@ -264,6 +267,10 @@ function isValidSummonerSpells(spells: { spell1Id: number; spell2Id: number }): 
 
 function getSummonerSpellSignature(spells: { spell1Id: number; spell2Id: number }): string {
   return `${spells.spell1Id}:${spells.spell2Id}`
+}
+
+function getRunePageSignature(page: Pick<RunePagePayload, 'primaryStyleId' | 'subStyleId' | 'selectedPerkIds'>): string {
+  return `${page.primaryStyleId}:${page.subStyleId}:${page.selectedPerkIds.join(',')}`
 }
 
 function ensureRecommendationPrefetch(context: RecommendationContext): RecommendationCacheEntry | null {
@@ -475,13 +482,18 @@ function isCurrentRecommendationContext(context: RecommendationContext): boolean
 
 function saveCurrentSmartRunePage(page: RunePage): void {
   if (!store.get('smartBuildRecommendation')) return
-  if (Date.now() < suppressRuneSaveUntil) return
   if (currentContext.championId <= 0 || !currentChampionLocked) return
   if (page.current === false && page.isActive === false) return
   if (!isValidRunePage(page)) return
 
   const runeKey = getSmartRuneKey(currentContext)
   if (!runeKey) return
+
+  const signature = getRunePageSignature(page)
+  if (signature === lastAutoAppliedRuneSignature && Date.now() < suppressRuneSaveUntil) {
+    logger.debug('[OPGG] 跳过 Sona 自动恢复触发的符文保存 → key=%s', runeKey)
+    return
+  }
 
   const pages = { ...store.get('smartRunePages') }
   pages[runeKey] = {
@@ -491,7 +503,7 @@ function saveCurrentSmartRunePage(page: RunePage): void {
     updatedAt: Date.now(),
   }
   store.set('smartRunePages', pages)
-  logger.info('[OPGG] 已保存智能符文 → key=%s, page=%s', runeKey, getSmartRunePageName(currentContext))
+  logger.info('[OPGG] 已保存智能符文 → key=%s, page=%s, signature=%s', runeKey, getSmartRunePageName(currentContext), signature)
 }
 
 function saveCurrentSmartSummonerSpells(player: ChampSelectSession['myTeam'][number], context: RecommendationContext): void {
@@ -528,6 +540,13 @@ function saveCurrentSmartSummonerSpells(player: ChampSelectSession['myTeam'][num
 
 function handleRunePageEvent(event: LCUEventMessage): void {
   if (event.eventType !== 'Create' && event.eventType !== 'Update') return
+  const page = event.data as RunePage | null
+  if (!page || typeof page !== 'object') return
+  saveCurrentSmartRunePage(page)
+}
+
+function handleCurrentRunePageEvent(event: LCUEventMessage): void {
+  if (event.eventType === 'Delete') return
   const page = event.data as RunePage | null
   if (!page || typeof page !== 'object') return
   saveCurrentSmartRunePage(page)
@@ -596,6 +615,7 @@ async function applySavedSmartRunePage(context: RecommendationContext): Promise<
 
   runeApplyInFlightKeys.add(runeKey)
   try {
+    lastAutoAppliedRuneSignature = getRunePageSignature(saved)
     suppressRuneSaveUntil = Date.now() + RUNE_APPLY_SUPPRESS_MS
     const pageName = getSmartRunePageName(context)
     await lcu.applyRunePage({
@@ -605,7 +625,7 @@ async function applySavedSmartRunePage(context: RecommendationContext): Promise<
       selectedPerkIds: [...saved.selectedPerkIds],
     })
     lastAppliedRuneKey = runeKey
-    logger.info('[OPGG] 已自动应用智能符文 → key=%s, page=%s', runeKey, pageName)
+    logger.info('[OPGG] 已自动应用智能符文 → key=%s, page=%s, signature=%s', runeKey, pageName, lastAutoAppliedRuneSignature)
     return true
   } finally {
     runeApplyInFlightKeys.delete(runeKey)
@@ -1517,6 +1537,9 @@ function unmount(resetContext = true) {
   lastAppliedItemSetKey = ''
   lastAppliedRuneKey = ''
   lastAppliedSpellKey = ''
+  lastAutoAppliedRuneSignature = ''
+  suppressRuneSaveUntil = 0
+  suppressSpellSaveUntil = 0
   if (smartLoadoutRestoreTimer != null) {
     window.clearTimeout(smartLoadoutRestoreTimer)
     smartLoadoutRestoreTimer = null
@@ -1559,6 +1582,7 @@ function startOpggListeners() {
   })
 
   runePagesUnsub = lcu.observe(RUNE_PAGES_EVENT_URI, handleRunePageEvent)
+  currentRunePageUnsub = lcu.observe(CURRENT_RUNE_PAGE_EVENT_URI, handleCurrentRunePageEvent)
 
   lcu.getGameflowPhase().then((phase) => {
     if (phase === 'ChampSelect') {
@@ -1595,6 +1619,10 @@ export function updateOpggBuildRecommendation(enabled: boolean) {
     if (runePagesUnsub) {
       runePagesUnsub()
       runePagesUnsub = null
+    }
+    if (currentRunePageUnsub) {
+      currentRunePageUnsub()
+      currentRunePageUnsub = null
     }
     unmount()
     logger.info('[OPGG] 配装推荐接管已禁用')
