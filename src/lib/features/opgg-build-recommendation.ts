@@ -45,6 +45,7 @@ const CURRENT_RUNE_PAGE_EVENT_URI = '/lol-perks/v1/currentpage'
 const RUNE_APPLY_SUPPRESS_MS = 1500
 const SPELL_APPLY_SUPPRESS_MS = 1500
 const SMART_LOADOUT_RESTORE_DEBOUNCE_MS = 500
+const RUNE_SAVE_CHAT_DEDUPE_MS = 2000
 const SELECTABLE_OPGG_TIERS: OpggTier[] = [
   'all',
   'challenger',
@@ -109,6 +110,8 @@ let smartLoadoutRestoreTimer: number | null = null
 let pendingSmartLoadoutContext: RecommendationContext | null = null
 let lastObservedSpellKey = ''
 let lastObservedSpellSignature = ''
+let lastRuneSaveChatSignature = ''
+let lastRuneSaveChatAt = 0
 const itemSetSyncInFlightKeys = new Set<string>()
 const runeApplyInFlightKeys = new Set<string>()
 const spellApplyInFlightKeys = new Set<string>()
@@ -271,6 +274,23 @@ function getSummonerSpellSignature(spells: { spell1Id: number; spell2Id: number 
 
 function getRunePageSignature(page: Pick<RunePagePayload, 'primaryStyleId' | 'subStyleId' | 'selectedPerkIds'>): string {
   return `${page.primaryStyleId}:${page.subStyleId}:${page.selectedPerkIds.join(',')}`
+}
+
+function notifySmartRuneSaved(context: RecommendationContext, runeKey: string, signature: string): void {
+  const chatSignature = `${runeKey}|${signature}`
+  const now = Date.now()
+  if (chatSignature === lastRuneSaveChatSignature && now - lastRuneSaveChatAt < RUNE_SAVE_CHAT_DEDUPE_MS) {
+    return
+  }
+
+  lastRuneSaveChatSignature = chatSignature
+  lastRuneSaveChatAt = now
+
+  const championName = getChampionName(context.championId)
+  const modeLabel = getContextModeLabel(context)
+  lcu.sendChampSelectMessage(translate('opgg.chat.runesSaved', { championName, modeLabel }), 'celebration').catch((err) => {
+    logger.warn('[OPGG] 智能符文保存聊天提示发送失败:', err)
+  })
 }
 
 function ensureRecommendationPrefetch(context: RecommendationContext): RecommendationCacheEntry | null {
@@ -496,6 +516,8 @@ function saveCurrentSmartRunePage(page: RunePage): void {
   }
 
   const pages = { ...store.get('smartRunePages') }
+  const previous = pages[runeKey]
+  const previousSignature = previous ? getRunePageSignature(previous) : ''
   pages[runeKey] = {
     primaryStyleId: page.primaryStyleId,
     subStyleId: page.subStyleId,
@@ -504,6 +526,9 @@ function saveCurrentSmartRunePage(page: RunePage): void {
   }
   store.set('smartRunePages', pages)
   logger.info('[OPGG] 已保存智能符文 → key=%s, page=%s, signature=%s', runeKey, getSmartRunePageName(currentContext), signature)
+  if (previousSignature !== signature) {
+    notifySmartRuneSaved(currentContext, runeKey, signature)
+  }
 }
 
 function saveCurrentSmartSummonerSpells(player: ChampSelectSession['myTeam'][number], context: RecommendationContext): void {
@@ -1547,6 +1572,8 @@ function unmount(resetContext = true) {
   pendingSmartLoadoutContext = null
   lastObservedSpellKey = ''
   lastObservedSpellSignature = ''
+  lastRuneSaveChatSignature = ''
+  lastRuneSaveChatAt = 0
   itemSetSyncInFlightKeys.clear()
   runeApplyInFlightKeys.clear()
   spellApplyInFlightKeys.clear()
