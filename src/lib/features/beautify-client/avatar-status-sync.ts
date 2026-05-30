@@ -1,6 +1,14 @@
 import { lcu } from '@/lib/lcu'
 
-const IMGBB_API_KEY = 'fb01ca11e6e28914577b493ecca045bc'
+// ImgBB API key 号池：单 key 容易触发速率上限，使用号池随机分摊，失败自动轮换。
+const IMGBB_API_KEYS = [
+  'fb01ca11e6e28914577b493ecca045bc',
+  'c1289efc1b3d5b3cb46ca39696b3dedc',
+  'b0f8447c3493a289af85667bd0579100',
+  '0f88e687fe91b07d62b1818d69ccc57a',
+  'de2178ae9854c16dc8f28f23b6ec7772',
+  'ef53f3020d67083e1c831cfd483acc14',
+]
 const IMGBB_UPLOAD_URL = 'https://api.imgbb.com/1/upload'
 const AVATAR_PAYLOAD_PREFIX = 'sona-avatar:v1:'
 
@@ -107,11 +115,24 @@ export function decodeAvatarStatusPayload(statusMessage: string | null | undefin
   return isValidAvatarUrl(avatarUrl) ? avatarUrl : null
 }
 
-export async function uploadAvatarToImgbb(image: Blob): Promise<string> {
+function shuffleImgbbApiKeys(): string[] {
+  const keys = [...IMGBB_API_KEYS]
+  for (let i = keys.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[keys[i], keys[j]] = [keys[j], keys[i]]
+  }
+  return keys
+}
+
+function maskImgbbApiKey(key: string): string {
+  return key.length <= 6 ? key : `${key.slice(0, 6)}…`
+}
+
+async function uploadAvatarToImgbbWithKey(image: Blob, key: string): Promise<string> {
   const formData = new FormData()
   formData.set('image', image, 'sona-avatar.png')
 
-  const response = await fetch(`${IMGBB_UPLOAD_URL}?key=${encodeURIComponent(IMGBB_API_KEY)}`, {
+  const response = await fetch(`${IMGBB_UPLOAD_URL}?key=${encodeURIComponent(key)}`, {
     method: 'POST',
     body: formData,
   })
@@ -127,6 +148,23 @@ export async function uploadAvatarToImgbb(image: Blob): Promise<string> {
   }
 
   return avatarUrl
+}
+
+export async function uploadAvatarToImgbb(image: Blob): Promise<string> {
+  const keys = shuffleImgbbApiKeys()
+  const errors: string[] = []
+
+  for (const key of keys) {
+    try {
+      return await uploadAvatarToImgbbWithKey(image, key)
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err)
+      errors.push(`${maskImgbbApiKey(key)}: ${message}`)
+      console.warn(`[AvatarSync] ImgBB key ${maskImgbbApiKey(key)} 上传失败，尝试下一个 key:`, message)
+    }
+  }
+
+  throw new Error(`ImgBB avatar upload failed for all ${keys.length} API keys → ${errors.join(' | ')}`)
 }
 
 export async function writeAvatarUrlToStatusMessage(avatarUrl: string, fallbackStatusMessage = ''): Promise<void> {
