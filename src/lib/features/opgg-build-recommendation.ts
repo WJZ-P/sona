@@ -501,17 +501,32 @@ function isCurrentRecommendationContext(context: RecommendationContext): boolean
 }
 
 function saveCurrentSmartRunePage(page: RunePage): void {
-  if (!store.get('smartBuildRecommendation')) return
-  if (currentContext.championId <= 0 || !currentChampionLocked) return
-  if (page.current === false && page.isActive === false) return
-  if (!isValidRunePage(page)) return
+  if (!store.get('smartBuildRecommendation')) {
+    logger.info('[OPGG] 跳过符文保存：智能配装未开启')
+    return
+  }
+  if (currentContext.championId <= 0 || !currentChampionLocked) {
+    logger.info('[OPGG] 跳过符文保存：英雄未锁定 → championId=%d, locked=%s', currentContext.championId, currentChampionLocked)
+    return
+  }
+  if (page.current === false && page.isActive === false) {
+    logger.info('[OPGG] 跳过符文保存：非当前生效符文页 → name=%s, current=%s, isActive=%s', page.name, page.current, page.isActive)
+    return
+  }
+  if (!isValidRunePage(page)) {
+    logger.info('[OPGG] 跳过符文保存：符文页无效 → primaryStyleId=%d, subStyleId=%d, perks=%d', page.primaryStyleId, page.subStyleId, page.selectedPerkIds?.length ?? 0)
+    return
+  }
 
   const runeKey = getSmartRuneKey(currentContext)
-  if (!runeKey) return
+  if (!runeKey) {
+    logger.info('[OPGG] 跳过符文保存：无法生成 runeKey → championId=%d, gameMode=%s', currentContext.championId, currentContext.gameMode || 'unknown')
+    return
+  }
 
   const signature = getRunePageSignature(page)
   if (signature === lastAutoAppliedRuneSignature && Date.now() < suppressRuneSaveUntil) {
-    logger.debug('[OPGG] 跳过 Sona 自动恢复触发的符文保存 → key=%s', runeKey)
+    logger.info('[OPGG] 跳过符文保存：与 Sona 自动恢复的符文相同 → key=%s, signature=%s', runeKey, signature)
     return
   }
 
@@ -564,15 +579,37 @@ function saveCurrentSmartSummonerSpells(player: ChampSelectSession['myTeam'][num
 }
 
 function handleRunePageEvent(event: LCUEventMessage): void {
-  if (event.eventType !== 'Create' && event.eventType !== 'Update') return
   const page = event.data as RunePage | null
+  logger.info(
+    '[OPGG] WS 符文页事件 (pages) → eventType=%s, name=%s, id=%s, current=%s, isActive=%s, primaryStyleId=%s, subStyleId=%s, perks=%s',
+    event.eventType,
+    page?.name ?? 'unknown',
+    page?.id ?? 'unknown',
+    page?.current,
+    page?.isActive,
+    page?.primaryStyleId,
+    page?.subStyleId,
+    page?.selectedPerkIds?.length ?? 0,
+  )
+  if (event.eventType !== 'Create' && event.eventType !== 'Update') return
   if (!page || typeof page !== 'object') return
   saveCurrentSmartRunePage(page)
 }
 
 function handleCurrentRunePageEvent(event: LCUEventMessage): void {
-  if (event.eventType === 'Delete') return
   const page = event.data as RunePage | null
+  logger.info(
+    '[OPGG] WS 符文页事件 (currentpage) → eventType=%s, name=%s, id=%s, current=%s, isActive=%s, primaryStyleId=%s, subStyleId=%s, perks=%s',
+    event.eventType,
+    page?.name ?? 'unknown',
+    page?.id ?? 'unknown',
+    page?.current,
+    page?.isActive,
+    page?.primaryStyleId,
+    page?.subStyleId,
+    page?.selectedPerkIds?.length ?? 0,
+  )
+  if (event.eventType === 'Delete') return
   if (!page || typeof page !== 'object') return
   saveCurrentSmartRunePage(page)
 }
