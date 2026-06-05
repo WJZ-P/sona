@@ -76,7 +76,7 @@ export const zhCN = {
   'tools.group.rankDisguise': '段位伪装',
   'tools.group.replay': '回放工具',
   'tools.group.backup': '游戏设置备份',
-  'tools.matchQuery.description': '输入召唤师名#Tag 查询任意玩家的近期战绩。',
+  'tools.matchQuery.description': '输入召唤师名#Tag 查询任意玩家的近期战绩，不支持跨联盟大区查询。',
   'tools.matchQuery.placeholder': '名字#Tag (例:丨一疾风剑豪一丨#77772)',
   'tools.matchQuery.search': '查询战绩',
   'tools.matchQuery.invalid': '格式错误，请输入: 名字#Tag',

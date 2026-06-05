@@ -313,12 +313,12 @@ export function ToolsPage() {
     }
     setSearchError('')
     try {
-      const summoner = await lcu.getSummonerByRiotId(parts[0], parts[1])
-      if (!summoner?.puuid) {
+      const puuid = await lcu.resolveSummonerPuuidByRiotId(parts[0], parts[1])
+      if (!puuid) {
         setSearchError(t('tools.matchQuery.notFound'))
         return
       }
-      setMatchModalPuuid(summoner.puuid)
+      setMatchModalPuuid(puuid)
       setMatchModalName(`${parts[0]}#${parts[1]}`)
       setMatchModalOpen(true)
     } catch {

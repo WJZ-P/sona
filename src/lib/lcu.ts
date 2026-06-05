@@ -40,7 +40,7 @@ import type {
   GameQueue,
   ChampSelectSummoner,
 } from '@/types/lcu'
-import { SGP_SERVERS } from '@/types/sgp'
+import { SGP_SERVERS, TENCENT_MATCH_HISTORY_INTEROP } from '@/types/sgp'
 import type { SgpEntitlementsToken, SgpGameSummaryLol, SgpMatchHistoryLol, SgpParticipantLol, SgpPerks, SgpTeam } from '@/types/sgp'
 import { store } from '@/lib/store'
 
@@ -50,6 +50,14 @@ export type { SgpEntitlementsToken, SgpMatchHistoryLol } from '@/types/sgp'
 export { SGP_SERVERS, TENCENT_MATCH_HISTORY_INTEROP, TENCENT_SERVER_NAMES, queueIdToTag } from '@/types/sgp'
 
 export { LcuEventUri, QueueId } from '@/types/lcu'
+
+/** SGP summoner-ledge 按名查询返回的关键字段（仅取解析所需，容错处理） */
+interface SgpSummonerLite {
+  puuid?: string
+  gameName?: string
+  tagLine?: string
+  name?: string
+}
 
 type GameSettingsBackup = {
   general?: unknown
@@ -448,6 +456,117 @@ class LCUManager {
   /** 通过 gameName + tagLine (Riot ID) 获取召唤师信息 */
   getSummonerByRiotId(gameName: string, tagLine: string): Promise<SummonerInfo> {
     return get<SummonerInfo>(`/lol-summoner/v1/alias/lookup?gameName=${encodeURIComponent(gameName)}&tagLine=${encodeURIComponent(tagLine)}`)
+  }
+
+  /**
+   * 按 Riot ID 解析召唤师 puuid（支持国服跨大区）
+   *
+   * 解析顺序：
+   * 1. 先用 LCU `alias/lookup` 查本区（外服 / 国服本区命中即返回，最快）
+   * 2. 仅国服：本区查不到时，借助"所有腾讯大区共享同一 JWT"特性，并发查询
+   *    所有互通大区的 SGP `summoner-ledge` 按名接口，再用返回的 tagLine 精确匹配
+   *
+   * 拿到 puuid 后即可走 `getSgpMatchHistory`（国服互通，可跨区出战绩）。
+   *
+   * @returns 命中的 puuid；查不到返回空字符串
+   */
+  async resolveSummonerPuuidByRiotId(gameName: string, tagLine: string): Promise<string> {
+    const name = gameName.trim()
+    const tag = tagLine.trim()
+    if (!name || !tag) return ''
+
+    // 1. 本区精确查询
+    const local = await this.getSummonerByRiotId(name, tag).catch((err) => {
+      console.warn('[CrossRegion] 本区 alias/lookup 失败:', err)
+      return null
+    })
+    console.log('[CrossRegion] 本区 alias/lookup 结果:', local?.puuid ? `puuid=${local.puuid}` : '无')
+    if (local?.puuid) return local.puuid
+
+    // 2. 仅国服支持跨大区搜集
+    const sgpServerId = (await this.getSgpServerId().catch(() => '')).toUpperCase()
+    console.log('[CrossRegion] 当前 SGP 服务器:', sgpServerId || '(未解析到)')
+    if (!sgpServerId.startsWith('TENCENT_')) {
+      console.log('[CrossRegion] 非国服，跳过跨大区搜集')
+      return ''
+    }
+
+    const token = this._entitlementsToken ?? await this.getEntitlementsToken().catch((err) => {
+      console.warn('[CrossRegion] 获取 Entitlements Token 失败:', err)
+      return null
+    })
+    if (!token?.accessToken) {
+      console.warn('[CrossRegion] 无可用 accessToken，无法跨大区查询')
+      return ''
+    }
+    this._entitlementsToken = token
+
+    const wantTag = tag.toLowerCase()
+    const wantName = name.toLowerCase()
+    console.log('[CrossRegion] 开始跨大区搜集 → 目标 %s#%s，大区数 %d', name, tag, TENCENT_MATCH_HISTORY_INTEROP.length)
+
+    const results = await Promise.allSettled(
+      TENCENT_MATCH_HISTORY_INTEROP.map((regionKey) =>
+        this._getSgpSummonerByName(regionKey, name, token.accessToken),
+      ),
+    )
+
+    let matched = ''
+    results.forEach((r, idx) => {
+      const regionKey = TENCENT_MATCH_HISTORY_INTEROP[idx]
+      if (r.status !== 'fulfilled') {
+        console.warn('[CrossRegion] [%s] 查询异常:', regionKey, r.reason)
+        return
+      }
+      if (!r.value) {
+        console.log('[CrossRegion] [%s] 无返回 / 非 200', regionKey)
+        return
+      }
+      const sTag = (r.value.tagLine ?? '').trim().toLowerCase()
+      const sName = (r.value.gameName ?? r.value.name ?? '').trim().toLowerCase()
+      console.log('[CrossRegion] [%s] 命中召唤师: name=%s tag=%s puuid=%s', regionKey, sName || '(空)', sTag || '(空)', r.value.puuid || '(空)')
+      if (!matched && r.value.puuid && ((sTag && sTag === wantTag) || (!sTag && sName === wantName))) {
+        matched = r.value.puuid
+        console.log('[CrossRegion] ✓ 匹配成功 → 大区 %s，puuid=%s', regionKey, matched)
+      }
+    })
+
+    if (!matched) console.log('[CrossRegion] ✗ 全大区均未匹配到 %s#%s', name, tag)
+    return matched
+  }
+
+  /** 调用指定腾讯大区的 SGP `summoner-ledge` 按召唤师名查询 */
+  private async _getSgpSummonerByName(
+    regionKey: string,
+    gameName: string,
+    accessToken: string,
+  ): Promise<SgpSummonerLite | null> {
+    const server = SGP_SERVERS[regionKey]
+    const base = server?.common ?? server?.matchHistory
+    if (!base) return null
+
+    const regionCode = regionKey.replace(/^TENCENT_/, '')
+    const url = `${base}/summoner-ledge/v1/regions/${regionCode}/summoners/name/${encodeURIComponent(gameName)}`
+
+    const resp = await fetch(url, {
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'User-Agent': 'LeagueOfLegendsClient/14.13.596.7996 (rcp-be-lol-summoner)',
+      },
+    })
+
+    const text = await resp.text().catch(() => '')
+    console.log('[CrossRegion] [%s] %s → %d %s | body: %s', regionKey, url, resp.status, resp.statusText, text.slice(0, 800) || '(空)')
+
+    if (!resp.ok) return null
+    if (!text) return null
+
+    try {
+      return JSON.parse(text) as SgpSummonerLite
+    } catch (err) {
+      console.warn('[CrossRegion] [%s] JSON 解析失败:', regionKey, err)
+      return null
+    }
   }
 
   /** 设置当前召唤师头像 */

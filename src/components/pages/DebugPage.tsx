@@ -667,6 +667,16 @@ export function DebugPage() {
           }}>
             {t('debug.action.queryPuuid')}
           </SonaButton>
+          <SonaButton onClick={() => {
+            const parts = riotId.trim().split('#')
+            if (parts.length !== 2 || !parts[0] || !parts[1]) { setOutput('❌ 格式: 名字#Tag'); return }
+            runAndLog(`跨大区解析 puuid ${riotId}`, async () => {
+              const resolved = await lcu.resolveSummonerPuuidByRiotId(parts[0], parts[1])
+              return resolved ? { riotId, puuid: resolved } : `❌ 未找到（含国服全大区搜集）: ${riotId}`
+            })
+          }}>
+            跨大区解析 puuid
+          </SonaButton>
         </div>
       </SettingGroup>
 
