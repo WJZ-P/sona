@@ -8,6 +8,10 @@ const IMGBB_API_KEYS = [
   '0f88e687fe91b07d62b1818d69ccc57a',
   'de2178ae9854c16dc8f28f23b6ec7772',
   'ef53f3020d67083e1c831cfd483acc14',
+  'e17591bdc02fbebbcc854d80b4d1a53f',
+  '71a100fb76da44fffee851486e5a6bd4',
+  '6d2fde37e85a9b70fcf0672cb0fdc637',
+  '2cc0280c2500d36a3a64a9f6d4d05ca1'
 ]
 const IMGBB_UPLOAD_URL = 'https://api.imgbb.com/1/upload'
 const AVATAR_PAYLOAD_PREFIX = 'sona-avatar:v1:'
