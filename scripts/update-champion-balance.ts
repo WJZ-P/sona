@@ -1,10 +1,11 @@
 /**
  * 英雄平衡数据更新脚本（Node 环境）
  *
- * 从 Fandom LoL Wiki 的 Module:ChampionData/data 拉取官方 Lua 数据，
+ * 从 LoL Wiki 的 Module:ChampionData/data 拉取官方 Lua 数据，
  * 解析后提取特殊模式的平衡调整数值，写入 src/data/champion-balance.json。
  *
- * 数据源：Fandom MediaWiki API（action=query，不走 Cloudflare Challenge）
+ * 数据源：https://wiki.leagueoflegends.com/en-us/Module:ChampionData/data
+ *        （直接抓 HTML 页面，提取 `-- <pre>` 标记内的 Lua return 表）
  * 数据特点：字段天然稀疏——没调整就不存在，直接忽略
  *
  * 退出码：
@@ -18,14 +19,15 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import crypto from 'node:crypto'
+import { execSync } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
 import luaparse from 'luaparse'
+import { ProxyAgent, setGlobalDispatcher } from 'undici'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
-const WIKI_API_URL =
-  'https://leagueoflegends.fandom.com/api.php?action=query&prop=revisions&titles=Module:ChampionData/data&rvprop=content&rvslots=main&format=json'
+const WIKI_DATA_URL = 'https://wiki.leagueoflegends.com/en-us/Module:ChampionData/data'
 const OUTPUT_PATH = path.resolve(__dirname, '..', 'src', 'data', 'champion-balance.json')
 
 /** 支持的模式（Wiki 原始 key） */
@@ -92,26 +94,103 @@ function sha1(text: string): string {
   return crypto.createHash('sha1').update(text).digest('hex')
 }
 
+/** 解码 HTML 实体（&amp; 放最后，避免二次解码） */
+function decodeHtmlEntities(text: string): string {
+  return text
+    .replace(/&quot;/g, '"')
+    .replace(/&#0?39;/g, "'")
+    .replace(/&apos;/g, "'")
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&amp;/g, '&')
+}
+
+/**
+ * 从 wiki 页面 HTML 中提取 Lua return 表。
+ * 数据被包在 `-- <pre> ... -- </pre>` 注释标记内（HTML 中 `<` 被转义成 `&lt;`）。
+ */
+function extractLuaTable(html: string): string {
+  // 先锚定到 `-- <pre>` 标记，避免误命中页面其它脚本里的 "return {"
+  let preIdx = html.indexOf('&lt;pre')
+  if (preIdx < 0) preIdx = html.indexOf('<pre')
+  const searchFrom = preIdx >= 0 ? preIdx : 0
+
+  const startIdx = html.indexOf('return {', searchFrom)
+  if (startIdx < 0) throw new Error('未找到 "return {" 起始标记')
+
+  // 结束标记：lua 注释 `-- </pre>`（HTML 中 `<` 转义），找不到再退回真正的 </pre> 标签
+  let endIdx = html.indexOf('&lt;/pre', startIdx)
+  if (endIdx < 0) endIdx = html.indexOf('</pre', startIdx)
+  if (endIdx < 0) endIdx = html.length
+
+  // 回退到结束注释前的 `--`，去掉尾部的 `-- </pre>`
+  const dashIdx = html.lastIndexOf('--', endIdx)
+  if (dashIdx > startIdx) endIdx = dashIdx
+
+  return decodeHtmlEntities(html.substring(startIdx, endIdx)).replace(/\r\n/g, '\n').trimEnd()
+}
+
+/** 读取 Windows 系统代理（WinINET），node 的 fetch 默认不会走系统代理 */
+function detectWinInetProxy(): string {
+  if (process.platform !== 'win32') return ''
+  try {
+    const base =
+      'reg query "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings"'
+    const enable = execSync(`${base} /v ProxyEnable`, { encoding: 'utf-8' })
+    if (!/ProxyEnable\s+REG_DWORD\s+0x1/i.test(enable)) return ''
+
+    const server = execSync(`${base} /v ProxyServer`, { encoding: 'utf-8' })
+    const match = server.match(/ProxyServer\s+REG_SZ\s+(.+)/i)
+    if (!match) return ''
+
+    let value = match[1].trim()
+    // 形如 "http=host:port;https=host:port" 时优先取 https/http
+    if (value.includes('=')) {
+      const map = Object.fromEntries(value.split(';').map((s) => s.split('=')))
+      value = map['https'] || map['http'] || ''
+    }
+    if (!value) return ''
+    return /^https?:\/\//i.test(value) ? value : `http://${value}`
+  } catch {
+    return ''
+  }
+}
+
+/** 解析代理：优先环境变量，其次 Windows 系统代理 */
+function resolveProxy(): string {
+  return (
+    process.env.HTTPS_PROXY ||
+    process.env.https_proxy ||
+    process.env.HTTP_PROXY ||
+    process.env.http_proxy ||
+    process.env.ALL_PROXY ||
+    process.env.all_proxy ||
+    detectWinInetProxy()
+  )
+}
+
 async function fetchLuaSource(): Promise<string> {
-  console.log(`[update-balance] 从 Fandom Wiki API 拉取: ${WIKI_API_URL}`)
-  const res = await fetch(WIKI_API_URL, {
+  // Cloudflare 会按 TLS 指纹拦截 node 直连；若存在代理则让 fetch 走代理
+  const proxyUrl = resolveProxy()
+  if (proxyUrl) {
+    setGlobalDispatcher(new ProxyAgent(proxyUrl))
+    console.log(`[update-balance] 使用代理: ${proxyUrl}`)
+  }
+
+  console.log(`[update-balance] 从 LoL Wiki 拉取: ${WIKI_DATA_URL}`)
+  const res = await fetch(WIKI_DATA_URL, {
     headers: {
-      'User-Agent': 'Mozilla/5.0 (compatible; SonaBot/1.0; +https://github.com/WJZ-P/sona)',
+      // Cloudflare 会拦截“伪装浏览器”的 UA，反而放行 curl/wget 这类简单 UA
+      'Accept': '*/*',
+      'User-Agent': 'curl/8.13.0',
     },
+    signal: AbortSignal.timeout(30_000),
   })
   if (!res.ok) throw new Error(`HTTP ${res.status}`)
 
-  const json = await res.json() as {
-    query: { pages: Record<string, { revisions: Array<{ slots: { main: { '*': string } } }> }> }
-  }
-  const pages = json.query.pages
-  const pageId = Object.keys(pages)[0]
-  const content = pages[pageId].revisions[0].slots.main['*']
-
-  // 剥掉开头的注释，只保留 return { ... }
-  const returnIdx = content.indexOf('return {')
-  if (returnIdx < 0) throw new Error('未找到 "return {" 起始标记')
-  return content.substring(returnIdx)
+  const html = await res.text()
+  return extractLuaTable(html)
 }
 
 async function main() {
@@ -192,8 +271,8 @@ async function main() {
   // 写入新文件
   const output = {
     _meta: {
-      source: 'fandom-wiki',
-      sourceUrl: 'https://leagueoflegends.fandom.com/wiki/Module:ChampionData/data',
+      source: 'lol-wiki',
+      sourceUrl: 'https://wiki.leagueoflegends.com/en-us/Module:ChampionData/data',
       updatedAt: new Date().toISOString(),
       sha1: hash,
       championCount: count,

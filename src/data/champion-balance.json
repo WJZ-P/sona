@@ -1,10 +1,10 @@
 {
   "_meta": {
-    "source": "fandom-wiki",
-    "sourceUrl": "https://leagueoflegends.fandom.com/wiki/Module:ChampionData/data",
-    "updatedAt": "2026-04-22T10:32:03.933Z",
-    "sha1": "461fcb859341e84929aa0bd4d922e957bc01277b",
-    "championCount": 172
+    "source": "lol-wiki",
+    "sourceUrl": "https://wiki.leagueoflegends.com/en-us/Module:ChampionData/data",
+    "updatedAt": "2026-06-07T03:49:59.826Z",
+    "sha1": "6ddad723ad1f248564a096248f3dd10bcb575139",
+    "championCount": 174
   },
   "champions": {
     "1": {
@@ -18,7 +18,8 @@
         },
         "urf": {
           "dmg_dealt": 0.9,
-          "dmg_taken": 1.05
+          "dmg_taken": 1.1,
+          "shielding": 0.9
         }
       }
     },
@@ -111,7 +112,6 @@
       "alias": "Vladimir",
       "stats": {
         "aram": {
-          "dmg_dealt": 0.95,
           "dmg_taken": 1.05,
           "healing": 0.9
         },
@@ -154,7 +154,7 @@
           "dmg_taken": 1.1
         },
         "urf": {
-          "dmg_dealt": 0.95,
+          "dmg_dealt": 0.85,
           "dmg_taken": 1.1
         },
         "ofa": {
@@ -171,9 +171,6 @@
       "id": 11,
       "alias": "MasterYi",
       "stats": {
-        "aram": {
-          "dmg_taken": 0.97
-        },
         "urf": {
           "dmg_dealt": 0.9,
           "healing": 0.8
@@ -241,11 +238,12 @@
       "alias": "Sivir",
       "stats": {
         "aram": {
-          "dmg_dealt": 0.9,
+          "dmg_dealt": 0.93,
           "dmg_taken": 1.05
         },
         "urf": {
-          "dmg_dealt": 0.9
+          "dmg_dealt": 0.85,
+          "dmg_taken": 1.05
         },
         "nb": {
           "dmg_dealt": 0.95,
@@ -258,7 +256,7 @@
       "alias": "Soraka",
       "stats": {
         "aram": {
-          "dmg_taken": 0.97
+          "ability_haste": 10
         },
         "urf": {
           "dmg_dealt": 1.05,
@@ -276,12 +274,12 @@
       "alias": "Teemo",
       "stats": {
         "aram": {
-          "dmg_dealt": 0.9,
+          "dmg_dealt": 0.95,
           "dmg_taken": 1.1,
-          "ability_haste": -20
+          "ability_haste": -15
         },
         "urf": {
-          "dmg_dealt": 0.95
+          "dmg_dealt": 0.9
         },
         "nb": {
           "dmg_dealt": 0.9,
@@ -296,6 +294,10 @@
         "aram": {
           "dmg_dealt": 1.05,
           "dmg_taken": 0.95
+        },
+        "urf": {
+          "dmg_dealt": 0.9,
+          "dmg_taken": 1.05
         }
       }
     },
@@ -305,8 +307,7 @@
       "stats": {
         "aram": {
           "dmg_dealt": 1.05,
-          "dmg_taken": 0.95,
-          "healing": 1.05
+          "dmg_taken": 0.95
         },
         "usb": {
           "dmg_dealt": 0.95
@@ -351,8 +352,8 @@
       "alias": "MissFortune",
       "stats": {
         "aram": {
-          "dmg_dealt": 0.9,
-          "dmg_taken": 1.1
+          "dmg_dealt": 0.95,
+          "dmg_taken": 1.05
         },
         "usb": {
           "dmg_dealt": 1.05,
@@ -365,8 +366,7 @@
       "alias": "Ashe",
       "stats": {
         "aram": {
-          "dmg_dealt": 1.05,
-          "attack_speed": 1.03
+          "dmg_dealt": 1.05
         },
         "usb": {
           "dmg_taken": 0.95
@@ -380,7 +380,7 @@
         "aram": {
           "dmg_dealt": 1.1,
           "dmg_taken": 0.9,
-          "healing": 1.35
+          "healing": 1.2
         }
       }
     },
@@ -429,8 +429,7 @@
       "stats": {
         "aram": {
           "dmg_dealt": 1.05,
-          "dmg_taken": 0.95,
-          "ability_haste": 10
+          "dmg_taken": 0.95
         },
         "urf": {
           "dmg_dealt": 1.05,
@@ -447,8 +446,7 @@
       "alias": "Singed",
       "stats": {
         "aram": {
-          "dmg_dealt": 0.9,
-          "dmg_taken": 1.05
+          "dmg_taken": 1.08
         },
         "urf": {
           "dmg_dealt": 0.9
@@ -495,8 +493,8 @@
           "dmg_taken": 0.95
         },
         "urf": {
-          "dmg_dealt": 0.92,
-          "dmg_taken": 1.05
+          "dmg_dealt": 0.85,
+          "dmg_taken": 1.1
         },
         "ofa": {
           "dmg_dealt": 0.98
@@ -508,7 +506,7 @@
       "alias": "Karthus",
       "stats": {
         "aram": {
-          "dmg_dealt": 0.9,
+          "dmg_dealt": 0.93,
           "dmg_taken": 1.05
         },
         "urf": {
@@ -609,12 +607,6 @@
       "id": 37,
       "alias": "Sona",
       "stats": {
-        "aram": {
-          "dmg_taken": 1.1,
-          "healing": 0.85,
-          "shielding": 0.85,
-          "ability_haste": -20
-        },
         "urf": {
           "dmg_dealt": 0.9,
           "healing": 0.7
@@ -640,6 +632,7 @@
       "alias": "Irelia",
       "stats": {
         "aram": {
+          "dmg_dealt": 1.05,
           "ability_haste": 20
         },
         "ofa": {
@@ -654,8 +647,7 @@
         "aram": {
           "dmg_dealt": 0.95,
           "dmg_taken": 1.05,
-          "healing": 0.9,
-          "shielding": 0.95
+          "healing": 0.9
         },
         "ofa": {
           "dmg_dealt": 1.03
@@ -681,7 +673,7 @@
       "stats": {
         "aram": {
           "dmg_taken": 0.9,
-          "ability_haste": 20
+          "ability_haste": -20
         },
         "nb": {
           "dmg_dealt": 1.05
@@ -691,11 +683,7 @@
     "43": {
       "id": 43,
       "alias": "Karma",
-      "stats": {
-        "aram": {
-          "dmg_dealt": 0.98
-        }
-      }
+      "stats": {}
     },
     "44": {
       "id": 44,
@@ -717,8 +705,11 @@
       "alias": "Veigar",
       "stats": {
         "aram": {
-          "dmg_dealt": 0.9,
+          "dmg_dealt": 0.93,
           "dmg_taken": 1.1
+        },
+        "urf": {
+          "dmg_dealt": 0.9
         }
       }
     },
@@ -731,6 +722,7 @@
         },
         "urf": {
           "dmg_dealt": 0.95,
+          "dmg_taken": 0.95,
           "healing": 0.8
         },
         "ofa": {
@@ -747,7 +739,7 @@
       "alias": "Swain",
       "stats": {
         "aram": {
-          "dmg_dealt": 0.9,
+          "dmg_dealt": 0.95,
           "dmg_taken": 1.15,
           "healing": 0.8
         },
@@ -760,11 +752,7 @@
     "51": {
       "id": 51,
       "alias": "Caitlyn",
-      "stats": {
-        "aram": {
-          "dmg_taken": 1.05
-        }
-      }
+      "stats": {}
     },
     "53": {
       "id": 53,
@@ -804,7 +792,7 @@
           "tenacity": 1.2
         },
         "urf": {
-          "dmg_dealt": 1.05,
+          "dmg_dealt": 1.1,
           "dmg_taken": 0.95
         },
         "ofa": {
@@ -834,9 +822,8 @@
       "alias": "Maokai",
       "stats": {
         "aram": {
-          "dmg_dealt": 0.8,
-          "dmg_taken": 1.1,
-          "healing": 0.9
+          "dmg_dealt": 0.85,
+          "dmg_taken": 1.1
         },
         "urf": {
           "dmg_taken": 1.05,
@@ -858,7 +845,11 @@
       "alias": "Renekton",
       "stats": {
         "aram": {
-          "healing": 1.05
+          "healing": 1.1
+        },
+        "urf": {
+          "dmg_dealt": 0.95,
+          "dmg_taken": 0.95
         }
       }
     },
@@ -881,7 +872,7 @@
         "aram": {
           "dmg_dealt": 1.05,
           "dmg_taken": 0.9,
-          "tenacity": 1.2
+          "tenacity": 1.1
         },
         "urf": {
           "dmg_taken": 0.95
@@ -953,8 +944,10 @@
           "dmg_dealt": 1.05,
           "dmg_taken": 0.95,
           "healing": 1.1,
-          "shielding": 1.2,
-          "energy_regen": 1.2
+          "shielding": 1.2
+        },
+        "urf": {
+          "dmg_dealt": 1.05
         },
         "ofa": {
           "dmg_taken": 0.95
@@ -966,10 +959,10 @@
       "alias": "Vayne",
       "stats": {
         "aram": {
-          "dmg_dealt": 1.05,
           "dmg_taken": 0.95
         },
         "urf": {
+          "dmg_dealt": 0.95,
           "dmg_taken": 1.05
         },
         "ofa": {
@@ -996,8 +989,9 @@
       "id": 72,
       "alias": "Skarner",
       "stats": {
-        "aram": {
-          "dmg_taken": 1.05
+        "urf": {
+          "dmg_dealt": 1.1,
+          "shielding": 0.9
         },
         "ofa": {
           "dmg_taken": 0.97
@@ -1041,7 +1035,7 @@
           "dmg_dealt": 1.1
         },
         "urf": {
-          "dmg_dealt": 1.05,
+          "dmg_dealt": 1.1,
           "dmg_taken": 0.95
         },
         "ofa": {
@@ -1108,10 +1102,6 @@
       "id": 82,
       "alias": "Mordekaiser",
       "stats": {
-        "aram": {
-          "dmg_dealt": 0.95,
-          "dmg_taken": 1.05
-        },
         "urf": {
           "dmg_taken": 0.85
         },
@@ -1139,9 +1129,7 @@
       "alias": "Akali",
       "stats": {
         "aram": {
-          "dmg_dealt": 1.05,
-          "dmg_taken": 0.9,
-          "energy_regen": 1.2,
+          "dmg_taken": 0.95,
           "tenacity": 1.2
         },
         "urf": {
@@ -1161,9 +1149,8 @@
       "id": 85,
       "alias": "Kennen",
       "stats": {
-        "aram": {
-          "dmg_dealt": 1.05,
-          "energy_regen": 1.2
+        "urf": {
+          "dmg_taken": 0.95
         },
         "ofa": {
           "dmg_dealt": 0.98,
@@ -1180,7 +1167,7 @@
         },
         "urf": {
           "dmg_dealt": 1.1,
-          "dmg_taken": 0.9
+          "dmg_taken": 0.95
         },
         "ofa": {
           "dmg_dealt": 0.95
@@ -1243,11 +1230,12 @@
       "alias": "KogMaw",
       "stats": {
         "aram": {
-          "dmg_dealt": 0.88,
+          "dmg_dealt": 0.92,
           "dmg_taken": 1.1
         },
         "urf": {
-          "dmg_dealt": 0.95
+          "dmg_dealt": 0.85,
+          "dmg_taken": 1.05
         },
         "ofa": {
           "dmg_dealt": 0.97,
@@ -1280,9 +1268,9 @@
       "alias": "Lux",
       "stats": {
         "aram": {
-          "dmg_dealt": 0.85,
+          "dmg_dealt": 0.9,
           "dmg_taken": 1.1,
-          "shielding": 0.8
+          "shielding": 0.9
         },
         "urf": {
           "dmg_dealt": 0.95
@@ -1319,8 +1307,11 @@
     },
     "103": {
       "id": 103,
-      "alias": "Mel",
+      "alias": "Ahri",
       "stats": {
+        "aram": {
+          "healing": 0.9
+        },
         "urf": {
           "dmg_dealt": 0.9,
           "dmg_taken": 1.05
@@ -1392,12 +1383,7 @@
     "110": {
       "id": 110,
       "alias": "Varus",
-      "stats": {
-        "aram": {
-          "dmg_dealt": 0.98,
-          "dmg_taken": 1.05
-        }
-      }
+      "stats": {}
     },
     "111": {
       "id": 111,
@@ -1413,10 +1399,6 @@
       "id": 112,
       "alias": "Viktor",
       "stats": {
-        "aram": {
-          "dmg_dealt": 0.95,
-          "dmg_taken": 1.05
-        },
         "urf": {
           "dmg_dealt": 0.95
         }
@@ -1450,7 +1432,7 @@
       "alias": "Ziggs",
       "stats": {
         "aram": {
-          "dmg_dealt": 0.87,
+          "dmg_dealt": 0.92,
           "dmg_taken": 1.2,
           "ability_haste": -20
         },
@@ -1556,10 +1538,6 @@
       "id": 131,
       "alias": "Diana",
       "stats": {
-        "aram": {
-          "dmg_dealt": 1.02,
-          "dmg_taken": 0.98
-        },
         "ofa": {
           "dmg_dealt": 0.95
         }
@@ -1572,7 +1550,6 @@
         "aram": {
           "dmg_dealt": 1.1,
           "dmg_taken": 0.9,
-          "attack_speed": 1.025,
           "tenacity": 1.2
         },
         "urf": {
@@ -1608,8 +1585,7 @@
           "ability_haste": -20
         },
         "usb": {
-          "dmg_dealt": 1.05,
-          "movement_speed": 1.2
+          "dmg_dealt": 1.05
         }
       }
     },
@@ -1657,8 +1633,7 @@
       "alias": "Kaisa",
       "stats": {
         "aram": {
-          "dmg_taken": 0.95,
-          "attack_speed": 1.025
+          "dmg_taken": 0.9
         },
         "urf": {
           "dmg_dealt": 0.9,
@@ -1674,7 +1649,6 @@
       "alias": "Seraphine",
       "stats": {
         "aram": {
-          "dmg_dealt": 0.9,
           "dmg_taken": 1.2,
           "healing": 0.8,
           "shielding": 0.8,
@@ -1697,8 +1671,7 @@
       "stats": {
         "aram": {
           "dmg_dealt": 1.05,
-          "dmg_taken": 0.95,
-          "attack_speed": 1.025
+          "dmg_taken": 0.95
         },
         "urf": {
           "dmg_dealt": 1.1,
@@ -1720,9 +1693,6 @@
       "id": 157,
       "alias": "Yasuo",
       "stats": {
-        "aram": {
-          "attack_speed": 1.025
-        },
         "urf": {
           "dmg_taken": 0.9
         }
@@ -1789,7 +1759,9 @@
       "alias": "Belveth",
       "stats": {
         "aram": {
-          "dmg_dealt": 1.05
+          "dmg_dealt": 1.05,
+          "dmg_taken": 0.95,
+          "tenacity": 1.2
         },
         "usb": {
           "dmg_dealt": 0.9
@@ -1815,11 +1787,11 @@
       "alias": "Jhin",
       "stats": {
         "aram": {
-          "dmg_dealt": 0.9,
+          "dmg_dealt": 0.95,
           "dmg_taken": 1.05
         },
         "urf": {
-          "dmg_dealt": 1.05
+          "dmg_dealt": 1.01
         }
       }
     },
@@ -1829,8 +1801,7 @@
       "stats": {
         "aram": {
           "dmg_dealt": 1.1,
-          "dmg_taken": 0.9,
-          "attack_speed": 1.025
+          "dmg_taken": 0.9
         },
         "ofa": {
           "dmg_taken": 0.95
@@ -1846,7 +1817,8 @@
       "alias": "Zeri",
       "stats": {
         "aram": {
-          "dmg_dealt": 1.1
+          "dmg_dealt": 1.1,
+          "dmg_taken": 0.95
         }
       }
     },
@@ -1883,7 +1855,7 @@
       "stats": {
         "aram": {
           "dmg_dealt": 1.05,
-          "healing": 1.2
+          "healing": 1.1
         }
       }
     },
@@ -1909,8 +1881,11 @@
       "alias": "Senna",
       "stats": {
         "aram": {
-          "dmg_dealt": 0.97,
+          "dmg_dealt": 0.92,
           "dmg_taken": 1.05
+        },
+        "urf": {
+          "dmg_dealt": 1.1
         },
         "ofa": {
           "dmg_dealt": 1.05,
@@ -1945,7 +1920,6 @@
         "aram": {
           "dmg_dealt": 1.05,
           "dmg_taken": 0.95,
-          "energy_regen": 1.2,
           "tenacity": 1.2
         },
         "urf": {
@@ -1986,6 +1960,7 @@
         "aram": {
           "dmg_dealt": 1.15,
           "dmg_taken": 0.9,
+          "ability_haste": 20,
           "tenacity": 1.2
         },
         "urf": {
@@ -2038,8 +2013,7 @@
       "stats": {
         "aram": {
           "dmg_dealt": 0.95,
-          "dmg_taken": 1.05,
-          "healing": 0.9
+          "dmg_taken": 1.05
         },
         "ofa": {
           "dmg_dealt": 1.05,
@@ -2054,13 +2028,11 @@
       "stats": {
         "aram": {
           "dmg_taken": 0.95,
-          "ability_haste": 20,
-          "attack_speed": 1.025
+          "ability_haste": 20
         },
         "ofa": {
           "dmg_dealt": 1.08,
-          "dmg_taken": 0.9,
-          "movement_speed": 1.05
+          "dmg_taken": 0.9
         }
       }
     },
@@ -2068,12 +2040,9 @@
       "id": 350,
       "alias": "Yuumi",
       "stats": {
-        "aram": {
-          "dmg_dealt": 1.05
-        },
         "urf": {
-          "dmg_dealt": 0.65,
-          "dmg_taken": 1.2,
+          "dmg_dealt": 0.75,
+          "dmg_taken": 0.9,
           "healing": 0.7
         },
         "ofa": {
@@ -2093,10 +2062,6 @@
       "id": 360,
       "alias": "Samira",
       "stats": {
-        "aram": {
-          "dmg_dealt": 0.98,
-          "dmg_taken": 1.05
-        },
         "urf": {
           "dmg_dealt": 0.95
         },
@@ -2117,14 +2082,8 @@
           "dmg_taken": 0.87,
           "shielding": 1.2
         },
-        "ofa": {
-          "movement_speed": 1.05
-        },
         "nb": {
           "ability_haste": 20
-        },
-        "usb": {
-          "movement_speed": 1.2
         }
       }
     },
@@ -2176,7 +2135,7 @@
       "stats": {
         "aram": {
           "dmg_dealt": 0.95,
-          "shielding": 0.8
+          "shielding": 0.9
         },
         "ofa": {
           "dmg_dealt": 1.1,
@@ -2227,8 +2186,7 @@
         },
         "usb": {
           "dmg_dealt": 1.08,
-          "dmg_taken": 0.92,
-          "movement_speed": 1.2
+          "dmg_taken": 0.92
         }
       }
     },
@@ -2237,7 +2195,8 @@
       "alias": "Rakan",
       "stats": {
         "aram": {
-          "dmg_taken": 0.95
+          "dmg_taken": 0.95,
+          "ability_haste": 10
         }
       }
     },
@@ -2246,8 +2205,7 @@
       "alias": "Xayah",
       "stats": {
         "aram": {
-          "dmg_dealt": 1.05,
-          "attack_speed": 1.03
+          "dmg_dealt": 1.05
         },
         "urf": {
           "dmg_dealt": 0.85,
@@ -2317,7 +2275,6 @@
       "stats": {
         "aram": {
           "dmg_dealt": 0.95,
-          "healing": 0.9,
           "shielding": 0.9
         },
         "ofa": {
@@ -2335,7 +2292,7 @@
       "stats": {
         "aram": {
           "dmg_dealt": 1.1,
-          "dmg_taken": 0.95,
+          "dmg_taken": 0.9,
           "tenacity": 1.2
         },
         "urf": {
@@ -2367,8 +2324,7 @@
       "stats": {
         "aram": {
           "dmg_dealt": 1.05,
-          "dmg_taken": 0.97,
-          "attack_speed": 1.025
+          "dmg_taken": 0.97
         },
         "urf": {
           "dmg_dealt": 1.1,
@@ -2380,15 +2336,38 @@
         }
       }
     },
+    "799": {
+      "id": 799,
+      "alias": "Ambessa",
+      "stats": {
+        "aram": {
+          "dmg_taken": 1.05
+        }
+      }
+    },
+    "800": {
+      "id": 800,
+      "alias": "Mel",
+      "stats": {
+        "aram": {
+          "ability_haste": -10
+        },
+        "urf": {
+          "dmg_dealt": 0.9
+        }
+      }
+    },
+    "804": {
+      "id": 804,
+      "alias": "Yunara",
+      "stats": {}
+    },
     "875": {
       "id": 875,
       "alias": "Sett",
       "stats": {
         "aram": {
-          "dmg_dealt": 0.9,
-          "dmg_taken": 1.1,
-          "healing": 0.9,
-          "shielding": 0.9
+          "dmg_taken": 1.1
         },
         "urf": {
           "dmg_dealt": 1.05,
@@ -2427,6 +2406,9 @@
       "id": 887,
       "alias": "Gwen",
       "stats": {
+        "aram": {
+          "dmg_dealt": 1.02
+        },
         "usb": {
           "dmg_dealt": 0.95,
           "dmg_taken": 1.05
@@ -2439,8 +2421,7 @@
       "stats": {
         "aram": {
           "dmg_dealt": 0.95,
-          "dmg_taken": 1.05,
-          "shielding": 0.8
+          "dmg_taken": 1.05
         },
         "ofa": {
           "dmg_dealt": 1.1,
@@ -2452,16 +2433,16 @@
     "893": {
       "id": 893,
       "alias": "Aurora",
-      "stats": {}
+      "stats": {
+        "aram": {
+          "ability_haste": 10
+        }
+      }
     },
     "895": {
       "id": 895,
       "alias": "Nilah",
-      "stats": {
-        "aram": {
-          "dmg_dealt": 0.97
-        }
-      }
+      "stats": {}
     },
     "897": {
       "id": 897,
@@ -2480,7 +2461,7 @@
       "alias": "Smolder",
       "stats": {
         "aram": {
-          "dmg_taken": 1.05,
+          "dmg_taken": 1.02,
           "ability_haste": -10
         }
       }
@@ -2496,10 +2477,24 @@
         }
       }
     },
+    "904": {
+      "id": 904,
+      "alias": "Zaahen",
+      "stats": {
+        "aram": {
+          "dmg_dealt": 0.95,
+          "dmg_taken": 1.05
+        }
+      }
+    },
     "910": {
       "id": 910,
       "alias": "Hwei",
-      "stats": {}
+      "stats": {
+        "aram": {
+          "dmg_dealt": 0.95
+        }
+      }
     },
     "950": {
       "id": 950,
@@ -2519,12 +2514,7 @@
     "240.1": {
       "id": 240.1,
       "alias": "Kled",
-      "stats": {
-        "aram": {
-          "dmg_dealt": 1.05,
-          "dmg_taken": 0.9
-        }
-      }
+      "stats": {}
     }
   }
 }
