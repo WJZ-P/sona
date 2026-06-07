@@ -17,7 +17,7 @@ import { logger } from '@/index'
 import { lcu, LcuEventUri, type LCUEventMessage } from '@/lib/lcu'
 import type { GameflowPhase } from '@/types/lcu'
 import { injector } from '@/lib/InjectorManager'
-import { getChampionBalance, getChampionById, getQueueName, type BalanceMode, type ChampionBalanceStats } from '@/lib/assets'
+import { getAllChampions, getChampionBalance, getQueueName, type BalanceMode, type ChampionBalanceStats } from '@/lib/assets'
 
 // ==================== 图标资源（构建期内联为 base64） ====================
 
@@ -250,10 +250,10 @@ let injectRegistered = false
 let cardHoverObserver: MutationObserver | null = null
 /** 网格诊断日志去重（状态变化才打，避免每帧刷屏） */
 let lastCardDiag = ''
-/** 上次 hover 的卡片索引去重 */
-let lastHoverCardIndex = -2
-/** LCU 可选英雄列表：下标与英雄网格卡片顺序对应 */
-let pickableIds: number[] = []
+/** 上次 hover 的英雄 ID 去重 */
+let lastHoverChampId = -2
+/** 英雄本地化名字 → championId 映射（卡片上拿不到 id，只能靠名字反查） */
+let nameToId: Map<string, number> | null = null
 
 // ==================== 数据渲染（hover 时按需调用） ====================
 
@@ -352,27 +352,42 @@ function extractChampionIdFromBench(item: Element): number | null {
 }
 
 /**
- * 从英雄选择网格卡片 .champion-card-component 中提取英雄 ID
- * 依次尝试：data 属性 → <img> → 背景图 → outerHTML 兜底
+ * 构建「英雄文本 → championId」映射，缓存复用。
+ * 网格卡片显示的是英雄称号（title，如「皮城女警」），不是英雄名（name，如「凯特琳」），
+ * 因此 name / title / alias 都建索引，卡片显示哪个都能命中。
  */
-function extractChampionIdFromCard(card: Element): number | null {
-  for (const attr of ['data-champion-id', 'data-champion-id-value', 'data-champion-id-string', 'champion-id']) {
-    const value = card.getAttribute(attr)
-    if (value && /^\d+$/.test(value)) return Number(value)
+function buildNameToIdMap(): Map<string, number> {
+  if (nameToId) return nameToId
+  const map = new Map<string, number>()
+  for (const champ of getAllChampions()) {
+    if (champ.name) map.set(champ.name.trim(), champ.id)
+    if (champ.title) map.set(champ.title.trim(), champ.id)
+    if (champ.alias) map.set(champ.alias.trim(), champ.id)
   }
+  nameToId = map
+  return map
+}
 
-  const img = card.querySelector('img[src*="champion-icons"]')
-  const imgMatch = img?.getAttribute('src')?.match(/champion-icons\/(\d+)\.png/)
-  if (imgMatch) return Number(imgMatch[1])
-
-  const styled = card.querySelector('[style*="champion-icons"]') as HTMLElement | null
-  const styleMatch = styled?.style.backgroundImage?.match(/champion-icons\/(\d+)\.png/)
-  if (styleMatch) return Number(styleMatch[1])
-
-  const htmlMatch = (card as HTMLElement).outerHTML.match(/champion-icons\/(\d+)\.png/)
-  if (htmlMatch) return Number(htmlMatch[1])
-
+/**
+ * 从英雄选择网格卡片里抠出英雄名字文本。
+ * 卡片上拿不到 championId，但有英雄名字：先取整卡 textContent，再退而找子元素。
+ */
+function extractChampName(card: Element): string | null {
+  const el = card as HTMLElement
+  const direct = el.textContent?.trim()
+  if (direct && direct.length > 1 && direct.length < 25) return direct
+  for (const sel of ['[class*="name"]', '[class*="label"]', 'span', 'p']) {
+    const text = el.querySelector<HTMLElement>(sel)?.textContent?.trim()
+    if (text && text.length > 1 && text.length < 25) return text
+  }
   return null
+}
+
+/** 卡片 → 英雄名字 → championId */
+function resolveChampionIdByCard(card: Element): { championId: number | null; name: string | null } {
+  const name = extractChampName(card)
+  if (!name) return { championId: null, name: null }
+  return { championId: buildNameToIdMap().get(name) ?? null, name }
 }
 
 function tryBindHover(): boolean {
@@ -437,26 +452,6 @@ function logCardDiag(message: string): void {
   logger.info('[BalanceBuff] %s', message)
 }
 
-/** 拉取 LCU 可选英雄列表（下标对应英雄网格卡片顺序） */
-async function loadPickableIds(): Promise<void> {
-  pickableIds = await lcu.getPickableChampionIds().catch((err) => {
-    logger.warn('[BalanceBuff] 拉取可选英雄列表失败:', err)
-    return [] as number[]
-  })
-  logger.info('[BalanceBuff] 可选英雄列表已加载：%d 个', pickableIds.length)
-}
-
-/**
- * 根据卡片在网格中的下标，对应 LCU 可选英雄列表得到 championId。
- * 卡片 DOM 里拿不到 championId，改用「列表顺序 ↔ 元素顺序」对应。
- */
-function resolveChampionIdByCard(wrapper: Element, card: Element): { championId: number | null; index: number; total: number } {
-  const cards = Array.from(wrapper.querySelectorAll('.champion-card-component'))
-  const index = cards.indexOf(card)
-  const championId = index >= 0 ? (pickableIds[index] ?? null) : null
-  return { championId, index, total: cards.length }
-}
-
 function ensureCardHoverObserver(): void {
   if (!tooltip || !currentMode) {
     logCardDiag(`网格观察者未就绪 → tooltip=${!!tooltip}, currentMode=${currentMode ? currentMode.dataKey : 'null'}`)
@@ -478,8 +473,7 @@ function ensureCardHoverObserver(): void {
   if (wrapper.hasAttribute(BOUND_ATTR)) return
   wrapper.setAttribute(BOUND_ATTR, 'cards-wrapper')
 
-  // 兜底：mount 时若列表还没就绪（拉取过早/为空），这里再补一次
-  if (pickableIds.length === 0) void loadPickableIds()
+  buildNameToIdMap()
 
   const initialCards = wrapper.querySelectorAll('.champion-card-component').length
   logger.info(
@@ -494,29 +488,23 @@ function ensureCardHoverObserver(): void {
     // 直接读当前 hover 状态，天然规避「移出旧卡 / 移入新卡」的事件顺序问题
     const hovered = wrapper.querySelector('.champion-card-component.card-hovered')
     if (!hovered) {
-      if (lastHoverCardIndex !== -2) {
+      if (lastHoverChampId !== -2) {
         logger.info('[BalanceBuff] 网格 hover 离开 → 隐藏')
-        lastHoverCardIndex = -2
+        lastHoverChampId = -2
       }
       tooltip.hide()
       return
     }
 
-    // 卡片里拿不到 championId：用「卡片下标 ↔ LCU 可选列表」对应
-    let champId = extractChampionIdFromCard(hovered)
-    const { championId: idByIndex, index, total } = resolveChampionIdByCard(wrapper, hovered)
-    if (!champId || champId <= 0) champId = idByIndex
+    // 卡片里拿不到 championId：抠出英雄名字，再用名字反查 id
+    const { championId: champId, name } = resolveChampionIdByCard(hovered)
 
-    if (index !== lastHoverCardIndex) {
-      lastHoverCardIndex = index
-      const name = champId ? getChampionById(champId)?.name ?? '?' : '?'
+    if ((champId ?? -1) !== lastHoverChampId) {
+      lastHoverChampId = champId ?? -1
       logger.info(
-        '[BalanceBuff] 网格 hover → 第%d/%d张, 可选列表=%d, championId=%d(%s), hasData=%s',
-        index + 1,
-        total,
-        pickableIds.length,
+        '[BalanceBuff] 网格 hover → %s (championId=%d, hasData=%s)',
+        name ?? '?',
         champId ?? -1,
-        name,
         champId ? !!buildTooltipData(champId) : false,
       )
     }
@@ -567,8 +555,8 @@ async function mountForChampSelect() {
   }
   tooltip = new BalanceTooltip(manager)
 
-  // 3. 拉取 LCU 可选英雄列表（下标 ↔ 网格卡片顺序）
-  await loadPickableIds()
+  // 3. 预热「名字 → championId」映射（网格卡片靠名字识别英雄）
+  buildNameToIdMap()
 
   // 4. 注册 DOM 绑定注入（injector 会自愈，换英雄后 DOM 变化时自动重新绑定）
   injector.register(tryBindHover)
@@ -586,8 +574,7 @@ function unmountForChampSelect() {
     cardHoverObserver = null
   }
   lastCardDiag = ''
-  lastHoverCardIndex = -2
-  pickableIds = []
+  lastHoverChampId = -2
   if (tooltip) {
     tooltip.destroy()
     tooltip = null

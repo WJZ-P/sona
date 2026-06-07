@@ -138,9 +138,10 @@ async function _doFetchTeamStats(): Promise<TeamStatsResult> {
     strengthScore: null,
   })
 
-  // 并行查询所有队友的战绩（不过滤，保留占位以对齐楼层索引）
-  const stats = await Promise.all(session.myTeam.map(async (player, i) => {
-    // 主播模式下队友 puuid 为空，跳过查询，直接返回占位
+  // 跳过查不到数据的占位玩家（斗魂模式 myTeam 含空位），其余保留占位以对齐楼层索引
+  const analyzablePlayers = getAnalyzableTeamPlayers(session)
+  const stats = await Promise.all(analyzablePlayers.map(async (player, i) => {
+    // 主播模式下队友 puuid 为空（但有 obfuscatedPuuid），跳过查询，直接返回占位
     if (!player.puuid) {
       return placeholder(player, i)
     }
@@ -284,8 +285,17 @@ function cleanupMatchModal() {
   }
 }
 
+/**
+ * 过滤掉查不到数据的占位玩家：puuid 与 obfuscatedPuuid 均为空字符串。
+ * 斗魂（Arena）模式所有玩家都在 myTeam（16 人）且夹杂空位占位，
+ * 跳过它们避免楼层错位与无意义展示。
+ */
+function getAnalyzableTeamPlayers(session: ChampSelectSession): ChampSelectTeamPlayer[] {
+  return session.myTeam.filter((player) => Boolean(player.puuid) || Boolean(player.obfuscatedPuuid))
+}
+
 function getTeamDisplaySignature(session: ChampSelectSession): string {
-  return session.myTeam
+  return getAnalyzableTeamPlayers(session)
     .map((player) => `${getPlayerStatsKey(player)}:${player.cellId}`)
     .join('|')
 }
@@ -323,7 +333,7 @@ function getCachedStatsForPlayer(player: ChampSelectTeamPlayer, floor: number): 
 }
 
 function buildFloorStatsFromSession(session: ChampSelectSession): TeammateStats[] {
-  return session.myTeam
+  return getAnalyzableTeamPlayers(session)
     .map((player, index) => getCachedStatsForPlayer(player, index + 1))
 }
 
