@@ -13,7 +13,7 @@ import { createElement } from 'react'
 import { flushSync } from 'react-dom'
 import { createRoot, type Root } from 'react-dom/client'
 import { Modal } from '@/components/ui/Modal'
-import { getAllChampions, getAugmentInfo, getChampionById, getQueue, getQueueName } from '@/lib/assets'
+import { getAllChampions, getAugmentInfo, getChampionById, getItemPrice, getQueue, getQueueName } from '@/lib/assets'
 import { OpggBuildRecommendationPanel, type BuildRecommendation, type RecommendationContext } from '@/components/ui/OpggBuildRecommendationPanel'
 import { lcu, LcuEventUri, type ChampSelectSession, type ItemSet, type ItemSetBlock, type LCUEventMessage, type RunePage, type RunePagePayload } from '@/lib/lcu'
 import { store } from '@/lib/store'
@@ -64,6 +64,8 @@ const SELECTABLE_OPGG_TIERS: OpggTier[] = [
   'bronze',
   'iron',
 ]
+// 匹配/排位识别不到分路时，按「上中打野下路辅助」顺序全部写入
+const RANKED_ALL_POSITIONS: OpggPosition[] = ['top', 'mid', 'jungle', 'adc', 'support']
 
 interface RecommendationCacheEntry {
   key: string
@@ -183,6 +185,11 @@ function resolveOpggMode(context: RecommendationContext): OpggMode {
 
 function isKiwiMode(context: RecommendationContext): boolean {
   return context.gameMode.toLowerCase() === 'kiwi'
+}
+
+/** 匹配/排位（opgg ranked）且识别不到分路时，需要展开五路分别写入 */
+function shouldExpandAllPositions(context: RecommendationContext): boolean {
+  return resolveOpggMode(context) === 'ranked' && context.position === 'none'
 }
 
 function isArenaChampion(data: OpggChampion): data is OpggArenaModeChampion {
@@ -365,6 +372,14 @@ function flattenItemBuilds(builds: OpggItemBuild[]): number[] {
   return normalizeItemIds(builds.flatMap((build) => build.ids))
 }
 
+/** 按装备总价从高到低排序（价格相同保持原有顺序） */
+function sortItemIdsByPriceDesc(itemIds: number[]): number[] {
+  return itemIds
+    .map((id, index) => ({ id, index, price: getItemPrice(id) }))
+    .sort((a, b) => b.price - a.price || a.index - b.index)
+    .map((entry) => entry.id)
+}
+
 function getItemBuildWinRate(build: OpggItemBuild): number {
   return build.play > 0 ? build.win / build.play : 0
 }
@@ -413,13 +428,14 @@ function buildItemSetBlocks(recommendation: BuildRecommendation): ItemSetBlock[]
     appendItemSetBlock(blocks, `${blocks.length + 1}. 核心装 ${index + 1}`, build.ids)
   })
 
-  appendItemSetBlock(blocks, `${blocks.length + 1}. 后续装备`, flattenItemBuilds(lastItems))
+  appendItemSetBlock(blocks, `${blocks.length + 1}. 后续装备`, sortItemIdsByPriceDesc(flattenItemBuilds(lastItems)))
 
   return blocks
 }
 
 function getManagedItemSetUid(context: RecommendationContext): string {
-  return `sona-${context.championId}`
+  // 带上模式 + 分路，使不同分路 / 模式各自拥有独立的 item set，互不覆盖
+  return `sona-${context.championId}-${resolveOpggMode(context)}-${context.position}`
 }
 
 function getChampionName(championId: number): string {
@@ -483,15 +499,9 @@ function createManagedItemSet(context: RecommendationContext, recommendation: Bu
 }
 
 function isSameManagedItemSetContext(itemSet: ItemSet, nextItemSet: ItemSet): boolean {
-  if (itemSet.uid === nextItemSet.uid) return true
-  if (itemSet.title === nextItemSet.title) return true
-
-  const nextChampionId = nextItemSet.associatedChampions[0]
-  const isSonaManagedTitle = itemSet.title?.startsWith(SONA_ITEM_SET_TITLE_PREFIX) === true
-  const isSameChampion = Array.isArray(itemSet.associatedChampions)
-    && itemSet.associatedChampions.includes(nextChampionId)
-
-  return isSonaManagedTitle && isSameChampion
+  // 仅在 uid 或标题完全一致时替换；不同分路 / 模式的 Sona 配装得以并存，
+  // 不再因"同英雄"被整体清掉。
+  return itemSet.uid === nextItemSet.uid || itemSet.title === nextItemSet.title
 }
 
 function isCurrentRecommendationContext(context: RecommendationContext): boolean {
@@ -669,9 +679,87 @@ async function upsertRecommendedItemSet(context: RecommendationContext, recommen
   })
 }
 
+/** 批量写入多条分路的 Sona 装备集（读一次、过滤一次、一次写回，避免多次读写竞态） */
+async function upsertRecommendedItemSets(
+  items: Array<{ context: RecommendationContext; recommendation: BuildRecommendation }>,
+): Promise<void> {
+  const nextItemSets = items
+    .map(({ context, recommendation }) => createManagedItemSet(context, recommendation))
+    .filter((itemSet): itemSet is ItemSet => itemSet != null)
+
+  if (nextItemSets.length === 0) {
+    logger.warn('[OPGG] 多分路装备集生成失败：没有可写入的装备 block')
+    return
+  }
+
+  const summoner = await lcu.getSummonerInfo()
+  const wrapper = await lcu.getItemSets(summoner.summonerId)
+  const existingItemSets = Array.isArray(wrapper?.itemSets) ? wrapper.itemSets : []
+  const itemSets = existingItemSets.filter(
+    (itemSet) => !nextItemSets.some((nextItemSet) => isSameManagedItemSetContext(itemSet, nextItemSet)),
+  )
+
+  await lcu.putItemSets(summoner.summonerId, {
+    accountId: wrapper?.accountId ?? summoner.accountId ?? 0,
+    itemSets: [...itemSets, ...nextItemSets],
+    timestamp: Date.now(),
+  })
+
+  logger.info('[OPGG] 多分路自动装备集已同步：%d 个 → %s', nextItemSets.length, nextItemSets.map((itemSet) => itemSet.title).join(' | '))
+
+  const championName = getChampionName(items[0].context.championId)
+  lcu.sendChampSelectMessage(translate('opgg.chat.buildReady', { championName }), 'celebration').catch((err) => {
+    logger.warn('[OPGG] 多分路自动装备集聊天提示发送失败:', err)
+  })
+}
+
+/** 匹配/排位识别不到分路时：并发拉取上中打野下路辅助五路，分别写入各自的装备集 */
+function syncRankedAllPositionsItemSets(baseContext: RecommendationContext): void {
+  const syncKey = `sona-${baseContext.championId}-ranked-all`
+  if (lastAppliedItemSetKey === syncKey || itemSetSyncInFlightKeys.has(syncKey)) return
+
+  itemSetSyncInFlightKeys.add(syncKey)
+
+  const entries = RANKED_ALL_POSITIONS.map((position) => {
+    const context: RecommendationContext = { ...baseContext, position }
+    return { context, entry: ensureRecommendationPrefetch(context) }
+  })
+
+  Promise.all(entries.map(({ entry }) => entry?.promise ?? Promise.resolve(null)))
+    .then(async (recommendations) => {
+      if (!store.get('smartBuildRecommendation') || !currentChampionLocked) return
+      if (!isCurrentRecommendationContext(baseContext)) return
+      if (lastAppliedItemSetKey === syncKey) return
+
+      const items = entries
+        .map(({ context }, index) => ({ context, recommendation: recommendations[index] }))
+        .filter(
+          (item): item is { context: RecommendationContext; recommendation: BuildRecommendation } =>
+            Boolean(item.recommendation),
+        )
+
+      if (items.length === 0) return
+
+      await upsertRecommendedItemSets(items)
+      lastAppliedItemSetKey = syncKey
+    })
+    .catch((err) => {
+      logger.warn('[OPGG] 多分路自动装备集同步失败:', err)
+    })
+    .finally(() => {
+      itemSetSyncInFlightKeys.delete(syncKey)
+    })
+}
+
 function syncRecommendedItemSetWhenReady(entry: RecommendationCacheEntry): void {
   if (!store.get('smartBuildRecommendation')) return
   if (!currentChampionLocked) return
+
+  // 匹配/排位且识别不到分路时，展开五路分别写入，避免只剩中路一条
+  if (shouldExpandAllPositions(entry.context)) {
+    syncRankedAllPositionsItemSets(entry.context)
+    return
+  }
 
   const syncKey = getManagedItemSetUid(entry.context)
   if (lastAppliedItemSetKey === syncKey || itemSetSyncInFlightKeys.has(syncKey)) return

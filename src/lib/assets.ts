@@ -313,6 +313,11 @@ export function getItemName(id: number): string {
   return itemNameMap.get(id) ?? String(id)
 }
 
+/** 获取装备总价（金币）；未知返回 0 */
+export function getItemPrice(id: number): number {
+  return itemPriceMap.get(id) ?? 0
+}
+
 /** 获取装备完整信息（名称、图标、描述） */
 export function getItemInfo(id: number): { name: string; iconPath: string; description: string; price: number } {
   return {
