@@ -100,6 +100,14 @@ const AVAILABILITY_OPTIONS: { value: Availability; label: string }[] = [
 
 /** 当前状态缓存（从 store 初始化） */
 let currentAvailability: Availability = store.get('availability') as Availability
+  /**
+ * 玩家是否「真正手点」过隐身(offline)。仅记录隐身这一种：
+ * 手选隐身后，进游戏被客户端自动改成"游戏中"等状态时强制拉回隐身；
+ * 手点其他任意模式（在线/离开/手机在线）即置 null，不强制。
+ * 从 store 初始化（仅当上次保存为隐身），使重启后仍保持隐身意图。
+ */
+let userSelectedAvailability: Availability | null =
+  (store.get('availability') as Availability) === 'offline' ? 'offline' : null
 let statusPersistencePausedForVerify = false
 
 /** 获取当前账号保存的签名 */
@@ -292,6 +300,16 @@ function subscribeChatMeSync() {
     const me = event.data as ChatMe | null
     if (!me) return
 
+    // 强判断（不受阶段限制）：玩家手选隐身后，进游戏等场景客户端会自动把状态改成
+    // "游戏中"(dnd/chat 等)，这里检测到偏离立即强制拉回隐身，直到玩家手点其他在线模式。
+    if (userSelectedAvailability === 'offline' && me.availability && me.availability !== 'offline') {
+      logger.info('[Availability] 隐身被客户端改为 %s，强制恢复隐身', me.availability)
+      lcu.setAvailability('offline')
+        .then(() => { currentAvailability = 'offline' })
+        .catch((err) => logger.warn('[Availability] 强制隐身失败:', err))
+      return
+    }
+
     // 仅空闲阶段同步，避免把"选人中XX"之类的自动签名误存进去
     try {
       const phase = await lcu.getGameflowPhase()
@@ -364,6 +382,9 @@ function showAvailabilityMenu(anchor: HTMLElement) {
     btn.addEventListener('click', (e) => {
       e.stopPropagation()
       e.stopImmediatePropagation()
+
+      // 仅记录隐身：手选隐身才强制保留，手点其他任意模式即解除强制
+      userSelectedAvailability = option.value === 'offline' ? 'offline' : null
 
       if (option.value !== currentAvailability) {
         currentAvailability = option.value
