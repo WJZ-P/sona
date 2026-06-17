@@ -39,13 +39,15 @@ import type {
   ChampionSummaryData,
   GameQueue,
   ChampSelectSummoner,
+  RewardsGrant,
 } from '@/types/lcu'
 import { SGP_SERVERS, TENCENT_MATCH_HISTORY_INTEROP } from '@/types/sgp'
 import type { SgpEntitlementsToken, SgpGameSummaryLol, SgpMatchHistoryLol, SgpParticipantLol, SgpPerks, SgpTeam } from '@/types/sgp'
 import { store } from '@/lib/store'
 
 // Re-export types for convenience
-export type { SummonerInfo, LobbyConfig, Lobby, GameflowPhase, GameflowSession, LCUEventMessage, ChatConversation, ChatMessage, ChatMe, Availability, SendChatMessageBody, ReadyCheck, ChampSelectSession, ChampSelectPlayerDetail, MatchHistoryResponse, MatchDetail, ChatFriend, SpectatorLaunchPayload, ChampSelectSummoner }
+export type { SummonerInfo, LobbyConfig, Lobby, GameflowPhase, GameflowSession, LCUEventMessage, ChatConversation, ChatMessage, ChatMe, Availability, SendChatMessageBody, ReadyCheck, ChampSelectSession, ChampSelectPlayerDetail, MatchHistoryResponse, MatchDetail, ChatFriend, SpectatorLaunchPayload, ChampSelectSummoner, RewardsGrant }
+export type { RewardItem, RewardGroup, RewardGrantInfo, RewardSelectionStrategyConfig } from '@/types/lcu'
 export type { SgpEntitlementsToken, SgpMatchHistoryLol } from '@/types/sgp'
 export { SGP_SERVERS, TENCENT_MATCH_HISTORY_INTEROP, TENCENT_SERVER_NAMES, queueIdToTag } from '@/types/sgp'
 
@@ -1046,6 +1048,51 @@ class LCUManager {
   /** 获取最近一起玩过的召唤师 */
   getRecentlyPlayedSummoners(): Promise<unknown> {
     return get('/lol-match-history/v1/recently-played-summoners')
+  }
+
+  // ==================== 奖励领取（通行证 / Grants） ====================
+
+  /**
+   * 获取奖励授予列表（grants）
+   *
+   * @param status 过滤状态，常用 `'PENDING_SELECTION'`（待选择的多选一/几选几奖励）。
+   *   不传则返回全部状态的 grant。
+   *
+   * 返回的每个 grant 含：
+   * - `info.id`：grantId，领取/选择时所需
+   * - `info.rewardGroupId` / `rewardGroup.id`：奖励组 id
+   * - `rewardGroup.rewards[].id`：单个奖励的 reward id（select 时提交它）
+   * - `rewardGroup.selectionStrategyConfig`：几选几（为 null 表示直接发放，无需选择）
+   */
+  getRewardGrants(status?: string): Promise<RewardsGrant[]> {
+    const query = status ? `?status=${encodeURIComponent(status)}` : ''
+    return get<RewardsGrant[]>(`/lol-rewards/v1/grants${query}`)
+  }
+
+  /**
+   * 按需领取：选择并领取某个 grant 内的指定奖励
+   *
+   * 仅对 `PENDING_SELECTION`（多选一/几选几）类奖励有效。
+   *
+   * @param grantId       grant 的 id（来自 `RewardsGrant.info.id`）
+   * @param rewardGroupId 奖励组 id（来自 `rewardGroup.id`）
+   * @param rewardIds     想要领取的 reward id 列表（来自 `rewardGroup.rewards[].id`），
+   *                      数量需满足 `selectionStrategyConfig` 的 min/max 限制
+   */
+  selectGrantReward(grantId: string, rewardGroupId: string, rewardIds: string[]): Promise<unknown> {
+    return post(`/lol-rewards/v1/grants/${grantId}/select`, {
+      grantId,
+      rewardGroupId,
+      selections: rewardIds,
+    })
+  }
+
+  /**
+   * 标记 grant 为已查看（去掉客户端红点提示），**不等于领取**。
+   * @param grantIds grant id 列表
+   */
+  viewRewardGrants(grantIds: string[]): Promise<unknown> {
+    return patch('/lol-rewards/v1/grants/view', grantIds)
   }
 
   // ==================== SGP Token ====================

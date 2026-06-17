@@ -1,0 +1,165 @@
+/* Sona Rewards Page —— 通行证奖励按需领取 */
+
+.sona-rewards-bar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.sona-rewards-hint {
+  margin: 0;
+  flex: 1;
+  color: #a09b8c;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.sona-rewards-actions {
+  display: flex;
+  flex-shrink: 0;
+  gap: 8px;
+}
+
+.sona-rewards-status {
+  margin: 0 0 16px;
+  padding: 10px 14px;
+  background: rgba(1, 10, 19, 0.5);
+  border: 1px solid rgba(200, 170, 110, 0.25);
+  border-radius: 4px;
+  color: #c8aa6e;
+  font-size: 12px;
+  line-height: 1.5;
+  word-break: break-all;
+}
+
+.sona-rewards-empty {
+  padding: 40px 16px;
+  text-align: center;
+  color: #785a28;
+  font-size: 13px;
+}
+
+.sona-rewards-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.sona-reward-card {
+  padding: 16px;
+  background: rgba(30, 35, 40, 0.4);
+  border: 1px solid rgba(200, 170, 110, 0.14);
+  border-radius: 4px;
+}
+
+.sona-reward-items {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+  gap: 10px;
+}
+
+.sona-reward-item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 8px;
+  background: rgba(1, 10, 19, 0.4);
+  border: 1px solid rgba(200, 170, 110, 0.12);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+}
+
+.sona-reward-item:hover:not(:disabled) {
+  transform: translateY(-2px);
+  border-color: rgba(200, 170, 110, 0.32);
+  background: rgba(9, 20, 40, 0.5);
+}
+
+.sona-reward-item:disabled {
+  cursor: default;
+  opacity: 0.55;
+}
+
+.sona-reward-item--selected {
+  border-color: rgba(200, 170, 110, 0.7);
+  background: rgba(200, 170, 110, 0.12);
+  box-shadow: 0 0 12px rgba(200, 170, 110, 0.16);
+}
+
+.sona-reward-item-check {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #c8aa6e;
+  color: #010a13;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  box-shadow: 0 0 8px rgba(200, 170, 110, 0.5);
+}
+
+.sona-reward-item-thumb {
+  position: relative;
+  width: 56px;
+  height: 56px;
+}
+
+.sona-reward-item-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  background: rgba(0, 0, 0, 0.24);
+  border: 1px solid rgba(120, 90, 40, 0.3);
+  border-radius: 4px;
+}
+
+.sona-reward-item-thumb-placeholder {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.24);
+  border: 1px dashed rgba(120, 90, 40, 0.3);
+  border-radius: 4px;
+}
+
+.sona-reward-item-qty {
+  position: absolute;
+  right: -4px;
+  bottom: -4px;
+  padding: 1px 5px;
+  background: rgba(1, 10, 19, 0.92);
+  border: 1px solid rgba(200, 170, 110, 0.4);
+  border-radius: 3px;
+  color: #c8aa6e;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.sona-reward-item-name {
+  width: 100%;
+  color: #a09b8c;
+  font-size: 11px;
+  line-height: 1.4;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sona-reward-item--selected .sona-reward-item-name {
+  color: #f0e6d2;
+}

@@ -8,9 +8,10 @@ import { ToolsPage } from '@/components/pages/ToolsPage'
 import { BeautifyPage } from '@/components/pages/BeautifyPage'
 import { SettingsPage } from '@/components/pages/SettingsPage'
 import { AboutPage } from '@/components/pages/AboutPage'
+import { RewardsPage } from '@/components/pages/RewardsPage'
 import { DebugPage } from '@/components/pages/DebugPage'
 import { UpdatePage } from '@/components/pages/UpdatePage'
-import { HomeIcon, GamepadIcon, PaletteIcon, SettingsIcon, InfoIcon, BugIcon, ZapIcon } from '@/components/ui/icons'
+import { HomeIcon, GamepadIcon, PaletteIcon, SettingsIcon, InfoIcon, BugIcon, ZapIcon, GiftIcon } from '@/components/ui/icons'
 import { onModalVisibilityChange, isModalVisible, closeModal } from '@/lib/modal'
 import { store } from '@/lib/store'
 import { getUpdateState, onUpdateStateChange, type UpdateState } from '@/lib/update-checker'
@@ -20,6 +21,7 @@ import type { TranslationKey } from '@/i18n'
 const baseSidebarItemConfigs: Array<Omit<SidebarItem, 'label'> & { labelKey: TranslationKey }> = [
   { id: 'home', icon: <HomeIcon />, labelKey: 'nav.home' },
   { id: 'tools', icon: <GamepadIcon />, labelKey: 'nav.tools' },
+  { id: 'rewards', icon: <GiftIcon />, labelKey: 'nav.rewards' },
   { id: 'beautify', icon: <PaletteIcon />, labelKey: 'nav.beautify' },
   { id: 'settings', icon: <SettingsIcon />, labelKey: 'nav.settings' },
   { id: 'about', icon: <InfoIcon />, labelKey: 'nav.about' },
@@ -41,6 +43,8 @@ function PageContent({ pageId }: { pageId: string }) {
       return <HomePage />
     case 'tools':
       return <ToolsPage />
+    case 'rewards':
+      return <RewardsPage />
     case 'beautify':
       return <BeautifyPage />
     case 'settings':

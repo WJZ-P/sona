@@ -1167,3 +1167,74 @@ export interface ChatMe {
   /** 上次在线时间（通常为 null） */
   lastSeenOnlineTimestamp?: string | number | null
 }
+
+// ==================== 奖励领取（通行证 / Grants） ====================
+
+/** 奖励组内的单个奖励 — rewardGroup.rewards[] */
+export interface RewardItem {
+  /** 奖励 id，select 时提交的就是它 */
+  id: string
+  /** 物品 id（如皮肤/英雄/货币的 itemId） */
+  itemId: string
+  /** 物品类型，如 CHAMPION_SKIN / CURRENCY / EMOTE 等 */
+  itemType: string
+  /** 数量 */
+  quantity: number
+  /** 履约来源 */
+  fulfillmentSource?: string
+  media?: {
+    iconUrl?: string
+    splashImage?: string
+  }
+  localizations?: {
+    title?: string
+    details?: string
+  }
+}
+
+/** 选择策略：几选几 */
+export interface RewardSelectionStrategyConfig {
+  /** 最多可选数量 */
+  maxSelectionsAllowed: number
+  /** 最少需选数量 */
+  minSelectionsAllowed: number
+}
+
+/** 奖励组 — rewardGroup */
+export interface RewardGroup {
+  id: string
+  active: boolean
+  productId: string
+  rewardStrategy: string
+  celebrationType: string
+  childRewardGroupIds: string[]
+  rewards: RewardItem[]
+  /** 为 null 表示直接发放（无需选择）；非 null 表示多选一/几选几 */
+  selectionStrategyConfig: RewardSelectionStrategyConfig | null
+  localizations?: {
+    title?: string
+    description?: string
+  }
+  media?: Record<string, unknown>
+  types: string[]
+}
+
+/** 授予信息 — grant.info */
+export interface RewardGrantInfo {
+  /** grant id，即领取/选择所需的 grantId */
+  id: string
+  granteeId: string
+  rewardGroupId: string
+  /** 状态，如 PENDING_SELECTION（待选择）、SELECTED、GRANTED 等 */
+  status: string
+  viewed: boolean
+  dateCreated: string
+  selectedIds: string[]
+  grantElements: unknown[]
+}
+
+/** 一条奖励授予 — GET /lol-rewards/v1/grants */
+export interface RewardsGrant {
+  info: RewardGrantInfo
+  rewardGroup: RewardGroup
+}
