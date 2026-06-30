@@ -744,10 +744,16 @@ export function ToolsPage() {
         >
           <SonaButton onClick={async () => {
             try {
+              // 先读取当前 regalia，沿用现有 bannerType；selectedPrestigeCrest 固定为 22（无边框），与 Akari/Seraphine 一致。
+              const current = await lcu.getRegalia()
               await fetch('/lol-regalia/v2/current-summoner/regalia', {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ preferredCrestType: 'prestige', preferredBannerType: 'blank', selectedPrestigeCrest: 0 }),
+                body: JSON.stringify({
+                  preferredCrestType: 'prestige',
+                  preferredBannerType: current.bannerType,
+                  selectedPrestigeCrest: 22,
+                }),
               })
               logger.info('头像边框已卸下 ✓')
             } catch (err) {

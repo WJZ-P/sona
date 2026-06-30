@@ -1,6 +1,6 @@
 /**
  * @name Sona
- * @version 1.5.1
+ * @version 1.6.0
  * @description 基于 Pengu Loader 的全服可用英雄联盟客户端增强插件
  * @author WJZ_P
  * @link https://github.com/WJZ-P/sona
@@ -11944,7 +11944,7 @@ function Iw({ items: a, activeId: s, onSelect: l, collapsed: o, onToggle: r }) {
         /* @__PURE__ */ c.jsx("span", { className: "sona-sidebar-logo-text", children: "Sona" }),
         /* @__PURE__ */ c.jsxs("span", { className: "sona-sidebar-logo-version", children: [
           "v",
-          "1.5.1"
+          "1.6.0"
         ] })
       ] })
     ] }),
@@ -15030,10 +15030,15 @@ function r2() {
           description: a("tools.removeCrest.description"),
           children: /* @__PURE__ */ c.jsx($, { onClick: async () => {
             try {
+              const M = await I.getRegalia();
               await fetch("/lol-regalia/v2/current-summoner/regalia", {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ preferredCrestType: "prestige", preferredBannerType: "blank", selectedPrestigeCrest: 0 })
+                body: JSON.stringify({
+                  preferredCrestType: "prestige",
+                  preferredBannerType: M.bannerType,
+                  selectedPrestigeCrest: 22
+                })
               }), b.info("头像边框已卸下 ✓");
             } catch (M) {
               b.error("卸下头像边框失败:", M);
@@ -16711,7 +16716,7 @@ function yx() {
 }
 function dh() {
   return Po || (bi({ status: "checking", info: null, error: "" }), Po = hx().then((a) => {
-    const s = ji("1.5.1"), l = ji(a.tag_name ?? ""), o = px();
+    const s = ji("1.6.0"), l = ji(a.tag_name ?? ""), o = px();
     if (o && pA(s, o) >= 0 && v.set("skippedUpdateVersion", null), !l || pA(l, s) <= 0) {
       const m = { status: "latest", info: null, error: "" };
       return bi(m), m;
@@ -16873,13 +16878,13 @@ function kx() {
       /* @__PURE__ */ c.jsx("h2", { className: "sona-about-title", children: "Sona" }),
       /* @__PURE__ */ c.jsxs("span", { className: "sona-about-version", children: [
         "v",
-        "1.5.1"
+        "1.6.0"
       ] })
     ] }),
     /* @__PURE__ */ c.jsx("p", { className: "sona-about-desc", children: a("about.description") }),
     /* @__PURE__ */ c.jsxs("div", { className: "sona-about-row", children: [
       /* @__PURE__ */ c.jsxs("div", { className: "sona-about-cards", children: [
-        /* @__PURE__ */ c.jsx(Eg, { icon: /* @__PURE__ */ c.jsx(S1, {}), label: a("about.card.plugin"), value: "Sona v1.5.1" }),
+        /* @__PURE__ */ c.jsx(Eg, { icon: /* @__PURE__ */ c.jsx(S1, {}), label: a("about.card.plugin"), value: "Sona v1.6.0" }),
         /* @__PURE__ */ c.jsx(Eg, { icon: /* @__PURE__ */ c.jsx(uw, {}), label: a("about.card.framework"), value: "React + Vite" }),
         /* @__PURE__ */ c.jsx(
           Eg,
@@ -17006,7 +17011,7 @@ function Tx() {
     /* @__PURE__ */ c.jsxs("div", { className: "sona-rewards-bar", children: [
       /* @__PURE__ */ c.jsx("p", { className: "sona-rewards-hint", children: a("rewards.hint") }),
       /* @__PURE__ */ c.jsxs("div", { className: "sona-rewards-actions", children: [
-        /* @__PURE__ */ c.jsx($, { variant: "secondary", onClick: C, disabled: o || m, children: a(o ? "common.loading" : "rewards.refresh") }),
+        /* @__PURE__ */ c.jsx($, { onClick: C, disabled: o || m, children: a(o ? "common.loading" : "rewards.refresh") }),
         /* @__PURE__ */ c.jsx($, { variant: "primary", onClick: ee, disabled: m || X.length === 0, children: m ? a("rewards.claiming") : L > 0 ? a("rewards.claimSelected", { count: L }) : a("rewards.claim") })
       ] })
     ] }),
@@ -24421,7 +24426,7 @@ const A3 = [
 function S3() {
   b1 || (b1 = !0, A3.forEach(c3));
 }
-const E3 = "Sona", k3 = "1.5.1", v1 = "sona-root", b = t3({
+const E3 = "Sona", k3 = "1.6.0", v1 = "sona-root", b = t3({
   name: E3,
   version: k3
 });
