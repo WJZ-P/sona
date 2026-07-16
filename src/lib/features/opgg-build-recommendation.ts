@@ -504,6 +504,107 @@ function isSameManagedItemSetContext(itemSet: ItemSet, nextItemSet: ItemSet): bo
   return itemSet.uid === nextItemSet.uid || itemSet.title === nextItemSet.title
 }
 
+function areNumberArraysEqual(left: number[], right: number[]): boolean {
+  if (left.length !== right.length) return false
+
+  const sortedLeft = [...left].sort((a, b) => a - b)
+  const sortedRight = [...right].sort((a, b) => a - b)
+  return sortedLeft.every((value, index) => value === sortedRight[index])
+}
+
+function areItemSetBlocksEqual(left: ItemSetBlock[], right: ItemSetBlock[]): boolean {
+  if (left.length !== right.length) return false
+
+  return left.every((leftBlock, blockIndex) => {
+    const rightBlock = right[blockIndex]
+    if (!rightBlock || leftBlock.type !== rightBlock.type || leftBlock.items.length !== rightBlock.items.length) {
+      return false
+    }
+
+    return leftBlock.items.every((leftItem, itemIndex) => {
+      const rightItem = rightBlock.items[itemIndex]
+      return Boolean(rightItem)
+        && String(leftItem.id) === String(rightItem.id)
+        && Number(leftItem.count) === Number(rightItem.count)
+    })
+  })
+}
+
+/**
+ * 比较会影响推荐内容的字段。
+ *
+ * LCU / 游戏端会把 map、sortrank 以及 block 上的显示条件等字段标准化，
+ * 因此不能直接 JSON.stringify 整个对象，否则同一份配装会被误判成有变化。
+ */
+function isManagedItemSetContentEqual(itemSet: ItemSet, nextItemSet: ItemSet): boolean {
+  return itemSet.title === nextItemSet.title
+    && itemSet.type === nextItemSet.type
+    && itemSet.mode === nextItemSet.mode
+    && areNumberArraysEqual(itemSet.associatedChampions ?? [], nextItemSet.associatedChampions)
+    && areNumberArraysEqual(itemSet.associatedMaps ?? [], nextItemSet.associatedMaps)
+    && areItemSetBlocksEqual(itemSet.blocks ?? [], nextItemSet.blocks)
+}
+
+interface ItemSetUpsertPlan {
+  itemSets: ItemSet[]
+  changed: boolean
+  removedDuplicates: number
+}
+
+/**
+ * 幂等合并 Sona 装备集。
+ *
+ * `/lol-item-sets/.../sets` 是整包 PUT。即使内容完全相同，游戏端也会再次向
+ * Game/Config/Champions 写出新的 RIOT_ItemSet_N.json，且不会覆盖旧编号文件。
+ * 所以只有首次创建、推荐内容变化或需要清理 LCU 内重复项时才允许 PUT。
+ */
+function planManagedItemSetUpsert(existingItemSets: ItemSet[], nextItemSets: ItemSet[]): ItemSetUpsertPlan {
+  const mergedItemSets: ItemSet[] = []
+  const matchedNextIndexes = new Set<number>()
+  let changed = false
+  let removedDuplicates = 0
+
+  for (const existingItemSet of existingItemSets) {
+    const nextIndex = nextItemSets.findIndex((nextItemSet) =>
+      isSameManagedItemSetContext(existingItemSet, nextItemSet),
+    )
+
+    if (nextIndex < 0) {
+      mergedItemSets.push(existingItemSet)
+      continue
+    }
+
+    // 同一 uid / 标题在 LCU 数据中出现多次时，只保留一份。
+    if (matchedNextIndexes.has(nextIndex)) {
+      changed = true
+      removedDuplicates += 1
+      continue
+    }
+
+    matchedNextIndexes.add(nextIndex)
+    const nextItemSet = nextItemSets[nextIndex]
+    if (isManagedItemSetContentEqual(existingItemSet, nextItemSet)) {
+      // 保留 LCU 返回的对象，避免 map / sortrank 等标准化字段造成无意义改写。
+      mergedItemSets.push(existingItemSet)
+    } else {
+      mergedItemSets.push(nextItemSet)
+      changed = true
+    }
+  }
+
+  nextItemSets.forEach((nextItemSet, index) => {
+    if (matchedNextIndexes.has(index)) return
+    mergedItemSets.push(nextItemSet)
+    changed = true
+  })
+
+  return {
+    itemSets: mergedItemSets,
+    changed,
+    removedDuplicates,
+  }
+}
+
 function isCurrentRecommendationContext(context: RecommendationContext): boolean {
   return currentContext.championId === context.championId
     && currentContext.queueId === context.queueId
@@ -664,15 +765,25 @@ async function upsertRecommendedItemSet(context: RecommendationContext, recommen
   const summoner = await lcu.getSummonerInfo()
   const wrapper = await lcu.getItemSets(summoner.summonerId)
   const existingItemSets = Array.isArray(wrapper?.itemSets) ? wrapper.itemSets : []
-  const itemSets = existingItemSets.filter((itemSet) => !isSameManagedItemSetContext(itemSet, nextItemSet))
+  const plan = planManagedItemSetUpsert(existingItemSets, [nextItemSet])
+
+  if (!plan.changed) {
+    logger.info('[OPGG] 自动装备集内容未变化，跳过写入：%s', nextItemSet.title)
+    return
+  }
 
   await lcu.putItemSets(summoner.summonerId, {
     accountId: wrapper?.accountId ?? summoner.accountId ?? 0,
-    itemSets: [...itemSets, nextItemSet],
+    itemSets: plan.itemSets,
     timestamp: Date.now(),
   })
 
-  logger.info('[OPGG] 自动装备集已同步：%s，blocks=%d', nextItemSet.title, nextItemSet.blocks.length)
+  logger.info(
+    '[OPGG] 自动装备集已同步：%s，blocks=%d，清理重复项=%d',
+    nextItemSet.title,
+    nextItemSet.blocks.length,
+    plan.removedDuplicates,
+  )
   const championName = getChampionName(context.championId)
   lcu.sendChampSelectMessage(translate('opgg.chat.buildReady', { championName }), 'celebration').catch((err) => {
     logger.warn('[OPGG] 自动装备集聊天提示发送失败:', err)
@@ -695,17 +806,25 @@ async function upsertRecommendedItemSets(
   const summoner = await lcu.getSummonerInfo()
   const wrapper = await lcu.getItemSets(summoner.summonerId)
   const existingItemSets = Array.isArray(wrapper?.itemSets) ? wrapper.itemSets : []
-  const itemSets = existingItemSets.filter(
-    (itemSet) => !nextItemSets.some((nextItemSet) => isSameManagedItemSetContext(itemSet, nextItemSet)),
-  )
+  const plan = planManagedItemSetUpsert(existingItemSets, nextItemSets)
+
+  if (!plan.changed) {
+    logger.info('[OPGG] 多分路自动装备集内容未变化，跳过写入：%s', nextItemSets.map((itemSet) => itemSet.title).join(' | '))
+    return
+  }
 
   await lcu.putItemSets(summoner.summonerId, {
     accountId: wrapper?.accountId ?? summoner.accountId ?? 0,
-    itemSets: [...itemSets, ...nextItemSets],
+    itemSets: plan.itemSets,
     timestamp: Date.now(),
   })
 
-  logger.info('[OPGG] 多分路自动装备集已同步：%d 个 → %s', nextItemSets.length, nextItemSets.map((itemSet) => itemSet.title).join(' | '))
+  logger.info(
+    '[OPGG] 多分路自动装备集已同步：%d 个，清理重复项=%d → %s',
+    nextItemSets.length,
+    plan.removedDuplicates,
+    nextItemSets.map((itemSet) => itemSet.title).join(' | '),
+  )
 
   const championName = getChampionName(items[0].context.championId)
   lcu.sendChampSelectMessage(translate('opgg.chat.buildReady', { championName }), 'celebration').catch((err) => {
