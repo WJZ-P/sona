@@ -794,6 +794,24 @@ function syncHomepageBackgroundGlassConfig() {
   })
 }
 
+/**
+ * 自定义主页背景只在壁纸模式开启时挂载。
+ * 关闭模式时传入 null 会注销注入任务，并移除 viewport 下的视频和背景样式；
+ * 已选择的资源路径仍保留在 store 中，重新开启后可以直接恢复。
+ */
+function syncHomepageBackground() {
+  updateBeautifyHomepageBackground(
+    store.get('beautifyWallpaperMode')
+      ? store.get('beautifyHomepageBackgroundAssetPath')
+      : null,
+  )
+}
+
+function syncWallpaperMode() {
+  updateBeautifyWallpaperMode(store.get('beautifyWallpaperMode'))
+  syncHomepageBackground()
+}
+
 function pickRandomHomepageBackgroundOnStartup() {
   if (!store.get('beautifyHomepageBackgroundRandom')) return
 
@@ -882,11 +900,10 @@ export function initFeatures() {
   updateBeautifyHomepageBackgroundAdjustments(store.get('beautifyHomepageBackgroundAdjustments'))
   store.onChange('beautifyHomepageBackgroundAdjustments', updateBeautifyHomepageBackgroundAdjustments)
   pickRandomHomepageBackgroundOnStartup()
-  updateBeautifyHomepageBackground(store.get('beautifyHomepageBackgroundAssetPath'))
-  store.onChange('beautifyHomepageBackgroundAssetPath', updateBeautifyHomepageBackground)
+  store.onChange('beautifyHomepageBackgroundAssetPath', syncHomepageBackground)
 
-  updateBeautifyWallpaperMode(store.get('beautifyWallpaperMode'))
-  store.onChange('beautifyWallpaperMode', updateBeautifyWallpaperMode)
+  syncWallpaperMode()
+  store.onChange('beautifyWallpaperMode', syncWallpaperMode)
 
   syncWallpaperSceneConfig()
   store.onChange('beautifyWallpaperSceneBlur', syncWallpaperSceneConfig)

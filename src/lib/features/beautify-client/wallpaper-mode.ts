@@ -13,6 +13,14 @@ const IMG_CLEAR_SELECTORS = [
 ].join(', ')
 const WALLPAPER_STYLE_ID = 'sona-wallpaper-mode-style'
 
+/**
+ * 壁纸模式会清空客户端背景切换器的 img src；关闭时必须恢复这些原始地址。
+ *
+ * 使用元素引用保存而不是写入 data 属性，避免把客户端资源地址留在 DOM 上。
+ * 如果客户端在壁纸模式期间切换了场景，下一次清空前会用最新的非空 src 更新记录。
+ */
+const originalBackgroundImageSources = new Map<HTMLImageElement, string>()
+
 let glassConfig: BeautifyGlassConfig = {
   blur: 14,
   opacity: 28,
@@ -68,9 +76,23 @@ function clearBackgroundSwitcherImages() {
   document.querySelectorAll<HTMLElement>(IMG_CLEAR_SELECTORS).forEach((switcher) => {
     switcher.querySelectorAll('img').forEach((img) => {
       // 客户端可能反复写回 src，仅在非空时清空以避免无意义的 DOM 抖动
-      if (img.getAttribute('src')) img.setAttribute('src', '')
+      const src = img.getAttribute('src')
+      if (!src) return
+
+      originalBackgroundImageSources.set(img, src)
+      img.setAttribute('src', '')
     })
   })
+}
+
+/** 恢复仍由壁纸模式保持为空的原生背景图。 */
+function restoreBackgroundSwitcherImages() {
+  originalBackgroundImageSources.forEach((src, img) => {
+    // 节点已被客户端销毁时无需恢复；非空则说明客户端已自行写入了更新的背景。
+    if (!img.isConnected || img.getAttribute('src') !== '') return
+    img.setAttribute('src', src)
+  })
+  originalBackgroundImageSources.clear()
 }
 
 function tryApplyWallpaperMode(): boolean {
@@ -91,6 +113,7 @@ export function updateBeautifyWallpaperMode(enabled: boolean) {
     registered = false
     injector.unregister(tryApplyWallpaperMode)
     document.getElementById(WALLPAPER_STYLE_ID)?.remove()
+    restoreBackgroundSwitcherImages()
   }
 }
 
