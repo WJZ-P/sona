@@ -231,7 +231,7 @@ Core modules:
 
 1. Sona requires Pengu Loader and cannot run standalone.
 2. Sona communicates with the League Client through LCU APIs. It does not modify game files or inject into the game process.
-3. Custom avatars use user-selected local assets, ImgBB upload, hidden zero-width status payloads, and local friend-cache fallback for offline friends.
+3. Custom avatars use user-selected local assets, image hosting, hidden zero-width status payloads, and local friend-cache fallback for offline friends.
 4. Some features depend on client state, region, queue type, or third-party API availability and may not always return data.
 5. Rank disguise only affects friend-card display and does not alter real ranked data.
 

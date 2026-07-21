@@ -11,7 +11,8 @@ import { aramggApi } from '@/lib/aramgg-api'
 import { searchChampions, type ChampionInfo, getChampionBalanceMeta, getAllChampionBalances } from '@/lib/assets'
 import { openOpggBuildRecommendationDebugPanel } from '@/lib/features/opgg-build-recommendation'
 import { opggApi } from '@/lib/opgg-api'
-import { getPluginAssetsFolderPath } from '@/lib/plugin-resolver'
+import { getPluginAssetsFolderPath, resolvePluginAssetUrl } from '@/lib/plugin-resolver'
+import { uploadImageToHostingServiceForDebug } from '@/lib/image-hosting-service'
 import { logger } from '@/index'
 import { useI18n } from '@/i18n'
 import '@/styles/SettingsPage.css'
@@ -27,6 +28,7 @@ export function DebugPage() {
   const [skinId, setSkinId] = useState('')
   const [lobbyQueueId, setLobbyQueueId] = useState('')
   const [corsTestUrl, setCorsTestUrl] = useState('')
+  const [imageHostingAssetPath, setImageHostingAssetPath] = useState('')
   const [champSearch, setChampSearch] = useState('')
   const [champSuggestions, setChampSuggestions] = useState<ChampionInfo[]>([])
   const [showChampSuggestions, setShowChampSuggestions] = useState(false)
@@ -95,6 +97,34 @@ export function DebugPage() {
       setOutput(`❌ 图片读取失败\n${reader.error?.message ?? '未知错误'}`)
     }
     reader.readAsDataURL(file)
+  }
+
+  const testImageHostingUpload = async () => {
+    const assetPath = imageHostingAssetPath.trim()
+    if (!assetPath) throw new Error('请输入 assets 目录下的图片相对路径')
+
+    const assetUrl = resolvePluginAssetUrl(assetPath)
+    console.info('[Sona][ImageHosting] 开始读取插件资源', { source: 'plugin-assets' })
+
+    try {
+      const response = await fetch(assetUrl)
+      if (!response.ok) {
+        throw new Error(`读取插件资源失败: ${response.status} ${response.statusText}`)
+      }
+
+      const image = await response.blob()
+      const fileName = assetPath.replace(/\\/g, '/').split('/').filter(Boolean).at(-1) || 'sona-debug-image.png'
+      if (!image.type.startsWith('image/')) {
+        console.warn('[Sona][ImageHosting] 资源响应不是 image/*，将按文件扩展名继续测试', {
+          responseContentType: image.type || '(empty)',
+        })
+      }
+
+      return await uploadImageToHostingServiceForDebug(image, fileName)
+    } catch (err) {
+      console.error('[Sona][ImageHosting] 上传链路失败', err)
+      throw err
+    }
   }
 
   const testOpggConnectivity = async () => {
@@ -585,6 +615,29 @@ export function DebugPage() {
             <img src={beautifyImagePreview.src} alt={t('debug.beautify.chooseImage')} />
           </div>
         )}
+        <p className="sona-subtitle" style={{ marginTop: 14 }}>
+          图床链路测试：输入 assets 目录下的图片相对路径，控制台会输出脱敏后的分阶段信息。
+        </p>
+        <div className="sona-debug-actions" style={{ alignItems: 'center', gap: 8 }}>
+          <div style={{ flex: 1, minWidth: 280 }}>
+            <SonaInput
+              value={imageHostingAssetPath}
+              onChange={setImageHostingAssetPath}
+              placeholder="例如：test/avatar.png 或 assets/test/avatar.png"
+              onKeyDown={(event) => {
+                if (event.key === 'Enter') {
+                  void runAndLog('图床上传测试', testImageHostingUpload)
+                }
+              }}
+            />
+          </div>
+          <SonaButton
+            variant="primary"
+            onClick={() => runAndLog('图床上传测试', testImageHostingUpload)}
+          >
+            上传到图床
+          </SonaButton>
+        </div>
       </SettingGroup>
 
       <SettingGroup title={t('debug.group.lcu')}>

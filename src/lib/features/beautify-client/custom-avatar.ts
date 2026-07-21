@@ -4,11 +4,11 @@ import { lcu, LcuEventUri } from '@/lib/lcu'
 import { resolvePluginAssetUrl } from '@/lib/plugin-resolver'
 import { store } from '@/lib/store'
 import { translate } from '@/i18n'
+import { uploadImageToHostingService } from '@/lib/image-hosting-service'
 import {
   clearAvatarUrlFromStatusMessage,
   decodeAvatarStatusPayload,
   stripAvatarStatusPayload,
-  uploadAvatarToImgbb,
   writeAvatarUrlToStatusMessage,
 } from '@/lib/features/beautify-client/avatar-status-sync'
 import { getPuuid } from '@/lib/assets'
@@ -33,6 +33,7 @@ const VOICE_PUUID_ATTR = 'voice-puuid'
 const SOCIAL_MEMBER_SELECTOR = '[class*="lol-social-roster-member"]'
 const SOCIAL_MEMBER_NAME_SELECTOR = '.member-name'
 const FRIENDS_URI = '/lol-chat/v1/friends'
+const LEGACY_IMAGE_HOSTS = new Set(['i.ibb.co', 'ibb.co'])
 
 let customAvatarRegistered = false
 let customAvatarObserver: MutationObserver | null = null
@@ -45,6 +46,7 @@ let friendAvatarUnsub: (() => void) | null = null
 let ownStatusUnsub: (() => void) | null = null
 let friendAvatarRefreshTimer: number | null = null
 let ownStatusRestorePromise: Promise<void> | null = null
+let legacyAvatarMigrationPromise: Promise<void> | null = null
 const friendImageObservers = new Map<HTMLImageElement, MutationObserver>()
 const tftIconObservers = new Map<HTMLElement, MutationObserver>()
 const regaliaElementObservers = new Map<Element, MutationObserver>()
@@ -277,6 +279,14 @@ function getSavedOwnRemoteAvatarUrl(): string {
   return typeof avatarUrl === 'string' ? avatarUrl : ''
 }
 
+function isLegacyImageHostingUrl(value: string): boolean {
+  try {
+    return LEGACY_IMAGE_HOSTS.has(new URL(value).hostname.toLowerCase())
+  } catch {
+    return false
+  }
+}
+
 function getSavedOwnVisibleStatusMessage(): string {
   const savedStatusMessage = store.get('statusMessage')
   return stripAvatarStatusPayload(savedStatusMessage[getPuuid()] || savedStatusMessage[getOwnPuuid()] || '')
@@ -296,6 +306,7 @@ function ensureOwnAvatarStatusPayload(statusMessage?: string | null) {
 
   const savedAvatarUrl = getSavedOwnRemoteAvatarUrl()
   if (!savedAvatarUrl) return Promise.resolve()
+  if (isLegacyImageHostingUrl(savedAvatarUrl)) return Promise.resolve()
 
   ownStatusRestorePromise = (async () => {
     if (statusMessage !== undefined) {
@@ -317,6 +328,38 @@ function ensureOwnAvatarStatusPayload(statusMessage?: string | null) {
     })
 
   return ownStatusRestorePromise
+}
+
+function migrateLegacyOwnAvatarIfNeeded() {
+  if (legacyAvatarMigrationPromise) return legacyAvatarMigrationPromise
+
+  const [assetPath] = store.get('customAvatarAssetPaths')
+  if (!assetPath) return Promise.resolve()
+
+  legacyAvatarMigrationPromise = (async () => {
+    const ownPuuid = getOwnPuuid() || await lcu.getSummonerInfo()
+      .then((summoner) => {
+        ownPuuidCache = normalizePuuid(summoner.puuid)
+        return ownPuuidCache
+      })
+    if (!ownPuuid) return
+
+    const savedAvatarUrl = remoteAvatarCache.get(ownPuuid)
+      || store.get('customAvatarRemoteCache')[ownPuuid]
+      || ''
+    if (!isLegacyImageHostingUrl(savedAvatarUrl)) return
+
+    await syncCustomAvatarAssetPath(assetPath)
+    logger.info('[CustomAvatarSync] 已将旧图床头像迁移至当前图床。')
+  })()
+    .catch((err) => {
+      logger.warn('[CustomAvatarSync] 迁移旧图床头像失败:', err)
+    })
+    .finally(() => {
+      legacyAvatarMigrationPromise = null
+    })
+
+  return legacyAvatarMigrationPromise
 }
 
 function refreshFriendAvatarCache(forceAll: boolean, reason: string) {
@@ -907,6 +950,7 @@ export function updateBeautifyCustomAvatar() {
       logger.warn('[CustomAvatarSync] 清理简介头像同步信息失败:', err)
     })
   } else {
+    void migrateLegacyOwnAvatarIfNeeded()
     void ensureOwnAvatarStatusPayload()
   }
 }
@@ -929,7 +973,8 @@ export async function syncCustomAvatarAssetPath(assetPath: string) {
     }
 
     const image = await assetResponse.blob()
-    const avatarUrl = await uploadAvatarToImgbb(image)
+    const sourceFileName = assetPath.replace(/\\/g, '/').split('/').filter(Boolean).at(-1) || 'image.png'
+    const avatarUrl = await uploadImageToHostingService(image, sourceFileName)
     remoteAvatarCache.set(ownPuuid, avatarUrl)
     persistRemoteAvatarCacheEntry(ownPuuid, avatarUrl)
     await writeAvatarUrlToStatusMessage(avatarUrl, getSavedOwnVisibleStatusMessage())
