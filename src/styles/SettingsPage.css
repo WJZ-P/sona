@@ -241,6 +241,114 @@
   gap: 10px;
 }
 
+.sona-name-effect-settings {
+  display: grid;
+  grid-template-columns: minmax(150px, 0.8fr) minmax(330px, 1.4fr);
+  align-items: stretch;
+  gap: 16px;
+  width: 100%;
+  max-width: 100%;
+}
+
+.sona-name-effect-colors {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sona-name-effect-preview-stage {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 92px;
+  padding: 12px 18px;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(200, 170, 110, 0.09), transparent 62%),
+    rgba(1, 10, 19, 0.42);
+  border: 1px solid rgba(200, 170, 110, 0.22);
+  border-radius: 5px;
+}
+
+.sona-name-effect-preview {
+  display: inline-block;
+  max-width: 240px;
+  overflow: hidden;
+  color: transparent;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.4;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-size: 200% 100%;
+  background-repeat: repeat;
+  animation: sona-name-preview-water-flow 3.6s linear infinite;
+  will-change: background-position;
+}
+
+.sona-name-effect-colors {
+  justify-content: flex-start;
+}
+
+.sona-name-effect-controls {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+.sona-name-effect-color {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 34px;
+  align-items: center;
+  gap: 5px 10px;
+  min-width: 0;
+  padding: 9px 10px;
+  background: rgba(1, 10, 19, 0.3);
+  border: 1px solid rgba(120, 90, 40, 0.2);
+  border-radius: 4px;
+  color: #a09b8c;
+  font-size: 13px;
+}
+
+.sona-name-effect-color > span {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.sona-name-effect-color input[type="color"] {
+  width: 34px;
+  height: 28px;
+  padding: 1px;
+  border: 1px solid rgba(200, 170, 110, 0.35);
+  border-radius: 3px;
+  background: rgba(1, 10, 19, 0.72);
+  cursor: pointer;
+}
+
+.sona-name-effect-color code {
+  grid-column: 1 / -1;
+  color: #c8aa6e;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+@media (max-width: 620px) {
+  .sona-name-effect-settings {
+    grid-template-columns: 1fr;
+  }
+}
+
+@keyframes sona-name-preview-water-flow {
+  from { background-position: 200% center; }
+  to { background-position: 0% center; }
+}
+
 .sona-wallpaper-dropzone {
   min-height: 180px;
   padding: 14px;

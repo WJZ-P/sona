@@ -34,6 +34,9 @@ import { updateAutoReturnToLobby } from '@/lib/features/auto-return-to-lobby'
 import { updateOpggBuildRecommendation } from '@/lib/features/opgg-build-recommendation'
 import { updateBeautifyCustomAvatar } from '@/lib/features/beautify-client/custom-avatar'
 import { initSocialSidebarGlass, updateSocialSidebarGlassConfig } from '@/lib/features/beautify-client/social-sidebar-glass'
+import { initBeautifyNavbarBlur, updateBeautifyNavbarBlur } from '@/lib/features/beautify-client/navbar-blur'
+import { initBeautifyNavbarLines, updateBeautifyNavbarLines } from '@/lib/features/beautify-client/navbar-lines'
+import { initSummonerNameEffect, updateSummonerNameEffect } from '@/lib/features/beautify-client/summoner-name-effect'
 import { updateBeautifyHomepageBackground, updateBeautifyHomepageBackgroundAdjustments, updateBeautifyHomepageBackgroundGlassConfig } from '@/lib/features/beautify-client/homepage-background'
 import { updateBeautifyWallpaperMode, updateBeautifyWallpaperModeGlassConfig, updateBeautifyWallpaperSceneConfig } from '@/lib/features/beautify-client/wallpaper-mode'
 import { updateGameModeFilter } from '@/lib/features/game-mode-filter'
@@ -893,6 +896,18 @@ export function initFeatures() {
   syncSocialSidebarGlassConfig()
   store.onChange('beautifyGlassBlur', syncSocialSidebarGlassConfig)
   store.onChange('beautifyGlassOpacity', syncSocialSidebarGlassConfig)
+
+  initBeautifyNavbarBlur()
+  updateBeautifyNavbarBlur(store.get('beautifyNavbarBlur'))
+  store.onChange('beautifyNavbarBlur', updateBeautifyNavbarBlur)
+
+  initBeautifyNavbarLines()
+  updateBeautifyNavbarLines(store.get('beautifyNavbarHideLines'))
+  store.onChange('beautifyNavbarHideLines', updateBeautifyNavbarLines)
+
+  initSummonerNameEffect()
+  updateSummonerNameEffect(store.get('beautifySummonerNameEffect'))
+  store.onChange('beautifySummonerNameEffect', updateSummonerNameEffect)
 
   syncHomepageBackgroundGlassConfig()
   store.onChange('beautifyHomepageBackgroundBlur', syncHomepageBackgroundGlassConfig)

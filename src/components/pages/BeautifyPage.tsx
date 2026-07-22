@@ -106,6 +106,17 @@ export function BeautifyPage() {
   const [homepageBackgroundOpacity, setHomepageBackgroundOpacity] = useState(() => store.get('beautifyHomepageBackgroundOpacity'))
   const [glassBlur, setGlassBlur] = useState(() => store.get('beautifyGlassBlur'))
   const [glassOpacity, setGlassOpacity] = useState(() => store.get('beautifyGlassOpacity'))
+  const [navbarBlur, setNavbarBlur] = useState(() => store.get('beautifyNavbarBlur'))
+  const [navbarHideLines, setNavbarHideLines] = useState(() => store.get('beautifyNavbarHideLines'))
+  const [summonerNameEffect, setSummonerNameEffect] = useState(() => {
+    const saved = store.get('beautifySummonerNameEffect')
+    return {
+      enabled: Boolean(saved.enabled),
+      startColor: saved.startColor,
+      endColor: saved.endColor,
+      angle: saved.angle,
+    }
+  })
   const [assetPaths, setAssetPaths] = useState(() => store.get('beautifyAssetPaths'))
   const [customAvatarAssetPaths, setCustomAvatarAssetPaths] = useState(() => store.get('customAvatarAssetPaths'))
   const [assetMessage, setAssetMessage] = useState(() => t('beautify.assets.instructions'))
@@ -167,6 +178,22 @@ export function BeautifyPage() {
   const updateGlassOpacity = (value: number) => {
     setGlassOpacity(value)
     store.set('beautifyGlassOpacity', value)
+  }
+
+  const updateNavbarBlur = (value: number) => {
+    setNavbarBlur(value)
+    store.set('beautifyNavbarBlur', value)
+  }
+
+  const updateNavbarHideLines = (value: boolean) => {
+    setNavbarHideLines(value)
+    store.set('beautifyNavbarHideLines', value)
+  }
+
+  const updateSummonerNameEffect = (patch: Partial<typeof summonerNameEffect>) => {
+    const next = { ...summonerNameEffect, ...patch }
+    setSummonerNameEffect(next)
+    store.set('beautifySummonerNameEffect', next)
   }
 
   const updateHomepageBackgroundBlur = (value: number) => {
@@ -562,6 +589,90 @@ export function BeautifyPage() {
             />
           </div>
         </SettingCard>
+        <SettingCard
+          title={t('beautify.navbarBlur.title')}
+          description={t('beautify.navbarBlur.description')}
+        >
+          <div className="sona-glass-settings">
+            <SonaSlider
+              label={t('beautify.slider.blur')}
+              value={navbarBlur}
+              min={0}
+              max={40}
+              unit="px"
+              onChange={updateNavbarBlur}
+            />
+          </div>
+        </SettingCard>
+        <SettingCard
+          title={t('beautify.navbarLines.title')}
+          description={t('beautify.navbarLines.description')}
+        >
+          <SonaSwitch
+            checked={navbarHideLines}
+            onChange={updateNavbarHideLines}
+          />
+        </SettingCard>
+        <SettingCard
+          title={t('beautify.nameEffect.title')}
+          description={t('beautify.nameEffect.description')}
+        >
+          <SonaSwitch
+            checked={summonerNameEffect.enabled}
+            onChange={(enabled) => updateSummonerNameEffect({ enabled })}
+          />
+        </SettingCard>
+        {summonerNameEffect.enabled && (
+          <SettingCard
+            title={t('beautify.nameEffect.settingsTitle')}
+            description={t('beautify.nameEffect.settingsDescription')}
+            layout="stacked"
+          >
+            <div className="sona-name-effect-settings">
+              <div className="sona-name-effect-preview-stage">
+                <span
+                  className="sona-name-effect-preview"
+                  style={{
+                    backgroundImage: `linear-gradient(${summonerNameEffect.angle}deg, ${summonerNameEffect.startColor} 0%, ${summonerNameEffect.endColor} 50%, ${summonerNameEffect.startColor} 100%)`,
+                  }}
+                >
+                  {t('beautify.nameEffect.preview')}
+                </span>
+              </div>
+              <div className="sona-name-effect-controls">
+                <div className="sona-name-effect-colors">
+                  <label className="sona-name-effect-color">
+                    <span>{t('beautify.nameEffect.startColor')}</span>
+                    <input
+                      type="color"
+                      value={summonerNameEffect.startColor}
+                      onChange={(event) => updateSummonerNameEffect({ startColor: event.target.value })}
+                    />
+                    <code>{summonerNameEffect.startColor}</code>
+                  </label>
+                  <label className="sona-name-effect-color">
+                    <span>{t('beautify.nameEffect.endColor')}</span>
+                    <input
+                      type="color"
+                      value={summonerNameEffect.endColor}
+                      onChange={(event) => updateSummonerNameEffect({ endColor: event.target.value })}
+                    />
+                    <code>{summonerNameEffect.endColor}</code>
+                  </label>
+                </div>
+                <SonaSlider
+                  label={t('beautify.nameEffect.angle')}
+                  value={summonerNameEffect.angle}
+                  min={0}
+                  max={360}
+                  step={5}
+                  unit="°"
+                  onChange={(angle) => updateSummonerNameEffect({ angle })}
+                />
+              </div>
+            </div>
+          </SettingCard>
+        )}
       </SettingGroup>
 
       {assetPaths.length > 0 && (

@@ -124,6 +124,17 @@ export interface SonaConfig {
   beautifyGlassBlur: number
   /** 美化毛玻璃背景不透明度（0-100） */
   beautifyGlassOpacity: number
+  /** 顶部导航栏毛玻璃模糊强度（px） */
+  beautifyNavbarBlur: number
+  /** 隐藏顶部导航栏图标分隔线与底部边框 */
+  beautifyNavbarHideLines: boolean
+  /** 召唤师名字渐变特效 */
+  beautifySummonerNameEffect: {
+    enabled: boolean
+    startColor: string
+    endColor: string
+    angle: number
+  }
   /** 美化资源：用户手动录入的 assets 相对路径列表 */
   beautifyAssetPaths: string[]
   /** 自定义头像资源：从美化资源区复制引用的 assets 相对路径列表 */
@@ -246,6 +257,14 @@ const DEFAULT_CONFIG: SonaConfig = {
   beautifyHomepageBackgroundOpacity: 0,
   beautifyGlassBlur: 14,
   beautifyGlassOpacity: 28,
+  beautifyNavbarBlur: 10,
+  beautifyNavbarHideLines: false,
+  beautifySummonerNameEffect: {
+    enabled: false,
+    startColor: '#c8aa6e',
+    endColor: '#4a9eff',
+    angle: 90,
+  },
   beautifyAssetPaths: [],
   customAvatarAssetPaths: [],
   customAvatarRemoteCache: {},

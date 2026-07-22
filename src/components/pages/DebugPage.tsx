@@ -576,6 +576,27 @@ export function DebugPage() {
     return 68
   }
 
+  const testChampSelectDodgeViaQuitV2 = async () => {
+    const phase = await lcu.getGameflowPhase()
+    logger.info('[Sona][DodgeDebug] 当前 Gameflow 阶段: %s', phase)
+
+    if (phase !== 'ChampSelect') {
+      throw new Error(`当前阶段为 ${phase}，仅在 ChampSelect 阶段允许发送秒退请求`)
+    }
+
+    const endpoint = '/lol-login/v1/session/invoke (lcdsServiceProxy → teambuilder-draft.quitV2)'
+    logger.info('[Sona][DodgeDebug] 即将调用 %s', endpoint)
+    const response = await lcu.dodgeChampSelectViaQuitV2()
+    const result = {
+      success: true,
+      phase,
+      endpoint,
+      response: response ?? null,
+    }
+    logger.info('[Sona][DodgeDebug] quitV2 请求完成 ↓\n%o', result)
+    return result
+  }
+
   return (
     <div className="sona-settings">
       <h2 className="sona-settings-title">{t('debug.title')}</h2>
@@ -677,17 +698,17 @@ export function DebugPage() {
           <SonaButton onClick={() => runAndLog('可选英雄列表', () => lcu.getPickableChampionIds())}>
             {t('debug.action.pickable')}
           </SonaButton>
-          <SonaButton onClick={() => runAndLog('秒退（英雄选择阶段）', async () => {
-            const phase = await lcu.getGameflowPhase()
-            if (phase !== 'ChampSelect') {
-              return `⚠️ 当前阶段为 ${phase}，仅在 ChampSelect 阶段可秒退`
+          <SonaButton variant="secondary" onClick={() => {
+            if (!window.confirm(t('debug.confirm.dodgeQuitV2'))) {
+              setOutput('已取消 quitV2 秒退测试')
+              return
             }
-            await lcu.dodgeChampSelect()
-            return '✅ 已秒退选人（DELETE /lol-lobby/v2/lobby）'
-          })}>
-            秒退
+            void runAndLog('quitV2 秒退测试', testChampSelectDodgeViaQuitV2)
+          }}>
+            {t('debug.action.dodgeQuitV2')}
           </SonaButton>
         </div>
+        <p className="sona-subtitle">{t('debug.hint.dodgeQuitV2')}</p>
         <p className="sona-subtitle">{t('debug.hint.benchSlots')}</p>
         <div className="sona-debug-actions">
           {Array.from({ length: 10 }, (_, i) => (

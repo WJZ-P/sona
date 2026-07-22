@@ -5,11 +5,12 @@ export interface SettingCardProps {
   title: string
   description?: string
   children: ReactNode
+  layout?: 'row' | 'stacked'
 }
 
-export function SettingCard({ title, description, children }: SettingCardProps) {
+export function SettingCard({ title, description, children, layout = 'row' }: SettingCardProps) {
   return (
-    <div className="sona-setting-card">
+    <div className={`sona-setting-card${layout === 'stacked' ? ' sona-setting-card--stacked' : ''}`}>
       <div className="sona-setting-card-info">
         <h4 className="sona-setting-card-title">{title}</h4>
         {description && (

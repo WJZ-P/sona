@@ -690,6 +690,23 @@ class LCUManager {
     })
   }
 
+  /**
+   * 通过 LeagueAkari 使用的登录会话代理调用立即秒退。
+   *
+   * 该方法目前只用于 Debug 页验证，不替换上面的旧实现。调用后会产生正常的
+   * 秒退惩罚，因此调用方必须先确认当前处于 ChampSelect 并取得用户确认。
+   */
+  dodgeChampSelectViaQuitV2(): Promise<unknown> {
+    const args = ['', 'teambuilder-draft', 'quitV2', '']
+    const params = new URLSearchParams({
+      destination: 'lcdsServiceProxy',
+      method: 'call',
+      args: JSON.stringify(args),
+    })
+
+    return post(`/lol-login/v1/session/invoke?${params.toString()}`, { data: args })
+  }
+
   // ==================== 匹配 ====================
 
   /** 开始匹配 */

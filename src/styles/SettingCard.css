@@ -88,6 +88,22 @@
   min-width: 50px;
 }
 
+.sona-setting-card--stacked {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.sona-setting-card--stacked .sona-setting-card-info {
+  width: 100%;
+  padding-right: 0;
+  margin-bottom: 14px;
+}
+
+.sona-setting-card--stacked .sona-setting-card-action {
+  width: 100%;
+  justify-content: flex-start;
+}
+
 /* ---- 通用小标题/说明文字 ---- */
 .sona-subtitle {
   margin: 8px 0 4px;
