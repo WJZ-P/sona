@@ -31,6 +31,7 @@ import { updateCustomProfileBg } from '@/lib/features/profile-background'
 import { updateCustomBanner } from '@/lib/features/custom-banner'
 import { updateGameAnalysisPopup } from '@/lib/features/game-analysis-popup'
 import { updateAutoReturnToLobby } from '@/lib/features/auto-return-to-lobby'
+import { updateLobbyQuickToggles } from '@/lib/features/lobby-quick-toggles'
 import { updateOpggBuildRecommendation } from '@/lib/features/opgg-build-recommendation'
 import { updateBeautifyCustomAvatar } from '@/lib/features/beautify-client/custom-avatar'
 import { initSocialSidebarGlass, updateSocialSidebarGlassConfig } from '@/lib/features/beautify-client/social-sidebar-glass'
@@ -1219,15 +1220,17 @@ export function initFeatures() {
   updateGameAnalysisPopup(store.get('gameAnalysisPopup'))
   store.onChange('gameAnalysisPopup', updateGameAnalysisPopup)
 
-  updateAutoReturnToLobby(store.get('autoReturnToLobby'))
-  store.onChange('autoReturnToLobby', updateAutoReturnToLobby)
-  store.onChange('autoReturnMode', () => {
-    // 模式变化时，如果功能已启用，重新注册以应用新模式
-    if (store.get('autoReturnToLobby')) {
-      updateAutoReturnToLobby(false)
-      updateAutoReturnToLobby(true)
-    }
-  })
+  // 自动返回与返回后排队相互独立；任一开启都需要监听 EndOfGame → Lobby 阶段流转。
+  const updateAutoReturnLifecycle = () => {
+    updateAutoReturnToLobby(store.get('autoReturnToLobby') || store.get('autoQueueAfterReturn'))
+  }
+  updateAutoReturnLifecycle()
+  store.onChange('autoReturnToLobby', updateAutoReturnLifecycle)
+  store.onChange('autoQueueAfterReturn', updateAutoReturnLifecycle)
+
+  // 组队房间标题后的「自动返回 / 自动排队 / 自动接受」快捷开关条
+  updateLobbyQuickToggles(store.get('lobbyQuickToggles'))
+  store.onChange('lobbyQuickToggles', updateLobbyQuickToggles)
 
   // 解锁在线状态切换（接管客户端按钮，弹自定义"隐身/手机在线"菜单）
   setAvailabilityHijackEnabled(store.get('unlockAvailability'))

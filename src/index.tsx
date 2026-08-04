@@ -19,6 +19,7 @@ import '@/styles/index.css'
 import '@/styles/inject.css'
 import '@/styles/availabilityMenu.css'
 import '@/styles/gameModeFilter.css'
+import '@/styles/lobbyQuickToggles.css'
 
 const PLUGIN_NAME = 'Sona'
 const PLUGIN_VERSION = __PLUGIN_VERSION__

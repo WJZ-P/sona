@@ -203,8 +203,10 @@ export interface SonaConfig {
   gameAnalysisPopup: boolean
   /** 对局结束后自动返回房间 */
   autoReturnToLobby: boolean
-  /** 自动返回模式: queue=自动排队, lobby=仅返回房间 */
-  autoReturnMode: string
+  /** 对局结束后返回房间时自动排队（支持插件自动返回或玩家手动返回） */
+  autoQueueAfterReturn: boolean
+  /** 组队界面快捷开关：在房间标题后显示「自动返回 / 自动排队 / 自动接受」开关 */
+  lobbyQuickToggles: boolean
   /** 快速大厅模式：点击 Play 直接进入设置好的目标队列大厅 */
   quickLobbyMode: boolean
   /** 快速大厅模式的目标队列 ID */
@@ -296,7 +298,8 @@ const DEFAULT_CONFIG: SonaConfig = {
   champSelectQuitButton: false,
   gameAnalysisPopup: false,
   autoReturnToLobby: false,
-  autoReturnMode: 'queue',
+  autoQueueAfterReturn: false,
+  lobbyQuickToggles: true,
   quickLobbyMode: false,
   quickLobbyQueueId: 430,
 }
@@ -316,6 +319,8 @@ class SonaStore {
   private cache: SonaConfig
 
   constructor() {
+    this.migrateLegacyConfig()
+
     // 启动时把所有配置加载到内存缓存中
     const loaded = { ...DEFAULT_CONFIG }
     for (const key of Object.keys(DEFAULT_CONFIG) as ConfigKey[]) {
@@ -410,6 +415,30 @@ class SonaStore {
   }
 
   // ---- 内部方法 ----
+
+  /**
+   * 迁移旧版本配置：
+   * autoReturnMode('queue'|'lobby' 下拉模式) 已拆分为独立布尔 autoQueueAfterReturn。
+   * 新键已有持久化值时始终保留；否则仅当旧版自动返回已启用且旧模式为 queue 时迁移为 true。
+   * 旧模式缺失时，仅在旧版自动返回已启用的情况下按旧默认值视为 queue；lobby、未知或损坏的模式均迁移为 false。
+   * 新键写入失败时保留旧模式键并退出迁移，以便下次启动重试；写入成功或新键已存在后删除旧模式键。
+   */
+  private migrateLegacyConfig() {
+    const legacyModeKey = `${KEY_PREFIX}autoReturnMode`
+    const legacyAutoReturn = DataStore.get<boolean>(`${KEY_PREFIX}autoReturnToLobby`)
+    const legacyMode = DataStore.get<string>(legacyModeKey)
+    const hasLegacyMode = DataStore.has(legacyModeKey)
+    const newKey = `${KEY_PREFIX}autoQueueAfterReturn`
+
+    if (!DataStore.has(newKey) && (legacyAutoReturn !== undefined || hasLegacyMode)) {
+      const migratedValue = legacyAutoReturn === true && (legacyMode === undefined || legacyMode === 'queue')
+      if (!DataStore.set(newKey, migratedValue)) return
+    }
+
+    if (hasLegacyMode) {
+      DataStore.remove(legacyModeKey)
+    }
+  }
 
   private readFromDisk<K extends ConfigKey>(key: K): SonaConfig[K] {
     const stored = DataStore.get<SonaConfig[K]>(`${KEY_PREFIX}${key}`)
