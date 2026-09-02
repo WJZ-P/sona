@@ -1,0 +1,15 @@
+id: sona
+name: Sona
+description: Client enhancement suite — champion select tools, OP.GG builds, match history and beautification.
+version: $package.version
+
+repo: https://github.com/WJZ-P/sona
+
+author:
+  name: WJZ-P
+  github: WJZ-P
+
+tags: [utility, ui, champ-select]
+
+install:
+  release: "sona-*.zip"

@@ -1,5 +1,23 @@
 /* Sona Game Mode Filter - 玩家对战模式可见性勾选条 */
 
+/*
+ * 客户端原布局会为模式卡片保留固定槽位；隐藏部分模式后，剩余卡片因此会偏向原槽位。
+ * 重新以可见的直属卡片参与 Flex 排版，并在左右两侧保留与卡片间一致的留白。
+ */
+.parties-game-type-select-wrapper {
+  display: flex !important;
+  justify-content: space-evenly !important;
+  align-items: stretch;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.parties-game-type-select-wrapper > .game-type-card {
+  flex: 0 1 18% !important;
+  min-width: 0;
+  max-width: 240px;
+}
+
 .sona-game-mode-filter-bar {
   display: flex;
   flex-direction: row;

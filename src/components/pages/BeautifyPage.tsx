@@ -11,8 +11,12 @@ import { store } from '@/lib/store'
 import { useI18n } from '@/i18n'
 import '@/styles/SettingsPage.css'
 
-const IMAGE_EXTENSIONS = new Set(['png', 'jpg', 'jpeg', 'webp', 'gif', 'svg', 'bmp', 'ico'])
-const VIDEO_EXTENSIONS = new Set(['mp4', 'webm', 'ogg', 'ogv', 'mov', 'm4v'])
+const COMMON_IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'svg', 'bmp', 'ico'] as const
+const COMMON_VIDEO_EXTENSIONS = ['mp4', 'webm', 'ogg', 'ogv', 'mov', 'm4v'] as const
+const COMMON_MEDIA_EXTENSIONS = [...COMMON_IMAGE_EXTENSIONS, ...COMMON_VIDEO_EXTENSIONS]
+const IMAGE_EXTENSIONS = new Set<string>(COMMON_IMAGE_EXTENSIONS)
+const VIDEO_EXTENSIONS = new Set<string>(COMMON_VIDEO_EXTENSIONS)
+const ASSET_PROBE_TIMEOUT_MS = 4000
 const ASSET_DRAG_MIME = 'application/x-sona-asset-path'
 const DRAG_SCROLL_EDGE_SIZE = 76
 const DRAG_SCROLL_MAX_SPEED = 20
@@ -48,6 +52,27 @@ function isSupportedMediaFile(fileName: string): boolean {
   return isImageFile(fileName) || isVideoFile(fileName)
 }
 
+function getFileExtension(fileName: string): string {
+  const fileNameOnly = fileName.split('/').pop() ?? ''
+  const extension = fileNameOnly.includes('.') ? fileNameOnly.split('.').pop() : ''
+  return extension?.toLowerCase() ?? ''
+}
+
+function buildAssetPathCandidates(inputPath: string): string[] {
+  const inputExtension = getFileExtension(inputPath)
+  const hasSupportedExtension = isSupportedMediaFile(inputPath)
+  const extensions = hasSupportedExtension
+    ? [inputExtension, ...COMMON_MEDIA_EXTENSIONS.filter((extension) => extension !== inputExtension)]
+    : COMMON_MEDIA_EXTENSIONS
+  const candidates = hasSupportedExtension ? [inputPath] : []
+
+  for (const extension of extensions) {
+    candidates.push(`${inputPath}.${extension}`)
+  }
+
+  return Array.from(new Set(candidates))
+}
+
 function normalizeAssetPath(value: string): string {
   let normalized = value
     .trim()
@@ -71,6 +96,61 @@ function getAssetUrl(assetPath: string): string {
   return resolvePluginAssetUrl(assetPath)
 }
 
+function probeImageAsset(assetPath: string): Promise<boolean> {
+  return new Promise((resolve) => {
+    const image = new Image()
+    let settled = false
+    const finish = (loaded: boolean) => {
+      if (settled) return
+      settled = true
+      window.clearTimeout(timeout)
+      image.onload = null
+      image.onerror = null
+      resolve(loaded)
+    }
+    const timeout = window.setTimeout(() => finish(false), ASSET_PROBE_TIMEOUT_MS)
+
+    image.onload = () => finish(image.naturalWidth > 0 && image.naturalHeight > 0)
+    image.onerror = () => finish(false)
+    image.src = getAssetUrl(assetPath)
+  })
+}
+
+function probeVideoAsset(assetPath: string): Promise<boolean> {
+  return new Promise((resolve) => {
+    const video = document.createElement('video')
+    let settled = false
+    const finish = (loaded: boolean) => {
+      if (settled) return
+      settled = true
+      window.clearTimeout(timeout)
+      video.onloadedmetadata = null
+      video.onerror = null
+      video.removeAttribute('src')
+      resolve(loaded)
+    }
+    const timeout = window.setTimeout(() => finish(false), ASSET_PROBE_TIMEOUT_MS)
+
+    video.preload = 'metadata'
+    video.muted = true
+    video.onloadedmetadata = () => finish(video.videoWidth > 0 && video.videoHeight > 0)
+    video.onerror = () => finish(false)
+    video.src = getAssetUrl(assetPath)
+    video.load()
+  })
+}
+
+async function findLoadableAssetPath(inputPath: string): Promise<string | null> {
+  for (const candidate of buildAssetPathCandidates(inputPath)) {
+    const loaded = isVideoFile(candidate)
+      ? await probeVideoAsset(candidate)
+      : await probeImageAsset(candidate)
+    if (loaded) return candidate
+  }
+
+  return null
+}
+
 function getWallpaperBackgroundSize(adjustment: WallpaperAdjustment): string {
   return adjustment.scale === 1 ? 'cover' : `${Number((adjustment.scale * 100).toFixed(2))}% auto`
 }
@@ -90,7 +170,9 @@ export function BeautifyPage() {
   const wallpaperDragStartRef = useRef<WallpaperDragStart | null>(null)
   const dragScrollFrameRef = useRef<number | null>(null)
   const dragPointerYRef = useRef<number | null>(null)
+  const assetImportInProgressRef = useRef(false)
   const [assetPathInput, setAssetPathInput] = useState('')
+  const [isResolvingAssetPath, setIsResolvingAssetPath] = useState(false)
   const [beautifyWallpaperMode, setBeautifyWallpaperMode] = useState(() => store.get('beautifyWallpaperMode'))
   const [wallpaperSceneBlur, setWallpaperSceneBlur] = useState(() => store.get('beautifyWallpaperSceneBlur'))
   const [wallpaperSceneOpacity, setWallpaperSceneOpacity] = useState(() => store.get('beautifyWallpaperSceneOpacity'))
@@ -118,6 +200,7 @@ export function BeautifyPage() {
     }
   })
   const [assetPaths, setAssetPaths] = useState(() => store.get('beautifyAssetPaths'))
+  const [failedAssetPaths, setFailedAssetPaths] = useState<Set<string>>(() => new Set())
   const [customAvatarAssetPaths, setCustomAvatarAssetPaths] = useState(() => store.get('customAvatarAssetPaths'))
   const [assetMessage, setAssetMessage] = useState(() => t('beautify.assets.instructions'))
   const [editingWallpaperAssetPath, setEditingWallpaperAssetPath] = useState<string | null>(null)
@@ -206,7 +289,19 @@ export function BeautifyPage() {
     store.set('beautifyHomepageBackgroundOpacity', value)
   }
 
-  const addAssetPath = () => {
+  const setAssetLoadFailed = (assetPath: string, failed: boolean) => {
+    setFailedAssetPaths((current) => {
+      if (failed === current.has(assetPath)) return current
+      const next = new Set(current)
+      if (failed) next.add(assetPath)
+      else next.delete(assetPath)
+      return next
+    })
+  }
+
+  const addAssetPath = async () => {
+    if (assetImportInProgressRef.current) return
+
     const nextPath = normalizeAssetPath(assetPathInput)
 
     if (!nextPath) {
@@ -221,22 +316,42 @@ export function BeautifyPage() {
       setAssetMessage(t('beautify.status.assetUrlRejected'))
       return
     }
-    if (!isSupportedMediaFile(nextPath)) {
-      setAssetMessage(t('beautify.status.assetUnsupported'))
-      return
-    }
-    if (assetPaths.includes(nextPath)) {
-      setAssetMessage(t('beautify.status.assetDuplicate'))
-      return
-    }
+    assetImportInProgressRef.current = true
+    setIsResolvingAssetPath(true)
+    setAssetMessage(t('beautify.status.assetSearching', { path: nextPath }))
 
-    const nextPaths = [...assetPaths, nextPath]
-    saveAssetPaths(nextPaths)
-    setAssetPathInput('')
-    setAssetMessage(t('beautify.status.assetAdded', { path: nextPath }))
+    try {
+      const resolvedPath = await findLoadableAssetPath(nextPath)
+      if (!resolvedPath) {
+        setAssetMessage(t('beautify.status.assetNotFound', { path: nextPath }))
+        return
+      }
+      if (assetPaths.includes(resolvedPath)) {
+        setAssetMessage(t('beautify.status.assetDuplicate'))
+        return
+      }
+
+      const nextPaths = [...assetPaths, resolvedPath]
+      saveAssetPaths(nextPaths)
+      setAssetPathInput('')
+      setAssetMessage(
+        resolvedPath === nextPath
+          ? t('beautify.status.assetAdded', { path: resolvedPath })
+          : t('beautify.status.assetMatched', { input: nextPath, path: resolvedPath }),
+      )
+    } finally {
+      assetImportInProgressRef.current = false
+      setIsResolvingAssetPath(false)
+    }
   }
 
   const removeAssetPath = (assetPath: string) => {
+    setFailedAssetPaths((current) => {
+      if (!current.has(assetPath)) return current
+      const next = new Set(current)
+      next.delete(assetPath)
+      return next
+    })
     const nextPaths = assetPaths.filter((path) => path !== assetPath)
     const nextHomepageBackgroundAssetPaths = homepageBackgroundAssetPaths.filter((path) => path !== assetPath)
     const nextHomepageBackgroundAdjustments = { ...homepageBackgroundAdjustments }
@@ -862,11 +977,13 @@ export function BeautifyPage() {
           <p className="sona-asset-browser-status">{assetMessage}</p>
           {assetPaths.length > 0 ? (
             <div className="sona-asset-grid">
-              {assetPaths.map((assetPath) => (
+              {assetPaths.map((assetPath) => {
+                const loadFailed = failedAssetPaths.has(assetPath)
+                return (
                 <div
-                  className="sona-asset-card"
+                  className={`sona-asset-card${loadFailed ? ' sona-asset-card--error' : ''}`}
                   key={assetPath}
-                  draggable
+                  draggable={!loadFailed}
                   onDragStart={(event) => handleAssetDragStart(event, assetPath)}
                 >
                   <button
@@ -877,19 +994,35 @@ export function BeautifyPage() {
                   >
                     ×
                   </button>
-                  {isVideoFile(assetPath) ? (
-                    <video
-                      src={getAssetUrl(assetPath)}
-                      muted
-                      preload="metadata"
-                      playsInline
-                    />
-                  ) : (
-                    <img src={getAssetUrl(assetPath)} alt={assetPath} />
-                  )}
+                  <div className="sona-asset-card-preview">
+                    {isVideoFile(assetPath) ? (
+                      <video
+                        src={getAssetUrl(assetPath)}
+                        muted
+                        preload="metadata"
+                        playsInline
+                        onLoadedMetadata={() => setAssetLoadFailed(assetPath, false)}
+                        onError={() => setAssetLoadFailed(assetPath, true)}
+                      />
+                    ) : (
+                      <img
+                        src={getAssetUrl(assetPath)}
+                        alt={assetPath}
+                        onLoad={() => setAssetLoadFailed(assetPath, false)}
+                        onError={() => setAssetLoadFailed(assetPath, true)}
+                      />
+                    )}
+                    {loadFailed && (
+                      <div className="sona-asset-card-error">
+                        <strong>{t('beautify.assets.loadFailed')}</strong>
+                        <small>{t('beautify.assets.loadFailedHint')}</small>
+                      </div>
+                    )}
+                  </div>
                   <span>{assetPath}</span>
                 </div>
-              ))}
+                )
+              })}
             </div>
           ) : (
             <p className="sona-asset-empty">{t('beautify.assets.empty')}</p>
@@ -913,11 +1046,11 @@ export function BeautifyPage() {
               onChange={setAssetPathInput}
               placeholder={t('beautify.assets.examplePlaceholder')}
               onKeyDown={(event) => {
-                if (event.key === 'Enter') addAssetPath()
+                if (event.key === 'Enter') void addAssetPath()
               }}
             />
-            <SonaButton onClick={addAssetPath}>
-              {t('beautify.assets.add')}
+            <SonaButton onClick={() => void addAssetPath()} disabled={isResolvingAssetPath}>
+              {isResolvingAssetPath ? t('beautify.assets.searching') : t('beautify.assets.add')}
             </SonaButton>
           </div>
         </SettingCard>

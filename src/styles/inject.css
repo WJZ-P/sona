@@ -61,6 +61,10 @@
   animation: sona-glow-pulse 2.5s ease-in-out infinite;
 }
 
+.sona-entry-btn--hidden {
+  display: none !important;
+}
+
 /* ✨ 涟漪伪元素 —— 持续扩散的音波环 */
 .sona-entry-btn::before {
   content: '';

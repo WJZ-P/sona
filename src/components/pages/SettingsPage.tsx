@@ -20,6 +20,7 @@ export function SettingsPage() {
   const { localeSetting, setLocaleSetting, t } = useI18n()
   const [developerMode, setDeveloperMode] = useState(store.get('developerMode'))
   const [hotkey, setHotkey] = useState(store.get('hotkey'))
+  const [hideSonaIcon, setHideSonaIcon] = useState(store.get('hideSonaIcon'))
   const [globalParticle, setGlobalParticle] = useState(store.get('globalParticle'))
   const [skippedUpdateVersion, setSkippedUpdateVersion] = useState(store.get('skippedUpdateVersion'))
   const localeOptions = [
@@ -32,6 +33,7 @@ export function SettingsPage() {
     const unsubs = [
       store.onChange('developerMode', setDeveloperMode),
       store.onChange('hotkey', setHotkey),
+      store.onChange('hideSonaIcon', setHideSonaIcon),
       store.onChange('globalParticle', setGlobalParticle),
       store.onChange('skippedUpdateVersion', setSkippedUpdateVersion),
     ]
@@ -61,6 +63,15 @@ export function SettingsPage() {
             options={hotkeyOptions}
             value={hotkey}
             onChange={(v) => { setHotkey(v); store.set('hotkey', v) }}
+          />
+        </SettingCard>
+        <SettingCard
+          title={t('settings.hideSonaIcon.title')}
+          description={t('settings.hideSonaIcon.description', { hotkey })}
+        >
+          <SonaSwitch
+            checked={hideSonaIcon}
+            onChange={(v) => { setHideSonaIcon(v); store.set('hideSonaIcon', v) }}
           />
         </SettingCard>
         <SettingCard

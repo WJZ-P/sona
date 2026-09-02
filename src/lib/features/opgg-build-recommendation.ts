@@ -78,6 +78,19 @@ interface RecommendationCacheEntry {
   updatedAt: number
 }
 
+type SmartRuneSnapshot = Pick<RunePagePayload, 'primaryStyleId' | 'subStyleId' | 'selectedPerkIds'>
+type SmartSpellSnapshot = { spell1Id: number; spell2Id: number }
+
+interface ObservedSmartRuneSnapshot {
+  key: string
+  page: SmartRuneSnapshot
+}
+
+interface ObservedSmartSpellSnapshot {
+  key: string
+  spells: SmartSpellSnapshot
+}
+
 const MAX_RECOMMENDATION_CACHE_SIZE = 8
 
 let phaseUnsub: (() => void) | null = null
@@ -85,6 +98,7 @@ let champSelectUnsub: (() => void) | null = null
 let runePagePollTimer: number | null = null
 let lastPolledRuneKey = ''
 let lastPolledRuneSignature = ''
+let lastObservedRuneSnapshot: ObservedSmartRuneSnapshot | null = null
 let contextRefreshToken = 0
 let championLockPollTimer: number | null = null
 let championLockPollAttempts = 0
@@ -117,11 +131,15 @@ let smartLoadoutRestoreTimer: number | null = null
 let pendingSmartLoadoutContext: RecommendationContext | null = null
 let lastObservedSpellKey = ''
 let lastObservedSpellSignature = ''
+let lastObservedSpellSnapshot: ObservedSmartSpellSnapshot | null = null
 let lastRuneSaveChatSignature = ''
 let lastRuneSaveChatAt = 0
 const itemSetSyncInFlightKeys = new Set<string>()
 const runeApplyInFlightKeys = new Set<string>()
 const spellApplyInFlightKeys = new Set<string>()
+const smartLoadoutFinalSaveInFlightKeys = new Set<string>()
+const smartLoadoutFirstSavedRuneKeys = new Set<string>()
+const smartLoadoutFirstSavedSpellKeys = new Set<string>()
 
 function getLocalChampionId(session: ChampSelectSession): number {
   const localPlayer = session.myTeam.find((player) => player.cellId === session.localPlayerCellId)
@@ -403,6 +421,189 @@ function notifySmartRuneSaved(context: RecommendationContext, runeKey: string, s
   lcu.sendChampSelectMessage(translate('opgg.chat.runesSaved', { championName, modeLabel }), 'celebration').catch((err) => {
     logger.warn('[OPGG] 智能符文保存聊天提示发送失败:', err)
   })
+}
+
+function rememberSmartRuneSnapshot(runeKey: string, page: SmartRuneSnapshot): void {
+  lastObservedRuneSnapshot = {
+    key: runeKey,
+    page: {
+      primaryStyleId: page.primaryStyleId,
+      subStyleId: page.subStyleId,
+      selectedPerkIds: [...page.selectedPerkIds],
+    },
+  }
+}
+
+function rememberSmartSpellSnapshot(spellKey: string, spells: SmartSpellSnapshot): void {
+  lastObservedSpellSnapshot = {
+    key: spellKey,
+    spells: { ...spells },
+  }
+}
+
+/**
+ * 首次游玩某个“英雄 + 模式”时保存最终符文。
+ * 已存在有效记录时保持原有的“检测到用户变化才更新”策略，避免覆盖自动恢复内容。
+ */
+function persistMissingSmartRuneSnapshot(
+  context: RecommendationContext,
+  page: SmartRuneSnapshot,
+  reason: string,
+): boolean {
+  if (!store.get('smartBuildRecommendation') || !isValidRunePage(page)) return false
+
+  const runeKey = getSmartRuneKey(context)
+  if (!runeKey) return false
+
+  const pages = { ...store.get('smartRunePages') }
+  const existing = pages[runeKey]
+  const hasValidExisting = Boolean(existing && isValidRunePage(existing))
+  if (hasValidExisting && !smartLoadoutFirstSavedRuneKeys.has(runeKey)) return false
+
+  const previousSignature = hasValidExisting ? getRunePageSignature(existing) : ''
+  const signature = getRunePageSignature(page)
+  if (previousSignature === signature) return false
+
+  pages[runeKey] = {
+    primaryStyleId: page.primaryStyleId,
+    subStyleId: page.subStyleId,
+    selectedPerkIds: [...page.selectedPerkIds],
+    updatedAt: Date.now(),
+  }
+  store.set('smartRunePages', pages)
+  smartLoadoutFirstSavedRuneKeys.add(runeKey)
+  lastAppliedRuneKey = runeKey
+  logger.info('[OPGG] 已保存首次智能符文最终快照 → key=%s, reason=%s, signature=%s', runeKey, reason, signature)
+  notifySmartRuneSaved(context, runeKey, signature)
+  return true
+}
+
+/** 首次游玩某个“英雄 + 模式”时保存最终召唤师技能。 */
+function persistMissingSmartSpellSnapshot(
+  context: RecommendationContext,
+  spells: SmartSpellSnapshot,
+  reason: string,
+): boolean {
+  if (!store.get('smartBuildRecommendation') || !isValidSummonerSpells(spells)) return false
+
+  const spellKey = getSmartSpellKey(context)
+  if (!spellKey) return false
+
+  const allSpells = { ...store.get('smartSummonerSpells') }
+  const existing = allSpells[spellKey]
+  const hasValidExisting = Boolean(existing && isValidSummonerSpells(existing))
+  if (hasValidExisting && !smartLoadoutFirstSavedSpellKeys.has(spellKey)) return false
+
+  const previousSignature = hasValidExisting ? getSummonerSpellSignature(existing) : ''
+  const signature = getSummonerSpellSignature(spells)
+  if (previousSignature === signature) return false
+
+  allSpells[spellKey] = {
+    ...spells,
+    updatedAt: Date.now(),
+  }
+  store.set('smartSummonerSpells', allSpells)
+  smartLoadoutFirstSavedSpellKeys.add(spellKey)
+  lastAppliedSpellKey = spellKey
+  logger.info('[OPGG] 已保存首次召唤师技能最终快照 → key=%s, reason=%s, spells=%s', spellKey, reason, signature)
+  return true
+}
+
+/** 阶段切换时使用已观察到的最终快照同步兜底，避免 ChampSelect 接口先被销毁。 */
+function persistObservedSmartLoadoutSnapshot(context: RecommendationContext, reason: string): void {
+  const runeKey = getSmartRuneKey(context)
+  const spellKey = getSmartSpellKey(context)
+  let runeSaved = false
+  let spellsSaved = false
+
+  if (runeKey && lastObservedRuneSnapshot?.key === runeKey) {
+    runeSaved = persistMissingSmartRuneSnapshot(context, lastObservedRuneSnapshot.page, reason)
+  }
+  if (spellKey && lastObservedSpellSnapshot?.key === spellKey) {
+    spellsSaved = persistMissingSmartSpellSnapshot(context, lastObservedSpellSnapshot.spells, reason)
+  }
+
+  if (runeSaved || spellsSaved) {
+    logger.info('[OPGG] 智能配置最终快照已落盘 → reason=%s, rune=%s, spells=%s', reason, runeSaved, spellsSaved)
+  }
+}
+
+/**
+ * FINALIZATION / GAME_STARTING 时主动读取最后一份有效配置。
+ * 只补齐缺失记录；已有记录继续由日常变化监听负责更新。
+ */
+async function persistFinalSmartLoadoutSnapshot(
+  session: ChampSelectSession,
+  context: RecommendationContext,
+  reason: string,
+): Promise<void> {
+  if (!store.get('smartBuildRecommendation')) return
+  if (context.championId <= 0 || !isLocalChampionLocked(session)) return
+
+  const runeKey = getSmartRuneKey(context)
+  const spellKey = getSmartSpellKey(context)
+  const finalSaveKey = `${runeKey ?? '-'}|${spellKey ?? '-'}`
+  if (smartLoadoutFinalSaveInFlightKeys.has(finalSaveKey)) return
+
+  const savedRunes = store.get('smartRunePages')
+  const savedSpells = store.get('smartSummonerSpells')
+  const needsRune = Boolean(runeKey && (
+    smartLoadoutFirstSavedRuneKeys.has(runeKey)
+    || !savedRunes[runeKey]
+    || !isValidRunePage(savedRunes[runeKey])
+  ))
+  const needsSpells = Boolean(spellKey && (
+    smartLoadoutFirstSavedSpellKeys.has(spellKey)
+    || !savedSpells[spellKey]
+    || !isValidSummonerSpells(savedSpells[spellKey])
+  ))
+  if (!needsRune && !needsSpells) return
+
+  smartLoadoutFinalSaveInFlightKeys.add(finalSaveKey)
+  try {
+    let runeSaved = false
+    let spellsSaved = false
+
+    const localPlayer = getLocalPlayer(session)
+    if (needsSpells && spellKey && localPlayer) {
+      const spells = { spell1Id: localPlayer.spell1Id, spell2Id: localPlayer.spell2Id }
+      if (isValidSummonerSpells(spells)) {
+        rememberSmartSpellSnapshot(spellKey, spells)
+        spellsSaved = persistMissingSmartSpellSnapshot(context, spells, reason)
+      }
+    }
+
+    if (needsRune && runeKey) {
+      let runePage = lastObservedRuneSnapshot?.key === runeKey
+        ? lastObservedRuneSnapshot.page
+        : null
+
+      if (!runePage) {
+        const pages = await lcu.getRunePages()
+        const active = getActiveRunePage(pages)
+        if (active && isValidRunePage(active)) {
+          runePage = {
+            primaryStyleId: active.primaryStyleId,
+            subStyleId: active.subStyleId,
+            selectedPerkIds: [...active.selectedPerkIds],
+          }
+          rememberSmartRuneSnapshot(runeKey, runePage)
+        }
+      }
+
+      if (runePage) {
+        runeSaved = persistMissingSmartRuneSnapshot(context, runePage, reason)
+      }
+    }
+
+    if (runeSaved || spellsSaved) {
+      logger.info('[OPGG] 智能配置首次最终快照已保存 → reason=%s, rune=%s, spells=%s', reason, runeSaved, spellsSaved)
+    }
+  } catch (err) {
+    logger.warn('[OPGG] 智能配置最终快照保存失败 → reason=%s:', reason, err)
+  } finally {
+    smartLoadoutFinalSaveInFlightKeys.delete(finalSaveKey)
+  }
 }
 
 function ensureRecommendationPrefetch(context: RecommendationContext): RecommendationCacheEntry | null {
@@ -756,6 +957,7 @@ function saveCurrentSmartRunePage(page: RunePage): void {
     updatedAt: Date.now(),
   }
   store.set('smartRunePages', pages)
+  smartLoadoutFirstSavedRuneKeys.delete(runeKey)
   logger.info('[OPGG] 已保存智能符文 → key=%s, page=%s, signature=%s', runeKey, getSmartRunePageName(currentContext), signature)
   if (previousSignature !== signature) {
     notifySmartRuneSaved(currentContext, runeKey, signature)
@@ -777,6 +979,7 @@ function saveCurrentSmartSummonerSpells(player: ChampSelectSession['myTeam'][num
   if (!isValidSummonerSpells(spells)) return
 
   const signature = getSummonerSpellSignature(spells)
+  rememberSmartSpellSnapshot(spellKey, spells)
   if (lastObservedSpellKey !== spellKey) {
     lastObservedSpellKey = spellKey
     lastObservedSpellSignature = signature
@@ -791,6 +994,7 @@ function saveCurrentSmartSummonerSpells(player: ChampSelectSession['myTeam'][num
     updatedAt: Date.now(),
   }
   store.set('smartSummonerSpells', allSpells)
+  smartLoadoutFirstSavedSpellKeys.delete(spellKey)
   logger.info('[OPGG] 已保存智能召唤师技能 → key=%s, spells=%s', spellKey, signature)
 }
 
@@ -811,6 +1015,7 @@ async function pollCurrentRunePage(): Promise<void> {
     if (!active || !isValidRunePage(active)) return
 
     const signature = getRunePageSignature(active)
+    rememberSmartRuneSnapshot(runeKey, active)
 
     // 首次观察到该英雄/模式的符文页时，仅记录基线，不触发保存。
     // 否则锁定瞬间（Sona 自动恢复完成之前）轮询会把“恢复前的旧符文页”
@@ -1206,6 +1411,10 @@ async function refreshContext(session?: ChampSelectSession) {
       }
       if (currentChampionLocked) {
         syncSavedSmartLoadoutWhenReady(currentContext)
+        const timerPhase = currentSession.timer?.phase
+        if (timerPhase === 'FINALIZATION' || timerPhase === 'GAME_STARTING') {
+          void persistFinalSmartLoadoutSnapshot(currentSession, { ...currentContext }, `champ-select:${timerPhase}`)
+        }
       }
     } else {
       unmount(false)
@@ -1322,14 +1531,20 @@ async function loadAramggKiwiRecommendation(
 function getAramggSummaryLines(data: AramggChampionRecommendation): string[] {
   const stats = data.championStats
   return [
-    `总体胜率 ${formatRate(toNumber(stats?.win_rate))}`,
-    `登场 ${formatRate(toNumber(stats?.pick_rate))}`,
+    `总体胜率 ${formatRate(toOptionalNumber(stats?.win_rate))}`,
+    `登场 ${formatRate(toOptionalNumber(stats?.pick_rate))}`,
     `Tier ${stats?.tier || '-'}`,
   ]
 }
 
-function formatRate(value: number): string {
-  return Number.isFinite(value) ? `${(value * 100).toFixed(1)}%` : '-'
+function formatRate(value: number | null): string {
+  return value != null && Number.isFinite(value) ? `${(value * 100).toFixed(1)}%` : '-'
+}
+
+function toOptionalNumber(value: unknown): number | null {
+  if (value == null || value === '') return null
+  const numberValue = typeof value === 'number' ? value : Number(value)
+  return Number.isFinite(numberValue) ? numberValue : null
 }
 
 function toNumber(value: unknown): number {
@@ -2025,11 +2240,16 @@ function unmount(resetContext = true) {
   pendingSmartLoadoutContext = null
   lastObservedSpellKey = ''
   lastObservedSpellSignature = ''
+  lastObservedRuneSnapshot = null
+  lastObservedSpellSnapshot = null
   lastRuneSaveChatSignature = ''
   lastRuneSaveChatAt = 0
   itemSetSyncInFlightKeys.clear()
   runeApplyInFlightKeys.clear()
   spellApplyInFlightKeys.clear()
+  smartLoadoutFinalSaveInFlightKeys.clear()
+  smartLoadoutFirstSavedRuneKeys.clear()
+  smartLoadoutFirstSavedSpellKeys.clear()
 }
 
 function startOpggListeners() {
@@ -2037,6 +2257,10 @@ function startOpggListeners() {
 
   phaseUnsub = lcu.observe(LcuEventUri.GAMEFLOW_PHASE_CHANGE, (event: LCUEventMessage) => {
     const phase = event.data as GameflowPhase
+    if ((phase === 'GameStart' || phase === 'InProgress') && currentChampionLocked && currentContext.championId > 0) {
+      persistObservedSmartLoadoutSnapshot({ ...currentContext }, `gameflow:${phase}`)
+    }
+
     if (phase === 'ChampSelect') {
       unregisterInGameBuildButton()
       logger.info('[OPGG] 进入 ChampSelect，等待本地英雄锁定')

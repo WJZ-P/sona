@@ -3,7 +3,7 @@ import { store } from '@/lib/store'
 import { lcu, LcuEventUri } from '@/lib/lcu'
 import type { LCUEventMessage, GameflowPhase, ChampSelectSession } from '@/lib/lcu'
 import { sleep } from '@/lib/utils'
-import { getChampionById } from '@/lib/assets'
+import { getChampionById, getQueue } from '@/lib/assets'
 import { translate } from '@/i18n'
 
 // ==================== 秒抢英雄 ====================
@@ -25,6 +25,63 @@ async function notifyAutoLockSuccess(championId: number, isLock: boolean) {
 
 function getConfiguredChampionIds(): number[] {
   return [...new Set(store.get('autoLockChampionIds').filter((id) => id > 0))]
+}
+
+function isRankedQueue(queueId: number): boolean {
+  return getQueue(queueId)?.isRanked === true || queueId === 420 || queueId === 440
+}
+
+function normalizePosition(position: string | null | undefined): string {
+  switch (position?.trim().toLowerCase()) {
+    case 'middle': return 'mid'
+    case 'bottom': return 'bot'
+    case 'adc': return 'bot'
+    case 'support': return 'utility'
+    default: return position?.trim().toLowerCase() ?? ''
+  }
+}
+
+function parseSelectedRoleAssignmentReason(selectedRole: string | null | undefined): string {
+  const segments = selectedRole?.split('.') ?? []
+  return segments.length === 4 ? segments[1].toUpperCase() : ''
+}
+
+async function getRankedAutofillReason(session: ChampSelectSession): Promise<string | null> {
+  if (!isRankedQueue(session.queueId)) return null
+
+  const localPlayer = session.myTeam.find((player) => player.cellId === session.localPlayerCellId)
+  if (localPlayer?.isAutofilled === true) return 'champ-select:isAutofilled'
+
+  // 部分客户端版本不回填 myTeam.isAutofilled。gameflow 的 selectedRole 格式为
+  // CURRENT.ASSIGNMENT_REASON.PRIMARY.SECONDARY，可直接识别 AUTOFILL。
+  const gameflow = await lcu.getGameflowSession().catch(() => null)
+  if (gameflow) {
+    const localPuuid = localPlayer?.puuid || (await lcu.getSummonerInfo().catch(() => null))?.puuid || ''
+    const gameflowPlayer = [...(gameflow.gameData?.teamOne ?? []), ...(gameflow.gameData?.teamTwo ?? [])]
+      .find((player) => player.puuid === localPuuid || player.summonerId === localPlayer?.summonerId)
+    const assignmentReason = parseSelectedRoleAssignmentReason(gameflowPlayer?.selectedRole)
+    if (assignmentReason === 'AUTOFILL') return 'gameflow:selectedRole'
+  }
+
+  // 最后一层兼容：将排位分配位置与排队前的两个偏好位置对比。只有两个偏好
+  // 都是明确分路且实际位置都不匹配时才判为补位，避免拿不到数据时误停秒选。
+  const lobby = await lcu.getLobby().catch(() => null)
+  const assignedPosition = normalizePosition(localPlayer?.assignedPosition)
+  const primary = normalizePosition(lobby?.localMember.firstPositionPreference)
+  const secondary = normalizePosition(lobby?.localMember.secondPositionPreference)
+  if (
+    assignedPosition
+    && primary
+    && secondary
+    && primary !== 'fill'
+    && secondary !== 'fill'
+    && assignedPosition !== primary
+    && assignedPosition !== secondary
+  ) {
+    return `position-mismatch:${primary}/${secondary}->${assignedPosition}`
+  }
+
+  return null
 }
 
 async function getOptionalIdSet(loader: () => Promise<number[]>): Promise<Set<number> | null> {
@@ -94,11 +151,35 @@ async function tryAutoLockChampion() {
   }
 
   let lastPreselectedChampionId = 0
+  let autofillCheckCompleted = false
 
   // 排位赛 BP 可能长达 5 分钟，300 次 × 1s 轮询足够覆盖
   for (let attempt = 0; attempt < 300; attempt++) {
     try {
       const session = await lcu.getChampSelectSession()
+
+      // 排位补位时，实际分路不在玩家本来的选择内，继续执行预选或秒锁容易
+      // 锁下不适合该位置的英雄。LCU 会在本地玩家条目上直接标记 isAutofilled。
+      if (!autofillCheckCompleted) {
+        const localPlayer = session.myTeam.find((player) => player.cellId === session.localPlayerCellId)
+        // 排位的分路信息可能比首个 session 快照稍晚到达；等它就绪后只检查一次，
+        // 避免在后续整段 BP 轮询里反复请求 gameflow / lobby。
+        if (session.queueId <= 0 || (isRankedQueue(session.queueId) && !localPlayer?.assignedPosition)) {
+          await sleep(250)
+          continue
+        }
+
+        const autofillReason = await getRankedAutofillReason(session)
+        if (autofillReason) {
+          logger.info(
+            '[AutoLock] 检测到本局被自动补位（assignedPosition=%s, reason=%s），跳过预选与秒锁',
+            localPlayer?.assignedPosition || 'unknown',
+            autofillReason,
+          )
+          return
+        }
+        autofillCheckCompleted = true
+      }
 
       const allActions = session.actions.flat(2)
       if (allActions.length === 0) {

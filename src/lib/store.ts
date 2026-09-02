@@ -47,6 +47,8 @@ export interface SonaConfig {
   statusMessage: Record<string, string>
   /** 面板快捷键 */
   hotkey: string
+  /** 隐藏 Play 按钮旁的 Sona 入口图标 */
+  hideSonaIcon: boolean
   /** 界面语言：auto=跟随客户端 html lang */
   locale: 'auto' | 'zh-CN' | 'en-US'
   /** 已跳过提醒的 Sona 版本号 */
@@ -229,6 +231,7 @@ const DEFAULT_CONFIG: SonaConfig = {
   availability: 'chat',
   statusMessage: {},
   hotkey: 'F1',
+  hideSonaIcon: false,
   locale: 'auto',
   skippedUpdateVersion: null,
   windowEffect: 'none',

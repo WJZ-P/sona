@@ -1,14 +1,16 @@
 /**
  * 英雄选择网格 T 级角标
  *
- * 在客户端英雄选择网格的 .champion-grid-champion-thumbnail 左上角展示
-gg * OP.GG 全英雄梯度数据（OP-T5）。跟随"英雄选择阶段增强"开关启用。
+ * 在客户端英雄选择网格的 .champion-grid-champion-thumbnail 左上角展示全英雄梯度：
+ * 常规模式使用 OP.GG，海克斯大乱斗（KIWI）使用 ARAM.GG 的专属 T1-T5 数据。
+ * 跟随“英雄选择阶段增强”开关启用。
  */
 
 import { logger } from '@/index'
 import { injector } from '@/lib/InjectorManager'
 import { getQueue } from '@/lib/assets'
 import { lcu, LcuEventUri, type ChampSelectSession, type LCUEventMessage } from '@/lib/lcu'
+import { aramggApi, type AramggChampionsStats } from '@/lib/aramgg-api'
 import { opggApi, type OpggChampionsTier, type OpggMode, type OpggRankedDataItem, type OpggTier } from '@/lib/opgg-api'
 import { store } from '@/lib/store'
 import type { GameflowPhase } from '@/types/lcu'
@@ -66,7 +68,9 @@ const TIER_LABEL_MAP = new Map<number, string>([
   [4, 'T4'],
   [5, 'T5'],
 ])
-const PRELOAD_MODES: OpggMode[] = ['ranked', 'aram', 'arena', 'urf', 'nexus_blitz']
+type TierDataMode = OpggMode | 'kiwi'
+
+const PRELOAD_MODES: TierDataMode[] = ['ranked', 'aram', 'arena', 'kiwi', 'urf', 'nexus_blitz']
 
 interface TierCacheEntry {
   data?: Map<number, ChampionTierStats>
@@ -91,20 +95,21 @@ function normalizeOpggTier(value: string): OpggTier {
   return SELECTABLE_OPGG_TIERS.includes(value as OpggTier) ? value as OpggTier : DEFAULT_OPGG_TIER
 }
 
-function resolveOpggMode(gameMode: string): OpggMode {
+function resolveTierDataMode(gameMode: string): TierDataMode {
   const mode = gameMode.toLowerCase()
-  if (mode === 'aram' || mode === 'kiwi') return 'aram'
+  if (mode === 'kiwi') return 'kiwi'
+  if (mode === 'aram') return 'aram'
   if (mode === 'cherry' || mode === 'arena') return 'arena'
   if (mode === 'nexusblitz' || mode === 'nexus_blitz') return 'nexus_blitz'
   if (mode === 'urf' || mode === 'arurf') return 'urf'
   return 'ranked'
 }
 
-function getEffectiveTier(mode: OpggMode): OpggTier {
-  return mode === 'arena' ? 'all' : normalizeOpggTier(store.get('opggBuildRecommendationTier'))
+function getEffectiveTier(mode: TierDataMode): OpggTier {
+  return mode === 'arena' || mode === 'kiwi' ? 'all' : normalizeOpggTier(store.get('opggBuildRecommendationTier'))
 }
 
-function getTierCacheKey(mode: OpggMode, tier: OpggTier): string {
+function getTierCacheKey(mode: TierDataMode, tier: OpggTier): string {
   return `${mode}|${tier}`
 }
 
@@ -163,25 +168,46 @@ function buildTierMap(data: OpggChampionsTier, mode: OpggMode): Map<number, Cham
   return result
 }
 
-function ensureTierMap(mode: OpggMode, tier = getEffectiveTier(mode)): Promise<Map<number, ChampionTierStats>> {
+function buildAramggTierMap(data: AramggChampionsStats): Map<number, ChampionTierStats> {
+  const result = new Map<number, ChampionTierStats>()
+
+  for (const champion of data) {
+    const championId = Number(champion.championId)
+    const tier = Number(champion.tier)
+    const winRate = champion.winRate
+    if (!Number.isFinite(championId) || championId <= 0) continue
+
+    const stats: ChampionTierStats = {
+      tier: Number.isFinite(tier) && tier >= 1 && tier <= 5 ? tier : null,
+      winRate: toValidWinRate(winRate),
+    }
+    if (stats.tier != null || stats.winRate != null) result.set(championId, stats)
+  }
+
+  return result
+}
+
+function ensureTierMap(mode: TierDataMode, tier = getEffectiveTier(mode)): Promise<Map<number, ChampionTierStats>> {
   const cacheKey = getTierCacheKey(mode, tier)
   const cached = tierCache.get(cacheKey)
   if (cached?.data) return Promise.resolve(cached.data)
   if (cached?.promise) return cached.promise
 
   const entry: TierCacheEntry = {}
-  entry.promise = opggApi.getChampionsTier({ region: 'global', mode, tier })
-    .then((data) => {
-      const tierMap = buildTierMap(data, mode)
+  const source = mode === 'kiwi' ? 'ARAM.GG' : 'OP.GG'
+  entry.promise = (mode === 'kiwi'
+    ? aramggApi.getChampionsStats().then(buildAramggTierMap)
+    : opggApi.getChampionsTier({ region: 'global', mode, tier }).then((data) => buildTierMap(data, mode)))
+    .then((tierMap) => {
       entry.data = tierMap
       entry.promise = undefined
-      logger.info('[ChampTier] 已缓存 OP.GG 英雄 T 级 → mode=%s, tier=%s, count=%d', mode, tier, tierMap.size)
+      logger.info('[ChampTier] 已缓存 %s 英雄 T 级 → mode=%s, tier=%s, count=%d', source, mode, tier, tierMap.size)
       return tierMap
     })
     .catch((err) => {
       entry.promise = undefined
       tierCache.delete(cacheKey)
-      logger.warn('[ChampTier] OP.GG 英雄 T 级预加载失败 → mode=%s, tier=%s:', mode, tier, err)
+      logger.warn('[ChampTier] %s 英雄 T 级预加载失败 → mode=%s, tier=%s:', source, mode, tier, err)
       throw err
     })
 
@@ -194,23 +220,23 @@ export function preloadChampSelectTierBadgeData() {
   logger.info('[ChampTier] 开始预加载全模式英雄 T 级数据 → tier=%s', selectedTier)
 
   PRELOAD_MODES.forEach((mode) => {
-    const tier = mode === 'arena' ? 'all' : selectedTier
+    const tier = mode === 'arena' || mode === 'kiwi' ? 'all' : selectedTier
     void ensureTierMap(mode, tier).catch(() => { /* logged in ensureTierMap */ })
   })
 }
 
-async function resolveCurrentContext(session?: ChampSelectSession): Promise<{ mode: OpggMode; gameMode: string; queueId: number }> {
+async function resolveCurrentContext(session?: ChampSelectSession): Promise<{ mode: TierDataMode; gameMode: string; queueId: number }> {
   const currentSession = session ?? await lcu.getChampSelectSession().catch(() => null)
   const queueId = currentSession?.queueId ?? 0
   const queueMode = queueId > 0 ? getQueue(queueId)?.gameMode : ''
 
   if (queueMode) {
-    return { mode: resolveOpggMode(queueMode), gameMode: queueMode, queueId }
+    return { mode: resolveTierDataMode(queueMode), gameMode: queueMode, queueId }
   }
 
   const gameflow = await lcu.getGameflowSession().catch(() => null)
   const gameMode = gameflow?.gameData?.queue?.gameMode || gameflow?.map?.gameMode || ''
-  return { mode: resolveOpggMode(gameMode), gameMode, queueId: queueId || gameflow?.gameData?.queue?.id || 0 }
+  return { mode: resolveTierDataMode(gameMode), gameMode, queueId: queueId || gameflow?.gameData?.queue?.id || 0 }
 }
 
 async function loadTierData(session?: ChampSelectSession) {

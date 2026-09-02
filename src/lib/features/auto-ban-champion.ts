@@ -4,12 +4,13 @@ import { lcu, LcuEventUri } from '@/lib/lcu'
 import type { ChampSelectSession, GameflowPhase, LCUEventMessage } from '@/lib/lcu'
 import type { ChampSelectAction } from '@/types/lcu'
 import { sleep } from '@/lib/utils'
-import { getChampionById } from '@/lib/assets'
+import { getChampionById, getQueue } from '@/lib/assets'
 import { translate } from '@/i18n'
 
 const AUTO_BAN_MAX_ATTEMPTS = 600
 const AUTO_BAN_POLL_INTERVAL_MS = 500
 const AUTO_BAN_CONFIRM_DELAYS = [80, 180]
+const AUTO_BAN_WAIT_LOG_INTERVAL = 20
 
 async function notifyAutoBanSuccess(championId: number) {
   const champInfo = getChampionById(championId)
@@ -170,12 +171,35 @@ async function tryAutoBanChampion(runToken: number, reason: string) {
       const myBanAction = myBanActions.find((action) => !action.completed)
 
       if (!myBanAction) {
-        if (session.bans.numBans === 0 || myBanActions.length === 0) {
+        if (myBanActions.some((action) => action.completed)) {
+          logger.info('[AutoBan] 本局 Ban action 已完成，无需重复处理')
+          return
+        }
+
+        const queue = getQueue(session.queueId)
+        if (queue?.gameTypeConfig.maxAllowableBans === 0 || session.benchEnabled) {
           logger.info('[AutoBan] 当前模式无需禁用英雄，跳过')
           return
         }
-        logger.info('[AutoBan] 本局 Ban action 已完成，无需重复处理')
-        return
+
+        if (session.timer.phase === 'FINALIZATION' || session.timer.phase === 'GAME_STARTING') {
+          logger.info('[AutoBan] 选人已进入 %s，未发现本地 Ban action，停止等待', session.timer.phase)
+          return
+        }
+
+        // 刚进入选人时，首批 session 更新可能只有 pick/reveal action，Ban action
+        // 会稍后才补进来。这里不能提前结束，否则只能依赖玩家点击英雄产生下一次更新。
+        if (attempt === 0 || attempt % AUTO_BAN_WAIT_LOG_INTERVAL === 0) {
+          logger.debug(
+            '[AutoBan] 等待本地 Ban action：attempt=%d phase=%s actions=%d numBans=%d',
+            attempt + 1,
+            session.timer.phase,
+            allActions.length,
+            session.bans.numBans,
+          )
+        }
+        await sleep(AUTO_BAN_POLL_INTERVAL_MS)
+        continue
       }
 
       if (!myBanAction.isInProgress) {
@@ -185,8 +209,13 @@ async function tryAutoBanChampion(runToken: number, reason: string) {
 
       const championId = await resolveTargetChampionId(session)
       if (!championId) {
-        logger.warn('[AutoBan] 目标英雄队列中没有当前可 Ban 英雄')
-        return
+        // 可 Ban / 禁用英雄列表在阶段切换瞬间也可能尚未初始化，继续回读，
+        // 避免必须手动点击任意英雄后才出现可用目标。
+        if (attempt === 0 || attempt % AUTO_BAN_WAIT_LOG_INTERVAL === 0) {
+          logger.warn('[AutoBan] 暂未解析到可 Ban 目标，等待客户端英雄列表就绪')
+        }
+        await sleep(AUTO_BAN_POLL_INTERVAL_MS)
+        continue
       }
 
       logger.info('[AutoBan] 轮到禁用英雄，目标英雄 ID: %d (actionId: %d)', championId, myBanAction.id)

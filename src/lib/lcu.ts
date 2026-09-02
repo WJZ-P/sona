@@ -1685,7 +1685,7 @@ class LCUManager {
     return put<void>('/lol-regalia/v2/current-summoner/regalia', payload)
   }
 
-  /** 更新挑战身份偏好，例如展示旗帜、挑战 token 等 */
+  /** 更新挑战身份偏好，例如展示旗帜、挑战徽章等；challengeIds 传空数组可清空三个展示位 */
   updateChallengePlayerPreferences(payload: ChallengePlayerPreferencesPayload): Promise<void> {
     return post<void>('/lol-challenges/v1/update-player-preferences', payload)
   }
