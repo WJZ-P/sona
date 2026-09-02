@@ -87,7 +87,7 @@ Sona focuses on practical quality-of-life improvements: champion select tools, m
 | 🔒 | **Privacy / Streamer Mode Support** | Keeps teammate analysis working when names are hidden, restores real names beside client aliases, and tracks player swaps. |
 | 📈 | **Game Analysis Popup** | Displays team strength analysis after entering game, including win rate, KDA, rank, and premade groups. |
 | 🚪 | **Champion Select Quit Button** | Adds a quick exit button to non-custom champion select so you can return to the lobby. |
-| 🔁 | **Auto Return to Lobby** | Returns to lobby after a game, with optional auto queue and retry logic. |
+| 🔁 | **Auto Return to Lobby** | Auto Return and Auto Queue are independent controls. Auto Queue can start matchmaking after either an automatic or manual return, while preserving the party and retrying when needed. |
 | 🛡️ | **Balance Buff Tooltip** | Shows mode-specific champion balance modifiers in ARAM and other supported modes. |
 | 👍 | **Auto Honor** | Randomly honors teammates after the game. |
 | 🧩 | **Lobby Enhancement** | Click lobby member avatars for match history and show recent performance above banners. |

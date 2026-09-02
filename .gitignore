@@ -26,3 +26,7 @@ dist
 
 test/
 .cursor/
+
+# AI 相关
+.omo/
+AGENTS.md

@@ -159,7 +159,8 @@ export function ToolsPage() {
   const [champSelectQuitButton, setChampSelectQuitButton] = useState(store.get('champSelectQuitButton'))
   const [gameAnalysisPopup, setGameAnalysisPopup] = useState(store.get('gameAnalysisPopup'))
   const [autoReturnToLobby, setAutoReturnToLobby] = useState(store.get('autoReturnToLobby'))
-  const [autoReturnMode, setAutoReturnMode] = useState(store.get('autoReturnMode'))
+  const [autoQueueAfterReturn, setAutoQueueAfterReturn] = useState(store.get('autoQueueAfterReturn'))
+  const [lobbyQuickToggles, setLobbyQuickToggles] = useState(store.get('lobbyQuickToggles'))
   const [analyzeTeamPower, setAnalyzeTeamPower] = useState(store.get('analyzeTeamPower'))
   const [analyzeTeamPowerMsgType, setAnalyzeTeamPowerMsgType] = useState(store.get('analyzeTeamPowerMsgType'))
   const [analyzeTeamPowerFetchCount, setAnalyzeTeamPowerFetchCount] = useState(store.get('analyzeTeamPowerFetchCount'))
@@ -241,7 +242,8 @@ export function ToolsPage() {
       store.onChange('champSelectQuitButton', setChampSelectQuitButton),
       store.onChange('gameAnalysisPopup', setGameAnalysisPopup),
       store.onChange('autoReturnToLobby', setAutoReturnToLobby),
-      store.onChange('autoReturnMode', setAutoReturnMode),
+      store.onChange('autoQueueAfterReturn', setAutoQueueAfterReturn),
+      store.onChange('lobbyQuickToggles', setLobbyQuickToggles),
       store.onChange('analyzeTeamPower', setAnalyzeTeamPower),
       store.onChange('analyzeTeamPowerFetchCount', setAnalyzeTeamPowerFetchCount),
       store.onChange('champSelectAssistFetchCount', setChampSelectAssistFetchCount),
@@ -613,17 +615,27 @@ export function ToolsPage() {
           title={t('tools.autoReturn.title')}
           description={t('tools.autoReturn.description')}
         >
-          <SonaSelect
-            value={autoReturnMode}
-            onChange={(v) => { setAutoReturnMode(v); store.set('autoReturnMode', v) }}
-            options={[
-              { value: 'queue', label: t('option.autoReturn.queue') },
-              { value: 'lobby', label: t('option.autoReturn.lobby') },
-            ]}
-          />
           <SonaSwitch
             checked={autoReturnToLobby}
             onChange={(v) => { setAutoReturnToLobby(v); store.set('autoReturnToLobby', v) }}
+          />
+        </SettingCard>
+        <SettingCard
+          title={t('tools.autoQueueAfterReturn.title')}
+          description={t('tools.autoQueueAfterReturn.description')}
+        >
+          <SonaSwitch
+            checked={autoQueueAfterReturn}
+            onChange={(v) => { setAutoQueueAfterReturn(v); store.set('autoQueueAfterReturn', v) }}
+          />
+        </SettingCard>
+        <SettingCard
+          title={t('tools.lobbyQuickToggles.title')}
+          description={t('tools.lobbyQuickToggles.description')}
+        >
+          <SonaSwitch
+            checked={lobbyQuickToggles}
+            onChange={(v) => { setLobbyQuickToggles(v); store.set('lobbyQuickToggles', v) }}
           />
         </SettingCard>
         <SettingCard
