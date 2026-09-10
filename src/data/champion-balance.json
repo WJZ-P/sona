@@ -2,8 +2,8 @@
   "_meta": {
     "source": "lol-wiki",
     "sourceUrl": "https://wiki.leagueoflegends.com/en-us/Module:ChampionData/data",
-    "updatedAt": "2026-06-10T12:27:07.137Z",
-    "sha1": "9ecb47e0c051d7644d1a7cc27e9e61951d47baa4",
+    "updatedAt": "2026-09-10T13:28:01.355Z",
+    "sha1": "df564f2da8ecb38f766641422a5e3f35afb677f1",
     "championCount": 175
   },
   "champions": {
@@ -111,10 +111,6 @@
       "id": 8,
       "alias": "Vladimir",
       "stats": {
-        "aram": {
-          "dmg_taken": 1.05,
-          "healing": 0.9
-        },
         "urf": {
           "dmg_dealt": 0.92,
           "dmg_taken": 1.05,
