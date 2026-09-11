@@ -27,6 +27,7 @@ export function SettingsPage() {
     { value: 'auto', label: t('settings.language.auto') },
     { value: 'zh-CN', label: t('settings.language.zhCN') },
     { value: 'en-US', label: t('settings.language.enUS') },
+    { value: 'vi-VN', label: t('settings.language.viVN') },
   ]
 
   useEffect(() => {

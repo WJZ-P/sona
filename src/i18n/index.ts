@@ -5,11 +5,12 @@ import { locales, type SonaLocale, type SonaLocaleSetting, type TranslationKey }
 function normalizeLocale(value: string | null | undefined): SonaLocale {
   const normalized = (value ?? '').trim().replace('_', '-').toLowerCase()
   if (normalized.startsWith('zh')) return 'zh-CN'
+  if (normalized.startsWith('vi')) return 'vi-VN'
   return 'en-US'
 }
 
 function normalizeLocaleSetting(value: string | null | undefined): SonaLocaleSetting {
-  if (value === 'auto' || value === 'zh-CN' || value === 'en-US') return value
+  if (value === 'auto' || value === 'zh-CN' || value === 'en-US' || value === 'vi-VN') return value
   return 'auto'
 }
 
