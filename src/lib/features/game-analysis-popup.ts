@@ -35,7 +35,7 @@ function showGameAnalysisModal() {
     rootAtClose?.render(
       createElement(GameAnalysisModal, { open: false, onClose: close }),
     )
-    logger.info('[GameAnalysis] 战力分析弹窗已关闭')
+    logger.info('[GameAnalysis] Đã đóng cửa sổ phân tích sức mạnh')
 
     if (gameAnalysisCloseTimer != null) window.clearTimeout(gameAnalysisCloseTimer)
     gameAnalysisCloseTimer = window.setTimeout(() => {
@@ -47,7 +47,7 @@ function showGameAnalysisModal() {
   gameAnalysisRoot!.render(
     createElement(GameAnalysisModal, { open: true, onClose: close }),
   )
-  logger.info('[GameAnalysis] 战力分析弹窗已显示')
+  logger.info('[GameAnalysis] Đã hiển thị cửa sổ phân tích sức mạnh')
 }
 
 function cleanupGameAnalysisModal() {
@@ -82,18 +82,18 @@ function tryInjectGameAnalysisButton(): boolean {
 
   const btn = document.createElement('lol-uikit-flat-button')
   btn.setAttribute(GAME_ANALYSIS_BTN_ATTR, 'true')
-  btn.textContent = '对局分析'
+  btn.textContent = 'Phân tích trận đấu'
   btn.style.marginTop = '12px'
 
   btn.addEventListener('click', (e) => {
     e.stopPropagation()
     e.preventDefault()
     showGameAnalysisModal()
-    logger.info('[GameAnalysis] 打开分析弹窗')
+    logger.info('[GameAnalysis] Mở cửa sổ phân tích')
   })
 
   container.appendChild(btn)
-  logger.info('[GameAnalysis] 客户端内嵌按钮已注入 ✓')
+  logger.info('[GameAnalysis] Đã chèn nút vào client ✓')
   return true
 }
 

@@ -201,13 +201,13 @@ function ensureTierMap(mode: TierDataMode, tier = getEffectiveTier(mode)): Promi
     .then((tierMap) => {
       entry.data = tierMap
       entry.promise = undefined
-      logger.info('[ChampTier] 已缓存 %s 英雄 T 级 → mode=%s, tier=%s, count=%d', source, mode, tier, tierMap.size)
+      logger.info('[ChampTier] Đã lưu bộ nhớ đệm bậc sức mạnh tướng %s → mode=%s, tier=%s, count=%d', source, mode, tier, tierMap.size)
       return tierMap
     })
     .catch((err) => {
       entry.promise = undefined
       tierCache.delete(cacheKey)
-      logger.warn('[ChampTier] %s 英雄 T 级预加载失败 → mode=%s, tier=%s:', source, mode, tier, err)
+      logger.warn('[ChampTier] Tải trước bậc sức mạnh tướng %s thất bại → mode=%s, tier=%s:', source, mode, tier, err)
       throw err
     })
 
@@ -217,7 +217,7 @@ function ensureTierMap(mode: TierDataMode, tier = getEffectiveTier(mode)): Promi
 
 export function preloadChampSelectTierBadgeData() {
   const selectedTier = normalizeOpggTier(store.get('opggBuildRecommendationTier'))
-  logger.info('[ChampTier] 开始预加载全模式英雄 T 级数据 → tier=%s', selectedTier)
+  logger.info('[ChampTier] Bắt đầu tải trước dữ liệu bậc sức mạnh tướng cho mọi chế độ → tier=%s', selectedTier)
 
   PRELOAD_MODES.forEach((mode) => {
     const tier = mode === 'arena' || mode === 'kiwi' ? 'all' : selectedTier
@@ -253,7 +253,7 @@ async function loadTierData(session?: ChampSelectSession) {
   }
 
   currentCacheKey = cacheKey
-  logger.info('[ChampTier] 读取英雄 T 级缓存 → mode=%s, tier=%s, gameMode=%s, queueId=%d', mode, tier, gameMode || 'unknown', queueId)
+  logger.info('[ChampTier] Đọc bộ nhớ đệm bậc sức mạnh tướng → mode=%s, tier=%s, gameMode=%s, queueId=%d', mode, tier, gameMode || 'unknown', queueId)
 
   try {
     const tierMap = await ensureTierMap(mode, tier)
@@ -487,7 +487,7 @@ export function updateChampSelectTierBadge(enabled: boolean) {
       if (phase === 'ChampSelect') mount()
     }).catch(() => { /* ignore */ })
 
-    logger.info('[ChampTier] 英雄选择 T 级角标已启用 ✓')
+    logger.info('[ChampTier] Đã bật huy hiệu bậc sức mạnh khi chọn tướng ✓')
   } else if (!enabled && phaseUnsub) {
     phaseUnsub()
     phaseUnsub = null
@@ -496,6 +496,6 @@ export function updateChampSelectTierBadge(enabled: boolean) {
       champSelectUnsub = null
     }
     unmount()
-    logger.info('[ChampTier] 英雄选择 T 级角标已禁用')
+    logger.info('[ChampTier] Đã tắt huy hiệu bậc sức mạnh khi chọn tướng')
   }
 }

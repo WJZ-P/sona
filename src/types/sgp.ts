@@ -395,14 +395,14 @@ export function queueIdToTag(queueId: number): string {
 
 /** 国服大区中文名映射 */
 export const TENCENT_SERVER_NAMES: Record<string, string> = {
-  TENCENT_HN1: '艾欧尼亚',
-  TENCENT_HN10: '黑色玫瑰',
-  TENCENT_TJ100: '联盟四区',
-  TENCENT_TJ101: '联盟五区',
-  TENCENT_NJ100: '联盟一区',
-  TENCENT_GZ100: '联盟二区',
-  TENCENT_CQ100: '联盟三区',
-  TENCENT_BGP2: '峡谷之巅',
-  TENCENT_PBE: 'PBE (腾讯)',
-  TENCENT_PREPBE: 'PREPBE (腾讯)',
+  TENCENT_HN1: 'Ionia',
+  TENCENT_HN10: 'Black Rose',
+  TENCENT_TJ100: 'League Region 4',
+  TENCENT_TJ101: 'League Region 5',
+  TENCENT_NJ100: 'League Region 1',
+  TENCENT_GZ100: 'League Region 2',
+  TENCENT_CQ100: 'League Region 3',
+  TENCENT_BGP2: 'Super Server',
+  TENCENT_PBE: 'PBE (Tencent)',
+  TENCENT_PREPBE: 'PREPBE (Tencent)',
 }

@@ -19,6 +19,8 @@
  * ```
  */
 
+import type { SonaLocaleSetting } from '@/i18n/locales'
+
 // ==================== 配置项定义 ====================
 
 /** 所有配置项及其类型 */
@@ -50,7 +52,7 @@ export interface SonaConfig {
   /** 隐藏 Play 按钮旁的 Sona 入口图标 */
   hideSonaIcon: boolean
   /** 界面语言：auto=跟随客户端 html lang */
-  locale: 'auto' | 'zh-CN' | 'en-US'
+  locale: SonaLocaleSetting
   /** 已跳过提醒的 Sona 版本号 */
   skippedUpdateVersion: string | null
   /** 窗口视觉特效 */

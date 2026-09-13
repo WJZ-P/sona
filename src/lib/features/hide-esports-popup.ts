@@ -15,7 +15,7 @@ function tryRemoveEsportsPopup(): boolean {
   const popup = document.querySelector(POPUP_SELECTOR)
   if (popup) {
     popup.remove()
-    logger.info('[HideEsportsPopup] 已移除右下角赛事弹窗')
+    logger.info('[HideEsportsPopup] Đã xóa cửa sổ giải đấu ở góc dưới bên phải')
   }
   return true
 }

@@ -13,7 +13,7 @@ import { translate } from '@/i18n'
  */
 async function notifyAutoLockSuccess(championId: number, isLock: boolean) {
   const champInfo = getChampionById(championId)
-  const champName = champInfo?.name || `英雄#${championId}`
+  const champName = champInfo?.name || `Tướng #${championId}`
   const action = isLock ? translate('champSelect.autoLock.lock') : translate('champSelect.autoLock.preselect')
   const msg = translate('champSelect.autoLock.message', { action, championName: champName })
   try {
@@ -146,7 +146,7 @@ async function resolveTargetChampionId(session: ChampSelectSession, actionChampi
  */
 async function tryAutoLockChampion() {
   if (getConfiguredChampionIds().length === 0) {
-    logger.warn('[AutoLock] 未设置目标英雄队列')
+    logger.warn('[AutoLock] Chưa thiết lập danh sách tướng mục tiêu')
     return
   }
 
@@ -172,7 +172,7 @@ async function tryAutoLockChampion() {
         const autofillReason = await getRankedAutofillReason(session)
         if (autofillReason) {
           logger.info(
-            '[AutoLock] 检测到本局被自动补位（assignedPosition=%s, reason=%s），跳过预选与秒锁',
+            '[AutoLock] Phát hiện tự động lấp vị trí trong trận này (assignedPosition=%s, reason=%s), bỏ qua chọn trước và khóa ngay',
             localPlayer?.assignedPosition || 'unknown',
             autofillReason,
           )
@@ -193,7 +193,7 @@ async function tryAutoLockChampion() {
 
       if (!myPickAction) {
         if (allActions.every((a) => a.type !== 'pick' || a.actorCellId !== session.localPlayerCellId)) {
-          logger.info('[AutoLock] 当前模式无需选人（大乱斗等），跳过')
+          logger.info('[AutoLock] Chế độ hiện tại không cần chọn tướng (ARAM, v.v.), bỏ qua')
           return
         }
         await sleep(1000)
@@ -220,9 +220,9 @@ async function tryAutoLockChampion() {
 
           if (patchRes.ok) {
             lastPreselectedChampionId = championId
-            logger.info('[AutoLock] 预选阶段已亮出英雄 ID: %d (actionId: %d)', championId, myPickAction.id)
+            logger.info('[AutoLock] Đã chọn trước tướng ID: %d (actionId: %d)', championId, myPickAction.id)
           } else {
-            logger.warn('[AutoLock] 预选阶段亮英雄失败 (status=%d)', patchRes.status)
+            logger.warn('[AutoLock] Chọn trước tướng thất bại (status=%d)', patchRes.status)
           }
         }
 
@@ -233,7 +233,7 @@ async function tryAutoLockChampion() {
       if (myPickAction.isInProgress) {
         const championId = await resolveTargetChampionId(session, myPickAction.championId)
         if (!championId) {
-          logger.warn('[AutoLock] 目标英雄队列中没有当前可选英雄')
+          logger.warn('[AutoLock] Danh sách tướng mục tiêu không có tướng nào hiện có thể chọn')
           return
         }
 
@@ -241,7 +241,7 @@ async function tryAutoLockChampion() {
         const actionUrl = `/lol-champ-select/v1/session/actions/${myPickAction.id}`
 
         if (instant) {
-          logger.info('[AutoLock] 真正轮到选人了！秒锁英雄 ID: %d (actionId: %d)', championId, myPickAction.id)
+          logger.info('[AutoLock] Đã đến lượt chọn! Khóa ngay tướng ID: %d (actionId: %d)', championId, myPickAction.id)
 
           // 方案：PATCH 带 completed:true 一步到位完成选择+锁定
           const patchRes = await fetch(actionUrl, {
@@ -258,11 +258,11 @@ async function tryAutoLockChampion() {
           })
 
           if (patchRes.ok) {
-            logger.info('[AutoLock] 秒锁成功 (PATCH completed:true) ✓')
+            logger.info('[AutoLock] Khóa ngay thành công (PATCH completed:true) ✓')
             notifyAutoLockSuccess(championId, true)
           } else {
             // 备用方案：先 PATCH 选择，再 POST /select 锁定
-            logger.warn('[AutoLock] PATCH 方案失败，尝试备用方案 /select')
+            logger.warn('[AutoLock] Phương án PATCH thất bại, thử phương án dự phòng /select')
             await fetch(actionUrl, {
               method: 'PATCH',
               headers: { 'Content-Type': 'application/json' },
@@ -271,20 +271,20 @@ async function tryAutoLockChampion() {
             await sleep(200)
             const selectRes = await fetch(`${actionUrl}/select`, { method: 'POST' })
             if (selectRes.ok) {
-              logger.info('[AutoLock] 秒锁成功 (select 备用) ✓')
+              logger.info('[AutoLock] Khóa ngay thành công (select dự phòng) ✓')
               notifyAutoLockSuccess(championId, true)
             } else {
-              logger.error('[AutoLock] 秒锁失败，可能英雄被抢或被 Ban')
+              logger.error('[AutoLock] Khóa ngay thất bại, có thể tướng đã bị chọn hoặc bị cấm')
             }
           }
         } else {
-          logger.info('[AutoLock] 轮到选人，预选英雄 ID: %d（不锁定）', championId)
+          logger.info('[AutoLock] Đến lượt chọn, chọn trước tướng ID: %d (không khóa)', championId)
           await fetch(actionUrl, {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ championId }),
           })
-          logger.info('[AutoLock] 预选成功 ✓')
+          logger.info('[AutoLock] Chọn trước thành công ✓')
           notifyAutoLockSuccess(championId, false)
         }
 
@@ -294,12 +294,12 @@ async function tryAutoLockChampion() {
       await sleep(1000)
     } catch {
       // 轮询期间有人秒退（getChampSelectSession 会报 404），直接结束
-      logger.error('[AutoLock] 轮询中断 (可能有人秒退了房间)')
+      logger.error('[AutoLock] Thăm dò bị gián đoạn (có thể có người đã thoát phòng)')
       return
     }
   }
 
-  logger.warn('[AutoLock] 等待超时 (5分钟)，未能秒锁')
+  logger.warn('[AutoLock] Hết thời gian chờ (5 phút), không thể khóa ngay')
 }
 
 let autoLockChampionUnsub: (() => void) | null = null

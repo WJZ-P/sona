@@ -59,7 +59,7 @@ function buildFriendStatusInfo(friend: ChatFriend): EnhancedFriendStatusInfo | n
     displayName: getFriendDisplayName(friend),
     startedAt,
     queueId,
-    fallbackQueueName: friend.lol?.gameQueueType || friend.lol?.gameMode || '游戏中',
+    fallbackQueueName: friend.lol?.gameQueueType || friend.lol?.gameMode || 'Đang trong trận',
     isTft,
   }
 }
@@ -92,14 +92,14 @@ async function doRefreshEnhancedFriendStatusMap(retries = 5) {
       }
 
       enhancedFriendStatusMap = nextMap
-      logger.info('[FriendStatus] 刷新游戏中好友状态 → %d 条索引 (attempt %d)', nextMap.size, attempt)
+      logger.info('[FriendStatus] Làm mới trạng thái bạn bè đang trong trận → %d mục chỉ mục (attempt %d)', nextMap.size, attempt)
       tryInjectEnhancedFriendStatus()
       return
     } catch (err) {
       if (attempt < retries) {
         await sleep(2000)
       } else {
-        logger.error('[FriendStatus] 查询好友状态失败:', err)
+        logger.error('[FriendStatus] Truy vấn trạng thái bạn bè thất bại:', err)
       }
     }
   }

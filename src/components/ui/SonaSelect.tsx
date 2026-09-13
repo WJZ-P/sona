@@ -15,13 +15,13 @@ export interface SonaSelectProps {
   placeholder?: string
 }
 
-export function SonaSelect({ options, value, onChange, placeholder = '请选择...' }: SonaSelectProps) {
+export function SonaSelect({ options, value, onChange, placeholder }: SonaSelectProps) {
   const [isOpen, setIsOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
   const { t } = useI18n()
 
   const selectedOption = options.find((opt) => opt.value === value)
-  const displayPlaceholder = placeholder === '请选择...' ? t('select.placeholder') : placeholder
+  const displayPlaceholder = placeholder ?? t('select.placeholder')
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {

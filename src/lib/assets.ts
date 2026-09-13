@@ -136,9 +136,9 @@ export async function initAssets() {
   try {
     const summoner = await lcu.getSummonerInfo()
     currentPuuid = summoner.puuid || ''
-    logger.info('[Assets] 当前账号 puuid=%s', currentPuuid)
+    logger.info('[Assets] Tài khoản hiện tại puuid=%s', currentPuuid)
   } catch (err) {
-    logger.warn('[Assets] 获取 puuid 失败:', err)
+    logger.warn('[Assets] Không thể lấy puuid:', err)
   }
 
   // 加载本地英雄平衡数据（构建期嵌入，无网络请求）
@@ -163,12 +163,12 @@ function loadChampionBalance() {
       championBalanceMap.set(Number(id), balance)
     }
     logger.info(
-      '[Assets] 英雄平衡数据加载完成 → %d 个英雄 (数据更新于 %s)',
+      '[Assets] Đã tải dữ liệu cân bằng tướng → %d tướng (dữ liệu cập nhật vào %s)',
       championBalanceMap.size,
-      balanceData._meta?.updatedAt ?? '未知',
+      balanceData._meta?.updatedAt ?? 'Không rõ',
     )
   } catch (err) {
-    logger.error('[Assets] 英雄平衡数据加载失败:', err)
+    logger.error('[Assets] Tải dữ liệu cân bằng tướng thất bại:', err)
   }
 }
 
@@ -181,14 +181,14 @@ async function tryInit(attempt: number) {
   const RETRY_DELAY = 2000
 
   const [items, spells, queues, maps, perks, perkStyles, champions, augments] = await Promise.all([
-    lcu.getItems().catch((e) => { logger.warn('[Assets] getItems 失败:', e); return [] }),
-    lcu.getSummonerSpells().catch((e) => { logger.warn('[Assets] getSummonerSpells 失败:', e); return [] }),
-    lcu.getQueues().catch((e) => { logger.warn('[Assets] getQueues 失败:', e); return [] }),
-    lcu.getMapAssets().catch((e) => { logger.warn('[Assets] getMapAssets 失败:', e); return [] }),
-    lcu.getPerks().catch((e) => { logger.warn('[Assets] getPerks 失败:', e); return [] }),
-    lcu.getPerkStyles().catch((e) => { logger.warn('[Assets] getPerkStyles 失败:', e); return { styles: [] } }),
-    lcu.getChampionSummary().catch((e) => { logger.warn('[Assets] getChampionSummary 失败:', e); return [] }),
-    lcu.getAugments().catch((e) => { logger.warn('[Assets] getAugments 失败:', e); return [] }),
+    lcu.getItems().catch((e) => { logger.warn('[Assets] getItems thất bại:', e); return [] }),
+    lcu.getSummonerSpells().catch((e) => { logger.warn('[Assets] getSummonerSpells thất bại:', e); return [] }),
+    lcu.getQueues().catch((e) => { logger.warn('[Assets] getQueues thất bại:', e); return [] }),
+    lcu.getMapAssets().catch((e) => { logger.warn('[Assets] getMapAssets thất bại:', e); return [] }),
+    lcu.getPerks().catch((e) => { logger.warn('[Assets] getPerks thất bại:', e); return [] }),
+    lcu.getPerkStyles().catch((e) => { logger.warn('[Assets] getPerkStyles thất bại:', e); return { styles: [] } }),
+    lcu.getChampionSummary().catch((e) => { logger.warn('[Assets] getChampionSummary thất bại:', e); return [] }),
+    lcu.getAugments().catch((e) => { logger.warn('[Assets] getAugments thất bại:', e); return [] }),
   ])
 
   // 只填充获取到的数据（失败的返回空数组，for 循环自然跳过）
@@ -269,7 +269,7 @@ async function tryInit(attempt: number) {
   }
 
   logger.info(
-    '[Assets] 资源映射初始化 (attempt %d) → 装备 %d, 技能 %d, 符文 %d, 符文系 %d, 强化符文 %d, 队列 %d, 地图 %d, 英雄 %d',
+    '[Assets] Khởi tạo ánh xạ tài nguyên (lần %d) → trang bị %d, phép bổ trợ %d, ngọc %d, nhánh ngọc %d, nâng cấp %d, hàng chờ %d, bản đồ %d, tướng %d',
     attempt + 1,
     itemMap.size, spellMap.size, perkMap.size, perkStyleMap.size, augmentMap.size, queueMap.size, mapDataMap.size, championMap.size,
   )
@@ -283,16 +283,16 @@ async function tryInit(attempt: number) {
   ].filter(Boolean)
 
   if (missing.length > 0 && attempt < MAX_RETRY) {
-    logger.warn('[Assets] 关键资源缺失: %s，%d 秒后重试 (%d/%d)', missing.join(','), RETRY_DELAY / 1000, attempt + 1, MAX_RETRY)
+    logger.warn('[Assets] Thiếu tài nguyên thiết yếu: %s, thử lại sau %d giây (%d/%d)', missing.join(','), RETRY_DELAY / 1000, attempt + 1, MAX_RETRY)
     setTimeout(() => tryInit(attempt + 1), RETRY_DELAY)
     return
   }
 
   initialized = true
   if (missing.length > 0) {
-    logger.error('[Assets] 重试 %d 次后仍有资源缺失: %s', MAX_RETRY, missing.join(','))
+    logger.error('[Assets] Vẫn thiếu tài nguyên sau %d lần thử lại: %s', MAX_RETRY, missing.join(','))
   } else {
-    logger.info('[Assets] 资源映射初始化完成 ✓')
+    logger.info('[Assets] Đã khởi tạo ánh xạ tài nguyên ✓')
   }
 }
 
@@ -383,7 +383,7 @@ export function getAugmentInfo(id: number): { name: string; iconPath: string; ra
 
 /** 通过 queueId 获取队列名称（中文），如 "极地大乱斗"、"排位赛 单排/双排" */
 export function getQueueName(queueId: number): string {
-  return queueMap.get(queueId)?.name ?? `队列${queueId}`
+  return queueMap.get(queueId)?.name ?? `Hàng chờ ${queueId}`
 }
 
 /** 通过 queueId 获取完整队列数据 */
@@ -393,7 +393,7 @@ export function getQueue(queueId: number): GameQueue | undefined {
 
 /** 通过 mapId 获取地图名称，如 "召唤师峡谷"、"嚎哭深渊" */
 export function getMapName(mapId: number): string {
-  return mapDataMap.get(mapId)?.name ?? `地图${mapId}`
+  return mapDataMap.get(mapId)?.name ?? `Bản đồ ${mapId}`
 }
 
 /** 通过 mapId 获取游戏模式名称，如 "经典"、"极地大乱斗" */
@@ -506,7 +506,7 @@ export function getPlayableQueues(): { id: number; name: string }[] {
     if (!q.isEnabled || q.queueAvailability !== 'Available') return
     if (EXCLUDED_MODES.has(q.gameMode)) return
     if (EXCLUDED_TYPES.has(q.type)) return
-    result.push({ id: q.id, name: q.name || q.shortName || `队列${q.id}` })
+    result.push({ id: q.id, name: q.name || q.shortName || `Hàng chờ ${q.id}` })
   })
   // 按名称排序
   result.sort((a, b) => a.name.localeCompare(b.name, 'zh'))

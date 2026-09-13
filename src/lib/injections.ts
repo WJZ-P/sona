@@ -120,11 +120,11 @@ function tryInjectSonaButton(): boolean {
 const MENU_ID = 'sona-availability-menu'
 
 const AVAILABILITY_OPTIONS: { value: Availability; label: string }[] = [
-  { value: 'chat', label: '在线' },
-  { value: 'away', label: '离开' },
+  { value: 'chat', label: 'Trực tuyến' },
+  { value: 'away', label: 'Vắng mặt' },
   //{ value: 'dnd', label: '勿扰' }, 勿扰跟离开看起来是一样的，留一个就行了
-  { value: 'offline', label: '隐身' },
-  { value: 'mobile', label: '手机在线' },
+  { value: 'offline', label: 'Ẩn' },
+  { value: 'mobile', label: 'Trực tuyến trên điện thoại' },
 ]
 
 /** 当前状态缓存（从 store 初始化） */
@@ -170,12 +170,12 @@ function setSavedStatus(msg: string) {
  */
 async function restoreAvailabilityAndStatus() {
   try {
-    logger.info('[Availability] 开始恢复持久化状态...')
+    logger.info('[Availability] Bắt đầu khôi phục trạng thái đã lưu...')
 
     // 这里如果是游戏中或者其他在玩的状态，就直接放行，不改，不然怕关麦克风的bug。
     const phase = await lcu.getGameflowPhase()
     if (phase !== 'None' && phase !== 'Lobby') {
-      logger.info('[Availability] 当前阶段 %s，跳过状态恢复（避免与底层状态机冲突）', phase)
+      logger.info('[Availability] Giai đoạn hiện tại %s, bỏ qua khôi phục trạng thái (tránh xung đột với máy trạng thái bên dưới)', phase)
       return
     }
 
@@ -184,7 +184,7 @@ async function restoreAvailabilityAndStatus() {
     const savedStatus = getSavedStatus()
 
     logger.info(
-      '[Availability] 当前状态快照: client.availability=%s, client.statusMessage=%s | saved.availability=%s, saved.statusMessage=%s',
+      '[Availability] Ảnh chụp trạng thái hiện tại: client.availability=%s, client.statusMessage=%s | saved.availability=%s, saved.statusMessage=%s',
       me.availability, JSON.stringify(me.statusMessage),
       savedAvailability, JSON.stringify(savedStatus),
     )
@@ -193,13 +193,13 @@ async function restoreAvailabilityAndStatus() {
     if (savedAvailability && savedAvailability !== 'away' && savedAvailability !== me.availability) {
       try {
         await lcu.setAvailability(savedAvailability)
-        logger.info('[Availability] 已写入 availability: %s', savedAvailability)
+        logger.info('[Availability] Đã ghi availability: %s', savedAvailability)
       } catch (err) {
-        logger.warn('[Availability] availability 写入失败（稍后会再校验一次）:', err)
+        logger.warn('[Availability] Ghi availability thất bại (sẽ kiểm tra lại sau):', err)
       }
       currentAvailability = savedAvailability
     } else {
-      logger.info('[Availability] availability 无需恢复（已与 store 一致 / 未配置）')
+      logger.info('[Availability] Không cần khôi phục availability (đã khớp với store / chưa cấu hình)')
       currentAvailability = me.availability
     }
 
@@ -211,19 +211,19 @@ async function restoreAvailabilityAndStatus() {
     if (clientStatus === '' && hasContent(savedStatus)) {
       try {
         await lcu.setStatusMessage(replaceVisibleStatusPreservingSonaPayload(me.statusMessage, savedStatus))
-        logger.info('[Availability] 已写入 statusMessage: %s', savedStatus)
+        logger.info('[Availability] Đã ghi statusMessage: %s', savedStatus)
       } catch (err) {
-        logger.warn('[Availability] statusMessage 写入失败（稍后会再校验一次）:', err)
+        logger.warn('[Availability] Ghi statusMessage thất bại (sẽ kiểm tra lại sau):', err)
       }
     } else if (clientStatus !== '') {
       if (clientStatus !== savedStatus) {
         setSavedStatus(clientStatus)
-        logger.info('[Availability] 客户端签名与 store 不一致，已回写到 store: %s', clientStatus)
+        logger.info('[Availability] Thông điệp trạng thái của client khác với store, đã ghi lại vào store: %s', clientStatus)
       } else {
-        logger.info('[Availability] statusMessage 无需恢复（客户端与 store 一致）')
+        logger.info('[Availability] Không cần khôi phục statusMessage (client và store khớp nhau)')
       }
     } else {
-      logger.info('[Availability] 客户端无签名且 store 也无签名，跳过')
+      logger.info('[Availability] Client và store đều không có thông điệp trạng thái, bỏ qua')
     }
   } catch (err) {
     logger.warn('[Availability] Failed to restore availability/status:', err)
@@ -252,7 +252,7 @@ async function verifyAvailabilitySnapshot(label: string) {
   try {
     const phase = await lcu.getGameflowPhase()
     if (phase !== 'None' && phase !== 'Lobby') {
-      logger.info('[Availability] 延迟校验(%s)时阶段为 %s，跳过', label, phase)
+      logger.info('[Availability] Giai đoạn khi kiểm tra trễ (%s) là %s, bỏ qua', label, phase)
       return
     }
 
@@ -263,7 +263,7 @@ async function verifyAvailabilitySnapshot(label: string) {
     const clientStatus = hasContent(me.statusMessage) ? stripAvatarStatusPayload(me.statusMessage as string) : ''
 
     logger.info(
-      '[Availability] 延迟校验(%s)快照: client.availability=%s, client.statusMessage=%s | saved.availability=%s, saved.statusMessage=%s',
+      '[Availability] Ảnh chụp khi kiểm tra trễ (%s): client.availability=%s, client.statusMessage=%s | saved.availability=%s, saved.statusMessage=%s',
       label,
       me.availability, JSON.stringify(me.statusMessage),
       savedAvailability, JSON.stringify(savedStatus),
@@ -271,21 +271,21 @@ async function verifyAvailabilitySnapshot(label: string) {
 
     // 校验 availability
     if (savedAvailability && savedAvailability !== me.availability) {
-      logger.warn('[Availability] 延迟校验(%s)发现 availability 被客户端回退，再次写入: %s', label, savedAvailability)
+      logger.warn('[Availability] Kiểm tra trễ (%s) phát hiện client hoàn tác availability, ghi lại: %s', label, savedAvailability)
       await lcu.setAvailability(savedAvailability).catch((err) => {
-        logger.warn('[Availability] 延迟校验(%s)写 availability 失败:', label, err)
+        logger.warn('[Availability] Kiểm tra trễ (%s) ghi availability thất bại:', label, err)
       })
     }
 
     // 校验 statusMessage
     if (hasContent(savedStatus) && clientStatus !== savedStatus) {
-      logger.warn('[Availability] 延迟校验(%s)发现 statusMessage 被客户端回退（"%s" → "%s"），再次写入', label, savedStatus, clientStatus)
+      logger.warn('[Availability] Kiểm tra trễ (%s) phát hiện client hoàn tác statusMessage（"%s" → "%s"） , ghi lại', label, savedStatus, clientStatus)
       await lcu.setStatusMessage(replaceVisibleStatusPreservingSonaPayload(me.statusMessage, savedStatus)).catch((err) => {
-        logger.warn('[Availability] 延迟校验(%s)写 statusMessage 失败:', label, err)
+        logger.warn('[Availability] Kiểm tra trễ (%s) ghi statusMessage thất bại:', label, err)
       })
     }
   } catch (err) {
-    logger.warn('[Availability] 延迟校验(%s)失败:', label, err)
+    logger.warn('[Availability] Kiểm tra trễ (%s) thất bại:', label, err)
   }
 }
 
@@ -300,7 +300,7 @@ async function verifyAfterSubscribe() {
     }
   } finally {
     statusPersistencePausedForVerify = false
-    logger.info('[Availability] 延迟校验保护期结束，恢复签名变化持久化')
+    logger.info('[Availability] Đã kết thúc thời gian bảo vệ kiểm tra trễ, tiếp tục lưu thay đổi thông điệp trạng thái')
   }
 }
 
@@ -332,10 +332,10 @@ function subscribeChatMeSync() {
     // 强判断（不受阶段限制）：玩家手选隐身后，进游戏等场景客户端会自动把状态改成
     // "游戏中"(dnd/chat 等)，这里检测到偏离立即强制拉回隐身，直到玩家手点其他在线模式。
     if (userSelectedAvailability === 'offline' && me.availability && me.availability !== 'offline') {
-      logger.info('[Availability] 隐身被客户端改为 %s，强制恢复隐身', me.availability)
+      logger.info('[Availability] Client đã đổi trạng thái ẩn thành %s, buộc khôi phục trạng thái ẩn', me.availability)
       lcu.setAvailability('offline')
         .then(() => { currentAvailability = 'offline' })
-        .catch((err) => logger.warn('[Availability] 强制隐身失败:', err))
+        .catch((err) => logger.warn('[Availability] Buộc chuyển sang trạng thái ẩn thất bại:', err))
       return
     }
 
@@ -352,14 +352,14 @@ function subscribeChatMeSync() {
     // 这类临时状态误认为玩家主动改签名。
     if (statusPersistencePausedForVerify) {
       if (hasContent(me.statusMessage)) {
-        logger.info('[Availability] 延迟校验保护期内忽略签名变化，不持久化: %s', me.statusMessage)
+        logger.info('[Availability] Bỏ qua thay đổi thông điệp trạng thái trong thời gian bảo vệ kiểm tra trễ, không lưu: %s', me.statusMessage)
       }
     } else if (hasContent(me.statusMessage)) {
       const visibleStatusMessage = stripAvatarStatusPayload(me.statusMessage as string)
       const savedStatus = getSavedStatus()
       if (hasContent(visibleStatusMessage) && visibleStatusMessage !== savedStatus) {
         setSavedStatus(visibleStatusMessage)
-        logger.info('[Availability] 签名变化 → 已持久化: %s', visibleStatusMessage)
+        logger.info('[Availability] Thông điệp trạng thái thay đổi → đã lưu: %s', visibleStatusMessage)
       }
     }
 
@@ -370,18 +370,18 @@ function subscribeChatMeSync() {
     if (me.availability && me.availability !== 'away' && store.get('availability') !== me.availability) {
       store.set('availability', me.availability)
       currentAvailability = me.availability
-      logger.info('[Availability] 在线状态变化 → 已持久化: %s', me.availability)
+      logger.info('[Availability] Trạng thái trực tuyến thay đổi → đã lưu: %s', me.availability)
     }
   })
 
-  logger.info('[Availability] 已订阅 /lol-chat/v1/me 实时同步')
+  logger.info('[Availability] Đã đăng ký đồng bộ thời gian thực /lol-chat/v1/me')
 }
 
 function unsubscribeChatMeSync() {
   if (chatMeUnsub) {
     chatMeUnsub()
     chatMeUnsub = null
-    logger.info('[Availability] 已取消订阅 /lol-chat/v1/me')
+    logger.info('[Availability] Đã hủy đăng ký /lol-chat/v1/me')
   }
 }
 
@@ -427,20 +427,20 @@ function showAvailabilityMenu(anchor: HTMLElement) {
           .then((phase) => {
             if ((phase === 'None' || phase === 'Lobby') && option.value !== 'away') {
               store.set('availability', option.value)
-              logger.info('[Availability] 持久化: %s (phase=%s)', option.value, phase)
+              logger.info('[Availability] Đã lưu: %s (phase=%s)', option.value, phase)
             } else {
-              logger.info('[Availability] 仅临时切换（阶段 %s，不持久化）', phase)
+              logger.info('[Availability] Chỉ chuyển tạm thời (giai đoạn %s, không lưu)', phase)
             }
           })
           .catch(() => {
             // phase 拉不到时保守起见不写 store
-            logger.warn('[Availability] 无法获取 gameflow phase，跳过持久化')
+            logger.warn('[Availability] Không thể lấy gameflow phase, bỏ qua lưu trạng thái')
           })
 
         // PUT availability 请求本身不受阶段限制——用户点了就按用户意图发
         lcu.setAvailability(option.value)
-          .then(() => logger.info('[Availability] 已切换: %s', option.value))
-          .catch((err) => logger.error('[Availability] 切换失败:', err))
+          .then(() => logger.info('[Availability] Đã chuyển: %s', option.value))
+          .catch((err) => logger.error('[Availability] Chuyển trạng thái thất bại:', err))
       }
       closeAvailabilityMenu()
     }, true)

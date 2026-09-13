@@ -117,7 +117,7 @@ function extractLuaTable(html: string): string {
   const searchFrom = preIdx >= 0 ? preIdx : 0
 
   const startIdx = html.indexOf('return {', searchFrom)
-  if (startIdx < 0) throw new Error('未找到 "return {" 起始标记')
+  if (startIdx < 0) throw new Error('Could not find the "return {" start marker')
 
   // 结束标记：lua 注释 `-- </pre>`（HTML 中 `<` 转义），找不到再退回真正的 </pre> 标签
   let endIdx = html.indexOf('&lt;/pre', startIdx)
@@ -175,10 +175,10 @@ async function fetchLuaSource(): Promise<string> {
   const proxyUrl = resolveProxy()
   if (proxyUrl) {
     setGlobalDispatcher(new ProxyAgent(proxyUrl))
-    console.log(`[update-balance] 使用代理: ${proxyUrl}`)
+    console.log(`[update-balance] Using proxy: ${proxyUrl}`)
   }
 
-  console.log(`[update-balance] 从 LoL Wiki 拉取: ${WIKI_DATA_URL}`)
+  console.log(`[update-balance] Fetching from LoL Wiki: ${WIKI_DATA_URL}`)
   const res = await fetch(WIKI_DATA_URL, {
     headers: {
       // Cloudflare 会拦截“伪装浏览器”的 UA，反而放行 curl/wget 这类简单 UA
@@ -195,13 +195,13 @@ async function fetchLuaSource(): Promise<string> {
 
 async function main() {
   const lua = await fetchLuaSource()
-  console.log(`[update-balance] 原始 Lua 长度: ${lua.length} bytes`)
+  console.log(`[update-balance] Raw Lua length: ${lua.length} bytes`)
 
   // 解析 AST
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const ast = luaparse.parse(lua) as any
   const table = ast.body[0].arguments[0]
-  console.log(`[update-balance] 顶层英雄数: ${table.fields.length}`)
+  console.log(`[update-balance] Top-level champion count: ${table.fields.length}`)
 
   // 遍历每个英雄
   const champions: Record<string, unknown> = {}
@@ -264,7 +264,7 @@ async function main() {
   }
 
   if (hash === oldHash) {
-    console.log(`[update-balance] 数据未变化 (sha1=${hash.slice(0, 8)})，跳过更新`)
+    console.log(`[update-balance] Data unchanged (sha1=${hash.slice(0, 8)}), skipping update`)
     process.exit(1)
   }
 
@@ -283,14 +283,14 @@ async function main() {
   fs.mkdirSync(path.dirname(OUTPUT_PATH), { recursive: true })
   fs.writeFileSync(OUTPUT_PATH, JSON.stringify(output, null, 2) + '\n', 'utf-8')
 
-  console.log(`[update-balance] ✓ 更新完成：${count} 个英雄`)
-  console.log(`[update-balance]   旧 hash: ${oldHash.slice(0, 8) || '(empty)'}`)
-  console.log(`[update-balance]   新 hash: ${hash.slice(0, 8)}`)
-  console.log(`[update-balance]   写入: ${OUTPUT_PATH}`)
+  console.log(`[update-balance] ✓ Update complete: ${count} champions`)
+  console.log(`[update-balance]   Old hash: ${oldHash.slice(0, 8) || '(empty)'}`)
+  console.log(`[update-balance]   New hash: ${hash.slice(0, 8)}`)
+  console.log(`[update-balance]   Written to: ${OUTPUT_PATH}`)
   process.exit(0)
 }
 
 main().catch((err) => {
-  console.error('[update-balance] 失败:', err)
+  console.error('[update-balance] Failed:', err)
   process.exit(1)
 })

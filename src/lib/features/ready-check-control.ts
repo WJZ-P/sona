@@ -87,10 +87,10 @@ function applyUnlock() {
   if (currentResponse === 'Accepted') {
     const removed = unlockButton(container, 'decline')
     // 仅在真正移除时打日志，避免轮询每 300ms 刷屏
-    if (removed > 0) logger.info('[ReadyCheckControl] 已接受 → 解禁拒绝按钮，移除禁用标记 %d 处', removed)
+    if (removed > 0) logger.info('[ReadyCheckControl] Đã chấp nhận → Mở lại nút từ chối, xóa dấu vô hiệu hóa ở %d vị trí', removed)
   } else if (currentResponse === 'Declined') {
     const removed = unlockButton(container, 'accept')
-    if (removed > 0) logger.info('[ReadyCheckControl] 已拒绝 → 解禁接受按钮，移除禁用标记 %d 处', removed)
+    if (removed > 0) logger.info('[ReadyCheckControl] Đã từ chối → Mở lại nút chấp nhận, xóa dấu vô hiệu hóa ở %d vị trí', removed)
   }
 }
 
@@ -114,8 +114,8 @@ function bindClickHandler(el: Element | null, kind: 'accept' | 'decline') {
     // 不拦截默认/冒泡，让原生逻辑（若仍有效）照常运行，我们只额外补一刀
     const action = kind === 'accept' ? lcu.acceptMatch() : lcu.declineMatch()
     action
-      .then(() => logger.info('[ReadyCheckControl] 已主动%s对局 ✓', kind === 'accept' ? '接受' : '拒绝'))
-      .catch((err) => logger.error('[ReadyCheckControl] %s 调用失败:', kind, err))
+      .then(() => logger.info('[ReadyCheckControl] Đã chủ động %s trận đấu ✓', kind === 'accept' ? 'chấp nhận' : 'từ chối'))
+      .catch((err) => logger.error('[ReadyCheckControl] Gọi %s thất bại:', kind, err))
   }
 
   el.addEventListener('click', handler)
@@ -155,7 +155,7 @@ function ensureClickHandlers() {
 function refreshFromResponse(next: PlayerResponse) {
   if (next !== currentResponse) {
     currentResponse = next
-    logger.info('[ReadyCheckControl] 玩家响应状态变化 → %s', currentResponse)
+    logger.info('[ReadyCheckControl] Trạng thái phản hồi của người chơi thay đổi → %s', currentResponse)
   }
   ensureClickHandlers()
   applyUnlock()
@@ -174,7 +174,7 @@ async function pollReadyCheckOnce() {
 /** 进入 ReadyCheck：启动轮询（兜底首次冷启动 WS 订阅不生效的情况） */
 function startPolling() {
   if (pollTimer) return
-  logger.info('[ReadyCheckControl] 进入 ReadyCheck，启动轮询解禁（每 %dms 一次）', POLL_INTERVAL_MS)
+  logger.info('[ReadyCheckControl] Vào ReadyCheck, bắt đầu thăm dò để mở lại nút (mỗi %dms)', POLL_INTERVAL_MS)
   void pollReadyCheckOnce()
   pollTimer = setInterval(() => void pollReadyCheckOnce(), POLL_INTERVAL_MS)
 }
@@ -198,7 +198,7 @@ function cleanup() {
 let registered = false
 
 export function updateAllowDeclineAfterAccept(enabled: boolean) {
-  logger.info('[ReadyCheckControl] updateAllowDeclineAfterAccept 调用 → enabled=%s, registered=%s', enabled, registered)
+  logger.info('[ReadyCheckControl] Gọi updateAllowDeclineAfterAccept → enabled=%s, registered=%s', enabled, registered)
   if (enabled && !registered) {
     registered = true
     currentResponse = 'None'
@@ -212,7 +212,7 @@ export function updateAllowDeclineAfterAccept(enabled: boolean) {
     // 可靠驱动：gameflow 阶段（冷启动也稳）。进入 ReadyCheck 启动轮询，离开即清理
     phaseUnsub = lcu.observe(LcuEventUri.GAMEFLOW_PHASE_CHANGE, (event: LCUEventMessage) => {
       const phase = event.data as GameflowPhase
-      logger.info('[ReadyCheckControl] gameflow 阶段变化 → %s', phase)
+      logger.info('[ReadyCheckControl] Giai đoạn gameflow thay đổi → %s', phase)
       if (phase === 'ReadyCheck') {
         startPolling()
       } else {

@@ -136,7 +136,7 @@ async function _doFetchTeamStats(): Promise<TeamStatsResult> {
 
   // 直接从 ChampSelectSession 拿 queueId，无需额外请求
   const currentQueueId = session.queueId
-  logger.info('[TeamStats] 当前队列 ID: %d', currentQueueId)
+  logger.info('[TeamStats] ID hàng chờ hiện tại: %d', currentQueueId)
 
   // 将 queueId 转为 SGP tag
   const tag = queueIdToTag(currentQueueId)
@@ -176,13 +176,13 @@ async function _doFetchTeamStats(): Promise<TeamStatsResult> {
   const hiddenPlayers = analyzablePlayers.filter((player) => player.nameVisibilityType === 'HIDDEN' && !player.puuid)
   if (hiddenPlayers.length > 0) {
     const resolvedCount = hiddenPlayers.filter((player) => Boolean(resolveChampSelectPuuid(player))).length
-    logger.info('[TeamStats] 匿名模式身份还原: %d/%d', resolvedCount, hiddenPlayers.length)
+    logger.info('[TeamStats] Khôi phục danh tính trong chế độ ẩn danh: %d/%d', resolvedCount, hiddenPlayers.length)
   }
 
   const stats = await Promise.all(analyzablePlayers.map(async (player, i) => {
     const puuid = resolveChampSelectPuuid(player)
     if (!puuid) {
-      logger.warn('[TeamStats] %d楼缺少可查询的 PUUID（visibility=%s）', i + 1, player.nameVisibilityType || 'unknown')
+      logger.warn('[TeamStats] Vị trí %d thiếu PUUID có thể truy vấn (visibility=%s)', i + 1, player.nameVisibilityType || 'unknown')
       return placeholder(player, i, '')
     }
 
@@ -190,7 +190,7 @@ async function _doFetchTeamStats(): Promise<TeamStatsResult> {
     // 匿名模式的 ChampSelectSession 会清空 Riot ID；用已还原的真实 PUUID 从 Summoner 接口回填。
     const identityPromise = needsIdentityBackfill
       ? lcu.getSummonerByPuuid(puuid).catch((error) => {
-          logger.warn('[TeamStats] %d楼 Riot ID 回填失败:', i + 1, error)
+          logger.warn('[TeamStats] Bổ sung Riot ID cho vị trí %d thất bại:', i + 1, error)
           return null
         })
       : Promise.resolve(null)
@@ -211,7 +211,7 @@ async function _doFetchTeamStats(): Promise<TeamStatsResult> {
       const resolvedIdentity = { summonerId, gameName, tagLine }
 
       if (needsIdentityBackfill && gameName) {
-        logger.info('[TeamStats] %d楼匿名 Riot ID 回填成功 → %s%s', i + 1, gameName, tagLine ? `#${tagLine}` : '')
+        logger.info('[TeamStats] Đã bổ sung Riot ID ẩn danh cho vị trí %d → %s%s', i + 1, gameName, tagLine ? `#${tagLine}` : '')
       }
 
       const receivedGames = resp.games ?? []
@@ -247,12 +247,12 @@ async function _doFetchTeamStats(): Promise<TeamStatsResult> {
       const total = matchStats.length
       const strengthScore = calculateSonaPlayerStrengthScore(games, puuid)
       logger.info(
-        '[TeamStats] %s → 当前模式有效 %d 场 / 返回 %d 场 (queueId=%d, tag=%s)',
+        '[TeamStats] %s → %d trận hợp lệ trong chế độ hiện tại / %d trận trả về (queueId=%d, tag=%s)',
         gameName,
         total,
         receivedGames.length,
         currentQueueId,
-        tag || '全部',
+        tag || 'Tất cả',
       )
 
       return {
@@ -273,7 +273,7 @@ async function _doFetchTeamStats(): Promise<TeamStatsResult> {
         strengthScore,
       } as TeammateStats
     } catch (error) {
-      logger.warn('[TeamStats] %d楼战绩查询失败（visibility=%s）:', i + 1, player.nameVisibilityType || 'unknown', error)
+      logger.warn('[TeamStats] Truy vấn lịch sử đấu cho vị trí %d thất bại (visibility=%s):', i + 1, player.nameVisibilityType || 'unknown', error)
       // 即使 SGP 失败，也等待已发出的 Summoner 请求，以免弹窗标题和日志再次丢失名字。
       const summoner = await identityPromise
       return placeholder(player, i, puuid, {
@@ -516,11 +516,11 @@ function applyHiddenPlayerName(wrapper: Element, stat: TeammateStats, playerKey:
   nameElement.setAttribute(SONA_HIDDEN_NAME_ATTR, 'true')
   nameElement.setAttribute(SONA_HIDDEN_NAME_KEY_ATTR, playerKey)
   nameElement.setAttribute(SONA_HIDDEN_REAL_NAME_ATTR, stat.gameName)
-  nameElement.setAttribute('title', `${fullName} · 匿名模式`)
-  nameElement.setAttribute('aria-label', `${fullName}，匿名模式`)
+  nameElement.setAttribute('title', `${fullName} · Chế độ ẩn danh`)
+  nameElement.setAttribute('aria-label', `${fullName}，Chế độ ẩn danh`)
 
   if (created) {
-    logger.info('[ChampSelect] %d楼匿名名字增强 → %s', stat.floor, fullName)
+    logger.info('[ChampSelect] Đã bổ sung tên ẩn danh cho vị trí %d → %s', stat.floor, fullName)
   }
 }
 
@@ -642,7 +642,7 @@ function tryInjectChampSelectTier(): boolean {
       root.render(createElement(ChampSelectIconEffect, { winRate, width: size, height: size }))
       mountedRoots.push({ root, container: mountDiv })
 
-      logger.info('头像粒子特效 → %d楼 胜率%s%% → %s', i + 1, winRate.toFixed(1), config.id)
+      logger.info('Hiệu ứng hạt ảnh đại diện → vị trí %d, Win rate %s%% → %s', i + 1, winRate.toFixed(1), config.id)
     }
 
     // ---- 头像点击 → 弹出战绩弹窗 ----
@@ -686,7 +686,7 @@ function tryInjectChampSelectTier(): boolean {
 
         const winSpan = document.createElement('span')
         winSpan.style.cssText = `color:${winColor};font-weight:bold;display:inline-block;min-width:90px;`
-        winSpan.textContent = `${winRate.toFixed(0)}% (${stat.wins}胜/${stat.total - stat.wins}负)`
+        winSpan.textContent = `${winRate.toFixed(0)}% (${stat.wins} thắng/${stat.total - stat.wins} thua)`
 
         const kdaColor = stat.kdaNum >= 5 ? '#5bbd72' : stat.kdaNum >= 3 ? '#c8aa6e' : '#e74c3c'
         const kdaSpan = document.createElement('span')
@@ -701,7 +701,7 @@ function tryInjectChampSelectTier(): boolean {
         champSelectInjectedRefs.push({ statsDiv, iconContainer, summonerContainer, playerDetails, clickHandler })
 
         logger.info(
-          '[ChampSelect] %d楼战绩更新成功 → %s#%s 胜率%s%% (%d胜/%d负) KDA %s',
+          '[ChampSelect] Đã cập nhật lịch sử đấu cho vị trí %d → %s#%s, Win rate %s%% (%d thắng/%d thua) KDA %s',
           i + 1,
           stat.gameName ?? '?',
           stat.tagLine ?? '?',
@@ -769,9 +769,9 @@ async function applyChampSelectIconEffects() {
     currentChampSelectTeamSignature = stats.map(getTeammateStatsKey).join('|')
     registerTierInjection()
 
-    logger.info('头像特效数据就绪，%d 位队友，队列 ID: %d', stats.length, currentChampSelectQueueId)
+    logger.info('Dữ liệu hiệu ứng ảnh đại diện đã sẵn sàng, %d đồng đội, ID hàng chờ: %d', stats.length, currentChampSelectQueueId)
   } catch (err) {
-    logger.error('头像特效查询失败:', err)
+    logger.error('Truy vấn hiệu ứng ảnh đại diện thất bại:', err)
   }
 }
 
@@ -800,7 +800,7 @@ function onChampSelectUpdate(event: LCUEventMessage) {
   const nextSignature = getTeamDisplaySignature(session)
   if (nextSignature === currentChampSelectTeamSignature) return
 
-  logger.info('[ChampSelect] 检测到队友展示顺序或分路变化，重建头像战绩绑定')
+  logger.info('[ChampSelect] Phát hiện thay đổi thứ tự hiển thị hoặc đường của đồng đội, tạo lại liên kết ảnh đại diện và lịch sử đấu')
 
   // 清理旧注入并重建
   cleanupInjectedDOM()
@@ -915,16 +915,17 @@ async function analyzeTeammates() {
   try {
     const { stats, fetchCount } = await fetchTeamStats()
 
-    logger.info('┌─── 队友战绩分析 ───')
+    logger.info('┌─── Phân tích lịch sử đấu của đồng đội ───')
 
     const chatLines: string[] = [translate('champSelect.teamAnalysis.header', { count: fetchCount })]
     const teamPowerTitles = assignTeamPowerTitles(stats)
 
     for (const s of stats) {
       const floor = translate('champSelect.teamAnalysis.floor', { floor: s.floor })
+      const playerLabel = s.gameName?.trim() || floor
       if (s.winRate == null) {
-        logger.info('│ %s — %s#%s — 无近期战绩或查询失败', floor, s.gameName, s.tagLine)
-        chatLines.push(translate('champSelect.teamAnalysis.emptyLine', { floor }))
+        logger.info('│ %s — %s#%s — Không có lịch sử đấu gần đây hoặc truy vấn thất bại', floor, s.gameName, s.tagLine)
+        chatLines.push(translate('champSelect.teamAnalysis.emptyLine', { floor: playerLabel }))
         continue
       }
 
@@ -934,13 +935,13 @@ async function analyzeTeammates() {
       const scoreText = s.strengthScore ? s.strengthScore.score.toFixed(1) : '--'
 
       logger.info(
-        '│ %s — %s#%s — 近%d场 胜率: %s%% (%d胜%d负) | KDA: %s (%.1f/%.1f/%.1f) | 综合评分: %s | %s',
+        '│ %s — %s#%s — %d trận gần đây, Win rate: %s%% (%d thắng %d thua) | KDA: %s (%.1f/%.1f/%.1f) | Điểm tổng hợp: %s | %s',
         floor, s.gameName, s.tagLine,
         s.total, winRate, s.wins, s.total - s.wins,
         kdaStr, s.avgK, s.avgD, s.avgA, scoreText, title,
       )
 
-      chatLines.push(translate('champSelect.teamAnalysis.line', { floor, title, winRate, kda: kdaStr, score: scoreText }))
+      chatLines.push(translate('champSelect.teamAnalysis.line', { floor: playerLabel, title, winRate, kda: kdaStr, score: scoreText }))
     }
 
     logger.info('└────────────────────')
@@ -951,18 +952,18 @@ async function analyzeTeammates() {
     for (let attempt = 0; attempt < 10; attempt++) {
       try {
         await lcu.sendChampSelectMessage(msg, msgType)
-        logger.info('队友分析已发送到聊天框 ✓')
+        logger.info('Đã gửi phân tích đồng đội vào khung chat ✓')
         break
       } catch {
         if (attempt < 9) {
           await sleep(1000)
         } else {
-          logger.warn('聊天发送失败，聊天室始终未就绪')
+          logger.warn('Gửi tin nhắn thất bại, phòng chat vẫn chưa sẵn sàng')
         }
       }
     }
   } catch (err) {
-    logger.error('队友战绩分析失败:', err)
+    logger.error('Phân tích lịch sử đấu của đồng đội thất bại:', err)
   }
 }
 
@@ -1001,18 +1002,18 @@ async function sendSideIndicator() {
     for (let attempt = 0; attempt < 10; attempt++) {
       try {
         await lcu.sendChampSelectMessage(msg, msgType)
-        logger.info('红蓝方提示已发送 → %s', sideText)
+        logger.info('Đã gửi thông báo phe đỏ/xanh → %s', sideText)
         break
       } catch {
         if (attempt < 9) {
           await sleep(1000)
         } else {
-          logger.warn('红蓝方提示发送失败，聊天室始终未就绪')
+          logger.warn('Gửi thông báo phe đỏ/xanh thất bại, phòng chat vẫn chưa sẵn sàng')
         }
       }
     }
   } catch (err) {
-    logger.error('红蓝方提示失败:', err)
+    logger.error('Thông báo phe đỏ/xanh thất bại:', err)
   }
 }
 
@@ -1098,7 +1099,7 @@ function pickRandomHomepageBackgroundOnStartup() {
 
   store.set('beautifyHomepageBackgroundAssetPath', selectedAssetPath)
   store.set('beautifyHomepageBackgroundLastRandomAssetPath', selectedAssetPath)
-  logger.info('[HomepageBackground] 随机启动壁纸：%s', selectedAssetPath)
+  logger.info('[HomepageBackground] Hình nền khởi động ngẫu nhiên: %s', selectedAssetPath)
 }
 
 export function initFeatures() {

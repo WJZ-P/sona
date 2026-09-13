@@ -116,13 +116,13 @@ function ChampionPriorityCards({
               alt=""
             />
             <span className="sona-champ-priority-name">
-              {champion ? `${champion.title} ${champion.name}` : `英雄#${championId}`}
+              {champion ? `${champion.title} ${champion.name}` : `Tướng #${championId}`}
             </span>
             <button
               className="sona-champ-priority-remove"
               type="button"
               onClick={() => onRemove(championId)}
-              aria-label="移除"
+              aria-label="Xóa"
             >
               ×
             </button>
@@ -340,7 +340,7 @@ export function ToolsPage() {
     store.set('autoLockChampionIds', next)
     setChampSearchText('')
     setShowChampSuggestions(false)
-    logger.info('[AutoLock] 已加入目标英雄队列: %s %s (ID: %d)', champion.title, champion.name, champion.id)
+    logger.info('[AutoLock] Đã thêm vào danh sách tướng mục tiêu: %s %s (ID: %d)', champion.title, champion.name, champion.id)
   }
 
   const removeAutoLockChampion = (championId: number) => {
@@ -361,7 +361,7 @@ export function ToolsPage() {
     store.set('autoBanChampionIds', next)
     setBanChampSearchText('')
     setShowBanChampSuggestions(false)
-    logger.info('[AutoBan] 已加入目标英雄队列: %s %s (ID: %d)', champion.title, champion.name, champion.id)
+    logger.info('[AutoBan] Đã thêm vào danh sách tướng mục tiêu: %s %s (ID: %d)', champion.title, champion.name, champion.id)
   }
 
   const removeAutoBanChampion = (championId: number) => {
@@ -381,9 +381,9 @@ export function ToolsPage() {
         preferredBannerType: current.bannerType,
         selectedPrestigeCrest: 22,
       })
-      logger.info('头像边框已卸下 ✓')
+      logger.info('Đã gỡ khung ảnh đại diện ✓')
     } catch (err) {
-      logger.error('卸下头像边框失败:', err)
+      logger.error('Không thể gỡ khung ảnh đại diện:', err)
     } finally {
       setIsRemovingCrest(false)
     }
@@ -395,9 +395,9 @@ export function ToolsPage() {
     try {
       setIsRemovingChallengeBadges(true)
       await lcu.updateChallengePlayerPreferences({ challengeIds: [] })
-      logger.info('身份徽章已全部卸下 ✓')
+      logger.info('Đã gỡ tất cả huy hiệu danh tính ✓')
     } catch (err) {
-      logger.error('卸下身份徽章失败:', err)
+      logger.error('Không thể gỡ huy hiệu danh tính:', err)
     } finally {
       setIsRemovingChallengeBadges(false)
     }
@@ -458,7 +458,7 @@ export function ToolsPage() {
                     const n = parseInt(cleaned, 10)
                     store.set('autoAcceptDelayMin', Number.isFinite(n) ? n : 0)
                   }}
-                  placeholder="最小"
+                  placeholder="Tối thiểu"
                 />
               </div>
               <span style={{ color: '#a09b8c', fontSize: 13 }}>—</span>
@@ -471,10 +471,10 @@ export function ToolsPage() {
                     const n = parseInt(cleaned, 10)
                     store.set('autoAcceptDelayMax', Number.isFinite(n) ? n : 0)
                   }}
-                  placeholder="最大"
+                  placeholder="Tối đa"
                 />
               </div>
-              <span style={{ color: '#a09b8c', fontSize: 13 }}>毫秒</span>
+              <span style={{ color: '#a09b8c', fontSize: 13 }}>ms</span>
             </div>
           </SettingCard>
         )}
@@ -796,9 +796,9 @@ export function ToolsPage() {
           <SonaButton onClick={async () => {
             try {
               await lcu.setProfileIcon(29)
-              logger.info('头像已恢复为默认头像 ✓')
+              logger.info('Đã khôi phục ảnh đại diện mặc định ✓')
             } catch (err) {
-              logger.error('恢复默认头像失败:', err)
+              logger.error('Không thể khôi phục ảnh đại diện mặc định:', err)
             }
           }}>
             {t('tools.unequip')}
@@ -990,7 +990,7 @@ export function ToolsPage() {
                 // 1. 查元数据
                 const metaRes = await fetch(`/lol-replays/v1/metadata/${id}`)
                 if (!metaRes.ok) {
-                  logger.error('[Replay] 获取元数据失败:', metaRes.status)
+                  logger.error('[Replay] Không thể lấy siêu dữ liệu:', metaRes.status)
                   setReplayState('error')
                   return
                 }
@@ -1005,8 +1005,8 @@ export function ToolsPage() {
                     body: JSON.stringify({ componentType: 'replay', contextData: 'match-history' }),
                   })
                   setReplayState(res.ok ? 'ready' : 'error')
-                  if (res.ok) logger.info('[Replay] 开始播放 #%d ✓', id)
-                  else logger.error('[Replay] 播放失败:', await res.text())
+                  if (res.ok) logger.info('[Replay] Bắt đầu phát #%d ✓', id)
+                  else logger.error('[Replay] Phát thất bại:', await res.text())
                   return
                 }
 
@@ -1025,7 +1025,7 @@ export function ToolsPage() {
                   const checkRes = await fetch(`/lol-replays/v1/metadata/${id}`)
                   if (!checkRes.ok) continue
                   const checkMeta = await checkRes.json() as { state: string; downloadProgress: number }
-                  logger.info('[Replay] 下载中... %d%%', checkMeta.downloadProgress)
+                  logger.info('[Replay] Đang tải xuống... %d%%', checkMeta.downloadProgress)
 
                   if (checkMeta.state === 'watch') {
                     setReplayState('launching')
@@ -1035,15 +1035,15 @@ export function ToolsPage() {
                       body: JSON.stringify({ componentType: 'replay', contextData: 'match-history' }),
                     })
                     setReplayState(res.ok ? 'ready' : 'error')
-                    if (res.ok) logger.info('[Replay] 下载完成，开始播放 #%d ✓', id)
-                    else logger.error('[Replay] 播放失败:', await res.text())
+                    if (res.ok) logger.info('[Replay] Tải xuống hoàn tất, bắt đầu phát #%d ✓', id)
+                    else logger.error('[Replay] Phát thất bại:', await res.text())
                     return
                   }
                 }
-                logger.warn('[Replay] 等待超时')
+                logger.warn('[Replay] Hết thời gian chờ')
                 setReplayState('error')
               } catch (err) {
-                logger.error('[Replay] 异常:', err)
+                logger.error('[Replay] Lỗi:', err)
                 setReplayState('error')
               }
             }}

@@ -70,7 +70,7 @@ function showConfirmDialog(onConfirm: () => void) {
   ].join(';')
 
   const title = document.createElement('div')
-  title.textContent = '确认退出英雄选择？'
+  title.textContent = 'Xác nhận thoát chọn tướng?'
   title.style.cssText = [
     'color:#f0e6d2',
     'font-size:16px',
@@ -86,10 +86,10 @@ function showConfirmDialog(onConfirm: () => void) {
 
   const desc = document.createElement('div')
   desc.innerHTML = [
-    '秒退将会：',
-    '<br/>• 立即退出英雄选择并返回大厅',
-    '<br/>• <span style="color:#e84749;font-weight:bold;">短时间内无法匹配</span>，并可能扣除信誉分',
-    '<br/><br/>请谨慎操作。',
+    'Thoát chọn tướng sẽ:',
+    '<br/>• Thoát chọn tướng ngay và quay về sảnh',
+    '<br/>• <span style="color:#e84749;font-weight:bold;">Không thể tìm trận trong một khoảng thời gian ngắn</span>, đồng thời có thể bị trừ điểm uy tín',
+    '<br/><br/>Hãy cân nhắc trước khi thực hiện.',
   ].join('')
   desc.style.cssText = 'font-size:13px;line-height:20px;margin-bottom:20px;'
   dialog.appendChild(desc)
@@ -99,11 +99,11 @@ function showConfirmDialog(onConfirm: () => void) {
 
   // 两个按钮都直接用客户端原生的 <lol-uikit-flat-button>，自带官方样式/hover/点击反馈
   const cancelBtn = document.createElement('lol-uikit-flat-button')
-  cancelBtn.textContent = '取消'
+  cancelBtn.textContent = 'Hủy'
   cancelBtn.style.minWidth = '100px'
 
   const confirmBtn = document.createElement('lol-uikit-flat-button')
-  confirmBtn.textContent = '确认秒退'
+  confirmBtn.textContent = 'Xác nhận thoát'
   confirmBtn.style.minWidth = '120px'
   // 强调危险操作——文字染红，但是好像没用
   confirmBtn.style.color = '#e84749'
@@ -138,7 +138,7 @@ function showConfirmDialog(onConfirm: () => void) {
 function buildSonaQuitButton(): HTMLElement {
   const btn = document.createElement('lol-uikit-flat-button')
   btn.setAttribute(SONA_QUIT_ATTR, 'true')
-  btn.textContent = '退出对局'
+  btn.textContent = 'Thoát trận'
   // 对齐原生 quit-button 的布局规格：125px 宽 + 10px 右边距，配合父容器 flex
   btn.style.width = '125px'
   btn.style.marginRight = '10px'
@@ -149,9 +149,9 @@ function buildSonaQuitButton(): HTMLElement {
     showConfirmDialog(async () => {
       try {
         await lcu.dodgeChampSelect()
-        logger.info('[QuitButton] 已发送秒退请求 ✓')
+        logger.info('[QuitButton] Đã gửi yêu cầu thoát chọn tướng ✓')
       } catch (err) {
-        logger.error('[QuitButton] 秒退请求失败:', err)
+        logger.error('[QuitButton] Yêu cầu thoát chọn tướng thất bại:', err)
       }
     })
   })
@@ -184,7 +184,7 @@ function tryInjectQuitButton(): boolean {
   const btn = buildSonaQuitButton()
   // 插到容器最前面，视觉上靠左——和原生 quit-button 位置一致
   container.insertBefore(btn, container.firstChild)
-  logger.info('[QuitButton] 已注入选人阶段退出按钮 ✓')
+  logger.info('[QuitButton] Đã chèn nút thoát ở giai đoạn chọn tướng ✓')
   return true
 }
 
@@ -232,11 +232,11 @@ export function updateChampSelectQuitButton(enabled: boolean) {
       if (phase === 'ChampSelect') mount()
     }).catch(() => { /* ignore */ })
 
-    logger.info('[QuitButton] 选人阶段退出按钮已启用 ✓')
+    logger.info('[QuitButton] Đã bật nút thoát ở giai đoạn chọn tướng ✓')
   } else if (!enabled && phaseUnsub) {
     phaseUnsub()
     phaseUnsub = null
     unmount()
-    logger.info('[QuitButton] 选人阶段退出按钮已禁用')
+    logger.info('[QuitButton] Đã tắt nút thoát ở giai đoạn chọn tướng')
   }
 }

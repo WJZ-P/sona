@@ -148,7 +148,7 @@ function mountApp() {
   logger.info('Mounted ✓ (container connected: %s)', String(container.isConnected))
 
   if (!runtime.hasShownStartupToast) {
-    Toast.success('Sona 已启动 ♫')
+    Toast.success('Sona started ♫')
     runtime.hasShownStartupToast = true
   }
 

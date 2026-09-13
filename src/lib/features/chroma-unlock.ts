@@ -25,7 +25,7 @@ import { logger } from '@/index'
 export function registerChromaRules() {
   // 开关关闭就不注册规则，彻底不劫持
   if (!store.get('unlockChromas')) {
-    logger.info('[ChromaUnlock] 开关已关闭，跳过注册')
+    logger.info('[ChromaUnlock] Tính năng đã tắt, bỏ qua đăng ký')
     return
   }
 

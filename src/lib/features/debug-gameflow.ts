@@ -7,14 +7,14 @@ import type { LCUEventMessage, GameflowPhase } from '@/lib/lcu'
 let debugGameflowUnsub: (() => void) | null = null
 
 const PHASE_LABELS: Partial<Record<GameflowPhase, string>> = {
-  ReadyCheck: '匹配确认',
-  ChampSelect: '英雄选择',
-  GameStart: '游戏启动',
-  InProgress: '对局进行中',
-  Reconnect: '重新连接',
-  WaitingForStats: '等待结算',
-  PreEndOfGame: '结算准备',
-  EndOfGame: '对局结束',
+  ReadyCheck: 'Xác nhận trận đấu',
+  ChampSelect: 'Chọn tướng',
+  GameStart: 'Khởi động trò chơi',
+  InProgress: 'Trận đấu đang diễn ra',
+  Reconnect: 'Kết nối lại',
+  WaitingForStats: 'Chờ kết quả',
+  PreEndOfGame: 'Chuẩn bị kết quả',
+  EndOfGame: 'Trận đấu kết thúc',
 }
 
 export function updateDebugGameflow(enabled: boolean) {
@@ -30,34 +30,34 @@ export function updateDebugGameflow(enabled: boolean) {
       lcu.getGameflowSession()
         .then((session) => {
           logger.info('=== %s ===', label)
-          logger.info('游戏模式: %s | 队列: %s (ID: %d)', session.gameData.queue.gameMode, session.gameData.queue.name, session.gameData.queue.id)
-          logger.info('对局 ID: %d | 自定义: %s', session.gameData.gameId, session.gameData.isCustomGame)
-          logger.info('地图: %s (ID: %d)', session.map.name, session.map.id)
-          logger.info('我方队伍:', session.gameData.teamOne)
-          logger.info('对方队伍:', session.gameData.teamTwo)
+          logger.info('Chế độ chơi: %s | Hàng chờ: %s (ID: %d)', session.gameData.queue.gameMode, session.gameData.queue.name, session.gameData.queue.id)
+          logger.info('ID trận: %d | Tùy chỉnh: %s', session.gameData.gameId, session.gameData.isCustomGame)
+          logger.info('Bản đồ: %s (ID: %d)', session.map.name, session.map.id)
+          logger.info('Đội ta:', session.gameData.teamOne)
+          logger.info('Đội địch:', session.gameData.teamTwo)
           if (phase === 'InProgress') {
-            logger.info('游戏客户端: running=%s, server=%s:%d', session.gameClient.running, session.gameClient.serverIp, session.gameClient.serverPort)
+            logger.info('Client trò chơi: running=%s, server=%s:%d', session.gameClient.running, session.gameClient.serverIp, session.gameClient.serverPort)
           }
-          logger.info('完整 session: %o', session)
+          logger.info('Toàn bộ session: %o', session)
 
           // 英雄选择阶段：拉取 champ select session 打印队友信息
           if (phase === 'ChampSelect') {
             lcu.getChampSelectSession()
               .then((champSelect) => {
-                logger.info('--- 英雄选择详情 ---')
-                logger.info('本地玩家 cellId: %d', champSelect.localPlayerCellId)
+                logger.info('--- Chi tiết chọn tướng ---')
+                logger.info('cellId người chơi hiện tại: %d', champSelect.localPlayerCellId)
                 champSelect.myTeam.forEach((p, i) => {
-                  logger.info('我方 #%d → summonerId: %d, championId: %d, cellId: %d, position: %s', i + 1, p.summonerId, p.championId, p.cellId, p.assignedPosition || '无')
+                  logger.info('Đội ta #%d → summonerId: %d, championId: %d, cellId: %d, position: %s', i + 1, p.summonerId, p.championId, p.cellId, p.assignedPosition || 'Không')
                 })
                 champSelect.theirTeam.forEach((p, i) => {
-                  logger.info('对方 #%d → summonerId: %d, championId: %d, cellId: %d, position: %s', i + 1, p.summonerId, p.championId, p.cellId, p.assignedPosition || '无')
+                  logger.info('Đội địch #%d → summonerId: %d, championId: %d, cellId: %d, position: %s', i + 1, p.summonerId, p.championId, p.cellId, p.assignedPosition || 'Không')
                 })
-                logger.info('完整 champSelect: %o', champSelect)
+                logger.info('Toàn bộ champSelect: %o', champSelect)
               })
-              .catch((err) => logger.error('获取英雄选择详情失败:', err))
+              .catch((err) => logger.error('Lấy chi tiết chọn tướng thất bại:', err))
           }
         })
-        .catch((err) => logger.error('获取 %s 对局信息失败:', label, err))
+        .catch((err) => logger.error('Lấy thông tin trận %s thất bại:', label, err))
     })
     logger.info('Debug gameflow logging enabled ✓')
   } else if (!enabled && debugGameflowUnsub) {

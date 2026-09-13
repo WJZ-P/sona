@@ -59,10 +59,10 @@ function tryHijackProfileSkinButton(): boolean {
     e.stopImmediatePropagation()
     e.preventDefault()
     showProfileBgPicker()
-    logger.info('[ProfileBg] 拦截原生按钮点击，打开自定义弹窗')
+    logger.info('[ProfileBg] Chặn nhấp nút gốc, mở cửa sổ tùy chỉnh')
   }, true)
 
-  logger.info('[ProfileBg] 已接管皮肤选择按钮 ✓')
+  logger.info('[ProfileBg] Đã tiếp quản nút chọn skin ✓')
   return true
 }
 

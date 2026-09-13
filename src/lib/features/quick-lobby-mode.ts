@@ -40,7 +40,7 @@ async function handlePlayClick(e: Event) {
 
   const queueId = store.get('quickLobbyQueueId')
   if (!queueId || queueId <= 0) {
-    logger.warn('[QuickLobby] 未配置目标队列，放行原生 Play 行为')
+    logger.warn('[QuickLobby] Chưa cấu hình hàng chờ mục tiêu, cho phép hành vi Play gốc')
     return
   }
 
@@ -51,9 +51,9 @@ async function handlePlayClick(e: Event) {
 
   try {
     await lcu.createLobby(queueId)
-    logger.info('[QuickLobby] 已快速创建大厅 → queueId=%d ✓', queueId)
+    logger.info('[QuickLobby] Đã tạo sảnh nhanh → queueId=%d ✓', queueId)
   } catch (err) {
-    logger.error('[QuickLobby] 创建大厅失败 queueId=%d:', queueId, err)
+    logger.error('[QuickLobby] Tạo sảnh thất bại queueId=%d:', queueId, err)
   }
 }
 
@@ -65,7 +65,7 @@ function tryBindPlayButton(): boolean {
 
   btn.addEventListener('click', handlePlayClick, true)
   btn.setAttribute(BOUND_ATTR, 'true')
-  logger.info('[QuickLobby] 已绑定 Play 按钮点击监听 ✓')
+  logger.info('[QuickLobby] Đã gắn trình nghe nhấp nút Play ✓')
   return true
 }
 
@@ -90,7 +90,7 @@ export function updateQuickLobbyMode(enabled: boolean) {
       .then((phase) => { currentPhase = phase })
       .catch(() => { /* ignore */ })
 
-    logger.info('[QuickLobby] 快速大厅模式已启用 ✓')
+    logger.info('[QuickLobby] Đã bật chế độ sảnh nhanh ✓')
   } else if (!enabled && registered) {
     registered = false
     injector.unregister(tryBindPlayButton)
@@ -100,6 +100,6 @@ export function updateQuickLobbyMode(enabled: boolean) {
       phaseUnsub = null
     }
     currentPhase = ''
-    logger.info('[QuickLobby] 快速大厅模式已禁用')
+    logger.info('[QuickLobby] Đã tắt chế độ sảnh nhanh')
   }
 }

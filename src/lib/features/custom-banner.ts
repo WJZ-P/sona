@@ -74,7 +74,7 @@ async function getOwnSummonerId(): Promise<string> {
     })
     .catch((err) => {
       ownSummonerIdPromise = null
-      logger.warn('[CustomBanner] 获取当前召唤师 ID 失败: %o', err)
+      logger.warn('[CustomBanner] Lấy ID người chơi hiện tại thất bại: %o', err)
       return ''
     })
 
@@ -91,7 +91,7 @@ async function getOwnPuuid(): Promise<string> {
     })
     .catch((err) => {
       ownPuuidPromise = null
-      logger.warn('[CustomBanner] 获取当前玩家 PUUID 失败: %o', err)
+      logger.warn('[CustomBanner] Lấy PUUID người chơi hiện tại thất bại: %o', err)
       return ''
     })
 
@@ -317,7 +317,7 @@ function cleanupCustomBanner() {
 function createNativeButton(): HTMLElement {
   const button = document.createElement('lol-uikit-flat-button') as HTMLElement
   button.setAttribute(SONA_CUSTOM_BANNER_ATTR, 'true')
-  button.textContent = '自定义旗帜'
+  button.textContent = 'Cờ tùy chỉnh'
   button.style.marginLeft = '12px'
   button.style.verticalAlign = 'middle'
   button.style.height = '24px'
@@ -329,7 +329,7 @@ function createNativeButton(): HTMLElement {
     event.stopImmediatePropagation()
     event.preventDefault()
     showCustomBannerPicker()
-    logger.info('[CustomBanner] 打开自定义旗帜弹窗')
+    logger.info('[CustomBanner] Mở cửa sổ cờ tùy chỉnh')
   }, true)
 
   return button
@@ -349,7 +349,7 @@ function tryInjectCustomBannerButton(): boolean {
     if (!titleEl.style.alignItems) titleEl.style.alignItems = 'center'
 
     title.appendChild(createNativeButton())
-    logger.info('[CustomBanner] 已注入自定义旗帜按钮 ✓')
+    logger.info('[CustomBanner] Đã chèn nút cờ tùy chỉnh ✓')
   })
 
   return true

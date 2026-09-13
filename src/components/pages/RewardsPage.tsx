@@ -45,7 +45,7 @@ export function RewardsPage() {
       })
     } catch (error) {
       const reason = error instanceof Error ? error.message : String(error)
-      logger.warn('[RewardsPage] 加载奖励失败: %s', reason)
+      logger.warn('[RewardsPage] Không thể tải phần thưởng: %s', reason)
       setStatus(t('rewards.loadFailed', { error: reason }))
     } finally {
       setLoading(false)
@@ -127,7 +127,7 @@ export function RewardsPage() {
         }
       } catch (error) {
         failure = error instanceof Error ? error.message : String(error)
-        logger.warn('[RewardsPage] 领取失败: %s', failure)
+        logger.warn('[RewardsPage] Nhận thất bại: %s', failure)
         break
       }
     }

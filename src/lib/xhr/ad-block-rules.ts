@@ -7,7 +7,7 @@ const AD_BLOCK_RULES: XhrRule[] = [
   {
     id: 'tencent-welive-match-popup',
     action: 'networkError',
-    description: '阻断比赛直播资源请求，避免客户端弹出直播入口',
+    description: 'Block match livestream resource requests to prevent livestream popups in the client',
     match: 'https://log.welive.qq.com/send',
   },
 ]

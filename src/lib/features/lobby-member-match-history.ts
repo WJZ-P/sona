@@ -114,7 +114,7 @@ function indexLobby(lobby: Lobby | null) {
     const info: LobbyMemberInfo = {
       puuid: member.puuid,
       summonerId: member.summonerId,
-      name: member.summonerName || `召唤师 ${member.summonerId}`,
+      name: member.summonerName || `Người chơi ${member.summonerId}`,
     }
 
     if (member.puuid) nextMap.set(`puuid:${member.puuid}`, info)
@@ -180,14 +180,14 @@ async function doRefreshLobbyMemberStats() {
         total,
       })
       logger.debug(
-        '[LobbyHistory] %s 当前模式有效 %d 场 / 返回 %d 场 (queueId=%d)',
+        '[LobbyHistory] %s có %d trận hợp lệ cho chế độ hiện tại / trả về %d trận (queueId=%d)',
         member.name,
         total,
         receivedGames.length,
         lobbyMemberHistoryQueueId,
       )
     } catch (err) {
-      logger.debug('[LobbyHistory] 拉取成员战绩失败: %s', member.name, err)
+      logger.debug('[LobbyHistory] Tải lịch sử đấu của thành viên thất bại: %s', member.name, err)
     }
   }))
 
@@ -281,11 +281,11 @@ function renderStatsOverlay(identity: HTMLElement, stats: LobbyMemberStats | und
   const overlay = ensureStatsOverlay(identity)
   const nextText = stats
     ? [
-        `胜率 ${Math.round(stats.winRate * 100)}%`,
+        `Win rate ${Math.round(stats.winRate * 100)}%`,
         `KDA ${stats.kda >= 99 ? 'Perfect' : stats.kda.toFixed(2)}`,
-        `评分 ${stats.score != null ? stats.score.toFixed(1) : '--'}`,
+        `Điểm ${stats.score != null ? stats.score.toFixed(1) : '--'}`,
       ].join('|')
-    : '战绩加载中...'
+    : 'Đang tải lịch sử đấu...'
 
   if (overlay.getAttribute(SONA_LOBBY_STATS_TEXT_ATTR) === nextText) {
     return
@@ -293,16 +293,16 @@ function renderStatsOverlay(identity: HTMLElement, stats: LobbyMemberStats | und
   overlay.setAttribute(SONA_LOBBY_STATS_TEXT_ATTR, nextText)
 
   if (!stats) {
-    overlay.innerHTML = '<span style="color:#a09b8c">战绩加载中...</span>'
+    overlay.innerHTML = '<span style="color:#a09b8c">Đang tải lịch sử đấu...</span>'
     return
   }
 
   overlay.innerHTML = [
-    `<span style="color:${getRateColor(stats.winRate)}">胜率 ${Math.round(stats.winRate * 100)}%</span>`,
+    `<span style="color:${getRateColor(stats.winRate)}">Win rate ${Math.round(stats.winRate * 100)}%</span>`,
     `<span style="color:#5c5b57">|</span>`,
     `<span style="color:${getKdaColor(stats.kda)}">KDA ${stats.kda >= 99 ? 'Perfect' : stats.kda.toFixed(2)}</span>`,
     `<span style="color:#5c5b57">|</span>`,
-    `<span style="color:${stats.score != null ? getScoreColor(stats.score) : '#a09b8c'}">评分 ${stats.score != null ? stats.score.toFixed(1) : '--'}</span>`,
+    `<span style="color:${stats.score != null ? getScoreColor(stats.score) : '#a09b8c'}">Điểm ${stats.score != null ? stats.score.toFixed(1) : '--'}</span>`,
   ].join('')
 }
 

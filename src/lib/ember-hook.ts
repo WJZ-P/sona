@@ -171,7 +171,7 @@ function applyRuleToClass(
 function hookComponentExtend(Ember: EmberNamespace) {
   const Component = Ember.Component
   if (!Component || typeof Component.extend !== 'function') {
-    logger.warn('[EmberHook] Ember.Component.extend 不存在，放弃')
+    logger.warn('[EmberHook] Không tìm thấy Ember.Component.extend, dừng lại')
     return
   }
 
@@ -204,7 +204,7 @@ function hookComponentExtend(Ember: EmberNamespace) {
           try {
             matched = m(args)
           } catch (e) {
-            logger.warn('[EmberHook] matcher 函数抛错 (%s): %o', rule.name, e)
+            logger.warn('[EmberHook] Hàm matcher phát sinh lỗi (%s): %o', rule.name, e)
             matched = false
           }
         } else if (m === '*') {
@@ -225,7 +225,7 @@ function hookComponentExtend(Ember: EmberNamespace) {
   } as EmberComponentClass['extend']
 
   target[WRAPPED_MARK] = true
-  logger.info('[EmberHook] ✅ Ember.Component.extend 已被劫持（当前规则数: %d）', rules.length)
+  logger.info('[EmberHook] ✅ Đã hook Ember.Component.extend (số quy tắc hiện tại: %d)', rules.length)
 }
 
 // ========== 公开 API ==========
@@ -236,12 +236,12 @@ function hookComponentExtend(Ember: EmberNamespace) {
  */
 export function installEmberHook(context: PenguContext) {
   if (installed) {
-    logger.warn('[EmberHook] installEmberHook 已经被调用过，忽略')
+    logger.warn('[EmberHook] installEmberHook đã được gọi, bỏ qua')
     return
   }
   installed = true
 
-  logger.info('[EmberHook] 注册 rcp-fe-ember-libs postInit...')
+  logger.info('[EmberHook] Đăng ký postInit cho rcp-fe-ember-libs...')
 
   // blocking=true 很关键！
   //   - false（默认）：只捕获"未来的初始化事件"，Pengu HMR/reload 后注册会错过时机
@@ -250,14 +250,14 @@ export function installEmberHook(context: PenguContext) {
   context.rcp.postInit('rcp-fe-ember-libs', (api: unknown) => {
     const emberLibs = api as { getEmber?: (...a: unknown[]) => Promise<EmberNamespace> }
     if (!emberLibs || typeof emberLibs.getEmber !== 'function') {
-      logger.warn('[EmberHook] rcp-fe-ember-libs 里没有 getEmber，放弃')
+      logger.warn('[EmberHook] Không tìm thấy getEmber trong rcp-fe-ember-libs, dừng lại')
       return
     }
 
     // 劫持 getEmber：客户端调用它拿 Ember 时，我们在中间插入 extend 劫持
     const target = emberLibs as unknown as Record<string | symbol, unknown>
     if (target[WRAPPED_MARK]) {
-      logger.info('[EmberHook] getEmber 已被劫持过，跳过')
+      logger.info('[EmberHook] getEmber đã được hook, bỏ qua')
       return
     }
 
@@ -268,14 +268,14 @@ export function installEmberHook(context: PenguContext) {
         try {
           hookComponentExtend(Ember)
         } catch (e) {
-          logger.warn('[EmberHook] hookComponentExtend 异常: %o', e)
+          logger.warn('[EmberHook] Lỗi hookComponentExtend: %o', e)
         }
         return Ember
       })
     }
     target[WRAPPED_MARK] = true
 
-    logger.info('[EmberHook] 🎯 已劫持 rcp-fe-ember-libs.getEmber，等客户端首次调用...')
+    logger.info('[EmberHook] 🎯 Đã hook rcp-fe-ember-libs.getEmber, chờ lần gọi đầu tiên từ client...')
   }, true)
 }
 
@@ -291,11 +291,11 @@ export function registerEmberRule(rule: EmberRule) {
   const i = rules.findIndex((r) => r.name === rule.name)
   if (i >= 0) {
     rules[i] = rule
-    logger.info('[EmberHook] 更新规则: %s', rule.name)
+    logger.info('[EmberHook] Cập nhật quy tắc: %s', rule.name)
   } else {
     rules.push(rule)
     const matcherDesc = typeof rule.matcher === 'function' ? '<function>' : rule.matcher
-    logger.info('[EmberHook] 新增规则: %s (matcher=%s)，当前共 %d 条', rule.name, matcherDesc, rules.length)
+    logger.info('[EmberHook] Thêm quy tắc: %s (matcher=%s), hiện có tổng cộng %d quy tắc', rule.name, matcherDesc, rules.length)
   }
 }
 

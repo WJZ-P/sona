@@ -8,7 +8,7 @@ const PROFILE_PRIVACY_RULES: XhrRule[] = [
   {
     id: 'profile-privacy-disabled',
     action: 'rewriteResponse',
-    description: '改写生涯隐私开关响应，允许查看开启隐私的生涯页面',
+    description: 'Rewrite the profile privacy setting response to allow viewing private profiles',
     match: '/lol-summoner/v1/profile-privacy-enabled',
     response: false,
     status: 200,

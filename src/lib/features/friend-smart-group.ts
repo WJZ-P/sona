@@ -69,15 +69,15 @@ async function doRefreshFriendInfoMap(retries = 5) {
       }
 
       friendInfoMap = newMap
-      logger.info('[FriendGroup] 刷新好友游戏状态 → %d 人在游戏中 (attempt %d)', newMap.size, attempt)
+      logger.info('[FriendGroup] Làm mới trạng thái chơi của bạn bè → %d người đang trong trận (attempt %d)', newMap.size, attempt)
       tryInjectFriendSmartGroup()
       return
     } catch (err) {
       if (attempt < retries) {
-        logger.debug('[FriendGroup] 好友接口未就绪，%ds 后重试 (%d/%d)', 2, attempt + 1, retries)
+        logger.debug('[FriendGroup] API bạn bè chưa sẵn sàng, thử lại sau %ds (%d/%d)', 2, attempt + 1, retries)
         await sleep(2000)
       } else {
-        logger.error('[FriendGroup] 查询好友状态失败:', err)
+        logger.error('[FriendGroup] Truy vấn trạng thái bạn bè thất bại:', err)
       }
     }
   }

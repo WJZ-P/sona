@@ -159,7 +159,7 @@ export function checkForUpdates(): Promise<UpdateState> {
       if (latestVersion === skippedVersion) {
         const next: UpdateState = { status: 'latest', info: null, error: '' }
         setState(next)
-        logger.info('[Update] 已跳过版本 %s，本次不再提示。', latestVersion)
+        logger.info('[Update] Version %s was skipped; no notification will be shown this time.', latestVersion)
         return next
       }
 
@@ -171,12 +171,12 @@ export function checkForUpdates(): Promise<UpdateState> {
           latestVersion,
           releaseName: release.name || `Sona v${latestVersion}`,
           releaseUrl: release.html_url || RELEASE_PAGE_URL,
-          releaseBody: release.body || '该版本没有填写更新说明。',
+          releaseBody: release.body || 'No release notes were provided for this version.',
           publishedAt: release.published_at || '',
         },
       }
       setState(next)
-      logger.info('[Update] 检测到新版本: %s -> %s', currentVersion, latestVersion)
+      logger.info('[Update] New version detected: %s -> %s', currentVersion, latestVersion)
       notifyUpdateAvailable(currentVersion, latestVersion)
       return next
     })
@@ -184,7 +184,7 @@ export function checkForUpdates(): Promise<UpdateState> {
       const message = err instanceof Error ? err.message : String(err)
       const next: UpdateState = { status: 'error', info: null, error: message }
       setState(next)
-      logger.warn('[Update] 检查更新失败:', err)
+      logger.warn('[Update] Failed to check for updates:', err)
       return next
     })
     .finally(() => {
@@ -207,7 +207,7 @@ export function skipUpdateVersion(version: string): UpdateState {
     emit()
   }
 
-  logger.info('[Update] 跳过版本更新提醒: %s', normalizedVersion)
+  logger.info('[Update] Skipping update notifications for version: %s', normalizedVersion)
   return getUpdateState()
 }
 
@@ -221,10 +221,10 @@ function notifyUpdateAvailable(currentVersion: string, latestVersion: string) {
   notifiedVersion = latestVersion
 
   void lcu.sendNotification(
-    '检测到 Sona 新版本',
-    `${currentVersion} → ${latestVersion}，打开 Sona 面板查看更新内容。`,
+    'New Sona version available',
+    `${currentVersion} → ${latestVersion}. Open the Sona panel to view the release notes.`,
   ).catch((err) => {
     notifiedVersion = ''
-    logger.warn('[Update] 发送更新通知失败:', err)
+    logger.warn('[Update] Failed to send update notification:', err)
   })
 }

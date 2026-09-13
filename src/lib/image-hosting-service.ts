@@ -220,7 +220,7 @@ async function getUploadParams(md5: string, extension: string, enableDebug: bool
   })
   const browserHeaderAcceptance = getHeaderAcceptance(request)
 
-  debugLog(enableDebug, 'Step 1/2 请求上传凭证', {
+  debugLog(enableDebug, 'Step 1/2 Requesting upload credentials', {
     endpoint: GET_UPLOAD_PARAMS_URL,
     proxy: CORS_PROXY_URL,
     md5,
@@ -237,13 +237,13 @@ async function getUploadParams(md5: string, extension: string, enableDebug: bool
 
   if (!response.ok || !body || typeof body === 'string' || body.retcode !== 0) {
     const message = body && typeof body !== 'string' ? body.message : body
-    throw new Error(`图床上传凭证请求失败: ${response.status} ${response.statusText}${message ? ` → ${message}` : ''}`)
+    throw new Error(`Image hosting upload credentials request failed: ${response.status} ${response.statusText}${message ? ` → ${message}` : ''}`)
   }
 
   const oss = body.data?.oss
   const key = body.data?.file_name
   if (!key || !oss?.policy || !oss.signature || !oss.accessid) {
-    throw new Error('图床上传凭证响应缺少 file_name / policy / signature / accessid')
+    throw new Error('Image hosting upload credentials response is missing file_name / policy / signature / accessid')
   }
 
   const params: ObjectStorageParams = {
@@ -253,7 +253,7 @@ async function getUploadParams(md5: string, extension: string, enableDebug: bool
     signature: oss.signature,
     accessId: oss.accessid,
   }
-  debugLog(enableDebug, 'Step 1/2 上传凭证获取成功', {
+  debugLog(enableDebug, 'Step 1/2 Upload credentials retrieved successfully', {
     status: response.status,
     host: params.host,
     key: params.key,
@@ -279,8 +279,8 @@ async function uploadImage(
   sourceFileName: string,
   enableDebug: boolean,
 ): Promise<ImageHostingUploadDebugResult> {
-  if (image.size <= 0) throw new Error('图片内容为空')
-  if (image.size > MAX_IMAGE_SIZE) throw new Error(`图片超过 50MB：${image.size} bytes`)
+  if (image.size <= 0) throw new Error('Image is empty')
+  if (image.size > MAX_IMAGE_SIZE) throw new Error(`Image exceeds 50MB: ${image.size} bytes`)
 
   const startedAt = performance.now()
   const buffer = await image.arrayBuffer()
@@ -288,7 +288,7 @@ async function uploadImage(
   const contentType = getContentType(extension, image.type)
   const md5 = computeMd5(buffer)
   const uploadFileName = `image-${crypto.randomUUID().replace(/-/g, '')}.${extension}`
-  debugLog(enableDebug, '已读取本地图片', {
+  debugLog(enableDebug, 'Local image loaded', {
     size: image.size,
     contentType,
     extension,
@@ -306,7 +306,7 @@ async function uploadImage(
   formData.set('x-oss-content-type', contentType)
   formData.set('file', image, uploadFileName)
 
-  debugLog(enableDebug, 'Step 2/2 开始上传对象存储', {
+  debugLog(enableDebug, 'Step 2/2 Starting upload to object storage', {
     host: paramsResult.params.host,
     key: paramsResult.params.key,
     uploadFileName,
@@ -324,7 +324,7 @@ async function uploadImage(
     body: formData,
   })
   const uploadBrowserHeaderAcceptance = getHeaderAcceptance(uploadRequest)
-  debugLog(enableDebug, 'Step 2/2 请求将通过 CORS 代理发送', {
+  debugLog(enableDebug, 'Step 2/2 Request will be sent through the CORS proxy', {
     proxy: CORS_PROXY_URL,
     browserHeaderAcceptance: uploadBrowserHeaderAcceptance,
   })
@@ -332,7 +332,7 @@ async function uploadImage(
 
   if (!uploadResponse.ok) {
     const body = await uploadResponse.text().catch(() => '')
-    throw new Error(`图床对象存储上传失败: ${uploadResponse.status} ${uploadResponse.statusText}${body ? ` → ${body.slice(0, 1000)}` : ''}`)
+    throw new Error(`Image hosting object storage upload failed: ${uploadResponse.status} ${uploadResponse.statusText}${body ? ` → ${body.slice(0, 1000)}` : ''}`)
   }
 
   const url = makePublicImageUrl(paramsResult.params.key)
@@ -350,7 +350,7 @@ async function uploadImage(
     uploadStatus: uploadResponse.status,
     elapsedMs: Math.round(performance.now() - startedAt),
   }
-  debugLog(enableDebug, '上传完成', { ...result })
+  debugLog(enableDebug, 'Upload complete', { ...result })
   return result
 }
 

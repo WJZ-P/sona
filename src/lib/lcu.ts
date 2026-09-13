@@ -88,7 +88,7 @@ async function request<T = unknown>(endpoint: string, options: RequestInit = {})
   })
 
   if (!response.ok) {
-    throw new Error(`[LCU] 请求失败: ${options.method ?? 'GET'} ${url} → ${response.status} ${response.statusText}`)
+    throw new Error(`[LCU] Yêu cầu thất bại: ${options.method ?? 'GET'} ${url} → ${response.status} ${response.statusText}`)
   }
 
   // 204 No Content 等情况不需要解析 body
@@ -389,10 +389,10 @@ class LCUManager {
       const token = event.data as SgpEntitlementsToken | null
       if (token) {
         this._entitlementsToken = token
-        console.log('[LCUManager] Entitlements Token 已通过 WS 事件更新')
+        console.log('[LCUManager] Đã cập nhật Entitlements Token qua sự kiện WS')
       } else {
         this._entitlementsToken = null
-        console.log('[LCUManager] Entitlements Token 已清空（WS 事件）')
+        console.log('[LCUManager] Đã xóa Entitlements Token (sự kiện WS)')
       }
     })
 
@@ -400,10 +400,10 @@ class LCUManager {
       const token = event.data as string | null
       if (token) {
         this._leagueSessionToken = token
-        console.log('[LCUManager] League Session Token 已通过 WS 事件更新')
+        console.log('[LCUManager] Đã cập nhật League Session Token qua sự kiện WS')
       } else {
         this._leagueSessionToken = null
-        console.log('[LCUManager] League Session Token 已清空（WS 事件）')
+        console.log('[LCUManager] Đã xóa League Session Token (sự kiện WS)')
       }
     })
   }
@@ -413,24 +413,24 @@ class LCUManager {
     try {
       const [entToken, sessionToken] = await Promise.all([
         this.getEntitlementsToken().catch((e) => {
-          console.warn('[LCUManager] 初始拉取 Entitlements Token 失败:', e)
+          console.warn('[LCUManager] Không thể lấy Entitlements Token ban đầu:', e)
           return null
         }),
         this.getLeagueSessionToken().catch((e) => {
-          console.warn('[LCUManager] 初始拉取 League Session Token 失败:', e)
+          console.warn('[LCUManager] Không thể lấy League Session Token ban đầu:', e)
           return null
         }),
       ])
       if (entToken) {
         this._entitlementsToken = entToken
-        console.log('[LCUManager] 初始 Entitlements Token 已获取')
+        console.log('[LCUManager] Đã lấy Entitlements Token ban đầu')
       }
       if (sessionToken) {
         this._leagueSessionToken = sessionToken
-        console.log('[LCUManager] 初始 League Session Token 已获取')
+        console.log('[LCUManager] Đã lấy League Session Token ban đầu')
       }
     } catch (error) {
-      console.warn('[LCUManager] 初始拉取 SGP Token 异常:', error)
+      console.warn('[LCUManager] Lỗi khi lấy SGP Token ban đầu:', error)
     }
   }
 
@@ -486,33 +486,33 @@ class LCUManager {
 
     // 1. 本区精确查询
     const local = await this.getSummonerByRiotId(name, tag).catch((err) => {
-      console.warn('[CrossRegion] 本区 alias/lookup 失败:', err)
+      console.warn('[CrossRegion] alias/lookup trong khu vực hiện tại thất bại:', err)
       return null
     })
-    console.log('[CrossRegion] 本区 alias/lookup 结果:', local?.puuid ? `puuid=${local.puuid}` : '无')
+    console.log('[CrossRegion] Kết quả alias/lookup trong khu vực hiện tại:', local?.puuid ? `puuid=${local.puuid}` : 'Không có')
     if (local?.puuid) return local.puuid
 
     // 2. 仅国服支持跨大区搜集
     const sgpServerId = (await this.getSgpServerId().catch(() => '')).toUpperCase()
-    console.log('[CrossRegion] 当前 SGP 服务器:', sgpServerId || '(未解析到)')
+    console.log('[CrossRegion] Máy chủ SGP hiện tại:', sgpServerId || '(chưa xác định)')
     if (!sgpServerId.startsWith('TENCENT_')) {
-      console.log('[CrossRegion] 非国服，跳过跨大区搜集')
+      console.log('[CrossRegion] Không phải máy chủ Trung Quốc, bỏ qua tìm kiếm liên khu vực')
       return ''
     }
 
     const token = this._entitlementsToken ?? await this.getEntitlementsToken().catch((err) => {
-      console.warn('[CrossRegion] 获取 Entitlements Token 失败:', err)
+      console.warn('[CrossRegion] Không thể lấy Entitlements Token:', err)
       return null
     })
     if (!token?.accessToken) {
-      console.warn('[CrossRegion] 无可用 accessToken，无法跨大区查询')
+      console.warn('[CrossRegion] Không có accessToken khả dụng, không thể truy vấn liên khu vực')
       return ''
     }
     this._entitlementsToken = token
 
     const wantTag = tag.toLowerCase()
     const wantName = name.toLowerCase()
-    console.log('[CrossRegion] 开始跨大区搜集 → 目标 %s#%s，大区数 %d', name, tag, TENCENT_MATCH_HISTORY_INTEROP.length)
+    console.log('[CrossRegion] Bắt đầu tìm kiếm liên khu vực → mục tiêu %s#%s, số khu vực %d', name, tag, TENCENT_MATCH_HISTORY_INTEROP.length)
 
     const results = await Promise.allSettled(
       TENCENT_MATCH_HISTORY_INTEROP.map((regionKey) =>
@@ -524,23 +524,23 @@ class LCUManager {
     results.forEach((r, idx) => {
       const regionKey = TENCENT_MATCH_HISTORY_INTEROP[idx]
       if (r.status !== 'fulfilled') {
-        console.warn('[CrossRegion] [%s] 查询异常:', regionKey, r.reason)
+        console.warn('[CrossRegion] [%s] Lỗi truy vấn:', regionKey, r.reason)
         return
       }
       if (!r.value) {
-        console.log('[CrossRegion] [%s] 无返回 / 非 200', regionKey)
+        console.log('[CrossRegion] [%s] Không có kết quả / mã trạng thái khác 200', regionKey)
         return
       }
       const sTag = (r.value.tagLine ?? '').trim().toLowerCase()
       const sName = (r.value.gameName ?? r.value.name ?? '').trim().toLowerCase()
-      console.log('[CrossRegion] [%s] 命中召唤师: name=%s tag=%s puuid=%s', regionKey, sName || '(空)', sTag || '(空)', r.value.puuid || '(空)')
+      console.log('[CrossRegion] [%s] Tìm thấy người chơi: name=%s tag=%s puuid=%s', regionKey, sName || '(trống)', sTag || '(trống)', r.value.puuid || '(trống)')
       if (!matched && r.value.puuid && ((sTag && sTag === wantTag) || (!sTag && sName === wantName))) {
         matched = r.value.puuid
-        console.log('[CrossRegion] ✓ 匹配成功 → 大区 %s，puuid=%s', regionKey, matched)
+        console.log('[CrossRegion] ✓ Khớp thành công → khu vực %s, puuid=%s', regionKey, matched)
       }
     })
 
-    if (!matched) console.log('[CrossRegion] ✗ 全大区均未匹配到 %s#%s', name, tag)
+    if (!matched) console.log('[CrossRegion] ✗ Không tìm thấy %s#%s ở bất kỳ khu vực nào', name, tag)
     return matched
   }
 
@@ -565,7 +565,7 @@ class LCUManager {
     })
 
     const text = await resp.text().catch(() => '')
-    console.log('[CrossRegion] [%s] %s → %d %s | body: %s', regionKey, url, resp.status, resp.statusText, text.slice(0, 800) || '(空)')
+    console.log('[CrossRegion] [%s] %s → %d %s | body: %s', regionKey, url, resp.status, resp.statusText, text.slice(0, 800) || '(trống)')
 
     if (!resp.ok) return null
     if (!text) return null
@@ -573,7 +573,7 @@ class LCUManager {
     try {
       return JSON.parse(text) as SgpSummonerLite
     } catch (err) {
-      console.warn('[CrossRegion] [%s] JSON 解析失败:', regionKey, err)
+      console.warn('[CrossRegion] [%s] Phân tích JSON thất bại:', regionKey, err)
       return null
     }
   }
@@ -814,7 +814,7 @@ class LCUManager {
         .find((a) => a.actorCellId === session.localPlayerCellId && a.isInProgress && !a.completed)
 
       if (!myAction) {
-        throw new Error('[LCU] 找不到当前正在进行的选人/禁人动作')
+        throw new Error('[LCU] Không tìm thấy thao tác chọn/cấm tướng đang diễn ra')
       }
       targetActionId = myAction.id
     }
@@ -839,7 +839,7 @@ class LCUManager {
         .find((a) => a.actorCellId === session.localPlayerCellId && a.isInProgress && !a.completed)
 
       if (!myAction) {
-        throw new Error('[LCU] 找不到当前正在进行的选人动作')
+        throw new Error('[LCU] Không tìm thấy thao tác chọn tướng đang diễn ra')
       }
       targetActionId = myAction.id
     }
@@ -1012,7 +1012,7 @@ class LCUManager {
   async sendChampSelectMessage(message: string, type?: 'chat' | 'celebration' | 'system' |'information' | string): Promise<ChatMessage> {
     const conversation = await this.getChampSelectConversation()
     if (!conversation) {
-      throw new Error('[LCU] 当前不在英雄选择阶段，找不到 championSelect 会话')
+      throw new Error('[LCU] Hiện không ở giai đoạn chọn tướng, không tìm thấy phiên championSelect')
     }
     return this.sendChatMessage(conversation.id, { body: message, type: type ?? 'chat' })
   }
@@ -1287,7 +1287,7 @@ class LCUManager {
       const server = SGP_SERVERS[sgpServerId.toUpperCase()]
       debugContext.matchHistoryBaseUrl = server?.matchHistory ?? ''
       if (!server?.matchHistory) {
-        throw new Error(`[SGP] 找不到服务器配置: ${sgpServerId}`)
+        throw new Error(`[SGP] Không tìm thấy cấu hình máy chủ: ${sgpServerId}`)
       }
 
       const params = new URLSearchParams()
@@ -1309,12 +1309,12 @@ class LCUManager {
 
       if (!resp.ok) {
         const body = await resp.text().catch(() => '')
-        throw new Error(`[SGP] 请求失败: ${resp.status} ${resp.statusText} ${body.slice(0, 1000)}`)
+        throw new Error(`[SGP] Yêu cầu thất bại: ${resp.status} ${resp.statusText} ${body.slice(0, 1000)}`)
       }
 
       return resp.json()
     } catch (err) {
-      console.error('[SGP] 战绩查询失败，回退到客户端原生战绩接口', {
+      console.error('[SGP] Truy vấn lịch sử đấu thất bại, chuyển sang API lịch sử đấu gốc của client', {
         platformId: debugContext.platformId || 'unknown',
         sgpServerId: debugContext.sgpServerId || 'unknown',
         matchHistoryBaseUrl: debugContext.matchHistoryBaseUrl || 'unknown',
@@ -1783,7 +1783,7 @@ class LCUManager {
 
   private async getPuuid(): Promise<string> {
     const session = await get<{ puuid: string }>('/lol-login/v1/session')
-    if (!session.puuid) throw new Error('未获取到 PUUID')
+    if (!session.puuid) throw new Error('Không lấy được PUUID')
     return session.puuid
   }
 
@@ -1838,7 +1838,7 @@ class LCUManager {
       const puuid = await this.getPuuid()
       const all = this.loadAllBackups(puuid)
       const backup = all[name]
-      if (!backup) throw new Error(`备份 "${name}" 不存在`)
+      if (!backup) throw new Error(`Bản sao lưu "${name}" không tồn tại`)
 
       // 第 1 步：恢复常规设置 (game-settings)
       if (backup.general) {
@@ -1894,19 +1894,19 @@ class LCUManager {
 
   private observeUriOnSocket(uri: string) {
     if (!this.penguContext) {
-      console.warn('[LCUManager] PenguContext 未绑定，无法监听事件。请先调用 lcu.bindContext(context)')
+      console.warn('[LCUManager] PenguContext chưa được liên kết, không thể theo dõi sự kiện. Hãy gọi lcu.bindContext(context) trước')
       return
     }
 
     if (this.observedUris.has(uri)) {
-      console.log('[LCUManager] URI 已订阅到底层 socket，跳过重复 observe: %s', uri)
+      console.log('[LCUManager] URI đã được đăng ký trên socket bên dưới, bỏ qua observe trùng lặp: %s', uri)
       return
     }
 
     this.observedUris.add(uri)
-    console.log('[LCUManager] 向当前 socket 订阅 URI: %s', uri)
+    console.log('[LCUManager] Đăng ký URI trên socket hiện tại: %s', uri)
     this.penguContext.socket.observe(uri, (data) => {
-      console.log('[LCUManager] WS 收到事件 → uri=%s, data=%o', uri, data)
+      console.log('[LCUManager] WS nhận sự kiện → uri=%s, data=%o', uri, data)
       const message = data as LCUEventMessage
       const cbs = this.eventListeners.get(uri)
       cbs?.forEach((cb) => cb(message))

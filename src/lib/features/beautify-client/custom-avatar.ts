@@ -89,7 +89,7 @@ function loadRemoteAvatarOnce(avatarUrl: string): Promise<void> {
       settled = true
       image.onload = null
       image.onerror = null
-      reject(new Error('远程头像加载超时'))
+      reject(new Error('Hết thời gian tải ảnh đại diện từ xa'))
     }, REMOTE_AVATAR_LOAD_TIMEOUT)
 
     const finish = (error?: Error) => {
@@ -104,7 +104,7 @@ function loadRemoteAvatarOnce(avatarUrl: string): Promise<void> {
 
     image.referrerPolicy = 'no-referrer'
     image.onload = () => finish()
-    image.onerror = () => finish(new Error('远程头像直链加载失败'))
+    image.onerror = () => finish(new Error('Không thể tải ảnh đại diện từ liên kết trực tiếp'))
     image.src = avatarUrl
   })
 }
@@ -121,7 +121,7 @@ async function assertRemoteAvatarLoadable(avatarUrl: string): Promise<void> {
     }
   }
 
-  throw lastError instanceof Error ? lastError : new Error('远程头像直链加载失败')
+  throw lastError instanceof Error ? lastError : new Error('Không thể tải ảnh đại diện từ liên kết trực tiếp')
 }
 
 function getCurrentAvatarUrl(): string {
@@ -399,7 +399,7 @@ function ensureOwnAvatarStatusPayload(statusMessage?: string | null) {
     }
   })()
     .catch((err) => {
-      logger.warn('[CustomAvatarSync] 恢复简介头像同步信息失败:', err)
+      logger.warn('[CustomAvatarSync] Khôi phục thông tin đồng bộ ảnh đại diện trong tiểu sử thất bại:', err)
     })
     .finally(() => {
       ownStatusRestorePromise = null
@@ -428,10 +428,10 @@ function migrateLegacyOwnAvatarIfNeeded() {
     if (!isLegacyImageHostingUrl(savedAvatarUrl)) return
 
     await syncCustomAvatarAssetPath(assetPath)
-    logger.info('[CustomAvatarSync] 已将旧图床头像迁移至当前图床。')
+    logger.info('[CustomAvatarSync] Đã chuyển ảnh đại diện từ dịch vụ lưu ảnh cũ sang dịch vụ hiện tại.')
   })()
     .catch((err) => {
-      logger.warn('[CustomAvatarSync] 迁移旧图床头像失败:', err)
+      logger.warn('[CustomAvatarSync] Chuyển ảnh đại diện từ dịch vụ lưu ảnh cũ thất bại:', err)
     })
     .finally(() => {
       legacyAvatarMigrationPromise = null
@@ -455,7 +455,7 @@ function refreshFriendAvatarCache(forceAll: boolean, reason: string) {
       nextPuuids.forEach((puuid) => knownFriendPuuids.add(puuid))
 
       logger.info(
-        '[CustomAvatarSync] 好友列表刷新：%s，好友 PUUID %d 个，携带头像 %d 个，forceAll=%s',
+        '[CustomAvatarSync] Làm mới danh sách bạn bè: %s, %d PUUID bạn bè, %d có ảnh đại diện, forceAll=%s',
         reason,
         nextPuuids.size,
         advertisedAvatarCount,
@@ -464,7 +464,7 @@ function refreshFriendAvatarCache(forceAll: boolean, reason: string) {
     })
     .catch((err) => {
       friendPuuidMapUpdatedAt = 0
-      logger.error('[CustomAvatarSync] 刷新好友列表失败：%s', reason, err)
+      logger.error('[CustomAvatarSync] Làm mới danh sách bạn bè thất bại: %s', reason, err)
     })
     .finally(() => {
       friendPuuidMapPromise = null
@@ -888,7 +888,7 @@ function applyCustomAvatar(): boolean {
   if (friendScanSignature !== lastFriendAvatarScanSignature) {
     lastFriendAvatarScanSignature = friendScanSignature
     logger.debug(
-      '[CustomAvatarSync] 好友栏扫描：候选=%d，已映射 PUUID=%d，命中头像=%d，已替换=%d',
+      '[CustomAvatarSync] Quét thanh bạn bè: ứng viên=%d, PUUID đã ánh xạ=%d, ảnh đại diện khớp=%d, đã thay thế=%d',
       friendCandidates.length,
       mappedFriendCandidates,
       matchedRemoteAvatars,
@@ -988,7 +988,7 @@ function enableCustomAvatar() {
       if (friend && puuid && !knownFriendPuuids.has(puuid)) {
         indexFriendPuuid(friend)
         knownFriendPuuids.add(puuid)
-        logger.info('[CustomAvatarSync] 好友 WS 捕获新增 PUUID：%s', puuid)
+        logger.info('[CustomAvatarSync] WS bạn bè phát hiện PUUID mới: %s', puuid)
       }
 
       scheduleFriendAvatarRefresh('friends-ws-update')
@@ -1061,7 +1061,7 @@ export function updateBeautifyCustomAvatar() {
     if (ownPuuid) restoreOwnPatchedAvatars(ownPuuid)
     scheduleApplyCustomAvatar()
     void clearAvatarUrlFromStatusMessage().catch((err) => {
-      logger.warn('[CustomAvatarSync] 清理简介头像同步信息失败:', err)
+      logger.warn('[CustomAvatarSync] Xóa thông tin đồng bộ ảnh đại diện trong tiểu sử thất bại:', err)
     })
   } else {
     void migrateLegacyOwnAvatarIfNeeded()
@@ -1078,12 +1078,12 @@ export async function syncCustomAvatarAssetPath(assetPath: string) {
       })
 
     if (!ownPuuid) {
-      throw new Error('无法获取当前玩家 PUUID。')
+      throw new Error('Không thể lấy PUUID của người chơi hiện tại.')
     }
 
     const assetResponse = await fetch(getAssetUrl(assetPath))
     if (!assetResponse.ok) {
-      throw new Error(`读取头像资源失败：${assetResponse.status} ${assetResponse.statusText}`)
+      throw new Error(`Đọc tài nguyên ảnh đại diện thất bại: ${assetResponse.status} ${assetResponse.statusText}`)
     }
 
     const image = await assetResponse.blob()
@@ -1109,7 +1109,7 @@ export async function syncCustomAvatarAssetPath(assetPath: string) {
       throw error
     }
 
-    logger.info('[CustomAvatarSync] 新头像 payload 已替换并通过延迟回读校验。')
+    logger.info('[CustomAvatarSync] Đã thay thế payload ảnh đại diện mới và xác minh thành công bằng cách đọc lại sau độ trễ.')
     scheduleApplyCustomAvatar()
     await lcu.sendNotification(translate('notification.avatarSync.title'), translate('notification.avatarSync.details')).catch(() => {})
 

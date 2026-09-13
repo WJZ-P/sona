@@ -75,7 +75,7 @@ function scheduleAcceptMatch() {
   if (delayMs === 0) {
     doAccept()
   } else {
-    logger.info('[AutoAccept] 随机延迟 %dms 后接受', delayMs)
+    logger.info('[AutoAccept] Chấp nhận sau độ trễ ngẫu nhiên %dms', delayMs)
     autoAcceptTimer = setTimeout(doAccept, delayMs)
   }
 }
@@ -97,7 +97,7 @@ function suppressAutoAcceptForDecline(source: string) {
 
   userDeclinedThisSession = true
   hasAcceptedThisReadyCheck = true
-  logger.info('[AutoAccept] 玩家主动拒绝(%s)，已取消待执行接受并暂停自动接受直至回到大厅', source)
+  logger.info('[AutoAccept] Người chơi chủ động từ chối (%s), đã hủy lần chấp nhận đang chờ và tạm dừng tự động chấp nhận cho đến khi về sảnh', source)
 }
 
 /**
@@ -115,7 +115,7 @@ export function notifyUserManuallyDeclined() {
 export function notifyUserManuallyAccepted() {
   if (userDeclinedThisSession) {
     userDeclinedThisSession = false
-    logger.info('[AutoAccept] 检测到玩家主动接受，恢复自动接受')
+    logger.info('[AutoAccept] Phát hiện người chơi chủ động chấp nhận, tiếp tục tự động chấp nhận')
   }
 }
 

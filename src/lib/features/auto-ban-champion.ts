@@ -14,7 +14,7 @@ const AUTO_BAN_WAIT_LOG_INTERVAL = 20
 
 async function notifyAutoBanSuccess(championId: number) {
   const champInfo = getChampionById(championId)
-  const champName = champInfo?.name || `英雄#${championId}`
+  const champName = champInfo?.name || `Tướng #${championId}`
   const msg = translate('champSelect.autoBan.message', { championName: champName })
 
   try {
@@ -120,24 +120,24 @@ async function submitBanAction(action: ChampSelectAction, championId: number): P
     if (patchRes.ok) {
       const confirmed = await confirmBanCompleted(action.id, championId)
       if (confirmed !== false) return true
-      logger.warn('[AutoBan] 单步 PATCH 返回成功但会话未确认完成，切换两步式兜底')
+      logger.warn('[AutoBan] PATCH một bước thành công nhưng phiên chưa xác nhận hoàn tất, chuyển sang phương án dự phòng hai bước')
     } else {
-      logger.warn('[AutoBan] 单步 PATCH 失败 (status=%d)，切换两步式兜底', patchRes.status)
+      logger.warn('[AutoBan] PATCH một bước thất bại (status=%d), chuyển sang phương án dự phòng hai bước', patchRes.status)
     }
   } catch (error) {
-    logger.warn('[AutoBan] 单步 PATCH 请求异常，切换两步式兜底:', error)
+    logger.warn('[AutoBan] Lỗi yêu cầu PATCH một bước, chuyển sang phương án dự phòng hai bước:', error)
   }
 
   try {
     await lcu.lockChampion(championId, action.id)
     const confirmed = await confirmBanCompleted(action.id, championId)
     if (confirmed === false) {
-      logger.warn('[AutoBan] 两步式提交完成，但会话仍未确认 Ban 结果')
+      logger.warn('[AutoBan] Đã gửi xong hai bước nhưng phiên vẫn chưa xác nhận kết quả cấm')
       return false
     }
     return true
   } catch (error) {
-    logger.warn('[AutoBan] 两步式提交失败:', error)
+    logger.warn('[AutoBan] Gửi hai bước thất bại:', error)
     return false
   }
 }
@@ -147,11 +147,11 @@ let autoBanRunPromise: Promise<void> | null = null
 
 async function tryAutoBanChampion(runToken: number, reason: string) {
   if (getConfiguredChampionIds().length === 0) {
-    logger.warn('[AutoBan] 未设置目标英雄队列')
+    logger.warn('[AutoBan] Chưa thiết lập danh sách tướng mục tiêu')
     return
   }
 
-  logger.info('[AutoBan] 开始监听本局 Ban action：%s', reason)
+  logger.info('[AutoBan] Bắt đầu theo dõi thao tác cấm trong trận này: %s', reason)
 
   // 选人事件负责及时唤醒，轮询负责兜住丢失的 WS 更新。
   for (let attempt = 0; attempt < AUTO_BAN_MAX_ATTEMPTS; attempt++) {
@@ -172,18 +172,18 @@ async function tryAutoBanChampion(runToken: number, reason: string) {
 
       if (!myBanAction) {
         if (myBanActions.some((action) => action.completed)) {
-          logger.info('[AutoBan] 本局 Ban action 已完成，无需重复处理')
+          logger.info('[AutoBan] Thao tác cấm trong trận này đã hoàn tất, không cần xử lý lại')
           return
         }
 
         const queue = getQueue(session.queueId)
         if (queue?.gameTypeConfig.maxAllowableBans === 0 || session.benchEnabled) {
-          logger.info('[AutoBan] 当前模式无需禁用英雄，跳过')
+          logger.info('[AutoBan] Chế độ hiện tại không cần cấm tướng, bỏ qua')
           return
         }
 
         if (session.timer.phase === 'FINALIZATION' || session.timer.phase === 'GAME_STARTING') {
-          logger.info('[AutoBan] 选人已进入 %s，未发现本地 Ban action，停止等待', session.timer.phase)
+          logger.info('[AutoBan] Chọn tướng đã chuyển sang %s, không tìm thấy thao tác cấm của người chơi, ngừng chờ', session.timer.phase)
           return
         }
 
@@ -191,7 +191,7 @@ async function tryAutoBanChampion(runToken: number, reason: string) {
         // 会稍后才补进来。这里不能提前结束，否则只能依赖玩家点击英雄产生下一次更新。
         if (attempt === 0 || attempt % AUTO_BAN_WAIT_LOG_INTERVAL === 0) {
           logger.debug(
-            '[AutoBan] 等待本地 Ban action：attempt=%d phase=%s actions=%d numBans=%d',
+            '[AutoBan] Đang chờ thao tác cấm của người chơi: attempt=%d phase=%s actions=%d numBans=%d',
             attempt + 1,
             session.timer.phase,
             allActions.length,
@@ -212,37 +212,37 @@ async function tryAutoBanChampion(runToken: number, reason: string) {
         // 可 Ban / 禁用英雄列表在阶段切换瞬间也可能尚未初始化，继续回读，
         // 避免必须手动点击任意英雄后才出现可用目标。
         if (attempt === 0 || attempt % AUTO_BAN_WAIT_LOG_INTERVAL === 0) {
-          logger.warn('[AutoBan] 暂未解析到可 Ban 目标，等待客户端英雄列表就绪')
+          logger.warn('[AutoBan] Chưa xác định được tướng có thể cấm, chờ danh sách tướng của client sẵn sàng')
         }
         await sleep(AUTO_BAN_POLL_INTERVAL_MS)
         continue
       }
 
-      logger.info('[AutoBan] 轮到禁用英雄，目标英雄 ID: %d (actionId: %d)', championId, myBanAction.id)
+      logger.info('[AutoBan] Đến lượt cấm tướng, ID tướng mục tiêu: %d (actionId: %d)', championId, myBanAction.id)
 
       if (await submitBanAction(myBanAction, championId)) {
-        logger.info('[AutoBan] 自动 Ban 成功 ✓')
+        logger.info('[AutoBan] Tự động cấm thành công ✓')
         void notifyAutoBanSuccess(championId)
         return
       } else {
-        logger.warn('[AutoBan] 本次提交未完成，将等待下一次会话更新重试')
+        logger.warn('[AutoBan] Lần gửi này chưa hoàn tất, chờ cập nhật phiên tiếp theo để thử lại')
       }
 
       await sleep(AUTO_BAN_POLL_INTERVAL_MS)
     } catch (error) {
       const phase = await lcu.getGameflowPhase().catch(() => null)
       if (phase !== 'ChampSelect') {
-        logger.info('[AutoBan] 已离开英雄选择，停止本局自动 Ban')
+        logger.info('[AutoBan] Đã rời chọn tướng, dừng tự động cấm trong trận này')
         return
       }
       if (attempt === 0 || attempt % 10 === 0) {
-        logger.warn('[AutoBan] 会话读取暂时失败，继续重试:', error)
+        logger.warn('[AutoBan] Tạm thời không đọc được phiên, tiếp tục thử lại:', error)
       }
       await sleep(AUTO_BAN_POLL_INTERVAL_MS)
     }
   }
 
-  logger.warn('[AutoBan] 等待超时 (5分钟)，未能自动 Ban')
+  logger.warn('[AutoBan] Hết thời gian chờ (5 phút), không thể tự động cấm')
 }
 
 let autoBanChampionUnsub: (() => void) | null = null
@@ -269,7 +269,7 @@ function probeCurrentAutoBanPhase(reason: string) {
     .then((phase) => {
       if (phase === 'ChampSelect') startAutoBanRun(reason)
     })
-    .catch((error) => logger.debug('[AutoBan] 当前阶段探测暂未就绪:', error))
+    .catch((error) => logger.debug('[AutoBan] Chưa thể xác định giai đoạn hiện tại:', error))
 }
 
 export function updateAutoBanChampion(enabled: boolean) {

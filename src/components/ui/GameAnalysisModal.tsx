@@ -85,16 +85,16 @@ const RANK_COLORS: Record<string, string> = {
 }
 
 const RANK_NAMES: Record<string, string> = {
-  CHALLENGER: '最强王者',
-  GRANDMASTER: '傲世宗师',
-  MASTER: '超凡大师',
-  DIAMOND: '璀璨钻石',
-  EMERALD: '流光翡翠',
-  PLATINUM: '华贵铂金',
-  GOLD: '荣耀黄金',
-  SILVER: '不屈白银',
-  BRONZE: '英勇青铜',
-  IRON: '坚韧黑铁',
+  CHALLENGER: 'Thách Đấu',
+  GRANDMASTER: 'Đại Cao Thủ',
+  MASTER: 'Cao Thủ',
+  DIAMOND: 'Kim Cương',
+  EMERALD: 'Lục Bảo',
+  PLATINUM: 'Bạch Kim',
+  GOLD: 'Vàng',
+  SILVER: 'Bạc',
+  BRONZE: 'Đồng',
+  IRON: 'Sắt',
 }
 
 const PREMADE_COLORS = ['#e8a424', '#4a9eff', '#5bbd72', '#e74c3c', '#c084fc']
@@ -377,7 +377,7 @@ export function GameAnalysisModal({ open, onClose, mockData }: GameAnalysisModal
     } catch (err) {
       if (loadToken !== loadTokenRef.current) return
       setError(t('gameAnalysis.empty'))
-      console.error('[GameAnalysis] 加载失败:', err)
+      console.error('[GameAnalysis] Tải thất bại:', err)
     } finally {
       if (loadToken === loadTokenRef.current) setLoading(false)
     }

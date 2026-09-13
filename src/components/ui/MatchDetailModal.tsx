@@ -34,16 +34,16 @@ const RANK_COLORS: Record<string, string> = {
 }
 
 const RANK_NAMES: Record<string, string> = {
-  CHALLENGER: '最强王者',
-  GRANDMASTER: '傲世宗师',
-  MASTER: '超凡大师',
-  DIAMOND: '璀璨钻石',
-  EMERALD: '流光翡翠',
-  PLATINUM: '华贵铂金',
-  GOLD: '荣耀黄金',
-  SILVER: '不屈白银',
-  BRONZE: '英勇青铜',
-  IRON: '坚韧黑铁',
+  CHALLENGER: 'Thách Đấu',
+  GRANDMASTER: 'Đại Cao Thủ',
+  MASTER: 'Cao Thủ',
+  DIAMOND: 'Kim Cương',
+  EMERALD: 'Lục Bảo',
+  PLATINUM: 'Bạch Kim',
+  GOLD: 'Vàng',
+  SILVER: 'Bạc',
+  BRONZE: 'Đồng',
+  IRON: 'Sắt',
 }
 
 function formatK(value: number): string {
@@ -144,19 +144,19 @@ function TeamSummary({ team, participants, isRed }: { team?: MatchTeam; particip
 
   return (
     <div className="smd-team-summary">
-      <span title="击杀">
+      <span title="Hạ gục">
         <span className="smd-sprite-icon" style={{ WebkitMaskImage: 'url(/fe/lol-match-history/icons.png)', WebkitMaskPositionY: '0%' }} />
         {kills}
       </span>
-      <span className="smd-stat-gold" title="金币">
+      <span className="smd-stat-gold" title="Vàng">
         <span className="smd-stat-icon" style={{ WebkitMaskImage: 'url(/fe/lol-match-history/icon_gold.png)' }} />
         {formatK(gold)}
       </span>
-      <span className="smd-team-damage" title="伤害">
+      <span className="smd-team-damage" title="Sát thương">
         <span className="smd-damage-icon" />
         {formatK(damage)}
       </span>
-      <span className="smd-team-turret" title="防御塔">
+      <span className="smd-team-turret" title="Trụ">
         <img src={isRed ? redTurretIcon : blueTurretIcon} alt="" />
         {team?.towerKills ?? 0}
       </span>
@@ -249,11 +249,11 @@ function ParticipantRow({
 
       <div className="smd-items-block">
         <div className="smd-stat-strip">
-          <span className="smd-stat-pill" title="补刀">
+          <span className="smd-stat-pill" title="Chỉ số lính">
             <span className="smd-stat-icon" style={{ WebkitMaskImage: 'url(/fe/lol-match-history/icon_minions.png)' }} />
             {cs}
           </span>
-          <span className="smd-stat-pill smd-stat-gold" title="金币">
+          <span className="smd-stat-pill smd-stat-gold" title="Vàng">
             <span className="smd-stat-icon" style={{ WebkitMaskImage: 'url(/fe/lol-match-history/icon_gold.png)' }} />
             {formatK(stats.goldEarned)}
           </span>

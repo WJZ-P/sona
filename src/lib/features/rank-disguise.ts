@@ -10,7 +10,7 @@ export async function applyRankDisguise() {
 
   try {
     const res = await fetch('/lol-chat/v1/me')
-    if (!res.ok) { logger.error('[RankDisguise] 获取聊天状态失败'); return }
+    if (!res.ok) { logger.error('[RankDisguise] Lấy trạng thái trò chuyện thất bại'); return }
     const me = await res.json()
     me.lol.rankedLeagueTier = tier
     me.lol.rankedLeagueDivision = division
@@ -21,12 +21,12 @@ export async function applyRankDisguise() {
       body: JSON.stringify(me),
     })
     if (putRes.ok) {
-      logger.info('[RankDisguise] 段位伪装已应用 ✓ %s %s %s', queue, tier, division)
+      logger.info('[RankDisguise] Đã áp dụng ngụy trang rank ✓ %s %s %s', queue, tier, division)
     } else {
-      logger.error('[RankDisguise] 应用失败:', await putRes.text())
+      logger.error('[RankDisguise] Áp dụng thất bại:', await putRes.text())
     }
   } catch (err) {
-    logger.error('[RankDisguise] 应用异常:', err)
+    logger.error('[RankDisguise] Lỗi khi áp dụng:', err)
   }
 }
 
@@ -43,9 +43,9 @@ async function removeRankDisguise() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(me),
     })
-    if (putRes.ok) logger.info('[RankDisguise] 已恢复真实段位 ✓')
+    if (putRes.ok) logger.info('[RankDisguise] Đã khôi phục rank thật ✓')
   } catch (err) {
-    logger.error('[RankDisguise] 恢复失败:', err)
+    logger.error('[RankDisguise] Khôi phục thất bại:', err)
   }
 }
 

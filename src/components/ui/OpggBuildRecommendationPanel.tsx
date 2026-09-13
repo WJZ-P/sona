@@ -28,22 +28,22 @@ import '@/styles/OpggBuildRecommendationPanel.css'
 const MAX_RECOMMENDATION_ROWS = 5
 const RANKED_MINI_CREST_BASE = '/fe/lol-static-assets/images/ranked-mini-crests'
 const OPGG_TIER_BASE_OPTIONS: Array<{ value: OpggTier; label: string }> = [
-  { value: 'all', label: '全部段位' },
-  { value: 'challenger', label: '最强王者' },
-  { value: 'grandmaster', label: '傲世宗师' },
-  { value: 'master_plus', label: '超凡大师+' },
-  { value: 'master', label: '超凡大师' },
-  { value: 'diamond_plus', label: '璀璨钻石+' },
-  { value: 'diamond', label: '璀璨钻石' },
-  { value: 'emerald_plus', label: '流光翡翠+' },
-  { value: 'emerald', label: '流光翡翠' },
-  { value: 'platinum_plus', label: '华贵铂金+' },
-  { value: 'platinum', label: '华贵铂金' },
-  { value: 'gold_plus', label: '荣耀黄金+' },
-  { value: 'gold', label: '荣耀黄金' },
-  { value: 'silver', label: '不屈白银' },
-  { value: 'bronze', label: '英勇黄铜' },
-  { value: 'iron', label: '坚韧黑铁' },
+  { value: 'all', label: 'Tất cả rank' },
+  { value: 'challenger', label: 'Thách Đấu' },
+  { value: 'grandmaster', label: 'Đại Cao Thủ' },
+  { value: 'master_plus', label: 'Cao Thủ+' },
+  { value: 'master', label: 'Cao Thủ' },
+  { value: 'diamond_plus', label: 'Kim Cương+' },
+  { value: 'diamond', label: 'Kim Cương' },
+  { value: 'emerald_plus', label: 'Lục Bảo+' },
+  { value: 'emerald', label: 'Lục Bảo' },
+  { value: 'platinum_plus', label: 'Bạch Kim+' },
+  { value: 'platinum', label: 'Bạch Kim' },
+  { value: 'gold_plus', label: 'Vàng+' },
+  { value: 'gold', label: 'Vàng' },
+  { value: 'silver', label: 'Bạc' },
+  { value: 'bronze', label: 'Đồng' },
+  { value: 'iron', label: 'Sắt' },
 ]
 const OPGG_TIER_OPTIONS: Array<{ value: OpggTier; label: string; icon?: string }> = OPGG_TIER_BASE_OPTIONS.map((option) => ({
   ...option,
@@ -296,10 +296,10 @@ function TrendMeta({ meta }: { meta?: RecommendationMeta }) {
 }
 
 function getRankTrend(delta: number | null): { kind: 'up' | 'down' | 'flat' | 'unknown'; text: string } {
-  if (delta == null) return { kind: 'unknown', text: '暂无' }
+  if (delta == null) return { kind: 'unknown', text: 'Chưa có' }
   if (delta > 0) return { kind: 'up', text: `↑ ${delta}` }
   if (delta < 0) return { kind: 'down', text: `↓ ${Math.abs(delta)}` }
-  return { kind: 'flat', text: '持平' }
+  return { kind: 'flat', text: 'Không đổi' }
 }
 
 function TierBadge({ value }: { value: string }) {
@@ -487,7 +487,7 @@ function MatchupGroup({ title, items, tone }: { title: string; items: BuildRecom
       <div className="sobp-matchup-list">
         {items.map((item) => {
           const champion = getChampionById(item.championId)
-          const championName = champion ? `${champion.title} ${champion.name}` : `英雄 ${item.championId}`
+          const championName = champion ? `${champion.title} ${champion.name}` : `Tướng ${item.championId}`
           return (
             <div className="sobp-matchup" key={`${tone}-${item.championId}`}>
               <img className="sobp-matchup-icon" src={`/lol-game-data/assets/v1/champion-icons/${item.championId}.png`} alt="" />
@@ -495,7 +495,7 @@ function MatchupGroup({ title, items, tone }: { title: string; items: BuildRecom
                 <span className="sobp-matchup-name" title={championName}>{championName}</span>
                 <span className="sobp-matchup-detail">
                   <span className={`sobp-matchup-rate sobp-matchup-rate--${tone}`}>{formatPercent(item.winRate)}</span>
-                  <span className="sobp-matchup-play">{item.play.toLocaleString()}场</span>
+                  <span className="sobp-matchup-play">{item.play.toLocaleString()} trận</span>
                 </span>
               </div>
             </div>
@@ -610,7 +610,7 @@ function AugmentSection({ title, groups, winRateFirst = false }: { title: string
                 const info = getAugmentInfo(augment.id)
                 const detailText = Number.isFinite(augment.winRate)
                   ? formatAugmentWinRateText(augment, winRateFirst)
-                  : `登场 ${formatPercent(augment.pickRate)} · 均排 ${formatPlace(augment.averagePlace)}`
+                  : `Pick rate ${formatPercent(augment.pickRate)} · Hạng trung bình ${formatPlace(augment.averagePlace)}`
                 return (
                   <div className="sobp-augment" key={augment.id}>
                     <BuildIcon
@@ -623,7 +623,9 @@ function AugmentSection({ title, groups, winRateFirst = false }: { title: string
                     />
                     <div className="sobp-augment-info">
                       <div className="sobp-augment-name">{info?.name ?? String(augment.id)}</div>
-                      <div className="sobp-augment-meta">{detailText}</div>
+                      <div className="sobp-augment-meta">
+                        {detailText.split('\n').map((line) => <div key={line}>{line}</div>)}
+                      </div>
                     </div>
                   </div>
                 )
@@ -637,9 +639,9 @@ function AugmentSection({ title, groups, winRateFirst = false }: { title: string
 }
 
 function formatAugmentWinRateText(augment: { pickRate: number; winRate?: number }, winRateFirst: boolean): string {
-  const winRateText = `胜率 ${formatPercent(augment.winRate)}`
-  const pickRateText = `登场 ${formatPercent(augment.pickRate)}`
-  return winRateFirst ? `${winRateText} · ${pickRateText}` : `${pickRateText} · ${winRateText}`
+  const winRateText = `Win rate ${formatPercent(augment.winRate)}`
+  const pickRateText = `Pick rate ${formatPercent(augment.pickRate)}`
+  return winRateFirst ? `${winRateText}\n${pickRateText}` : `${pickRateText}\n${winRateText}`
 }
 
 function RankBadge({ rank }: { rank: number }) {
@@ -890,14 +892,14 @@ function formatPercent(value: number | undefined): string {
 
 function formatPlace(value: number | undefined): string {
   if (!Number.isFinite(value)) return '-'
-  return `${(value ?? 0).toFixed(2)}名`
+  return `${(value ?? 0).toFixed(2)} hạng`
 }
 
 function getAugmentRarityLabel(rarity: number): string {
-  if (rarity === 1) return '银色'
-  if (rarity === 4) return '金色'
-  if (rarity === 8) return '棱彩'
-  return `稀有度 ${rarity}`
+  if (rarity === 1) return 'Bạc'
+  if (rarity === 4) return 'Vàng'
+  if (rarity === 8) return 'Kim Cương'
+  return `Độ hiếm ${rarity}`
 }
 
 function getAugmentBorder(rarity: string | undefined): string {

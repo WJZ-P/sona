@@ -228,7 +228,7 @@ function ensureCommonPositionMap(tier: OpggTier): Promise<Map<number, OpggPositi
       if (mostCommon) positionsByChampion.set(champion.id, mostCommon.position)
     }
 
-    logger.info('[OPGG] 英雄常见分路表已缓存 → tier=%s, champions=%d', tier, positionsByChampion.size)
+    logger.info('[OPGG] Đã lưu bộ nhớ đệm vị trí phổ biến của tướng → tier=%s, champions=%d', tier, positionsByChampion.size)
     return positionsByChampion
   }).catch((err) => {
     commonPositionMapCache.delete(tier)
@@ -246,7 +246,7 @@ async function resolveMostCommonPosition(championId: number, tier = getSelectedO
     const positionsByChampion = await ensureCommonPositionMap(tier)
     return positionsByChampion.get(championId) ?? null
   } catch (err) {
-    logger.warn('[OPGG] 获取英雄常见分路失败:', err)
+    logger.warn('[OPGG] Lấy vị trí phổ biến của tướng thất bại:', err)
     return null
   }
 }
@@ -268,14 +268,14 @@ async function resolveInitialRecommendationPosition(options: {
   if (resolveOpggMode(probeContext) !== 'ranked') return 'none'
 
   if (isRankedQueue(options.queueId) && options.assignedPosition !== 'none') {
-    logger.info('[OPGG] 推荐分路使用排位分配位置 → %s', options.assignedPosition)
+    logger.info('[OPGG] Đề xuất vị trí theo phân công trong xếp hạng → %s', options.assignedPosition)
     return options.assignedPosition
   }
 
   const mostCommonPosition = await resolveMostCommonPosition(options.championId)
   if (mostCommonPosition) {
     logger.info(
-      '[OPGG] 推荐分路使用英雄最常见位置 → championId=%d, position=%s, queueId=%d',
+      '[OPGG] Đề xuất vị trí phổ biến nhất của tướng → championId=%d, position=%s, queueId=%d',
       options.championId,
       mostCommonPosition,
       options.queueId,
@@ -284,7 +284,7 @@ async function resolveInitialRecommendationPosition(options: {
   }
 
   if (options.assignedPosition !== 'none') return options.assignedPosition
-  logger.warn('[OPGG] 无法识别推荐分路，回退到中路 → championId=%d', options.championId)
+  logger.warn('[OPGG] Không thể xác định vị trí đề xuất, dùng đường giữa làm dự phòng → championId=%d', options.championId)
   return FALLBACK_OPGG_POSITION
 }
 
@@ -419,7 +419,7 @@ function notifySmartRuneSaved(context: RecommendationContext, runeKey: string, s
   const championName = getChampionName(context.championId)
   const modeLabel = getContextModeLabel(context)
   lcu.sendChampSelectMessage(translate('opgg.chat.runesSaved', { championName, modeLabel }), 'celebration').catch((err) => {
-    logger.warn('[OPGG] 智能符文保存聊天提示发送失败:', err)
+    logger.warn('[OPGG] Gửi thông báo lưu ngọc thông minh vào trò chuyện thất bại:', err)
   })
 }
 
@@ -473,7 +473,7 @@ function persistMissingSmartRuneSnapshot(
   store.set('smartRunePages', pages)
   smartLoadoutFirstSavedRuneKeys.add(runeKey)
   lastAppliedRuneKey = runeKey
-  logger.info('[OPGG] 已保存首次智能符文最终快照 → key=%s, reason=%s, signature=%s', runeKey, reason, signature)
+  logger.info('[OPGG] Đã lưu ảnh chụp trạng thái cuối cùng đầu tiên của ngọc thông minh → key=%s, reason=%s, signature=%s', runeKey, reason, signature)
   notifySmartRuneSaved(context, runeKey, signature)
   return true
 }
@@ -505,7 +505,7 @@ function persistMissingSmartSpellSnapshot(
   store.set('smartSummonerSpells', allSpells)
   smartLoadoutFirstSavedSpellKeys.add(spellKey)
   lastAppliedSpellKey = spellKey
-  logger.info('[OPGG] 已保存首次召唤师技能最终快照 → key=%s, reason=%s, spells=%s', spellKey, reason, signature)
+  logger.info('[OPGG] Đã lưu ảnh chụp trạng thái cuối cùng đầu tiên của phép bổ trợ → key=%s, reason=%s, spells=%s', spellKey, reason, signature)
   return true
 }
 
@@ -524,7 +524,7 @@ function persistObservedSmartLoadoutSnapshot(context: RecommendationContext, rea
   }
 
   if (runeSaved || spellsSaved) {
-    logger.info('[OPGG] 智能配置最终快照已落盘 → reason=%s, rune=%s, spells=%s', reason, runeSaved, spellsSaved)
+    logger.info('[OPGG] Đã ghi ảnh chụp trạng thái cuối cùng của cấu hình thông minh xuống đĩa → reason=%s, rune=%s, spells=%s', reason, runeSaved, spellsSaved)
   }
 }
 
@@ -597,10 +597,10 @@ async function persistFinalSmartLoadoutSnapshot(
     }
 
     if (runeSaved || spellsSaved) {
-      logger.info('[OPGG] 智能配置首次最终快照已保存 → reason=%s, rune=%s, spells=%s', reason, runeSaved, spellsSaved)
+      logger.info('[OPGG] Đã lưu ảnh chụp trạng thái cuối cùng đầu tiên của cấu hình thông minh → reason=%s, rune=%s, spells=%s', reason, runeSaved, spellsSaved)
     }
   } catch (err) {
-    logger.warn('[OPGG] 智能配置最终快照保存失败 → reason=%s:', reason, err)
+    logger.warn('[OPGG] Lưu ảnh chụp trạng thái cuối cùng của cấu hình thông minh thất bại → reason=%s:', reason, err)
   } finally {
     smartLoadoutFinalSaveInFlightKeys.delete(finalSaveKey)
   }
@@ -625,20 +625,20 @@ function ensureRecommendationPrefetch(context: RecommendationContext): Recommend
     .then((data) => {
       entry.data = data
       entry.updatedAt = Date.now()
-      logger.info('[OPGG] 配装推荐缓存完成 → %s', key)
+      logger.info('[OPGG] Đã lưu bộ nhớ đệm đề xuất build → %s', key)
       return data
     })
     .catch((err) => {
       entry.error = err instanceof Error ? err.message : String(err)
       entry.data = null
       entry.updatedAt = Date.now()
-      logger.warn('[OPGG] 配装推荐预拉取失败:', err)
+      logger.warn('[OPGG] Tải trước đề xuất build thất bại:', err)
       return null
     })
 
   recommendationCache.set(key, entry)
   trimRecommendationCache()
-  logger.info('[OPGG] 开始后台预拉取配装推荐 → %s', key)
+  logger.info('[OPGG] Bắt đầu tải trước đề xuất build trong nền → %s', key)
   return entry
 }
 
@@ -720,20 +720,20 @@ function buildItemSetBlocks(recommendation: BuildRecommendation): ItemSetBlock[]
   const lastItems = sortItemBuildsByWinRate(recommendation.lastItems)
 
   starterItems.slice(0, 3).forEach((build, index) => {
-    appendItemSetBlock(blocks, `${index + 1}. 出门装`, build.ids)
+    appendItemSetBlock(blocks, `${index + 1}. Trang bị khởi đầu`, build.ids)
   })
 
-  appendItemSetBlock(blocks, `${blocks.length + 1}. 鞋子`, flattenItemBuilds(boots))
+  appendItemSetBlock(blocks, `${blocks.length + 1}. Giày`, flattenItemBuilds(boots))
 
   if (prismItems.length > 0) {
-    appendItemSetBlock(blocks, `${blocks.length + 1}. 棱彩装备`, flattenItemBuilds(prismItems))
+    appendItemSetBlock(blocks, `${blocks.length + 1}. Trang bị Kim Cương`, flattenItemBuilds(prismItems))
   }
 
   coreItems.slice(0, 5).forEach((build, index) => {
-    appendItemSetBlock(blocks, `${blocks.length + 1}. 核心装 ${index + 1}`, build.ids)
+    appendItemSetBlock(blocks, `${blocks.length + 1}. Trang bị cốt lõi ${index + 1}`, build.ids)
   })
 
-  appendItemSetBlock(blocks, `${blocks.length + 1}. 后续装备`, sortItemIdsByPriceDesc(flattenItemBuilds(lastItems)))
+  appendItemSetBlock(blocks, `${blocks.length + 1}. Trang bị tiếp theo`, sortItemIdsByPriceDesc(flattenItemBuilds(lastItems)))
 
   return blocks
 }
@@ -745,7 +745,7 @@ function getManagedItemSetUid(context: RecommendationContext): string {
 
 function getChampionName(championId: number): string {
   const champion = getChampionById(championId)
-  if (!champion) return `英雄 ${championId}`
+  if (!champion) return `Tướng ${championId}`
 
   return [champion.title, champion.name].filter(Boolean).join(' ')
 }
@@ -753,15 +753,15 @@ function getChampionName(championId: number): string {
 function getPositionLabel(position: OpggPosition): string {
   switch (position) {
     case 'top':
-      return '上路'
+      return 'Đường trên'
     case 'jungle':
-      return '打野'
+      return 'Đi rừng'
     case 'mid':
-      return '中路'
+      return 'Đường giữa'
     case 'adc':
-      return '下路'
+      return 'Đường dưới'
     case 'support':
-      return '辅助'
+      return 'Hỗ trợ'
     default:
       return ''
   }
@@ -919,31 +919,31 @@ function isCurrentRecommendationContext(context: RecommendationContext): boolean
 
 function saveCurrentSmartRunePage(page: RunePage): void {
   if (!store.get('smartBuildRecommendation')) {
-    logger.info('[OPGG] 跳过符文保存：智能配装未开启')
+    logger.info('[OPGG] Bỏ qua lưu ngọc: chưa bật build thông minh')
     return
   }
   if (currentContext.championId <= 0 || !currentChampionLocked) {
-    logger.info('[OPGG] 跳过符文保存：英雄未锁定 → championId=%d, locked=%s', currentContext.championId, currentChampionLocked)
+    logger.info('[OPGG] Bỏ qua lưu ngọc: chưa khóa tướng → championId=%d, locked=%s', currentContext.championId, currentChampionLocked)
     return
   }
   if (page.current === false && page.isActive === false) {
-    logger.info('[OPGG] 跳过符文保存：非当前生效符文页 → name=%s, current=%s, isActive=%s', page.name, page.current, page.isActive)
+    logger.info('[OPGG] Bỏ qua lưu ngọc: không phải trang ngọc đang có hiệu lực → name=%s, current=%s, isActive=%s', page.name, page.current, page.isActive)
     return
   }
   if (!isValidRunePage(page)) {
-    logger.info('[OPGG] 跳过符文保存：符文页无效 → primaryStyleId=%d, subStyleId=%d, perks=%d', page.primaryStyleId, page.subStyleId, page.selectedPerkIds?.length ?? 0)
+    logger.info('[OPGG] Bỏ qua lưu ngọc: trang ngọc không hợp lệ → primaryStyleId=%d, subStyleId=%d, perks=%d', page.primaryStyleId, page.subStyleId, page.selectedPerkIds?.length ?? 0)
     return
   }
 
   const runeKey = getSmartRuneKey(currentContext)
   if (!runeKey) {
-    logger.info('[OPGG] 跳过符文保存：无法生成 runeKey → championId=%d, gameMode=%s', currentContext.championId, currentContext.gameMode || 'unknown')
+    logger.info('[OPGG] Bỏ qua lưu ngọc: không thể tạo runeKey → championId=%d, gameMode=%s', currentContext.championId, currentContext.gameMode || 'unknown')
     return
   }
 
   const signature = getRunePageSignature(page)
   if (signature === lastAutoAppliedRuneSignature && Date.now() < suppressRuneSaveUntil) {
-    logger.info('[OPGG] 跳过符文保存：与 Sona 自动恢复的符文相同 → key=%s, signature=%s', runeKey, signature)
+    logger.info('[OPGG] Bỏ qua lưu ngọc: giống ngọc được Sona tự động khôi phục → key=%s, signature=%s', runeKey, signature)
     return
   }
 
@@ -958,7 +958,7 @@ function saveCurrentSmartRunePage(page: RunePage): void {
   }
   store.set('smartRunePages', pages)
   smartLoadoutFirstSavedRuneKeys.delete(runeKey)
-  logger.info('[OPGG] 已保存智能符文 → key=%s, page=%s, signature=%s', runeKey, getSmartRunePageName(currentContext), signature)
+  logger.info('[OPGG] Đã lưu ngọc thông minh → key=%s, page=%s, signature=%s', runeKey, getSmartRunePageName(currentContext), signature)
   if (previousSignature !== signature) {
     notifySmartRuneSaved(currentContext, runeKey, signature)
   }
@@ -995,7 +995,7 @@ function saveCurrentSmartSummonerSpells(player: ChampSelectSession['myTeam'][num
   }
   store.set('smartSummonerSpells', allSpells)
   smartLoadoutFirstSavedSpellKeys.delete(spellKey)
-  logger.info('[OPGG] 已保存智能召唤师技能 → key=%s, spells=%s', spellKey, signature)
+  logger.info('[OPGG] Đã lưu phép bổ trợ thông minh → key=%s, spells=%s', spellKey, signature)
 }
 
 function getActiveRunePage(pages: RunePage[]): RunePage | null {
@@ -1030,7 +1030,7 @@ async function pollCurrentRunePage(): Promise<void> {
     if (signature === lastPolledRuneSignature) return
 
     logger.info(
-      '[OPGG] 轮询检测到符文页变化 → name=%s, id=%s, current=%s, isActive=%s, signature=%s',
+      '[OPGG] Thăm dò phát hiện trang ngọc thay đổi → name=%s, id=%s, current=%s, isActive=%s, signature=%s',
       active.name,
       active.id,
       active.current,
@@ -1040,7 +1040,7 @@ async function pollCurrentRunePage(): Promise<void> {
     lastPolledRuneSignature = signature
     saveCurrentSmartRunePage(active)
   } catch (err) {
-    logger.debug('[OPGG] 轮询符文页失败:', err)
+    logger.debug('[OPGG] Thăm dò trang ngọc thất bại:', err)
   }
 }
 
@@ -1052,7 +1052,7 @@ function startRunePagePolling(): void {
   runePagePollTimer = window.setInterval(() => {
     void pollCurrentRunePage()
   }, RUNE_PAGE_POLL_INTERVAL_MS)
-  logger.info('[OPGG] 已启动符文页轮询（每 %dms 读取一次）', RUNE_PAGE_POLL_INTERVAL_MS)
+  logger.info('[OPGG] Đã bắt đầu thăm dò trang ngọc (đọc mỗi %dms)', RUNE_PAGE_POLL_INTERVAL_MS)
 }
 
 function stopRunePagePolling(): void {
@@ -1067,7 +1067,7 @@ function stopRunePagePolling(): void {
 async function upsertRecommendedItemSet(context: RecommendationContext, recommendation: BuildRecommendation): Promise<void> {
   const nextItemSet = createManagedItemSet(context, recommendation)
   if (!nextItemSet) {
-    logger.warn('[OPGG] 装备集生成失败：没有可写入的装备 block')
+    logger.warn('[OPGG] Tạo bộ trang bị thất bại: không có block trang bị để ghi')
     return
   }
 
@@ -1077,7 +1077,7 @@ async function upsertRecommendedItemSet(context: RecommendationContext, recommen
   const plan = planManagedItemSetUpsert(existingItemSets, [nextItemSet])
 
   if (!plan.changed) {
-    logger.info('[OPGG] 自动装备集内容未变化，跳过写入：%s', nextItemSet.title)
+    logger.info('[OPGG] Nội dung bộ trang bị tự động không đổi, bỏ qua ghi: %s', nextItemSet.title)
     return
   }
 
@@ -1088,14 +1088,14 @@ async function upsertRecommendedItemSet(context: RecommendationContext, recommen
   })
 
   logger.info(
-    '[OPGG] 自动装备集已同步：%s，blocks=%d，清理重复项=%d',
+    '[OPGG] Đã đồng bộ bộ trang bị tự động: %s, blocks=%d, mục trùng đã xóa=%d',
     nextItemSet.title,
     nextItemSet.blocks.length,
     plan.removedDuplicates,
   )
   const championName = getChampionName(context.championId)
   lcu.sendChampSelectMessage(translate('opgg.chat.buildReady', { championName }), 'celebration').catch((err) => {
-    logger.warn('[OPGG] 自动装备集聊天提示发送失败:', err)
+    logger.warn('[OPGG] Gửi thông báo bộ trang bị tự động vào trò chuyện thất bại:', err)
   })
 }
 
@@ -1108,7 +1108,7 @@ async function upsertRecommendedItemSets(
     .filter((itemSet): itemSet is ItemSet => itemSet != null)
 
   if (nextItemSets.length === 0) {
-    logger.warn('[OPGG] 多分路装备集生成失败：没有可写入的装备 block')
+    logger.warn('[OPGG] Tạo bộ trang bị đa vị trí thất bại: không có block trang bị để ghi')
     return
   }
 
@@ -1118,7 +1118,7 @@ async function upsertRecommendedItemSets(
   const plan = planManagedItemSetUpsert(existingItemSets, nextItemSets)
 
   if (!plan.changed) {
-    logger.info('[OPGG] 多分路自动装备集内容未变化，跳过写入：%s', nextItemSets.map((itemSet) => itemSet.title).join(' | '))
+    logger.info('[OPGG] Nội dung bộ trang bị tự động đa vị trí không đổi, bỏ qua ghi: %s', nextItemSets.map((itemSet) => itemSet.title).join(' | '))
     return
   }
 
@@ -1129,7 +1129,7 @@ async function upsertRecommendedItemSets(
   })
 
   logger.info(
-    '[OPGG] 多分路自动装备集已同步：%d 个，清理重复项=%d → %s',
+    '[OPGG] Đã đồng bộ %d bộ trang bị tự động đa vị trí, mục trùng đã xóa=%d → %s',
     nextItemSets.length,
     plan.removedDuplicates,
     nextItemSets.map((itemSet) => itemSet.title).join(' | '),
@@ -1137,7 +1137,7 @@ async function upsertRecommendedItemSets(
 
   const championName = getChampionName(items[0].context.championId)
   lcu.sendChampSelectMessage(translate('opgg.chat.buildReady', { championName }), 'celebration').catch((err) => {
-    logger.warn('[OPGG] 多分路自动装备集聊天提示发送失败:', err)
+    logger.warn('[OPGG] Gửi thông báo bộ trang bị tự động đa vị trí vào trò chuyện thất bại:', err)
   })
 }
 
@@ -1172,7 +1172,7 @@ function syncRankedAllPositionsItemSets(baseContext: RecommendationContext): voi
       lastAppliedItemSetKey = syncKey
     })
     .catch((err) => {
-      logger.warn('[OPGG] 多分路自动装备集同步失败:', err)
+      logger.warn('[OPGG] Đồng bộ bộ trang bị tự động đa vị trí thất bại:', err)
     })
     .finally(() => {
       itemSetSyncInFlightKeys.delete(syncKey)
@@ -1203,7 +1203,7 @@ function syncRecommendedItemSetWhenReady(entry: RecommendationCacheEntry): void 
       lastAppliedItemSetKey = syncKey
     })
     .catch((err) => {
-      logger.warn('[OPGG] 自动装备集同步失败:', err)
+      logger.warn('[OPGG] Đồng bộ bộ trang bị tự động thất bại:', err)
     })
     .finally(() => {
       itemSetSyncInFlightKeys.delete(syncKey)
@@ -1233,7 +1233,7 @@ async function applySavedSmartRunePage(context: RecommendationContext): Promise<
       selectedPerkIds: [...saved.selectedPerkIds],
     })
     lastAppliedRuneKey = runeKey
-    logger.info('[OPGG] 已自动应用智能符文 → key=%s, page=%s, signature=%s', runeKey, pageName, lastAutoAppliedRuneSignature)
+    logger.info('[OPGG] Đã tự động áp dụng ngọc thông minh → key=%s, page=%s, signature=%s', runeKey, pageName, lastAutoAppliedRuneSignature)
     return true
   } finally {
     runeApplyInFlightKeys.delete(runeKey)
@@ -1262,7 +1262,7 @@ async function applySavedSmartSummonerSpells(context: RecommendationContext): Pr
     lastAppliedSpellKey = spellKey
     lastObservedSpellKey = spellKey
     lastObservedSpellSignature = getSummonerSpellSignature(saved)
-    logger.info('[OPGG] 已自动恢复召唤师技能 → key=%s, spells=%s', spellKey, lastObservedSpellSignature)
+    logger.info('[OPGG] Đã tự động khôi phục phép bổ trợ → key=%s, spells=%s', spellKey, lastObservedSpellSignature)
     return true
   } finally {
     spellApplyInFlightKeys.delete(spellKey)
@@ -1272,11 +1272,11 @@ async function applySavedSmartSummonerSpells(context: RecommendationContext): Pr
 async function applySavedSmartLoadout(context: RecommendationContext): Promise<void> {
   const [runeRestored, spellsRestored] = await Promise.all([
     applySavedSmartRunePage(context).catch((err) => {
-      logger.warn('[OPGG] 智能符文自动恢复失败:', err)
+      logger.warn('[OPGG] Tự động khôi phục ngọc thông minh thất bại:', err)
       return false
     }),
     applySavedSmartSummonerSpells(context).catch((err) => {
-      logger.warn('[OPGG] 智能召唤师技能自动恢复失败:', err)
+      logger.warn('[OPGG] Tự động khôi phục phép bổ trợ thông minh thất bại:', err)
       return false
     }),
   ])
@@ -1290,7 +1290,7 @@ async function applySavedSmartLoadout(context: RecommendationContext): Promise<v
     : runeRestored ? translate('opgg.restored.runes') : translate('opgg.restored.spells')
 
   lcu.sendChampSelectMessage(translate('opgg.chat.restored', { championName, modeLabel, restoredText }), 'celebration').catch((err) => {
-    logger.warn('[OPGG] 智能配置聊天提示发送失败:', err)
+    logger.warn('[OPGG] Gửi thông báo cấu hình thông minh vào trò chuyện thất bại:', err)
   })
 }
 
@@ -1310,7 +1310,7 @@ function syncSavedSmartLoadoutWhenReady(context: RecommendationContext): void {
     if (!snapshot) return
 
     applySavedSmartLoadout(snapshot).catch((err) => {
-      logger.warn('[OPGG] 智能配置自动恢复失败:', err)
+      logger.warn('[OPGG] Tự động khôi phục cấu hình thông minh thất bại:', err)
     })
   }, SMART_LOADOUT_RESTORE_DEBOUNCE_MS)
 }
@@ -1351,7 +1351,7 @@ function scheduleRefreshWhenChampionLocked(delay = 250) {
       scheduleRefreshWhenChampionLocked(500)
     } else {
       stopChampionLockPolling()
-      logger.warn('[OPGG] 等待本地英雄锁定超时，未触发智能配置')
+      logger.warn('[OPGG] Hết thời gian chờ người chơi khóa tướng, chưa kích hoạt cấu hình thông minh')
     }
   }, delay)
 }
@@ -1420,7 +1420,7 @@ async function refreshContext(session?: ChampSelectSession) {
       unmount(false)
     }
   } catch (err) {
-    logger.warn('[OPGG] 刷新选人上下文失败:', err)
+    logger.warn('[OPGG] Làm mới ngữ cảnh chọn tướng thất bại:', err)
   }
 }
 
@@ -1482,12 +1482,12 @@ async function loadAramggKiwiRecommendation(
       tier,
       position,
     }).catch((err) => {
-      logger.warn('[OPGG] KIWI 基础配装请求失败，将只使用 ARAM.GG 数据:', err)
+      logger.warn('[OPGG] Yêu cầu bộ trang bị cơ bản KIWI thất bại, chỉ sử dụng dữ liệu ARAM.GG:', err)
       return null
     }),
     aramggApi.getChampionRecommendation(context.championId),
     aramggApi.getMayhemAugmentsZhCn().catch((err) => {
-      logger.warn('[ARAMGG] 海克斯稀有度请求失败，将尝试使用客户端资源兜底:', err)
+      logger.warn('[ARAMGG] Yêu cầu độ hiếm nâng cấp Hextech thất bại, sẽ thử dùng tài nguyên client làm dự phòng:', err)
       return {} as AramggMayhemAugments
     }),
   ])
@@ -1502,7 +1502,7 @@ async function loadAramggKiwiRecommendation(
   // 本地配装只剩鞋子。出门装则始终由 OP.GG 提供，因为 ARAM.GG 没有该分段。
   if (aramggCoreItems.length === 0 || aramggLastItems.length === 0) {
     logger.warn(
-      '[BuildRecommendation] ARAM.GG 装备分段为空，回退 OP.GG：champion=%d core=%d last=%d',
+      '[BuildRecommendation] Các nhóm trang bị ARAM.GG trống, quay về OP.GG: champion=%d core=%d last=%d',
       context.championId,
       aramggCoreItems.length,
       aramggLastItems.length,
@@ -1531,8 +1531,8 @@ async function loadAramggKiwiRecommendation(
 function getAramggSummaryLines(data: AramggChampionRecommendation): string[] {
   const stats = data.championStats
   return [
-    `总体胜率 ${formatRate(toOptionalNumber(stats?.win_rate))}`,
-    `登场 ${formatRate(toOptionalNumber(stats?.pick_rate))}`,
+    `Win rate tổng thể ${formatRate(toOptionalNumber(stats?.win_rate))}`,
+    `Pick rate ${formatRate(toOptionalNumber(stats?.pick_rate))}`,
     `Tier ${stats?.tier || '-'}`,
   ]
 }
@@ -1707,26 +1707,26 @@ async function getChampionWithVersionFallback(options: {
     return await opggApi.getChampion({ ...options, region: 'global' })
   } catch (err) {
     if (!options.version) throw err
-    logger.warn('[OPGG] 版本 %s 请求失败，回退到 OP.GG 最新版本:', options.version, err)
+    logger.warn('[OPGG] Yêu cầu phiên bản %s thất bại, quay về phiên bản OP.GG mới nhất:', options.version, err)
     return opggApi.getChampion({ ...options, region: 'global', version: undefined })
   }
 }
 
 function getModeLabel(mode: OpggMode, context: RecommendationContext): string {
   const queueName = context.queueId > 0 ? getQueueName(context.queueId) : ''
-  if (isKiwiMode(context)) return queueName || '海克斯大乱斗'
+  if (isKiwiMode(context)) return queueName || 'ARAM Hỗn Loạn'
   if (queueName) return queueName
   switch (mode) {
     case 'aram':
-      return '极地大乱斗'
+      return 'ARAM'
     case 'arena':
-      return '斗魂竞技场'
+      return 'Đấu Trường'
     case 'urf':
-      return '无限火力'
+      return 'URF'
     case 'nexus_blitz':
-      return '极限闪击'
+      return 'Đột Kích Nhà Chính'
     default:
-      return '召唤师峡谷'
+      return 'Summoner’s Rift'
   }
 }
 
@@ -1734,16 +1734,16 @@ function getSummaryLines(champion: OpggChampion): string[] {
   if (isArenaChampion(champion)) {
     const stats = champion.data.summary.average_stats
     return [
-      `排名 #${stats.rank || '-'}`,
+      `Rank #${stats.rank || '-'}`,
       `Tier ${stats.tier || '-'}`,
-      `登场 ${(stats.pick_rate * 100).toFixed(1)}%`,
+      `Pick rate ${(stats.pick_rate * 100).toFixed(1)}%`,
     ]
   }
 
   const stats = champion.data.summary.average_stats
   return [
-    `总体胜率 ${(stats.win_rate * 100).toFixed(1)}%`,
-    `登场 ${(stats.pick_rate * 100).toFixed(1)}%`,
+    `Win rate tổng thể ${(stats.win_rate * 100).toFixed(1)}%`,
+    `Pick rate ${(stats.pick_rate * 100).toFixed(1)}%`,
     `Tier ${stats.tier || '-'}`,
   ]
 }
@@ -1893,7 +1893,7 @@ async function resolveInGameRecommendationContext(): Promise<RecommendationConte
   const championId = selection?.championId || player?.championId || currentContext.championId
 
   if (!championId) {
-    throw new Error('无法识别当前英雄')
+    throw new Error('Không thể xác định tướng hiện tại')
   }
 
   const queueId = session.gameData?.queue?.id ?? currentContext.queueId
@@ -2107,7 +2107,7 @@ function renderRecommendationPanel(
 function tryHijackAbilityPreviewPanel(): boolean {
   const targets = document.querySelectorAll(`${TARGET_SELECTOR}:not([${HIJACK_ATTR}])`)
   if (targets.length === 0) {
-    logger.info('[OPGG] 未找到技能预览面板元素')
+    logger.info('[OPGG] Không tìm thấy phần tử bảng xem trước kỹ năng')
     return false
   }
 
@@ -2127,13 +2127,13 @@ function tryHijackAbilityPreviewPanel(): boolean {
     }
 
     target.setAttribute(HIJACK_ATTR, 'true')
-    target.innerText = '配装推荐'
+    target.innerText = 'Đề xuất build'
     target.style.cursor = 'pointer'
     target.addEventListener('click', handler, true)
     boundElements.push({ el: target, handler, originalText })
   })
 
-  logger.info('[OPGG] 已接管技能预览面板点击 → %d 个元素', targets.length)
+  logger.info('[OPGG] Đã tiếp quản thao tác nhấp bảng xem trước kỹ năng → %d phần tử', targets.length)
   return true
 }
 
@@ -2145,7 +2145,7 @@ function tryInjectInGameBuildButton(): boolean {
 
   const btn = document.createElement('lol-uikit-flat-button')
   btn.setAttribute(IN_GAME_BUILD_BUTTON_ATTR, 'true')
-  btn.textContent = '配装推荐'
+  btn.textContent = 'Đề xuất build'
   btn.style.display = 'block'
   btn.style.marginTop = '12px'
 
@@ -2153,9 +2153,9 @@ function tryInjectInGameBuildButton(): boolean {
     event.stopPropagation()
     event.preventDefault()
     showOpggBuildRecommendationModal().catch((err) => {
-      logger.warn('[OPGG] 游戏内配装推荐弹窗打开失败:', err)
+      logger.warn('[OPGG] Mở cửa sổ đề xuất build trong trò chơi thất bại:', err)
       if (typeof Toast !== 'undefined') {
-        Toast.error('配装推荐打开失败，请稍后再试')
+        Toast.error('Không thể mở đề xuất build, vui lòng thử lại sau')
       }
     })
   })
@@ -2167,7 +2167,7 @@ function tryInjectInGameBuildButton(): boolean {
     container.appendChild(btn)
   }
 
-  logger.info('[OPGG] 游戏内配装推荐按钮已注入 ✓')
+  logger.info('[OPGG] Đã chèn nút đề xuất build trong trò chơi ✓')
   return true
 }
 
@@ -2192,7 +2192,7 @@ function mount() {
   if (!injectRegistered) {
     injector.register(tryHijackAbilityPreviewPanel)
     injectRegistered = true
-    logger.info('[OPGG] 已检测到本地英雄，开始接管技能预览入口')
+    logger.info('[OPGG] Đã phát hiện tướng của người chơi, bắt đầu tiếp quản lối vào xem trước kỹ năng')
   }
 }
 
@@ -2263,7 +2263,7 @@ function startOpggListeners() {
 
     if (phase === 'ChampSelect') {
       unregisterInGameBuildButton()
-      logger.info('[OPGG] 进入 ChampSelect，等待本地英雄锁定')
+      logger.info('[OPGG] Vào ChampSelect, chờ người chơi khóa tướng')
       startRunePagePolling()
       scheduleRefreshWhenChampionLocked()
     } else if (phase === 'InProgress') {
@@ -2295,7 +2295,7 @@ function startOpggListeners() {
     }
   }).catch(() => { /* ignore */ })
 
-  logger.info('[OPGG] 配装推荐接管已启用 ✓')
+  logger.info('[OPGG] Đã bật tiếp quản đề xuất build ✓')
 }
 
 export function updateOpggBuildRecommendation(enabled: boolean) {
@@ -2320,6 +2320,6 @@ export function updateOpggBuildRecommendation(enabled: boolean) {
       champSelectUnsub = null
     }
     unmount()
-    logger.info('[OPGG] 配装推荐接管已禁用')
+    logger.info('[OPGG] Đã tắt tiếp quản đề xuất build')
   }
 }

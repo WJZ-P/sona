@@ -63,9 +63,9 @@ function parseSgpMatch(game: SgpGameSummaryLol, puuid: string): MatchRowData | n
   let mapName = getMapName(json.mapId)
   if (json.mapId === 12) {
     const mutator = json.gameModeMutators?.[0]
-    if (mutator === 'mapskin_ha_bilgewater') mapName = '屠夫之桥'
-    else if (mutator === 'mapskin_map12_bloom') mapName = '莲华栈桥'
-    else mapName = '嚎哭深渊'
+    if (mutator === 'mapskin_ha_bilgewater') mapName = 'Cầu Đồ Tể'
+    else if (mutator === 'mapskin_map12_bloom') mapName = 'Cầu Hoa Linh'
+    else mapName = 'Vực Gió Hú'
   }
 
   // SGP 的符文结构：perks.styles[0] = 主系, styles[1] = 副系

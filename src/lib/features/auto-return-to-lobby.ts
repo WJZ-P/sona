@@ -15,7 +15,7 @@ export function updateAutoReturnToLobby(enabled: boolean) {
 
       if (phase === 'EndOfGame') {
         const mode = store.get('autoReturnMode')
-        logger.info('[AutoReturn] 检测到对局结束，准备执行自动返回流程...')
+        logger.info('[AutoReturn] Phát hiện trận đấu kết thúc, chuẩn bị tự động quay về...')
 
         // 延迟等待：刚进入结算时，服务器可能还在结算荣誉，给点缓冲时间
         await sleep(2000);
@@ -23,29 +23,29 @@ export function updateAutoReturnToLobby(enabled: boolean) {
         try {
           // 统一使用 playAgain 重建房间
           await lcu.playAgain()
-          logger.info('[AutoReturn] 已通过 play-again 重建房间（已保留原队伍结构）✓')
+          logger.info('[AutoReturn] Đã tạo lại phòng qua play-again (giữ nguyên đội hình ban đầu) ✓')
 
           // 自动排队模式：额外调用 startMatchmaking（带重试，队友可能还没准备好）
           if (mode === 'queue') {
-            logger.info('[AutoReturn] 当前模式为自动排队，准备启动匹配引擎...')
+            logger.info('[AutoReturn] Đang ở chế độ tự động tìm trận, chuẩn bị bắt đầu tìm trận...')
             const MAX_RETRIES = 15
             for (let i = 1; i <= MAX_RETRIES; i++) {
               await sleep(1000)
               try {
                 await lcu.startMatchmaking()
-                logger.info('[AutoReturn] 正在自动匹配... ✓ (第 %d 次尝试)', i)
+                logger.info('[AutoReturn] Đang tự động tìm trận... ✓ (lần thử thứ %d)', i)
                 break
               } catch (err) {
                 if (i < MAX_RETRIES) {
-                  logger.info('[AutoReturn] 开始排队失败（队友可能未就绪），1s 后重试... (%d/%d)', i, MAX_RETRIES)
+                  logger.info('[AutoReturn] Bắt đầu tìm trận thất bại (đồng đội có thể chưa sẵn sàng), thử lại sau 1 giây... (%d/%d)', i, MAX_RETRIES)
                 } else {
-                  logger.error('[AutoReturn] 开始排队失败，已达最大重试次数 %d:', MAX_RETRIES, err)
+                  logger.error('[AutoReturn] Bắt đầu tìm trận thất bại, đã đạt số lần thử lại tối đa %d:', MAX_RETRIES, err)
                 }
               }
             }
           }
         } catch (err) {
-          logger.error('[AutoReturn] 自动返回流程异常:', err)
+          logger.error('[AutoReturn] Lỗi trong quá trình tự động quay về:', err)
         }
       }
     })

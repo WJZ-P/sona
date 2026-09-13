@@ -27,16 +27,16 @@ export interface CustomBannerPickerProps {
 }
 
 const RANK_NAME_MAP: Record<string, string> = {
-  IRON: '坚韧黑铁',
-  BRONZE: '英勇青铜',
-  SILVER: '不屈白银',
-  GOLD: '荣耀黄金',
-  PLATINUM: '华贵铂金',
-  EMERALD: '流光翡翠',
-  DIAMOND: '璀璨钻石',
-  MASTER: '超凡大师',
-  GRANDMASTER: '傲世宗师',
-  CHALLENGER: '最强王者',
+  IRON: 'Sắt',
+  BRONZE: 'Đồng',
+  SILVER: 'Bạc',
+  GOLD: 'Vàng',
+  PLATINUM: 'Bạch Kim',
+  EMERALD: 'Lục Bảo',
+  DIAMOND: 'Kim Cương',
+  MASTER: 'Cao Thủ',
+  GRANDMASTER: 'Đại Cao Thủ',
+  CHALLENGER: 'Thách Đấu',
 }
 
 function normalizeRankText(value: string): string {
@@ -63,7 +63,7 @@ function getBannerRank(item: RegaliaBannerInventoryItem): string {
 }
 
 function getBannerName(item: RegaliaBannerInventoryItem, bannerRank: string): string {
-  if (bannerRank) return `${RANK_NAME_MAP[bannerRank] ?? bannerRank} 旗帜`
+  if (bannerRank) return `${RANK_NAME_MAP[bannerRank] ?? bannerRank} - Cờ hiệu`
   if (item.localizedName.trim()) return item.localizedName
 
   const filename = item.assetPath
@@ -126,11 +126,11 @@ export function CustomBannerPicker({ open, onClose, selectedBannerKey, onApplyBa
 
         setBanners(items)
         setAppliedId(selectedBannerKey)
-        logger.info('[CustomBanner] 加载了 %d 个旗帜', items.length)
+        logger.info('[CustomBanner] Đã tải %d cờ hiệu', items.length)
       } catch (err) {
-        logger.error('[CustomBanner] 加载旗帜失败:', err)
+        logger.error('[CustomBanner] Không thể tải cờ hiệu:', err)
         setBanners([])
-        setStatusMsg('❌ 加载旗帜数据失败')
+        setStatusMsg('❌ Không thể tải dữ liệu cờ hiệu')
       } finally {
         setLoading(false)
       }
@@ -138,7 +138,7 @@ export function CustomBannerPicker({ open, onClose, selectedBannerKey, onApplyBa
   }, [open, selectedBannerKey])
 
   const handleApply = (banner: BannerItem) => {
-    setStatusMsg(`正在应用 ${banner.name}...`)
+    setStatusMsg(`Đang áp dụng ${banner.name}...`)
     try {
       onApplyBanner({
         id: banner.id,
@@ -148,11 +148,11 @@ export function CustomBannerPicker({ open, onClose, selectedBannerKey, onApplyBa
         bannerRank: banner.bannerRank,
       })
       setAppliedId(banner.selectionKey)
-      setStatusMsg(`✅ 已本地应用 [${banner.name}]`)
-      logger.info('[CustomBanner] 本地旗帜已设置为 %s (id=%s)', banner.name, banner.id)
+      setStatusMsg(`✅ Đã áp dụng cục bộ [${banner.name}]`)
+      logger.info('[CustomBanner] Đã đặt cờ hiệu cục bộ thành %s (id=%s)', banner.name, banner.id)
     } catch (err) {
-      logger.error('[CustomBanner] 本地设置旗帜失败:', err)
-      setStatusMsg('❌ 本地设置旗帜失败')
+      logger.error('[CustomBanner] Không thể đặt cờ hiệu cục bộ:', err)
+      setStatusMsg('❌ Không thể đặt cờ hiệu cục bộ')
     }
 
     window.setTimeout(() => setStatusMsg(''), 3000)
@@ -163,16 +163,16 @@ export function CustomBannerPicker({ open, onClose, selectedBannerKey, onApplyBa
       <div className="scb-container">
         <div className="scb-header">
           <div className="scb-header-main">
-            <span className="scb-title">自定义旗帜</span>
-            <span className="scb-hint">{banners.length} 个旗帜，仅修改本地显示，其他玩家不可见。</span>
+            <span className="scb-title">Tùy chỉnh cờ hiệu</span>
+            <span className="scb-hint">{banners.length} cờ hiệu, chỉ thay đổi hiển thị cục bộ, người chơi khác không thấy.</span>
           </div>
           {statusMsg && <span className="scb-status">{statusMsg}</span>}
         </div>
 
         <div className="scb-grid-wrap">
-          {loading && <div className="scb-empty">加载中...</div>}
+          {loading && <div className="scb-empty">Đang tải...</div>}
           {!loading && banners.length === 0 && (
-            <div className="scb-empty">没有找到相关旗帜</div>
+            <div className="scb-empty">Không tìm thấy cờ hiệu phù hợp</div>
           )}
           <div className="scb-grid">
             {banners.map((banner) => {
@@ -193,8 +193,8 @@ export function CustomBannerPicker({ open, onClose, selectedBannerKey, onApplyBa
                       alt={banner.name}
                       loading="lazy"
                     />
-                    <span className="scb-card-hover">点击应用</span>
-                    {isApplied && <span className="scb-card-badge">使用中</span>}
+                    <span className="scb-card-hover">Nhấn để áp dụng</span>
+                    {isApplied && <span className="scb-card-badge">Đang sử dụng</span>}
                   </span>
                   <span className="scb-card-name">{banner.name}</span>
                 </button>

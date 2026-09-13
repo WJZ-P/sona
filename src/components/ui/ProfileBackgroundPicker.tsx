@@ -65,7 +65,7 @@ function pickSkinImagePath(skin: Pick<LcuChampionSkin, 'tilePath' | 'uncenteredS
 
 function getTierSkinName(parent: LcuChampionSkin, tier: LcuChampionSkinTier): string {
   if (tier.name) return tier.name
-  if (tier.stage != null) return `${parent.name} 阶段 ${tier.stage}`
+  if (tier.stage != null) return `${parent.name} - Giai đoạn ${tier.stage}`
   return parent.name
 }
 
@@ -87,7 +87,7 @@ function appendChampionSkins(itemsById: Map<number, SkinItem>, champion: Pick<Lc
   const championId = Number(champion.id)
   if (!Number.isFinite(championId) || championId <= 0) return
 
-  const champName = champNameFallback || champion.name || `英雄 ${championId}`
+  const champName = champNameFallback || champion.name || `Tướng ${championId}`
   for (const skin of champion.skins ?? []) {
     appendSkinItem(itemsById, skin, championId, champName)
 
@@ -147,7 +147,7 @@ export function ProfileBackgroundPicker({ open, onClose }: ProfileBackgroundPick
 
         // 完整英雄库存比 skins-minimal 更全，包含部分特殊/分层皮肤。
         const championsRes = await fetch(`/lol-champions/v1/inventories/${summonerId}/champions`)
-        if (!championsRes.ok) throw new Error(`获取皮肤失败 ${championsRes.status}`)
+        if (!championsRes.ok) throw new Error(`Không thể lấy skin ${championsRes.status}`)
         const championInventory = await championsRes.json() as LcuChampionInventoryItem[]
 
         const itemsById = new Map<number, SkinItem>()
@@ -158,10 +158,10 @@ export function ProfileBackgroundPicker({ open, onClose }: ProfileBackgroundPick
         const items = Array.from(itemsById.values())
           .sort((a, b) => a.champName.localeCompare(b.champName, undefined) || a.id - b.id)
         setSkins(items)
-        logger.info('[ProfileBg] 加载了 %d 款皮肤', items.length)
+        logger.info('[ProfileBg] Đã tải %d skin', items.length)
       } catch (err) {
-        logger.error('[ProfileBg] 加载皮肤失败:', err)
-        setStatusMsg('❌ 加载皮肤数据失败')
+        logger.error('[ProfileBg] Không thể tải skin:', err)
+        setStatusMsg('❌ Không thể tải dữ liệu skin')
       } finally {
         setLoading(false)
       }
@@ -226,7 +226,7 @@ export function ProfileBackgroundPicker({ open, onClose }: ProfileBackgroundPick
 
   // 点击皮肤 → 直接应用
   const handleApply = async (skin: SkinItem) => {
-    setStatusMsg(`正在应用 ${skin.name}...`)
+    setStatusMsg(`Đang áp dụng ${skin.name}...`)
     try {
       const res = await fetch('/lol-summoner/v1/current-summoner/summoner-profile', {
         method: 'POST',
@@ -235,14 +235,14 @@ export function ProfileBackgroundPicker({ open, onClose }: ProfileBackgroundPick
       })
       if (res.ok) {
         setAppliedId(skin.id)
-        setStatusMsg(`✅ 已应用 [${skin.name}]`)
-        logger.info('[ProfileBg] 背景已设置为 %s (id=%d)', skin.name, skin.id)
+        setStatusMsg(`✅ Đã áp dụng [${skin.name}]`)
+        logger.info('[ProfileBg] Đã đặt nền thành %s (id=%d)', skin.name, skin.id)
       } else {
-        setStatusMsg(`❌ 设置失败 ${res.status}`)
+        setStatusMsg(`❌ Thiết lập thất bại ${res.status}`)
       }
     } catch (err) {
-      setStatusMsg('❌ 请求失败')
-      logger.error('[ProfileBg] 设置背景失败:', err)
+      setStatusMsg('❌ Yêu cầu thất bại')
+      logger.error('[ProfileBg] Không thể đặt nền:', err)
     }
     setTimeout(() => setStatusMsg(''), 3000)
   }
@@ -252,25 +252,25 @@ export function ProfileBackgroundPicker({ open, onClose }: ProfileBackgroundPick
       <div className="spbg-container">
         {/* 标题 */}
         <div className="spbg-header">
-          <span className="spbg-title">自定义生涯背景</span>
+          <span className="spbg-title">Tùy chỉnh nền hồ sơ</span>
           <div className="spbg-toolbar">
             <input
               className="spbg-search"
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="搜索英雄或皮肤..."
+              placeholder="Tìm tướng hoặc skin..."
             />
-            <span className="spbg-count">{filtered.length} 款皮肤</span>
+            <span className="spbg-count">{filtered.length} skin</span>
             {statusMsg && <span className="spbg-status">{statusMsg}</span>}
           </div>
         </div>
 
         {/* 皮肤网格 */}
         <div className="spbg-grid-wrap" ref={gridWrapRef} onScroll={handleScroll}>
-          {loading && <div className="spbg-empty">加载中...</div>}
+          {loading && <div className="spbg-empty">Đang tải...</div>}
           {!loading && filtered.length === 0 && (
-            <div className="spbg-empty">没有找到相关皮肤</div>
+            <div className="spbg-empty">Không tìm thấy skin phù hợp</div>
           )}
           <div className="spbg-grid">
             {visibleSkins.map((skin) => {
@@ -289,8 +289,8 @@ export function ProfileBackgroundPicker({ open, onClose }: ProfileBackgroundPick
                       alt={skin.name}
                       loading="lazy"
                     />
-                    <div className="spbg-card-hover">点击应用</div>
-                    {isApplied && <div className="spbg-card-badge">使用中</div>}
+                    <div className="spbg-card-hover">Nhấn để áp dụng</div>
+                    {isApplied && <div className="spbg-card-badge">Đang sử dụng</div>}
                   </div>
                   <p className="spbg-card-name">{skin.name}</p>
                 </div>

@@ -48,16 +48,16 @@ const ICON_MAP: Record<string, string> = {
 
 /** Wiki 字段名 → 中文标签 */
 const LABEL_MAP: Record<string, string> = {
-  dmg_dealt: '造成伤害',
-  dmg_taken: '承受伤害',
-  healing: '治疗效果',
-  shielding: '护盾效果',
-  tenacity: '韧性',
-  ability_haste: '技能急速',
-  attack_speed: '成长攻速',
-  energy_regen: '能量回复',
-  mana_regen: '法力回复',
-  movement_speed: '移动速度',
+  dmg_dealt: 'Sát thương gây ra',
+  dmg_taken: 'Sát thương nhận vào',
+  healing: 'Hiệu quả hồi máu',
+  shielding: 'Hiệu quả lá chắn',
+  tenacity: 'Kháng hiệu ứng',
+  ability_haste: 'Điểm hồi kỹ năng',
+  attack_speed: 'Tốc độ đánh tăng theo cấp',
+  energy_regen: 'Hồi nội năng',
+  mana_regen: 'Hồi năng lượng',
+  movement_speed: 'Tốc độ di chuyển',
 }
 
 /** 显示顺序（固定顺序比字典序好看） */
@@ -212,7 +212,7 @@ function buildStatsHtml(stats: ChampionBalanceStats): string {
   }
 
   if (entries.length === 0) {
-    return '<div style="color:#746e64;font-style:italic;">无平衡调整（原版数值）</div>'
+    return '<div style="color:#746e64;font-style:italic;">Không có điều chỉnh cân bằng (chỉ số gốc)</div>'
   }
 
   const rows = entries.map(([key, value]) => {
@@ -265,7 +265,7 @@ function buildTooltipData(champId: number): { caption: string; content: string }
   // Wiki 数据稀疏：没调整的模式根本不存在
   const stats = balance.stats?.[currentMode.dataKey] ?? {}
   return {
-    caption: `${currentMode.displayName} · 平衡调整`,
+    caption: `${currentMode.displayName} · Điều chỉnh cân bằng`,
     content: buildStatsHtml(stats),
   }
 }
@@ -288,12 +288,12 @@ function extractChampionIdFromWrapper(wrapper: Element): number | null {
     const src = img.getAttribute('src') || ''
     const match = src.match(/champion-icons\/(\d+)\.png/)
     if (match) {
-      logger.debug('[BalanceBuff] extractFromWrapper: 从<img>提取 championId=%s (src=%s)', match[1], src)
+      logger.debug('[BalanceBuff] extractFromWrapper: Trích xuất championId=%s từ <img> (src=%s)', match[1], src)
       return Number(match[1])
     }
-    logger.debug('[BalanceBuff] extractFromWrapper: 找到<img>但src不匹配 (src=%s)', src)
+    logger.debug('[BalanceBuff] extractFromWrapper: Tìm thấy <img> nhưng src không khớp (src=%s)', src)
   } else {
-    logger.debug('[BalanceBuff] extractFromWrapper: 未找到 img[src*=champion-icons]')
+    logger.debug('[BalanceBuff] extractFromWrapper: Không tìm thấy img[src*=champion-icons]')
   }
 
   // fallback: 从 background-image 提取
@@ -308,23 +308,23 @@ function extractChampionIdFromWrapper(wrapper: Element): number | null {
       const bgEl = iconContainer.querySelector('[style*="champion-icons"]') as HTMLElement | null
       bg = bgEl?.style.backgroundImage || ''
     }
-    logger.debug('[BalanceBuff] extractFromWrapper: 找到iconContainer (class=%s, bg=%s)', iconContainer.className, bg)
+    logger.debug('[BalanceBuff] extractFromWrapper: Tìm thấy iconContainer (class=%s, bg=%s)', iconContainer.className, bg)
     const match = bg.match(/champion-icons\/(\d+)\.png/)
     if (match) {
-      logger.debug('[BalanceBuff] extractFromWrapper: 从background-image提取 championId=%s', match[1])
+      logger.debug('[BalanceBuff] extractFromWrapper: Trích xuất championId=%s từ background-image', match[1])
       return Number(match[1])
     }
-    logger.debug('[BalanceBuff] extractFromWrapper: iconContainer内background-image不匹配')
+    logger.debug('[BalanceBuff] extractFromWrapper: background-image trong iconContainer không khớp')
   } else {
-    logger.debug('[BalanceBuff] extractFromWrapper: 未找到 .champion-icon-container 或 .champion-icon')
+    logger.debug('[BalanceBuff] extractFromWrapper: Không tìm thấy .champion-icon-container hoặc .champion-icon')
   }
 
   // 最终兜底：打印 wrapper 内所有 img 和带 background-image 的元素
   const allImgs = wrapper.querySelectorAll('img')
   if (allImgs.length > 0) {
-    logger.debug('[BalanceBuff] extractFromWrapper: wrapper内所有img: %o', Array.from(allImgs).map(i => ({ src: i.getAttribute('src'), alt: i.getAttribute('alt') })))
+    logger.debug('[BalanceBuff] extractFromWrapper: Tất cả img trong wrapper: %o', Array.from(allImgs).map(i => ({ src: i.getAttribute('src'), alt: i.getAttribute('alt') })))
   }
-  logger.debug('[BalanceBuff] extractFromWrapper: 无法提取championId，wrapper.innerHTML片段=%s', wrapper.innerHTML.substring(0, 300))
+  logger.debug('[BalanceBuff] extractFromWrapper: Không thể trích xuất championId, đoạn wrapper.innerHTML=%s', wrapper.innerHTML.substring(0, 300))
   return null
 }
 
@@ -399,7 +399,7 @@ function tryBindHover(): boolean {
   const party = document.querySelector('.summoner-array.your-party')
   if (party) {
     const wrappers = party.querySelectorAll('.summoner-container-wrapper')
-    logger.debug('[BalanceBuff] tryBindHover: 找到party, wrappers=%d个', wrappers.length)
+    logger.debug('[BalanceBuff] tryBindHover: Tìm thấy party, số wrappers=%d', wrappers.length)
     wrappers.forEach((el) => {
       if (el.hasAttribute(BOUND_ATTR)) return
       el.setAttribute(BOUND_ATTR, 'team')
@@ -414,12 +414,12 @@ function tryBindHover(): boolean {
       el.addEventListener('mouseleave', () => tooltip!.hide())
     })
   } else {
-    logger.debug('[BalanceBuff] tryBindHover: 未找到 .summoner-array.your-party')
+    logger.debug('[BalanceBuff] tryBindHover: Không tìm thấy .summoner-array.your-party')
   }
 
   // 候选席
   const bench = document.querySelectorAll('.bench-container .champion-bench-item')
-  logger.debug('[BalanceBuff] tryBindHover: bench元素=%d个', bench.length)
+  logger.debug('[BalanceBuff] tryBindHover: Số phần tử bench=%d', bench.length)
   bench.forEach((el) => {
     if (el.hasAttribute(BOUND_ATTR)) return
     el.setAttribute(BOUND_ATTR, 'bench')
@@ -454,7 +454,7 @@ function logCardDiag(message: string): void {
 
 function ensureCardHoverObserver(): void {
   if (!tooltip || !currentMode) {
-    logCardDiag(`网格观察者未就绪 → tooltip=${!!tooltip}, currentMode=${currentMode ? currentMode.dataKey : 'null'}`)
+    logCardDiag(`Bộ theo dõi lưới chưa sẵn sàng → tooltip=${!!tooltip}, currentMode=${currentMode ? currentMode.dataKey : 'null'}`)
     return
   }
 
@@ -463,9 +463,9 @@ function ensureCardHoverObserver(): void {
     const cardCount = document.querySelectorAll('.champion-card-component').length
     // 有卡片却找不到 wrapper，说明选择器/结构对不上，是关键诊断信号
     if (cardCount > 0) {
-      logCardDiag(`有 ${cardCount} 张 .champion-card-component 卡片，但未找到 .champion-cards-component-wrapper（请检查选择器）`)
+      logCardDiag(`Có ${cardCount} thẻ .champion-card-component nhưng không tìm thấy .champion-cards-component-wrapper (hãy kiểm tra bộ chọn)`)
     } else {
-      logCardDiag('英雄网格尚未渲染（卡片数=0），等待 DOM 出现')
+      logCardDiag('Lưới tướng chưa được hiển thị (số thẻ=0), đang chờ DOM xuất hiện')
     }
     return
   }
@@ -477,7 +477,7 @@ function ensureCardHoverObserver(): void {
 
   const initialCards = wrapper.querySelectorAll('.champion-card-component').length
   logger.info(
-    '[BalanceBuff] ✓ 已绑定英雄网格 card-hovered 观察者（wrapper 命中，初始卡片数=%d，模式=%s）',
+    '[BalanceBuff] ✓ Đã gắn bộ theo dõi card-hovered cho lưới tướng (tìm thấy wrapper, số thẻ ban đầu=%d, chế độ=%s)',
     initialCards,
     currentMode.displayName,
   )
@@ -489,7 +489,7 @@ function ensureCardHoverObserver(): void {
     const hovered = wrapper.querySelector('.champion-card-component.card-hovered')
     if (!hovered) {
       if (lastHoverChampId !== -2) {
-        logger.info('[BalanceBuff] 网格 hover 离开 → 隐藏')
+        logger.info('[BalanceBuff] Con trỏ rời lưới → Ẩn')
         lastHoverChampId = -2
       }
       tooltip.hide()
@@ -502,7 +502,7 @@ function ensureCardHoverObserver(): void {
     if ((champId ?? -1) !== lastHoverChampId) {
       lastHoverChampId = champId ?? -1
       logger.info(
-        '[BalanceBuff] 网格 hover → %s (championId=%d, hasData=%s)',
+        '[BalanceBuff] Di chuột trên lưới → %s (championId=%d, hasData=%s)',
         name ?? '?',
         champId ?? -1,
         champId ? !!buildTooltipData(champId) : false,
@@ -523,7 +523,7 @@ function ensureCardHoverObserver(): void {
 // ==================== 生命周期 ====================
 
 async function mountForChampSelect() {
-  logger.debug('[BalanceBuff] mountForChampSelect 开始')
+  logger.debug('[BalanceBuff] Bắt đầu mountForChampSelect')
   // 1. 探测当前模式：用 gameMode 映射平衡数据 key，用 queueId 拿官方中文名
   let gameMode = ''
   let queueId = 0
@@ -533,24 +533,24 @@ async function mountForChampSelect() {
     queueId = gf.gameData?.queue?.id || 0
     logger.debug('[BalanceBuff] getGameflowSession: gameMode=%s, queueId=%d', gameMode, queueId)
   } catch (e) {
-    logger.debug('[BalanceBuff] getGameflowSession 失败: %o', e)
+    logger.debug('[BalanceBuff] getGameflowSession thất bại: %o', e)
   }
 
   const modeKey = getBalanceKey(gameMode)
   if (!modeKey) {
-    logger.info('[BalanceBuff] 当前模式 %s 不支持，跳过', gameMode)
+    logger.info('[BalanceBuff] Chế độ hiện tại %s không được hỗ trợ, bỏ qua', gameMode)
     return
   }
 
   // 直接用 LCU 官方队列中文名，无需自己硬编码
   const displayName = queueId > 0 ? getQueueName(queueId) : gameMode
   currentMode = { dataKey: modeKey, displayName }
-  logger.info('[BalanceBuff] 进入选人阶段 → %s (gameMode=%s, queueId=%d, dataKey=%s)', displayName, gameMode, queueId, modeKey)
+  logger.info('[BalanceBuff] Vào giai đoạn chọn tướng → %s (gameMode=%s, queueId=%d, dataKey=%s)', displayName, gameMode, queueId, modeKey)
 
   // 2. 创建 tooltip
   const manager = document.getElementById('lol-uikit-layer-manager-wrapper')
   if (!manager) {
-    logger.warn('[BalanceBuff] 未找到 layer-manager-wrapper，延迟挂载')
+    logger.warn('[BalanceBuff] Không tìm thấy layer-manager-wrapper, hoãn gắn')
     return
   }
   tooltip = new BalanceTooltip(manager)
@@ -564,7 +564,7 @@ async function mountForChampSelect() {
 }
 
 function unmountForChampSelect() {
-  logger.debug('[BalanceBuff] unmountForChampSelect 执行')
+  logger.debug('[BalanceBuff] Thực thi unmountForChampSelect')
   if (injectRegistered) {
     injector.unregister(tryBindHover)
     injectRegistered = false
@@ -606,18 +606,18 @@ export function updateBalanceBuffTooltip(enabled: boolean) {
 
     // 插件启动时若已经在 ChampSelect 阶段，立即挂载
     lcu.getGameflowPhase().then((phase) => {
-      logger.debug('[BalanceBuff] 启动时当前阶段=%s', phase)
+      logger.debug('[BalanceBuff] Giai đoạn hiện tại khi khởi động=%s', phase)
       if (phase === 'ChampSelect') {
         unmountForChampSelect()
         mountForChampSelect()
       }
     }).catch(() => { /* ignore */ })
 
-    logger.info('[BalanceBuff] 平衡性调整 buff 提示已启用 ✓')
+    logger.info('[BalanceBuff] Đã bật chú giải điều chỉnh cân bằng ✓')
   } else if (!enabled && phaseUnsub) {
     phaseUnsub()
     phaseUnsub = null
     unmountForChampSelect()
-    logger.info('[BalanceBuff] 平衡性调整 buff 提示已禁用')
+    logger.info('[BalanceBuff] Đã tắt chú giải điều chỉnh cân bằng')
   }
 }

@@ -270,7 +270,7 @@ export class AramggDataApi {
     const promise = this.request<AramggChampionsStats>('/data/champions-stats.json', options)
       .then((data) => {
         if (!Array.isArray(data)) {
-          throw new AramggApiError('[ARAMGG] 全英雄统计格式异常', {
+          throw new AramggApiError('[ARAMGG] Invalid all-champion statistics format', {
             url: new URL('/data/champions-stats.json', AramggDataApi.BASE_URL).toString(),
             body: data,
           })
@@ -362,7 +362,7 @@ export class AramggDataApi {
       const body = text ? JSON.parse(text) as unknown : null
 
       if (!response.ok) {
-        throw new AramggApiError(`[ARAMGG] 请求失败: ${response.status} ${response.statusText}`, {
+        throw new AramggApiError(`[ARAMGG] Request failed: ${response.status} ${response.statusText}`, {
           url: url.toString(),
           status: response.status,
           statusText: response.statusText,
@@ -374,7 +374,7 @@ export class AramggDataApi {
     } catch (err) {
       if (err instanceof AramggApiError) throw err
       const message = err instanceof Error ? err.message : String(err)
-      throw new AramggApiError(`[ARAMGG] 请求异常: ${message}`, { url: url.toString() })
+      throw new AramggApiError(`[ARAMGG] Request error: ${message}`, { url: url.toString() })
     } finally {
       window.clearTimeout(timeout)
       options.signal?.removeEventListener('abort', relayAbort)

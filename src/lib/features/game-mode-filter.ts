@@ -323,7 +323,7 @@ function buildChip(info: GameModeInfo): HTMLDivElement {
   const chip = document.createElement('div')
   chip.className = 'sona-mode-chip' + (checked ? ' sona-mode-chip--on' : ' sona-mode-chip--off')
   chip.setAttribute('data-mode', info.mode)
-  chip.title = checked ? `点击隐藏：${info.name}` : `点击显示：${info.name}`
+  chip.title = checked ? `Nhấn để ẩn: ${info.name}` : `Nhấn để hiện: ${info.name}`
 
   const icon = document.createElement('div')
   icon.className = 'sona-mode-chip__icon'
@@ -356,10 +356,10 @@ function toggleMode(mode: string) {
   const map = { ...store.get('hiddenGameModes') }
   if (map[mode]) {
     delete map[mode]
-    logger.info('[GameModeFilter] 显示模式: %s', mode)
+    logger.info('[GameModeFilter] Hiện chế độ: %s', mode)
   } else {
     map[mode] = true
-    logger.info('[GameModeFilter] 隐藏模式: %s', mode)
+    logger.info('[GameModeFilter] Ẩn chế độ: %s', mode)
   }
   store.set('hiddenGameModes', map)
   // 立即触发一次刷新（注入器也会跟进，但即时反馈更好）
@@ -384,7 +384,7 @@ function refreshChipsState(bar: HTMLElement) {
     }
 
     const nameText = chip.querySelector('.sona-mode-chip__name')?.textContent ?? mode
-    chip.title = checked ? `点击隐藏：${nameText}` : `点击显示：${nameText}`
+    chip.title = checked ? `Nhấn để ẩn: ${nameText}` : `Nhấn để hiện: ${nameText}`
   })
 }
 

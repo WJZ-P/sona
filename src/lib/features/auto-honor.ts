@@ -39,7 +39,7 @@ async function autoHonorTeammate() {
   try {
     const ballotRes = await fetch('/lol-honor-v2/v1/ballot')
     if (!ballotRes.ok) {
-      logger.info('[AutoHonor] 当前没有待点赞的对局')
+      logger.info('[AutoHonor] Hiện không có trận nào đang chờ vinh danh')
       return
     }
 
@@ -48,12 +48,12 @@ async function autoHonorTeammate() {
     const opponents = [...(ballot.eligibleOpponents || [])]
 
     if (allies.length === 0 && opponents.length === 0) {
-      logger.info('[AutoHonor] 没有可点赞的玩家')
+      logger.info('[AutoHonor] Không có người chơi nào để vinh danh')
       return
     }
 
     const votes = ballot.votePool?.votes ?? 1
-    logger.info('[AutoHonor] 可用票数: %d, 队友: %d, 对手: %d', votes, allies.length, opponents.length)
+    logger.info('[AutoHonor] Số phiếu khả dụng: %d, đồng đội: %d, đối thủ: %d', votes, allies.length, opponents.length)
 
     // 打散队友顺序，每人最多 1 票
     for (let i = allies.length - 1; i > 0; i--) {
@@ -86,15 +86,15 @@ async function autoHonorTeammate() {
       })
 
       if (honorRes.ok) {
-        logger.info('[AutoHonor] 第%d票 ✓ → [%s] 给了 %s%s', i + 1, category, target.championName, isAlly ? '' : ' (对手)')
+        logger.info('[AutoHonor] Phiếu thứ %d ✓ → [%s] đã trao cho %s%s', i + 1, category, target.championName, isAlly ? '' : ' (đối thủ)')
       } else {
-        logger.error('[AutoHonor] 第%d票失败:', i + 1, honorRes.status, await honorRes.text())
+        logger.error('[AutoHonor] Phiếu thứ %d thất bại:', i + 1, honorRes.status, await honorRes.text())
       }
     }
 
-    logger.info('[AutoHonor] 自动点赞完成，共 %d 票', targets.length)
+    logger.info('[AutoHonor] Tự động vinh danh hoàn tất, tổng cộng %d phiếu', targets.length)
   } catch (err) {
-    logger.error('[AutoHonor] 自动点赞异常:', err)
+    logger.error('[AutoHonor] Lỗi tự động vinh danh:', err)
   }
 }
 

@@ -359,7 +359,7 @@ async function applyStatusPayloadPatch(patch: StatusPayloadPatch, fallbackStatus
   }
 
   throw new Error(
-    `头像/昵称同步信息写入后回读校验失败（写入 ${nextStatusMessage.length} 字符，回读 ${persistedStatusMessage.length} 字符）`,
+    `Xác minh đọc lại thông tin đồng bộ ảnh đại diện/biệt danh thất bại sau khi ghi (đã ghi ${nextStatusMessage.length} ký tự, đọc lại ${persistedStatusMessage.length} ký tự)`,
   )
 }
 
