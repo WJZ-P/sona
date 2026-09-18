@@ -108,32 +108,7 @@ export function RewardsPage() {
     [grants, selections],
   )
 
-  // 一键领取时各 grant 的自动选择：
-  //   - 用户已手动选好且合法的，尊重用户的选择
-  //   - 奖励数不超过 max 的（通常是"只有一个奖励、走个选择流程"），全选
-  //   - 真正需要在多个奖励里做取舍的，跳过，交给用户手动选
-  const autoPicks = useMemo(() => {
-    const picks: Array<{ grant: RewardsGrant; ids: string[] }> = []
-    let skipped = 0
-    for (const grant of grants) {
-      const min = minSelections(grant)
-      const max = maxSelections(grant)
-      const manual = selections[grant.info.id] ?? []
-      if (manual.length > 0 && manual.length >= min && manual.length <= max) {
-        picks.push({ grant, ids: manual })
-        continue
-      }
-      const all = grant.rewardGroup.rewards.map((reward) => reward.id)
-      if (all.length > 0 && all.length >= min && all.length <= max) {
-        picks.push({ grant, ids: all })
-      } else {
-        skipped++
-      }
-    }
-    return { picks, skipped }
-  }, [grants, selections])
-
-  /** 依次提交一组 grant 的选择，任一失败即中止；返回本次是否全部成功 */
+  /** 依次提交一组 grant 的选择，任一失败即中止 */
   const submitPicks = useCallback(async (picks: Array<{ grant: RewardsGrant; ids: string[] }>) => {
     const claimedNames: string[] = []
     const claimedIds: string[] = []
@@ -166,10 +141,9 @@ export function RewardsPage() {
 
     if (failure) {
       setStatus(t('rewards.claimFailed', { error: failure }))
-      return false
+    } else {
+      setStatus(t('rewards.claimSuccess', { items: claimedNames.join('、') }))
     }
-    setStatus(t('rewards.claimSuccess', { items: claimedNames.join('、') }))
-    return true
   }, [t])
 
   const claimAll = useCallback(async () => {
@@ -181,19 +155,18 @@ export function RewardsPage() {
     setClaiming(null)
   }, [claimableGrants, busy, selections, submitPicks])
 
+  // 一键领取：每个 grant 按可选上限直接取前几个奖励提交，不做任何取舍
   const claimEverything = useCallback(async () => {
-    if (busy) return
-    const { picks, skipped } = autoPicks
+    if (!grants.length || busy) return
 
     setClaiming('all')
     setStatus('')
-    const ok = picks.length ? await submitPicks(picks) : true
-    if (ok && skipped > 0) {
-      const remaining = t('rewards.manualSelectRemaining', { count: skipped })
-      setStatus((prev) => (prev ? `${prev}\n${remaining}` : remaining))
-    }
+    await submitPicks(grants.map((grant) => ({
+      grant,
+      ids: grant.rewardGroup.rewards.slice(0, maxSelections(grant)).map((reward) => reward.id),
+    })))
     setClaiming(null)
-  }, [autoPicks, busy, submitPicks, t])
+  }, [grants, busy, submitPicks])
 
   return (
     <div className="sona-settings sona-rewards">
