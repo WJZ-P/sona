@@ -145,7 +145,7 @@ Sona focuses on practical quality-of-life improvements: champion select tools, m
 |:---:|---|---|
 | 🎬 | **Replay Tool** | Download and watch replays by Game ID. |
 | 💾 | **Settings Backup** | Back up and restore client settings by account. |
-| 🎁 | **Selective Battle Pass Rewards** | Review pending choice rewards and claim only the items you select. |
+| 🎁 | **Selective Battle Pass Rewards** | Review pending choice rewards and claim only the items you select, or claim every no-choice reward in one click. |
 | 🪟 | **Window Effects** | Blur, acrylic, mica, and other visual effects depending on platform support. |
 | ✨ | **Global Particles** | Adds star-like particles to the client background. |
 | 🚀 | **Quick Lobby** | Skips mode selection from Play and opens a configured queue lobby directly. |

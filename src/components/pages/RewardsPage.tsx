@@ -23,7 +23,9 @@ export function RewardsPage() {
 
   const [grants, setGrants] = useState<RewardsGrant[]>([])
   const [loading, setLoading] = useState(false)
-  const [claiming, setClaiming] = useState(false)
+  // 正在提交的是"领取所选"还是"一键领取"，null 表示空闲
+  const [claiming, setClaiming] = useState<'selected' | 'all' | null>(null)
+  const busy = claiming !== null
   const [status, setStatus] = useState('')
   // grantId -> 已选中的 rewardId 列表
   const [selections, setSelections] = useState<Record<string, string[]>>({})
@@ -106,17 +108,38 @@ export function RewardsPage() {
     [grants, selections],
   )
 
-  const claimAll = useCallback(async () => {
-    if (!claimableGrants.length || claiming) return
+  // 一键领取时各 grant 的自动选择：
+  //   - 用户已手动选好且合法的，尊重用户的选择
+  //   - 奖励数不超过 max 的（通常是"只有一个奖励、走个选择流程"），全选
+  //   - 真正需要在多个奖励里做取舍的，跳过，交给用户手动选
+  const autoPicks = useMemo(() => {
+    const picks: Array<{ grant: RewardsGrant; ids: string[] }> = []
+    let skipped = 0
+    for (const grant of grants) {
+      const min = minSelections(grant)
+      const max = maxSelections(grant)
+      const manual = selections[grant.info.id] ?? []
+      if (manual.length > 0 && manual.length >= min && manual.length <= max) {
+        picks.push({ grant, ids: manual })
+        continue
+      }
+      const all = grant.rewardGroup.rewards.map((reward) => reward.id)
+      if (all.length > 0 && all.length >= min && all.length <= max) {
+        picks.push({ grant, ids: all })
+      } else {
+        skipped++
+      }
+    }
+    return { picks, skipped }
+  }, [grants, selections])
 
-    setClaiming(true)
-    setStatus('')
+  /** 依次提交一组 grant 的选择，任一失败即中止；返回本次是否全部成功 */
+  const submitPicks = useCallback(async (picks: Array<{ grant: RewardsGrant; ids: string[] }>) => {
     const claimedNames: string[] = []
     const claimedIds: string[] = []
     let failure = ''
 
-    for (const grant of claimableGrants) {
-      const ids = selections[grant.info.id] ?? []
+    for (const { grant, ids } of picks) {
       try {
         await lcu.selectGrantReward(grant.info.id, grant.rewardGroup.id, ids)
         claimedIds.push(grant.info.id)
@@ -143,11 +166,34 @@ export function RewardsPage() {
 
     if (failure) {
       setStatus(t('rewards.claimFailed', { error: failure }))
-    } else {
-      setStatus(t('rewards.claimSuccess', { items: claimedNames.join('、') }))
+      return false
     }
-    setClaiming(false)
-  }, [claimableGrants, claiming, selections, t])
+    setStatus(t('rewards.claimSuccess', { items: claimedNames.join('、') }))
+    return true
+  }, [t])
+
+  const claimAll = useCallback(async () => {
+    if (!claimableGrants.length || busy) return
+
+    setClaiming('selected')
+    setStatus('')
+    await submitPicks(claimableGrants.map((grant) => ({ grant, ids: selections[grant.info.id] ?? [] })))
+    setClaiming(null)
+  }, [claimableGrants, busy, selections, submitPicks])
+
+  const claimEverything = useCallback(async () => {
+    if (busy) return
+    const { picks, skipped } = autoPicks
+
+    setClaiming('all')
+    setStatus('')
+    const ok = picks.length ? await submitPicks(picks) : true
+    if (ok && skipped > 0) {
+      const remaining = t('rewards.manualSelectRemaining', { count: skipped })
+      setStatus((prev) => (prev ? `${prev}\n${remaining}` : remaining))
+    }
+    setClaiming(null)
+  }, [autoPicks, busy, submitPicks, t])
 
   return (
     <div className="sona-settings sona-rewards">
@@ -156,11 +202,14 @@ export function RewardsPage() {
       <div className="sona-rewards-bar">
         <p className="sona-rewards-hint">{t('rewards.hint')}</p>
         <div className="sona-rewards-actions">
-          <SonaButton onClick={load} disabled={loading || claiming}>
+          <SonaButton onClick={claimEverything} disabled={busy || loading || grants.length === 0}>
+            {claiming === 'all' ? t('rewards.claiming') : t('rewards.claimEverything')}
+          </SonaButton>
+          <SonaButton onClick={load} disabled={loading || busy}>
             {loading ? t('common.loading') : t('rewards.refresh')}
           </SonaButton>
-          <SonaButton variant="primary" onClick={claimAll} disabled={claiming || claimableGrants.length === 0}>
-            {claiming
+          <SonaButton variant="primary" onClick={claimAll} disabled={busy || claimableGrants.length === 0}>
+            {claiming === 'selected'
               ? t('rewards.claiming')
               : totalSelected > 0
                 ? t('rewards.claimSelected', { count: totalSelected })
@@ -187,7 +236,7 @@ export function RewardsPage() {
                   type="button"
                   className={`sona-reward-item${isSelected ? ' sona-reward-item--selected' : ''}`}
                   onClick={() => toggle(grant, reward.id)}
-                  disabled={claiming}
+                  disabled={busy}
                   title={name}
                 >
                   {isSelected && <span className="sona-reward-item-check" aria-hidden>✓</span>}
