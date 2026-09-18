@@ -82,7 +82,7 @@ Sona focuses on practical quality-of-life improvements: champion select tools, m
 | 🎯 | **Auto Pick / Auto Ban Queue** | Configure multiple candidate champions. Sona skips unavailable champions by priority. |
 | 🔄 | **ARAM Bench No Cooldown** | Removes bench swap cooldown in ARAM. |
 | 🔵 | **Side Indicator** | Reports whether your team is blue side or red side in champion-select chat. |
-| 📊 | **Team Power Analysis** | Uses matches from the current mode to calculate win rate, KDA, and a `3.0–16.0` strength score. |
+| 📊 | **Deadweight Detector** | Uses matches from the current mode to calculate win rate, KDA, and a `3.0–16.0` strength score. |
 | 🌟 | **Champion Select Assist** | Shows teammate win rate, KDA, particles, champion tier badges, and clickable match history. |
 | 🔒 | **Privacy / Streamer Mode Support** | Keeps teammate analysis working when names are hidden, restores real names beside client aliases, and tracks player swaps. |
 | 📈 | **Game Analysis Popup** | Displays team strength analysis after entering game, including win rate, KDA, rank, and premade groups. |
