@@ -184,3 +184,8 @@
 .sona-entry-btn--has-update .sona-entry-update-badge {
   display: flex;
 }
+
+/* 隐藏右侧导航文字：容器属性会覆盖当前及 Ember 后续创建的文字节点。 */
+.right-nav-menu[data-sona-hijacked-nav-text="true"] .menu-item-small-text {
+  display: none !important;
+}

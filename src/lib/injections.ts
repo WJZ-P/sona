@@ -571,6 +571,33 @@ function tryRemoveTFT(): boolean {
 let hideRightNavTextEnabled = false
 
 const NAV_TEXT_HIDDEN_ATTR = `${HIJACKED_ATTR}-nav-text`
+const NAV_TEXT_ELEMENT_HIDDEN_ATTR = `${NAV_TEXT_HIDDEN_ATTR}-element`
+
+function getRightNavTextElements(nav: Element): HTMLElement[] {
+  const textElements = new Set<HTMLElement>()
+
+  nav.querySelectorAll<HTMLElement>('.menu-item-small-text').forEach((text) => textElements.add(text))
+  nav.querySelectorAll('lol-uikit-navigation-item').forEach((item) => {
+    const shadowRoot = (item as HTMLElement).shadowRoot
+    shadowRoot?.querySelectorAll<HTMLElement>('.menu-item-small-text').forEach((text) => textElements.add(text))
+  })
+
+  return Array.from(textElements)
+}
+
+function restoreRightNavText() {
+  document.querySelectorAll('.right-nav-menu').forEach((nav) => {
+    const wasHiddenBySona = nav.hasAttribute(NAV_TEXT_HIDDEN_ATTR)
+    nav.removeAttribute(NAV_TEXT_HIDDEN_ATTR)
+
+    getRightNavTextElements(nav).forEach((text) => {
+      if (text.hasAttribute(NAV_TEXT_ELEMENT_HIDDEN_ATTR) || (wasHiddenBySona && text.style.display === 'none')) {
+        text.style.removeProperty('display')
+        text.removeAttribute(NAV_TEXT_ELEMENT_HIDDEN_ATTR)
+      }
+    })
+  })
+}
 
 /** 设置开关状态（供 features.ts 调用） */
 export function setHideRightNavTextEnabled(enabled: boolean) {
@@ -579,15 +606,7 @@ export function setHideRightNavTextEnabled(enabled: boolean) {
     injector.register(tryHideRightNavText)
   } else {
     injector.unregister(tryHideRightNavText)
-    // 恢复被隐藏的文字
-    const nav = document.querySelector('.right-nav-menu')
-    if (nav) {
-      nav.removeAttribute(NAV_TEXT_HIDDEN_ATTR)
-      nav.querySelectorAll('lol-uikit-navigation-item').forEach((item) => {
-        const text = (item as HTMLElement).querySelector('.menu-item-small-text') as HTMLElement | null
-        if (text) text.style.display = ''
-      })
-    }
+    restoreRightNavText()
   }
 }
 
@@ -598,23 +617,28 @@ export function setHideRightNavTextEnabled(enabled: boolean) {
 function tryHideRightNavText(): boolean {
   if (!hideRightNavTextEnabled) return true
 
-  const nav = document.querySelector('.right-nav-menu')
-  if (!nav || nav.hasAttribute(NAV_TEXT_HIDDEN_ATTR)) return true
+  const navs = document.querySelectorAll('.right-nav-menu')
+  if (navs.length === 0) return true
 
-  const navItems = nav.querySelectorAll('lol-uikit-navigation-item')
   let hiddenCount = 0
-  navItems.forEach((item) => {
-    const el = item as HTMLElement
-    const text = el.querySelector('.menu-item-small-text') as HTMLElement | null
-    if (text) {
-      text.style.display = 'none'
-      hiddenCount++
-      logger.info(`[HideRightNavText] Hide right nav text: ${el.textContent}`)
-    }
-  })
-  // 只有所有 item 都成功隐藏了 text 才打 tag，否则下帧继续尝试
-  if (hiddenCount > 0) {
+  navs.forEach((nav) => {
+    // 容器状态配合全局 CSS，可自动覆盖之后才由 Ember 创建的文字节点。
     nav.setAttribute(NAV_TEXT_HIDDEN_ATTR, 'true')
+
+    getRightNavTextElements(nav).forEach((text) => {
+      const alreadyHidden = text.hasAttribute(NAV_TEXT_ELEMENT_HIDDEN_ATTR)
+        && text.style.getPropertyValue('display') === 'none'
+        && text.style.getPropertyPriority('display') === 'important'
+      if (alreadyHidden) return
+
+      text.style.setProperty('display', 'none', 'important')
+      text.setAttribute(NAV_TEXT_ELEMENT_HIDDEN_ATTR, 'true')
+      hiddenCount++
+    })
+  })
+
+  if (hiddenCount > 0) {
+    logger.info('[HideRightNavText] 已隐藏或修复 %d 个右侧导航文字节点', hiddenCount)
   }
   return true
 }
