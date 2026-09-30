@@ -7,6 +7,7 @@ import { store } from '@/lib/store'
 import { getChampIcon } from '@/lib/assets'
 import { getRating } from '@/lib/features'
 import { filterSonaStrengthGamesByQueue, shouldSkipSonaStrengthGame } from '@/lib/player-strength-score'
+import { withTimeout } from '@/lib/utils'
 import { useI18n } from '@/i18n'
 import type { GameflowTeamPlayer, PlayerChampionSelection } from '@/types/lcu'
 import '@/styles/GameAnalysisModal.css'
@@ -108,6 +109,21 @@ const PREMADE_BG_COLORS = [
   'rgba(192, 132, 252, 0.15)',
 ]
 
+/**
+ * 超时保护
+ *
+ * 客户端刚进入 InProgress 时 LCU 可能被拉游戏的主进程压住，SGP 又是外网请求，
+ * 两者都可能长时间不返回。fetch 本身没有超时，`.catch()` 只接得住 reject、
+ * 接不住永不 settle 的 Promise，一旦某个请求挂住，Promise.all 就永远不 resolve，
+ * `setLoading(false)` 也就永远执行不到，UI 会一直停在加载动画上。
+ */
+/** 单个 LCU 本地请求（gameflow / 当前召唤师）的超时 */
+const LCU_TIMEOUT_MS = 10_000
+/** 单个玩家的召唤师 / 段位 / 战绩查询超时，超时后该玩家退化为占位数据 */
+const PLAYER_TIMEOUT_MS = 15_000
+/** 整轮十人分析的总兜底超时 */
+const ANALYSIS_TIMEOUT_MS = 45_000
+
 // ==================== 组件 ====================
 
 export interface GameAnalysisModalProps {
@@ -151,7 +167,7 @@ export function GameAnalysisModal({ open, onClose, mockData }: GameAnalysisModal
     }
 
     try {
-      const session = await lcu.getGameflowSession()
+      const session = await withTimeout(lcu.getGameflowSession(), LCU_TIMEOUT_MS, 'getGameflowSession')
       if (loadToken !== loadTokenRef.current) return
       const teamOne = session.gameData.teamOne ?? []
       const teamTwo = session.gameData.teamTwo ?? []
@@ -171,7 +187,7 @@ export function GameAnalysisModal({ open, onClose, mockData }: GameAnalysisModal
       }
 
       // 判断自己所在队伍：优先从 team 匹配，否则从 selections 索引判断
-      const localPuuid = (await lcu.getSummonerInfo()).puuid
+      const localPuuid = (await withTimeout(lcu.getSummonerInfo(), LCU_TIMEOUT_MS, 'getSummonerInfo')).puuid
       if (loadToken !== loadTokenRef.current) return
       const isInTeamOne = teamOne.some(p => p.puuid === localPuuid)
         || selTeamOne.some(s => s.puuid === localPuuid)
@@ -262,14 +278,15 @@ export function GameAnalysisModal({ open, onClose, mockData }: GameAnalysisModal
           // 匿名模式：selections 仍提供真实 PUUID，统一从 Summoner 接口回填 Riot ID。
           // 非匿名模式也走同一链路，避免 gameflow 中名字字段为空造成标题缺失。
           try {
+            // 任一请求超时只影响该玩家自己，退化为占位数据，不拖住其余九人
             const [summoner, ranked, sgpResp] = await Promise.all([
-              lcu.getSummonerByPuuid(p.puuid).catch(() => null),
-              lcu.getRankedStats(p.puuid).catch(() => null),
-              lcu.getSgpMatchHistory(p.puuid, {
+              withTimeout(lcu.getSummonerByPuuid(p.puuid), PLAYER_TIMEOUT_MS, `getSummonerByPuuid(${p.puuid})`).catch(() => null),
+              withTimeout(lcu.getRankedStats(p.puuid), PLAYER_TIMEOUT_MS, `getRankedStats(${p.puuid})`).catch(() => null),
+              withTimeout(lcu.getSgpMatchHistory(p.puuid, {
                 startIndex: 0,
                 count: store.get('gameAnalysisFetchCount') || 50,
                 tag: tag || undefined,
-              }).catch(() => null),
+              }), PLAYER_TIMEOUT_MS, `getSgpMatchHistory(${p.puuid})`).catch(() => null),
             ])
 
             const summonerName = summoner?.gameName
@@ -366,17 +383,20 @@ export function GameAnalysisModal({ open, onClose, mockData }: GameAnalysisModal
         }))
       }
 
-      const [one, two] = await Promise.all([
-        analyzeTeam(resolvedTeamOne),
-        analyzeTeam(resolvedTeamTwo),
-      ])
+      // 总兜底：即使上面的单项超时全部失灵，也不会永远停在加载动画上
+      const [one, two] = await withTimeout(
+        Promise.all([analyzeTeam(resolvedTeamOne), analyzeTeam(resolvedTeamTwo)]),
+        ANALYSIS_TIMEOUT_MS,
+        'analyzeTeams',
+      )
       if (loadToken !== loadTokenRef.current) return
 
       setBlueTeam(sortTeamByPosition(isInTeamOne ? one : two))
       setRedTeam(sortTeamByPosition(isInTeamOne ? two : one))
     } catch (err) {
       if (loadToken !== loadTokenRef.current) return
-      setError(t('gameAnalysis.empty'))
+      const isTimeout = err instanceof Error && err.message.startsWith('[Timeout]')
+      setError(isTimeout ? t('gameAnalysis.timeout') : t('gameAnalysis.empty'))
       console.error('[GameAnalysis] 加载失败:', err)
     } finally {
       if (loadToken === loadTokenRef.current) setLoading(false)
@@ -425,7 +445,14 @@ export function GameAnalysisModal({ open, onClose, mockData }: GameAnalysisModal
               <span>{t('gameAnalysis.loading')}</span>
             </div>
           )}
-          {error && <div className="sga-error">{error}</div>}
+          {error && (
+            <div className="sga-error">
+              <span>{error}</span>
+              <button type="button" className="sga-retry" onClick={() => void loadAnalysis()}>
+                {t('gameAnalysis.retry')}
+              </button>
+            </div>
+          )}
           {!loading && !error && (blueTeam.length > 0 || redTeam.length > 0) && (
             <div className="sga-teams">
               {/* 蓝色方 */}

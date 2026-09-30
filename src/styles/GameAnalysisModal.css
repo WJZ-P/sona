@@ -87,11 +87,34 @@
 
 .sga-error {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 14px;
   height: 100%;
   color: #e74c3c;
   font-size: 14px;
+}
+
+.sga-retry {
+  padding: 6px 22px;
+  background: rgba(30, 35, 40, 0.8);
+  border: 1px solid #785a28;
+  border-radius: 2px;
+  color: #cdbe91;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.sga-retry:hover {
+  background: rgba(200, 170, 110, 0.15);
+  border-color: #c8aa6e;
+  color: #f0e6d2;
+}
+
+.sga-retry:active {
+  transform: translateY(1px);
 }
 
 .sga-empty {
