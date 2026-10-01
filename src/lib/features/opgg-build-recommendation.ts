@@ -919,7 +919,7 @@ function isCurrentRecommendationContext(context: RecommendationContext): boolean
 
 function saveCurrentSmartRunePage(page: RunePage): void {
   if (!store.get('smartBuildRecommendation')) {
-    logger.info('[OPGG] 跳过符文保存：智能配装未开启')
+    logger.info('[OPGG] 跳过符文保存：符文/召唤师技能自动配置未开启')
     return
   }
   if (currentContext.championId <= 0 || !currentChampionLocked) {
@@ -1155,7 +1155,7 @@ function syncRankedAllPositionsItemSets(baseContext: RecommendationContext): voi
 
   Promise.all(entries.map(({ entry }) => entry?.promise ?? Promise.resolve(null)))
     .then(async (recommendations) => {
-      if (!store.get('smartBuildRecommendation') || !currentChampionLocked) return
+      if (!store.get('smartItemSetBuild') || !currentChampionLocked) return
       if (!isCurrentRecommendationContext(baseContext)) return
       if (lastAppliedItemSetKey === syncKey) return
 
@@ -1180,7 +1180,7 @@ function syncRankedAllPositionsItemSets(baseContext: RecommendationContext): voi
 }
 
 function syncRecommendedItemSetWhenReady(entry: RecommendationCacheEntry): void {
-  if (!store.get('smartBuildRecommendation')) return
+  if (!store.get('smartItemSetBuild')) return
   if (!currentChampionLocked) return
 
   // 匹配/排位且识别不到分路时，展开五路分别写入，避免只剩中路一条
@@ -1195,7 +1195,7 @@ function syncRecommendedItemSetWhenReady(entry: RecommendationCacheEntry): void 
   itemSetSyncInFlightKeys.add(syncKey)
   entry.promise
     .then(async (recommendation) => {
-      if (!recommendation || !store.get('smartBuildRecommendation')) return
+      if (!recommendation || !store.get('smartItemSetBuild')) return
       if (!currentChampionLocked) return
       if (!isCurrentRecommendationContext(entry.context)) return
       if (lastAppliedItemSetKey === syncKey) return

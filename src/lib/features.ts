@@ -1133,11 +1133,16 @@ export function initFeatures() {
   })
 
   const updateOpggLifecycle = () => {
-    updateOpggBuildRecommendation(store.get('opggBuildRecommendation') || store.get('smartBuildRecommendation'))
+    updateOpggBuildRecommendation(
+      store.get('opggBuildRecommendation')
+      || store.get('smartBuildRecommendation')
+      || store.get('smartItemSetBuild'),
+    )
   }
   updateOpggLifecycle()
   store.onChange('opggBuildRecommendation', updateOpggLifecycle)
   store.onChange('smartBuildRecommendation', updateOpggLifecycle)
+  store.onChange('smartItemSetBuild', updateOpggLifecycle)
 
   updateGlobalParticle(store.get('globalParticle'))
   store.onChange('globalParticle', updateGlobalParticle)

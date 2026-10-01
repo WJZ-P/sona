@@ -96,7 +96,8 @@ Sona focuses on practical quality-of-life improvements: champion select tools, m
 
 |  | Feature | Description |
 |:---:|---|---|
-| 🧠 | **Smart Builds, Runes and Summoner Spells** | Automatically syncs item sets after champion lock-in and remembers manually saved runes and spells per champion/mode. |
+| 🧠 | **Auto Runes & Summoner Spells** | Remembers and restores manually saved runes and spells per champion and mode. |
+| 📦 | **Auto Item Sets** | Writes OP.GG recommended item sets after champion lock-in (not recommended yet — may scramble your item sets). |
 | 🧭 | **Position-aware Recommendations** | Uses your assigned role in ranked, the champion's most common role elsewhere, and offers a Top/Jungle/Mid/ADC/Support selector. |
 | 🧰 | **OP.GG Recommendation Panel** | Shows mode-aware items, runes, summoner spells, augments, and matchups during champion select. |
 | 📦 | **Managed Item Sets** | Creates Sona-managed client item sets while preserving user-created item sets. |

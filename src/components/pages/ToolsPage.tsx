@@ -155,6 +155,7 @@ export function ToolsPage() {
   const [champSelectAssist, setChampSelectAssist] = useState(store.get('champSelectAssist'))
   const [opggBuildRecommendation, setOpggBuildRecommendation] = useState(store.get('opggBuildRecommendation'))
   const [smartBuildRecommendation, setSmartBuildRecommendation] = useState(store.get('smartBuildRecommendation'))
+  const [smartItemSetBuild, setSmartItemSetBuild] = useState(store.get('smartItemSetBuild'))
   const [balanceBuffTooltip, setBalanceBuffTooltip] = useState(store.get('balanceBuffTooltip'))
   const [champSelectQuitButton, setChampSelectQuitButton] = useState(store.get('champSelectQuitButton'))
   const [gameAnalysisPopup, setGameAnalysisPopup] = useState(store.get('gameAnalysisPopup'))
@@ -237,6 +238,7 @@ export function ToolsPage() {
       store.onChange('champSelectAssist', setChampSelectAssist),
       store.onChange('opggBuildRecommendation', setOpggBuildRecommendation),
       store.onChange('smartBuildRecommendation', setSmartBuildRecommendation),
+      store.onChange('smartItemSetBuild', setSmartItemSetBuild),
       store.onChange('balanceBuffTooltip', setBalanceBuffTooltip),
       store.onChange('champSelectQuitButton', setChampSelectQuitButton),
       store.onChange('gameAnalysisPopup', setGameAnalysisPopup),
@@ -574,6 +576,15 @@ export function ToolsPage() {
           <SonaSwitch
             checked={smartBuildRecommendation}
             onChange={(v) => { setSmartBuildRecommendation(v); store.set('smartBuildRecommendation', v) }}
+          />
+        </SettingCard>
+        <SettingCard
+          title={t('tools.smartItemSetBuild.title')}
+          description={t('tools.smartItemSetBuild.description')}
+        >
+          <SonaSwitch
+            checked={smartItemSetBuild}
+            onChange={(v) => { setSmartItemSetBuild(v); store.set('smartItemSetBuild', v) }}
           />
         </SettingCard>
         <SettingCard
