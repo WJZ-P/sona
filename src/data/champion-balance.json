@@ -2,8 +2,8 @@
   "_meta": {
     "source": "lol-wiki",
     "sourceUrl": "https://wiki.leagueoflegends.com/en-us/Module:ChampionData/data",
-    "updatedAt": "2026-09-10T13:28:01.355Z",
-    "sha1": "df564f2da8ecb38f766641422a5e3f35afb677f1",
+    "updatedAt": "2026-10-07T16:13:48.156Z",
+    "sha1": "00af491f3036d8ee03ff23258bf358ded828a28a",
     "championCount": 175
   },
   "champions": {
@@ -1754,11 +1754,6 @@
       "id": 200,
       "alias": "Belveth",
       "stats": {
-        "aram": {
-          "dmg_dealt": 1.05,
-          "dmg_taken": 0.95,
-          "tenacity": 1.2
-        },
         "usb": {
           "dmg_dealt": 0.9
         }
@@ -2361,7 +2356,11 @@
     "805": {
       "id": 805,
       "alias": "Locke",
-      "stats": {}
+      "stats": {
+        "aram": {
+          "dmg_dealt": 1.15
+        }
+      }
     },
     "875": {
       "id": 875,
