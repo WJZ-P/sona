@@ -1,6 +1,9 @@
-import { useEffect, useRef, useState, type MouseEvent, type ReactNode } from 'react'
+import { useCallback, useEffect, useRef, useState, type MouseEvent, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import '@/styles/Modal.css'
+
+/** 退场动画 0.2s，略留余量后强制卸载，避免 animationend 不触发时卡死 */
+const CLOSE_ANIMATION_FALLBACK_MS = 400
 
 export interface ModalProps {
   /** 是否显示 */
@@ -31,7 +34,9 @@ export function Modal({
   const dialogRef = useRef<HTMLDivElement>(null)
   const overlayRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const closeBtnRef = useRef<HTMLButtonElement>(null)
   const mouseDownOnOverlayRef = useRef(false)
+  const lastCloseAtRef = useRef(0)
   const [mounted, setMounted] = useState(false)
   const [closing, setClosing] = useState(false)
 
@@ -49,30 +54,66 @@ export function Modal({
   useEffect(() => {
     if (!closing) return
     const overlay = overlayRef.current
-    if (!overlay) {
+    const finish = () => {
       setMounted(false)
       setClosing(false)
+    }
+    if (!overlay) {
+      finish()
       return
     }
     const onEnd = (e: AnimationEvent) => {
-      if (e.target === overlay) {
-        setMounted(false)
-        setClosing(false)
-      }
+      if (e.target === overlay) finish()
     }
     overlay.addEventListener('animationend', onEnd)
-    return () => overlay.removeEventListener('animationend', onEnd)
+    // 兜底：动画没播（被客户端样式覆盖、reduced-motion、标签页不可见等）时
+    // animationend 永远不会来，弹窗会一直停在屏幕上关不掉
+    const fallbackTimer = window.setTimeout(finish, CLOSE_ANIMATION_FALLBACK_MS)
+    return () => {
+      overlay.removeEventListener('animationend', onEnd)
+      window.clearTimeout(fallbackTimer)
+    }
   }, [closing])
+
+  /** 统一的关闭入口：同一次点击可能从多条路径进来，用时间窗去重 */
+  const requestClose = useCallback(() => {
+    const now = Date.now()
+    if (now - lastCloseAtRef.current < 300) return
+    lastCloseAtRef.current = now
+    onClose()
+  }, [onClose])
+
+  // 关闭按钮：除 React 的 onClick 外，再挂一层原生捕获监听
+  //
+  // 客户端（尤其是"游戏中"界面）会在自己的层上处理点击，合成事件链路一旦被打断，
+  // 只绑 onClick 的关闭按钮就会完全点不动。pointerdown 比 click 更早、更难被吞掉，
+  // 两条路任意一条通就能关掉。
+  useEffect(() => {
+    const btn = closeBtnRef.current
+    if (!btn) return
+
+    const handleNative = (e: Event) => {
+      e.stopPropagation()
+      requestClose()
+    }
+
+    btn.addEventListener('pointerdown', handleNative, true)
+    btn.addEventListener('click', handleNative, true)
+    return () => {
+      btn.removeEventListener('pointerdown', handleNative, true)
+      btn.removeEventListener('click', handleNative, true)
+    }
+  }, [requestClose, mounted, closable])
 
   // ESC 关闭
   useEffect(() => {
     if (!open) return
     const handleKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose()
+      if (e.key === 'Escape') requestClose()
     }
     document.addEventListener('keydown', handleKey)
     return () => document.removeEventListener('keydown', handleKey)
-  }, [open, onClose])
+  }, [open, requestClose])
 
   // 🪄 Sona 音乐星光粒子效果
   useEffect(() => {
@@ -197,7 +238,7 @@ export function Modal({
     mouseDownOnOverlayRef.current = false
     e.stopPropagation()
 
-    if (shouldClose) onClose()
+    if (shouldClose) requestClose()
   }
 
   return createPortal(
@@ -221,7 +262,7 @@ export function Modal({
         />
         {/* 关闭按钮（悬浮右上角） */}
         {closable && (
-          <button className="sona-modal-close" onClick={onClose} title="Close">
+          <button ref={closeBtnRef} className="sona-modal-close" onClick={requestClose} title="Close">
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
               <path d="M1 1L13 13M13 1L1 13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
             </svg>
