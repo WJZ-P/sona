@@ -2146,8 +2146,7 @@ function tryInjectInGameBuildButton(): boolean {
   const btn = document.createElement('lol-uikit-flat-button')
   btn.setAttribute(IN_GAME_BUILD_BUTTON_ATTR, 'true')
   btn.textContent = '配装推荐'
-  btn.style.display = 'block'
-  btn.style.marginTop = '12px'
+  // 布局（display / 间距）统一在 inject.css 里处理，两个按钮的注入先后不固定
 
   btn.addEventListener('click', (event) => {
     event.stopPropagation()

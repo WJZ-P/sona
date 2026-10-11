@@ -20177,7 +20177,7 @@ function ih() {
   if (!t) return !1;
   if (t.querySelector(`[${ty}]`)) return !0;
   const n = document.createElement("lol-uikit-flat-button");
-  return n.setAttribute(ty, "true"), n.textContent = "对局分析", n.style.marginTop = "12px", n.addEventListener("click", (i) => {
+  return n.setAttribute(ty, "true"), n.textContent = "对局分析", n.addEventListener("click", (i) => {
     i.stopPropagation(), i.preventDefault(), $h(), b.info("[GameAnalysis] 打开分析弹窗");
   }), t.appendChild(n), b.info("[GameAnalysis] 客户端内嵌按钮已注入 ✓"), !0;
 }
@@ -22183,7 +22183,7 @@ function Pw() {
   if (!t) return !1;
   if (t.querySelector(`[${oy}]`)) return !0;
   const n = document.createElement("lol-uikit-flat-button");
-  n.setAttribute(oy, "true"), n.textContent = "配装推荐", n.style.display = "block", n.style.marginTop = "12px", n.addEventListener("click", (l) => {
+  n.setAttribute(oy, "true"), n.textContent = "配装推荐", n.addEventListener("click", (l) => {
     l.stopPropagation(), l.preventDefault(), aj().catch((r) => {
       b.warn("[OPGG] 游戏内配装推荐弹窗打开失败:", r), typeof Toast < "u" && Toast.error("配装推荐打开失败，请稍后再试");
     });

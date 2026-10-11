@@ -189,3 +189,16 @@
 .right-nav-menu[data-sona-hijacked-nav-text="true"] .menu-item-small-text {
   display: none !important;
 }
+
+/* 「游戏仍在进行中」面板里 Sona 注入的两个按钮 */
+.game-in-progress-container [data-sona-game-analysis],
+.game-in-progress-container [data-sona-opgg-ingame-build] {
+  display: block;
+  margin-top: 12px;
+}
+
+/* 两个按钮相邻时彼此只留 8px；注入先后顺序不固定，两个方向都要覆盖 */
+.game-in-progress-container [data-sona-game-analysis] + [data-sona-opgg-ingame-build],
+.game-in-progress-container [data-sona-opgg-ingame-build] + [data-sona-game-analysis] {
+  margin-top: 8px;
+}
