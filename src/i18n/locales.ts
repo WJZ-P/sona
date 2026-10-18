@@ -318,7 +318,7 @@ export const zhCN = {
   'strength.grade.critical': '需要照顾',
   'strength.lowConfidence': '样本偏少，暂评',
   'strength.line': '{grade} {score}分 | 胜率{winRate} | KDA {kda}',
-  'strength.teamTier.ace': '🦄 独角马',
+  'strength.teamTier.ace': '🦄 千里马',
   'strength.teamTier.high': '🏇 上等马',
   'strength.teamTier.mid': '🐎 中等马',
   'strength.teamTier.low': '🐴 下等马',

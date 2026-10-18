@@ -1,6 +1,6 @@
 /**
  * @name Sona
- * @version 1.9.2
+ * @version 1.10.0
  * @description 基于 Pengu Loader 的全服可用英雄联盟客户端增强插件
  * @author WJZ_P
  * @link https://github.com/WJZ-P/sona
@@ -11327,7 +11327,7 @@ const v = new CN(), TN = {
   "strength.grade.critical": "需要照顾",
   "strength.lowConfidence": "样本偏少，暂评",
   "strength.line": "{grade} {score}分 | 胜率{winRate} | KDA {kda}",
-  "strength.teamTier.ace": "🦄 独角马",
+  "strength.teamTier.ace": "🦄 千里马",
   "strength.teamTier.high": "🏇 上等马",
   "strength.teamTier.mid": "🐎 中等马",
   "strength.teamTier.low": "🐴 下等马",
@@ -12045,7 +12045,7 @@ function IN({ items: t, activeId: n, onSelect: i, collapsed: l, onToggle: r }) {
         /* @__PURE__ */ c.jsx("span", { className: "sona-sidebar-logo-text", children: "Sona" }),
         /* @__PURE__ */ c.jsxs("span", { className: "sona-sidebar-logo-version", children: [
           "v",
-          "1.9.2"
+          "1.10.0"
         ] })
       ] })
     ] }),
@@ -17595,7 +17595,7 @@ function JR() {
 }
 function l0() {
   return kr || (Hl({ status: "checking", info: null, error: "" }), kr = YR().then((t) => {
-    const n = io("1.9.2"), i = io(t.tag_name ?? ""), l = ZR();
+    const n = io("1.10.0"), i = io(t.tag_name ?? ""), l = ZR();
     if (l && A1(n, l) >= 0 && v.set("skippedUpdateVersion", null), !i || A1(i, n) <= 0) {
       const m = { status: "latest", info: null, error: "" };
       return Hl(m), m;
@@ -17774,13 +17774,13 @@ function aM() {
       /* @__PURE__ */ c.jsx("h2", { className: "sona-about-title", children: "Sona" }),
       /* @__PURE__ */ c.jsxs("span", { className: "sona-about-version", children: [
         "v",
-        "1.9.2"
+        "1.10.0"
       ] })
     ] }),
     /* @__PURE__ */ c.jsx("p", { className: "sona-about-desc", children: t("about.description") }),
     /* @__PURE__ */ c.jsxs("div", { className: "sona-about-row", children: [
       /* @__PURE__ */ c.jsxs("div", { className: "sona-about-cards", children: [
-        /* @__PURE__ */ c.jsx(Qp, { icon: /* @__PURE__ */ c.jsx(zC, {}), label: t("about.card.plugin"), value: "Sona v1.9.2" }),
+        /* @__PURE__ */ c.jsx(Qp, { icon: /* @__PURE__ */ c.jsx(zC, {}), label: t("about.card.plugin"), value: "Sona v1.10.0" }),
         /* @__PURE__ */ c.jsx(Qp, { icon: /* @__PURE__ */ c.jsx(uN, {}), label: t("about.card.framework"), value: "React + Vite" }),
         /* @__PURE__ */ c.jsx(
           Qp,
@@ -26430,7 +26430,7 @@ const FO = [
 function XO() {
   LC || (LC = !0, FO.forEach(OO));
 }
-const ZO = "Sona", YO = "1.9.2", UC = "sona-root", b = xO({
+const ZO = "Sona", YO = "1.10.0", UC = "sona-root", b = xO({
   name: ZO,
   version: YO
 });
