@@ -42,7 +42,7 @@ import { updateBeautifyWallpaperMode, updateBeautifyWallpaperModeGlassConfig, up
 import { updateGameModeFilter } from '@/lib/features/game-mode-filter'
 import { updateQuickLobbyMode } from '@/lib/features/quick-lobby-mode'
 import { preloadChampSelectTierBadgeData, updateChampSelectTierBadge } from '@/lib/features/champselect-tier-badge'
-import { setAvailabilityHijackEnabled, setHideTFTEnabled, setHideRightNavTextEnabled } from '@/lib/injections'
+import { setAvailabilityHijackEnabled, setHideTFTEnabled, setHideClassicModeEnabled, setHideRightNavTextEnabled } from '@/lib/injections'
 import {
   calculateSonaPlayerStrengthScore,
   filterSonaStrengthGamesByQueue,
@@ -1241,6 +1241,10 @@ export function initFeatures() {
   // 隐藏云顶之弈入口
   setHideTFTEnabled(store.get('hideTFT'))
   store.onChange('hideTFT', setHideTFTEnabled)
+
+  // 隐藏经典模式入口
+  setHideClassicModeEnabled(store.get('hideClassicMode'))
+  store.onChange('hideClassicMode', setHideClassicModeEnabled)
 
   // 隐藏主页右侧导航栏文字
   setHideRightNavTextEnabled(store.get('hideRightNavText'))

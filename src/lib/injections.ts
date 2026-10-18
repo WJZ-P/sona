@@ -565,6 +565,45 @@ function tryRemoveTFT(): boolean {
   return true
 }
 
+// ==================== 隐藏经典模式入口 ====================
+
+/** 是否启用"隐藏经典模式入口"功能 */
+let hideClassicModeEnabled = false
+
+const CLASSIC_MODE_HIDDEN_ATTR = `${HIJACKED_ATTR}-classic-mode`
+
+/** 设置开关状态（供 features.ts 调用） */
+export function setHideClassicModeEnabled(enabled: boolean) {
+  hideClassicModeEnabled = enabled
+  if (enabled) {
+    injector.register(tryRemoveClassicMode)
+  } else {
+    injector.unregister(tryRemoveClassicMode)
+    // 恢复被隐藏的元素：移除标记，让元素重新显示
+    document.querySelectorAll(`[${CLASSIC_MODE_HIDDEN_ATTR}]`).forEach((el) => {
+      (el as HTMLElement).style.display = ''
+      el.removeAttribute(CLASSIC_MODE_HIDDEN_ATTR)
+    })
+  }
+}
+
+/**
+ * 注入任务：隐藏经典模式入口
+ * 隐藏顶部导航栏经典模式菜单项
+ */
+function tryRemoveClassicMode(): boolean {
+  if (!hideClassicModeEnabled) return true
+
+  // 顶部导航栏经典模式菜单项
+  const navItem = document.querySelector(`.menu_item_navbar_demacia:not([${CLASSIC_MODE_HIDDEN_ATTR}])`)
+  if (navItem) {
+    navItem.setAttribute(CLASSIC_MODE_HIDDEN_ATTR, 'true')
+    ;(navItem as HTMLElement).style.display = 'none'
+  }
+
+  return true
+}
+
 // ==================== 隐藏右侧导航栏文字 ====================
 
 /** 是否启用"隐藏右侧导航栏文字"功能 */

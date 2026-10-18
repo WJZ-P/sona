@@ -145,6 +145,7 @@ export function ToolsPage() {
   const [unlockChromas, setUnlockChromas] = useState(store.get('unlockChromas'))
   const [benchNoCooldown, setBenchNoCooldown] = useState(store.get('benchNoCooldown'))
   const [hideTFT, setHideTFT] = useState(store.get('hideTFT'))
+  const [hideClassicMode, setHideClassicMode] = useState(store.get('hideClassicMode'))
   const [hideRightNavText, setHideRightNavText] = useState(store.get('hideRightNavText'))
   const [hideEsportsPopup, setHideEsportsPopup] = useState(store.get('hideEsportsPopup'))
   const [gameModeFilter, setGameModeFilter] = useState(store.get('gameModeFilter'))
@@ -229,6 +230,7 @@ export function ToolsPage() {
       store.onChange('unlockChromas', setUnlockChromas),
       store.onChange('benchNoCooldown', setBenchNoCooldown),
       store.onChange('hideTFT', setHideTFT),
+      store.onChange('hideClassicMode', setHideClassicMode),
       store.onChange('hideRightNavText', setHideRightNavText),
       store.onChange('hideEsportsPopup', setHideEsportsPopup),
       store.onChange('gameModeFilter', setGameModeFilter),
@@ -884,6 +886,15 @@ export function ToolsPage() {
           <SonaSwitch
             checked={hideTFT}
             onChange={(v) => { setHideTFT(v); store.set('hideTFT', v) }}
+          />
+        </SettingCard>
+        <SettingCard
+          title={t('tools.hideClassicMode.title')}
+          description={t('tools.hideClassicMode.description')}
+        >
+          <SonaSwitch
+            checked={hideClassicMode}
+            onChange={(v) => { setHideClassicMode(v); store.set('hideClassicMode', v) }}
           />
         </SettingCard>
         <SettingCard

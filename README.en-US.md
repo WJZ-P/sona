@@ -151,7 +151,7 @@ Sona focuses on practical quality-of-life improvements: champion select tools, m
 | ✨ | **Global Particles** | Adds star-like particles to the client background. |
 | 🚀 | **Quick Lobby** | Skips mode selection from Play and opens a configured queue lobby directly. |
 | 🗂️ | **Game Mode Filter** | Hides unwanted queue entries from the PvP mode-selection page. |
-| 🧹 | **Client UI Cleanup** | Can hide the TFT entry, right-navbar labels, and esports broadcast popup. |
+| 🧹 | **Client UI Cleanup** | Can hide the TFT entry, Classic mode entry, right-navbar labels, and esports broadcast popup. |
 | 🎨 | **Restore Chromas Tab** | Restores the hidden Chromas sub-tab on supported collection pages. |
 | 🔔 | **Update Checker** | Checks releases on startup and lets you open or skip a new version. |
 | 🌐 | **Internationalization** | Supports Simplified Chinese, English, and automatic language detection. |
