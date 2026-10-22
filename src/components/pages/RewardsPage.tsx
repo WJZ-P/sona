@@ -63,7 +63,16 @@ export function RewardsPage() {
     const unsub = lcu.observe('/lol-rewards/v1/grants', (event) => {
       const data = event.data as RewardsGrant[] | null
       if (!Array.isArray(data)) return
-      setGrants(data.filter((g) => g?.info?.status === TARGET_STATUS))
+      const pending = data.filter((g) => g?.info?.status === TARGET_STATUS)
+      setGrants(pending)
+      // 与 load() 一致：清理已不存在的 grant 的选择，避免「所选 (N)」计数虚高
+      setSelections((prev) => {
+        const next: Record<string, string[]> = {}
+        for (const g of pending) {
+          if (prev[g.info.id]) next[g.info.id] = prev[g.info.id]
+        }
+        return next
+      })
     })
     return unsub
   }, [])
@@ -108,6 +117,33 @@ export function RewardsPage() {
     [grants, selections],
   )
 
+  /**
+   * 已勾选但不满足 min/max 约束的 grant 的提示
+   *
+   * 页面把所有 grant 的奖励拍平展示，看不出哪些奖励同组、每组要选几个；
+   * 只靠置灰按钮的话，用户只勾了 1 个而该组要求选多个时会完全不知道原因。
+   */
+  const describeIncompleteGrants = useCallback((): string => {
+    return grants
+      .filter((grant) => {
+        const count = (selections[grant.info.id] ?? []).length
+        return count > 0 && !(count >= minSelections(grant) && count <= maxSelections(grant))
+      })
+      .map((grant) => {
+        const ids = selections[grant.info.id] ?? []
+        const min = minSelections(grant)
+        const max = maxSelections(grant)
+        const name = grant.rewardGroup.localizations?.title
+          || grant.rewardGroup.rewards.find((reward) => ids.includes(reward.id))?.localizations?.title
+          || t('rewards.untitled')
+        const need = min >= max
+          ? t('rewards.selectHintExact', { count: min })
+          : t('rewards.selectHintRange', { min, max })
+        return `「${name}」${need}（${t('rewards.selectedCount', { count: ids.length, max })}）`
+      })
+      .join('\n')
+  }, [grants, selections, t])
+
   /** 依次提交一组 grant 的选择，任一失败即中止 */
   const submitPicks = useCallback(async (picks: Array<{ grant: RewardsGrant; ids: string[] }>) => {
     const claimedNames: string[] = []
@@ -147,13 +183,23 @@ export function RewardsPage() {
   }, [t])
 
   const claimAll = useCallback(async () => {
-    if (!claimableGrants.length || busy) return
+    if (totalSelected === 0 || busy) return
+
+    // 不满足数量要求的组不提交，但要明确告诉用户还差什么
+    const incompleteHint = describeIncompleteGrants()
+    if (!claimableGrants.length) {
+      setStatus(incompleteHint)
+      return
+    }
 
     setClaiming('selected')
     setStatus('')
     await submitPicks(claimableGrants.map((grant) => ({ grant, ids: selections[grant.info.id] ?? [] })))
+    if (incompleteHint) {
+      setStatus((prev) => (prev ? `${prev}\n${incompleteHint}` : incompleteHint))
+    }
     setClaiming(null)
-  }, [claimableGrants, busy, selections, submitPicks])
+  }, [totalSelected, busy, describeIncompleteGrants, claimableGrants, selections, submitPicks])
 
   // 一键领取：每个 grant 按可选上限直接取前几个奖励提交，不做任何取舍
   const claimEverything = useCallback(async () => {
@@ -181,7 +227,7 @@ export function RewardsPage() {
           <SonaButton onClick={load} disabled={loading || busy}>
             {loading ? t('common.loading') : t('rewards.refresh')}
           </SonaButton>
-          <SonaButton variant="primary" onClick={claimAll} disabled={busy || claimableGrants.length === 0}>
+          <SonaButton variant="primary" onClick={claimAll} disabled={busy || totalSelected === 0}>
             {claiming === 'selected'
               ? t('rewards.claiming')
               : totalSelected > 0
