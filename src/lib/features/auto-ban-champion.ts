@@ -79,6 +79,24 @@ async function resolveTargetChampionId(session: ChampSelectSession): Promise<num
   }) ?? null
 }
 
+/**
+ * 判断是否已轮到本地 Ban action
+ *
+ * 判定规则与客户端 rcp-fe-lol-champ-select 的 sessionActions 保持一致：BAN_PICK 阶段里，
+ * session.actions 中第一组还有未完成动作的 action set 就是当前动作组。客户端自身完全不读
+ * isInProgress，界面已提示该 Ban 时这个字段不保证已经是 true，所以不能把它当作唯一依据，
+ * 否则要等玩家点击英雄产生新的动作状态后才会开始 Ban。
+ */
+function isLocalBanTurn(session: ChampSelectSession, action: ChampSelectAction): boolean {
+  if (action.isInProgress) return true
+  if (session.timer.phase !== 'BAN_PICK') return false
+
+  const currentActionSet = session.actions
+    .map((actionSet) => actionSet.flat())
+    .find((actionSet) => actionSet.some((item) => !item.completed))
+  return currentActionSet?.some((item) => item.id === action.id) ?? false
+}
+
 function findActionById(session: ChampSelectSession, actionId: number): ChampSelectAction | undefined {
   return session.actions.flat(2).find((action) => action.id === actionId)
 }
@@ -202,7 +220,7 @@ async function tryAutoBanChampion(runToken: number, reason: string) {
         continue
       }
 
-      if (!myBanAction.isInProgress) {
+      if (!isLocalBanTurn(session, myBanAction)) {
         await sleep(AUTO_BAN_POLL_INTERVAL_MS)
         continue
       }
@@ -218,7 +236,12 @@ async function tryAutoBanChampion(runToken: number, reason: string) {
         continue
       }
 
-      logger.info('[AutoBan] 轮到禁用英雄，目标英雄 ID: %d (actionId: %d)', championId, myBanAction.id)
+      logger.info(
+        '[AutoBan] 轮到禁用英雄，目标英雄 ID: %d (actionId: %d, isInProgress: %s)',
+        championId,
+        myBanAction.id,
+        String(myBanAction.isInProgress),
+      )
 
       if (await submitBanAction(myBanAction, championId)) {
         logger.info('[AutoBan] 自动 Ban 成功 ✓')
