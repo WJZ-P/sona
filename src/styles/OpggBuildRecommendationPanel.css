@@ -60,10 +60,11 @@
   background: linear-gradient(90deg, #1e2328 0%, #010a13 100%);
 }
 
+/* 标题栏空间不足时由这里让出宽度，英雄名随之缩小字号，关闭按钮始终保留在右侧。 */
 .sobp-title-main {
   display: flex;
-  min-width: 280px;
-  flex: 1 1 auto;
+  min-width: 150px;
+  flex: 1 1 0;
   align-items: center;
   gap: 12px;
 }
@@ -99,6 +100,7 @@
 }
 
 .sobp-title-name {
+  overflow: hidden;
   min-width: 0;
   flex: 0 1 auto;
   text-overflow: ellipsis;
@@ -120,7 +122,8 @@
 
 .sobp-title-actions {
   display: flex;
-  flex: 0 0 auto;
+  min-width: 0;
+  flex: 0 1 auto;
   align-items: center;
   gap: 10px;
 }
@@ -184,6 +187,9 @@
 }
 
 .sobp-close {
+  position: relative;
+  z-index: 1;
+  flex: 0 0 auto;
   width: 32px;
   height: 32px;
   border: 1px solid rgb(200 170 110 / 12%);

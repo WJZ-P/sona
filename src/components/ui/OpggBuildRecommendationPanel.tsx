@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState, type ReactNode } from 'react'
+import { useLayoutEffect, useRef, useState, type ReactNode, type RefObject } from 'react'
 import { createPortal } from 'react-dom'
 import { SonaSelect } from '@/components/ui/SonaSelect'
 import tier1Icon from '@/../assets/tier/t1.svg'
@@ -113,6 +113,42 @@ export interface OpggBuildRecommendationPanelProps {
   onClose: () => void
 }
 
+/** 英雄名字号范围：放不下时逐级缩小，到下限仍放不下才省略 */
+const TITLE_NAME_MAX_FONT_SIZE = 18
+const TITLE_NAME_MIN_FONT_SIZE = 12
+
+/**
+ * 让英雄名字号适应标题区的可用宽度
+ *
+ * 观察的是 .sobp-title-text：它的宽度由标题栏 flex 决定，不受字号影响，不会形成
+ * ResizeObserver 回环；.sobp-title 是按内容收缩的绝对定位元素，不能作为观察目标。
+ */
+function useFitTitleFontSize(
+  containerRef: RefObject<HTMLElement | null>,
+  textRef: RefObject<HTMLElement | null>,
+  text: string,
+) {
+  useLayoutEffect(() => {
+    const container = containerRef.current
+    const textElement = textRef.current
+    if (!container || !textElement) return
+
+    const fit = () => {
+      let fontSize = TITLE_NAME_MAX_FONT_SIZE
+      textElement.style.fontSize = `${fontSize}px`
+      while (fontSize > TITLE_NAME_MIN_FONT_SIZE && textElement.scrollWidth > textElement.clientWidth) {
+        fontSize -= 1
+        textElement.style.fontSize = `${fontSize}px`
+      }
+    }
+
+    fit()
+    const observer = new ResizeObserver(fit)
+    observer.observe(container)
+    return () => observer.disconnect()
+  }, [containerRef, textRef, text])
+}
+
 export function OpggBuildRecommendationPanel({
   context,
   recommendation,
@@ -131,6 +167,9 @@ export function OpggBuildRecommendationPanel({
   const modeTags = [queueText, formatPositionText(positionText)].filter(Boolean).join(' · ')
   const showAugments = isKiwiMode(context) || recommendation?.mode === 'arena'
   const showPositionFilter = supportsPositionFilter(context, recommendation)
+  const titleTextRef = useRef<HTMLDivElement>(null)
+  const titleNameRef = useRef<HTMLSpanElement>(null)
+  useFitTitleFontSize(titleTextRef, titleNameRef, championName)
 
   return (
     <div className="sobp">
@@ -141,10 +180,10 @@ export function OpggBuildRecommendationPanel({
           <div className="sobp-champion-ring">
             <img src={`/lol-game-data/assets/v1/champion-icons/${context.championId}.png`} alt="" />
           </div>
-          <div className="sobp-title-text">
+          <div className="sobp-title-text" ref={titleTextRef}>
             <div className="sobp-title">
               <span className="sobp-title-mark">❖</span>
-              <span className="sobp-title-name">{championName}</span>
+              <span className="sobp-title-name" ref={titleNameRef} title={championName}>{championName}</span>
             </div>
             {modeTags && <div className="sobp-mode-tag">{modeTags}</div>}
           </div>
@@ -156,10 +195,10 @@ export function OpggBuildRecommendationPanel({
           <TierFilterSelect value={selectedTier} onChange={onTierChange} />
           <TrendMeta meta={recommendation?.meta} />
           <SummaryCards values={recommendation?.summary ?? []} />
-          <button type="button" className="sobp-close" onClick={onClose} aria-label={t('opgg.close')}>
-            ×
-          </button>
         </div>
+        <button type="button" className="sobp-close" onClick={onClose} aria-label={t('opgg.close')}>
+          ×
+        </button>
       </header>
 
       <main className="sobp-body">
