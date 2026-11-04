@@ -1,9 +1,9 @@
 /**
- * 英雄选择网格 T 级角标
+ * 英雄选择 T 级角标
  *
- * 在客户端英雄选择网格的 .champion-grid-champion-thumbnail 左上角展示全英雄梯度：
+ * 在客户端英雄选择列表、备选席和左侧队友头像上展示全英雄梯度：
  * 常规模式使用 OP.GG，海克斯大乱斗（KIWI）使用 ARAM.GG 的专属 T1-T5 数据。
- * 跟随“英雄选择阶段增强”开关启用。
+ * 由独立的“英雄 T 级角标”开关（champSelectTierBadge）控制。
  */
 
 import { logger } from '@/index'

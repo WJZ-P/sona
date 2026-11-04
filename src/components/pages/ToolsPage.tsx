@@ -154,6 +154,7 @@ export function ToolsPage() {
   const [quickLobbyQueueOptions, setQuickLobbyQueueOptions] = useState<{ value: string; label: string }[]>([])
   const [windowEffect, setWindowEffect] = useState(store.get('windowEffect'))
   const [champSelectAssist, setChampSelectAssist] = useState(store.get('champSelectAssist'))
+  const [champSelectTierBadge, setChampSelectTierBadge] = useState(store.get('champSelectTierBadge'))
   const [opggBuildRecommendation, setOpggBuildRecommendation] = useState(store.get('opggBuildRecommendation'))
   const [smartBuildRecommendation, setSmartBuildRecommendation] = useState(store.get('smartBuildRecommendation'))
   const [smartItemSetBuild, setSmartItemSetBuild] = useState(store.get('smartItemSetBuild'))
@@ -238,6 +239,7 @@ export function ToolsPage() {
       store.onChange('quickLobbyQueueId', setQuickLobbyQueueId),
       store.onChange('windowEffect', setWindowEffect),
       store.onChange('champSelectAssist', setChampSelectAssist),
+      store.onChange('champSelectTierBadge', setChampSelectTierBadge),
       store.onChange('opggBuildRecommendation', setOpggBuildRecommendation),
       store.onChange('smartBuildRecommendation', setSmartBuildRecommendation),
       store.onChange('smartItemSetBuild', setSmartItemSetBuild),
@@ -560,6 +562,15 @@ export function ToolsPage() {
           <SonaSwitch
             checked={champSelectAssist}
             onChange={(v) => { setChampSelectAssist(v); store.set('champSelectAssist', v) }}
+          />
+        </SettingCard>
+        <SettingCard
+          title={t('tools.champSelectTierBadge.title')}
+          description={t('tools.champSelectTierBadge.description')}
+        >
+          <SonaSwitch
+            checked={champSelectTierBadge}
+            onChange={(v) => { setChampSelectTierBadge(v); store.set('champSelectTierBadge', v) }}
           />
         </SettingCard>
         <SettingCard

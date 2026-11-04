@@ -1126,11 +1126,10 @@ export function initFeatures() {
   store.onChange('sideIndicator', updateSideIndicator)
 
   updateChampSelectAssist(store.get('champSelectAssist'))
-  updateChampSelectTierBadge(store.get('champSelectAssist'))
-  store.onChange('champSelectAssist', (enabled) => {
-    updateChampSelectAssist(enabled)
-    updateChampSelectTierBadge(enabled)
-  })
+  store.onChange('champSelectAssist', updateChampSelectAssist)
+
+  updateChampSelectTierBadge(store.get('champSelectTierBadge'))
+  store.onChange('champSelectTierBadge', updateChampSelectTierBadge)
 
   const updateOpggLifecycle = () => {
     updateOpggBuildRecommendation(

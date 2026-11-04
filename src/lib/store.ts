@@ -57,6 +57,8 @@ export interface SonaConfig {
   windowEffect: string
   /** 英雄选择玩家头像交互（点击队友头像展示历史数据） */
   champSelectAssist: boolean
+  /** 英雄 T 级角标（英雄选择列表、备选席和左侧队友头像） */
+  champSelectTierBadge: boolean
   /** OP.GG 配装推荐（接管选好英雄后的技能预览面板点击） */
   opggBuildRecommendation: boolean
   /**
@@ -243,6 +245,7 @@ const DEFAULT_CONFIG: SonaConfig = {
   skippedUpdateVersion: null,
   windowEffect: 'none',
   champSelectAssist: false,
+  champSelectTierBadge: false,
   opggBuildRecommendation: false,
   smartBuildRecommendation: false,
   smartItemSetBuild: false,

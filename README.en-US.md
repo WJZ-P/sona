@@ -88,7 +88,7 @@ Sona focuses on practical quality-of-life improvements: champion select tools, m
 | 📊 | **Deadweight Detector** | Uses matches from the current mode to calculate win rate, KDA, and a `3.0–16.0` strength score, ranks teammates into tiers, and posts the result to chat (visible to yourself only, or to the whole team). |
 | 🌟 | **Champion Select Assist** | Adds 5 win-rate particle tiers to teammate portraits, shows win rate and KDA, and opens match history on click. |
 | 🔒 | **Privacy / Streamer Mode Support** | Keeps teammate analysis working when names are hidden, restores real names beside client aliases, and tracks player swaps. |
-| 🏷️ | **Champion Tier Badges** | Shows OP.GG tier badges on the champion grid, bench, and your team's portraits (ARAM Mayhem uses ARAM.GG data). |
+| 🏷️ | **Champion Tier Badges** | Shows OP.GG tier badges on the champion grid, bench, and teammate portraits (ARAM Mayhem uses ARAM.GG data). Off by default. |
 | 📈 | **Game Analysis Popup** | Displays both teams' win rate, KDA, rank, and premade groups after entering game; a "Game Analysis" button in the in-game panel reopens it any time. |
 | 🚪 | **Champion Select Quit Button** | Adds a quick exit button to non-custom champion select so you can return to the lobby. |
 | 🔁 | **Auto Return to Lobby** | Returns to lobby after a game while keeping your premade, with "auto queue" or "return only" modes and retry logic. |
