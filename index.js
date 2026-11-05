@@ -1,6 +1,6 @@
 /**
  * @name Sona
- * @version 1.10.0
+ * @version 1.11.0
  * @description 基于 Pengu Loader 的全服可用英雄联盟客户端增强插件
  * @author WJZ_P
  * @link https://github.com/WJZ-P/sona
@@ -12050,7 +12050,7 @@ function RN({ items: t, activeId: n, onSelect: i, collapsed: l, onToggle: r }) {
         /* @__PURE__ */ c.jsx("span", { className: "sona-sidebar-logo-text", children: "Sona" }),
         /* @__PURE__ */ c.jsxs("span", { className: "sona-sidebar-logo-version", children: [
           "v",
-          "1.10.0"
+          "1.11.0"
         ] })
       ] })
     ] }),
@@ -17617,7 +17617,7 @@ function WR() {
 }
 function r0() {
   return Tr || (Pl({ status: "checking", info: null, error: "" }), Tr = JR().then((t) => {
-    const n = so("1.10.0"), i = so(t.tag_name ?? ""), l = YR();
+    const n = so("1.11.0"), i = so(t.tag_name ?? ""), l = YR();
     if (l && S1(n, l) >= 0 && v.set("skippedUpdateVersion", null), !i || S1(i, n) <= 0) {
       const m = { status: "latest", info: null, error: "" };
       return Pl(m), m;
@@ -17796,13 +17796,13 @@ function nM() {
       /* @__PURE__ */ c.jsx("h2", { className: "sona-about-title", children: "Sona" }),
       /* @__PURE__ */ c.jsxs("span", { className: "sona-about-version", children: [
         "v",
-        "1.10.0"
+        "1.11.0"
       ] })
     ] }),
     /* @__PURE__ */ c.jsx("p", { className: "sona-about-desc", children: t("about.description") }),
     /* @__PURE__ */ c.jsxs("div", { className: "sona-about-row", children: [
       /* @__PURE__ */ c.jsxs("div", { className: "sona-about-cards", children: [
-        /* @__PURE__ */ c.jsx(Xp, { icon: /* @__PURE__ */ c.jsx(PC, {}), label: t("about.card.plugin"), value: "Sona v1.10.0" }),
+        /* @__PURE__ */ c.jsx(Xp, { icon: /* @__PURE__ */ c.jsx(PC, {}), label: t("about.card.plugin"), value: "Sona v1.11.0" }),
         /* @__PURE__ */ c.jsx(Xp, { icon: /* @__PURE__ */ c.jsx(dN, {}), label: t("about.card.framework"), value: "React + Vite" }),
         /* @__PURE__ */ c.jsx(
           Xp,
@@ -26498,7 +26498,7 @@ const JO = [
 function WO() {
   UC || (UC = !0, JO.forEach(zO));
 }
-const _O = "Sona", $O = "1.10.0", GC = "sona-root", b = MO({
+const _O = "Sona", $O = "1.11.0", GC = "sona-root", b = MO({
   name: _O,
   version: $O
 });
