@@ -3,7 +3,10 @@
  *
  * 在客户端英雄选择列表、备选席和左侧队友头像上展示全英雄梯度：
  * 常规模式使用 OP.GG，海克斯大乱斗（KIWI）使用 ARAM.GG 的专属 T1-T5 数据。
- * 由独立的“英雄 T 级角标”开关（champSelectTierBadge）控制。
+ * 两个独立开关：
+ * - champSelectTierBadge：左侧队友头像
+ * - champSelectGridTierBadge：英雄列表 / 英雄卡片 / 备选席左上角
+ * 任一开启时模块即运行，关闭的那一类角标不注入并被清理。
  */
 
 import { logger } from '@/index'
@@ -344,9 +347,28 @@ function getOwnBadge(element: HTMLElement): HTMLImageElement | null {
   }) ?? null
 }
 
+function isGridBadgeEnabled(): boolean {
+  return store.get('champSelectGridTierBadge')
+}
+
+function isPlayerIconBadgeEnabled(): boolean {
+  return store.get('champSelectTierBadge')
+}
+
 function tryInjectTierBadges(): boolean {
   if (tierByChampionId.size === 0) return true
 
+  if (isGridBadgeEnabled()) {
+    tryInjectGridTierBadges()
+  }
+  if (isPlayerIconBadgeEnabled()) {
+    tryInjectPlayerIconTierBadges()
+  }
+
+  return true
+}
+
+function tryInjectGridTierBadges() {
   const targets = document.querySelectorAll(BADGE_TARGET_SELECTOR)
   targets.forEach((element) => {
     if (!(element instanceof HTMLElement)) return
@@ -378,10 +400,6 @@ function tryInjectTierBadges(): boolean {
       }
     }
   })
-
-  tryInjectPlayerIconTierBadges()
-
-  return true
 }
 
 function tryInjectPlayerIconTierBadges() {
@@ -462,7 +480,16 @@ function unmount() {
   cleanupBadges()
 }
 
-export function updateChampSelectTierBadge(enabled: boolean) {
+/** 由两个开关的 onChange 共同调用：任一开启则运行，并按最新开关状态重绘角标。 */
+export function updateChampSelectTierBadge() {
+  const enabled = isGridBadgeEnabled() || isPlayerIconBadgeEnabled()
+  if (enabled && phaseUnsub) {
+    // 模块已在运行，只是某一类角标被切换：清掉后按新开关重新注入。
+    cleanupBadges()
+    tryInjectTierBadges()
+    return
+  }
+
   if (enabled && !phaseUnsub) {
     phaseUnsub = lcu.observe(LcuEventUri.GAMEFLOW_PHASE_CHANGE, (event: LCUEventMessage) => {
       const phase = event.data as GameflowPhase

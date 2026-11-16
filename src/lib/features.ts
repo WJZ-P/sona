@@ -49,6 +49,8 @@ import {
   shouldSkipSonaStrengthGame,
   type SonaPlayerStrengthScore,
 } from '@/lib/player-strength-score'
+import { calculateHexMayhemScore, isHexMayhemGameMode, type HexMayhemScore } from '@/lib/hex-mayhem-score'
+import { getQueue } from '@/lib/assets'
 import { deobfuscateChampSelectPuuid } from '@/lib/champ-select-puuid'
 import { translate } from '@/i18n'
 
@@ -72,10 +74,14 @@ interface TeammateStats {
   avgA: number
   kdaNum: number
   strengthScore: SonaPlayerStrengthScore | null
+  /** 海斗分，仅当前队列为海克斯大乱斗时计算 */
+  hexMayhemScore: HexMayhemScore | null
 }
 
 interface TeamStatsResult {
   isBlue: boolean
+  /** 当前队列是否为海克斯大乱斗 */
+  isHexMayhem: boolean
   stats: TeammateStats[]
   queueId: number
   fetchCount: number
@@ -140,6 +146,7 @@ async function _doFetchTeamStats(): Promise<TeamStatsResult> {
 
   // 将 queueId 转为 SGP tag
   const tag = queueIdToTag(currentQueueId)
+  const isHexMayhem = isHexMayhemGameMode(getQueue(currentQueueId)?.gameMode)
 
   // 取两个功能中较大的查询局数，确保数据充足（两者共用同一轮请求）
   const FETCH_COUNT = Math.max(
@@ -169,6 +176,7 @@ async function _doFetchTeamStats(): Promise<TeamStatsResult> {
     avgA: 0,
     kdaNum: 0,
     strengthScore: null,
+    hexMayhemScore: null,
   })
 
   // 跳过查不到数据的占位玩家（斗魂模式 myTeam 含空位），其余保留占位以对齐楼层索引
@@ -246,6 +254,7 @@ async function _doFetchTeamStats(): Promise<TeamStatsResult> {
 
       const total = matchStats.length
       const strengthScore = calculateSonaPlayerStrengthScore(games, puuid)
+      const hexMayhemScore = isHexMayhem ? calculateHexMayhemScore(games, puuid) : null
       logger.info(
         '[TeamStats] %s → 当前模式有效 %d 场 / 返回 %d 场 (queueId=%d, tag=%s)',
         gameName,
@@ -271,6 +280,7 @@ async function _doFetchTeamStats(): Promise<TeamStatsResult> {
         avgA: totalAssists / total,
         kdaNum: totalDeaths === 0 ? totalKills + totalAssists : (totalKills + totalAssists) / totalDeaths,
         strengthScore,
+        hexMayhemScore,
       } as TeammateStats
     } catch (error) {
       logger.warn('[TeamStats] %d楼战绩查询失败（visibility=%s）:', i + 1, player.nameVisibilityType || 'unknown', error)
@@ -284,7 +294,7 @@ async function _doFetchTeamStats(): Promise<TeamStatsResult> {
     }
   }))
 
-  return { isBlue, queueId: currentQueueId, stats, fetchCount: FETCH_COUNT }
+  return { isBlue, isHexMayhem, queueId: currentQueueId, stats, fetchCount: FETCH_COUNT }
 }
 
 // ==================== 选人阶段头像胜率特效 (champSelectAssist) ====================
@@ -323,6 +333,8 @@ let currentChampSelectQueueId = 0
 interface ChampSelectInjectedRef {
   /** 我们创建的 stats div（胜率/KDA） */
   statsDiv: HTMLDivElement
+  /** 我们创建的海斗战力 div（仅海克斯大乱斗，位于名字上方） */
+  hexDiv: HTMLDivElement | null
   /** 被修改了 style 的 iconContainer */
   iconContainer: HTMLElement
   /** 被修改了 overflow 的 summonerContainer（可能为 null） */
@@ -574,6 +586,7 @@ function getCachedStatsForPlayer(player: ChampSelectTeamPlayer, floor: number): 
     avgA: 0,
     kdaNum: 0,
     strengthScore: null,
+    hexMayhemScore: null,
   }
 }
 
@@ -697,8 +710,12 @@ function tryInjectChampSelectTier(): boolean {
         statsDiv.appendChild(kdaSpan)
         playerDetails.appendChild(statsDiv)
 
+        // ---- player-details 上方海斗战力（仅海克斯大乱斗有该数据） ----
+        const hexDiv = stat.hexMayhemScore ? createHexMayhemScoreDiv(stat.hexMayhemScore.score) : null
+        if (hexDiv) playerDetails.appendChild(hexDiv)
+
         // 记录注入引用，离开 ChampSelect 时直接清理
-        champSelectInjectedRefs.push({ statsDiv, iconContainer, summonerContainer, playerDetails, clickHandler })
+        champSelectInjectedRefs.push({ statsDiv, hexDiv, iconContainer, summonerContainer, playerDetails, clickHandler })
 
         logger.info(
           '[ChampSelect] %d楼战绩更新成功 → %s#%s 胜率%s%% (%d胜/%d负) KDA %s',
@@ -717,6 +734,35 @@ function tryInjectChampSelectTier(): boolean {
 }
 
 
+
+function getHexMayhemScoreColor(score: number): string {
+  if (score >= 3500) return '#c084fc'
+  if (score >= 3000) return '#5bbd72'
+  if (score >= 2000) return '#c8aa6e'
+  return '#e74c3c'
+}
+
+/** 绝对定位在 player-details（名字区域）正上方的海斗战力标签。 */
+function createHexMayhemScoreDiv(score: number): HTMLDivElement {
+  const div = document.createElement('div')
+  div.setAttribute(SONA_STATS_ATTR, 'hex')
+  div.style.cssText = [
+    'position:absolute',
+    'left:0',
+    'bottom:100%',
+    'margin-bottom:4px',
+    'font-size:13px',
+    'line-height:1',
+    'font-weight:bold',
+    // pre：保留文案里「战力」与数字之间的两个空格，同时不换行
+    'white-space:pre',
+    'pointer-events:none',
+    `color:${getHexMayhemScoreColor(score)}`,
+    'text-shadow:0 0 4px rgba(0,0,0,0.9)',
+  ].join(';')
+  div.textContent = translate('champSelect.stats.hexScore', { score })
+  return div
+}
 
 let tierInjectionRegistered = false
 
@@ -824,6 +870,7 @@ function cleanupInjectedDOM() {
 
   for (const ref of champSelectInjectedRefs) {
     ref.statsDiv.remove()
+    ref.hexDiv?.remove()
     // 移除 click handler
     if (ref.clickHandler) {
       ref.iconContainer.removeEventListener('click', ref.clickHandler, true)
@@ -898,10 +945,18 @@ const TEAM_POWER_TITLE_KEYS = [
   'strength.teamTier.burden',
 ] as const
 
-function assignTeamPowerTitles(stats: TeammateStats[]): Map<string, string> {
-  const ranked = [...stats]
-    .filter((stat): stat is TeammateStats & { strengthScore: SonaPlayerStrengthScore } => Boolean(stat.strengthScore))
-    .sort((a, b) => b.strengthScore.score - a.strengthScore.score)
+/** 牛马检测器用于排名和展示的分数：海克斯大乱斗用海斗分，其余模式用综合评分。 */
+function getTeamPowerScore(stat: TeammateStats, isHexMayhem: boolean): number | null {
+  if (isHexMayhem) return stat.hexMayhemScore?.score ?? null
+  return stat.strengthScore?.score ?? null
+}
+
+function assignTeamPowerTitles(stats: TeammateStats[], isHexMayhem: boolean): Map<string, string> {
+  const ranked = stats
+    .map((stat) => ({ stat, score: getTeamPowerScore(stat, isHexMayhem) }))
+    .filter((item): item is { stat: TeammateStats; score: number } => item.score !== null)
+    .sort((a, b) => b.score - a.score)
+    .map((item) => item.stat)
 
   const titles = new Map<string, string>()
   ranked.forEach((stat, index) => {
@@ -913,12 +968,13 @@ function assignTeamPowerTitles(stats: TeammateStats[]): Map<string, string> {
 
 async function analyzeTeammates() {
   try {
-    const { stats, fetchCount } = await fetchTeamStats()
+    const { stats, fetchCount, isHexMayhem } = await fetchTeamStats()
 
     logger.info('┌─── 队友战绩分析 ───')
 
     const chatLines: string[] = [translate('champSelect.teamAnalysis.header', { count: fetchCount })]
-    const teamPowerTitles = assignTeamPowerTitles(stats)
+    const teamPowerTitles = assignTeamPowerTitles(stats, isHexMayhem)
+    const lineKey = isHexMayhem ? 'champSelect.teamAnalysis.hexLine' : 'champSelect.teamAnalysis.line'
 
     for (const s of stats) {
       const floor = translate('champSelect.teamAnalysis.floor', { floor: s.floor })
@@ -931,16 +987,17 @@ async function analyzeTeammates() {
       const winRate = s.winRate.toFixed(1)
       const kdaStr = s.kdaNum >= 99 ? 'Perfect' : s.kdaNum.toFixed(2)
       const title = teamPowerTitles.get(getTeammateStatsKey(s)) ?? translate('strength.teamTier.newbie')
-      const scoreText = s.strengthScore ? s.strengthScore.score.toFixed(1) : '--'
+      const powerScore = getTeamPowerScore(s, isHexMayhem)
+      const scoreText = powerScore === null ? '--' : isHexMayhem ? String(powerScore) : powerScore.toFixed(1)
 
       logger.info(
-        '│ %s — %s#%s — 近%d场 胜率: %s%% (%d胜%d负) | KDA: %s (%.1f/%.1f/%.1f) | 综合评分: %s | %s',
+        '│ %s — %s#%s — 近%d场 胜率: %s%% (%d胜%d负) | KDA: %s (%.1f/%.1f/%.1f) | %s: %s | %s',
         floor, s.gameName, s.tagLine,
         s.total, winRate, s.wins, s.total - s.wins,
-        kdaStr, s.avgK, s.avgD, s.avgA, scoreText, title,
+        kdaStr, s.avgK, s.avgD, s.avgA, isHexMayhem ? '海斗战力' : '综合评分', scoreText, title,
       )
 
-      chatLines.push(translate('champSelect.teamAnalysis.line', { floor, title, winRate, kda: kdaStr, score: scoreText }))
+      chatLines.push(translate(lineKey, { floor, title, winRate, kda: kdaStr, score: scoreText }))
     }
 
     logger.info('└────────────────────')
@@ -1128,8 +1185,9 @@ export function initFeatures() {
   updateChampSelectAssist(store.get('champSelectAssist'))
   store.onChange('champSelectAssist', updateChampSelectAssist)
 
-  updateChampSelectTierBadge(store.get('champSelectTierBadge'))
-  store.onChange('champSelectTierBadge', updateChampSelectTierBadge)
+  updateChampSelectTierBadge()
+  store.onChange('champSelectTierBadge', () => updateChampSelectTierBadge())
+  store.onChange('champSelectGridTierBadge', () => updateChampSelectTierBadge())
 
   const updateOpggLifecycle = () => {
     updateOpggBuildRecommendation(
