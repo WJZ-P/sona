@@ -85,10 +85,10 @@ Sona focuses on practical quality-of-life improvements: champion select tools, m
 | 🎯 | **Auto Pick / Auto Ban Queue** | Configure multiple candidate champions; unavailable ones are skipped by priority. Auto pick can either lock in or only hover, and is skipped when you are autofilled in ranked. |
 | 🔄 | **ARAM Bench No Cooldown** | Removes bench swap cooldown in ARAM. |
 | 🔵 | **Side Indicator** | Reports whether your team is blue side or red side in champion-select chat. |
-| 📊 | **Deadweight Detector** | Uses matches from the current mode to calculate win rate, KDA, and a `3.0–16.0` strength score, ranks teammates into tiers, and posts the result to chat (visible to yourself only, or to the whole team). |
+| 📊 | **Deadweight Detector** | Uses matches from the current mode to calculate win rate, KDA, and a `3.0–16.0` strength score (ARAM Mayhem uses a `1000–4000` Hex score instead, also shown above teammate names), ranks teammates into tiers, and posts the result to chat (visible to yourself only, or to the whole team). |
 | 🌟 | **Champion Select Assist** | Adds 5 win-rate particle tiers to teammate portraits, shows win rate and KDA, and opens match history on click. |
 | 🔒 | **Privacy / Streamer Mode Support** | Keeps teammate analysis working when names are hidden, restores real names beside client aliases, and tracks player swaps. |
-| 🏷️ | **Champion Tier Badges** | Shows OP.GG tier badges on the champion grid, bench, and teammate portraits (ARAM Mayhem uses ARAM.GG data). Off by default. |
+| 🏷️ | **Champion Tier Badges** | Shows OP.GG tier badges on the champion grid, bench, and teammate portraits (ARAM Mayhem uses ARAM.GG data). The grid and teammate portraits have separate switches, both off by default. |
 | 📈 | **Game Analysis Popup** | Displays both teams' win rate, KDA, rank, and premade groups after entering game; a "Game Analysis" button in the in-game panel reopens it any time. |
 | 🚪 | **Champion Select Quit Button** | Adds a quick exit button to non-custom champion select so you can return to the lobby. |
 | 🔁 | **Auto Return to Lobby** | Returns to lobby after a game while keeping your premade, with "auto queue" or "return only" modes and retry logic. |
@@ -375,6 +375,7 @@ sona/
 │   │   ├── opgg-api.ts                # OP.GG builds / runes / tiers
 │   │   ├── aramgg-api.ts              # ARAM.GG ARAM Mayhem data
 │   │   ├── player-strength-score.ts   # Scoring for Deadweight Detector / game analysis
+│   │   ├── hex-mayhem-score.ts        # ARAM Mayhem Hex score
 │   │   ├── champ-select-puuid.ts      # PUUID recovery in anonymous champ select
 │   │   ├── image-hosting-service.ts   # Image hosting for custom avatars
 │   │   ├── update-checker.ts          # Release update checker
