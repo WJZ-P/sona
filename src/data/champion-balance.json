@@ -2,8 +2,8 @@
   "_meta": {
     "source": "lol-wiki",
     "sourceUrl": "https://wiki.leagueoflegends.com/en-us/Module:ChampionData/data",
-    "updatedAt": "2026-10-07T16:13:48.156Z",
-    "sha1": "00af491f3036d8ee03ff23258bf358ded828a28a",
+    "updatedAt": "2026-11-18T17:53:47.025Z",
+    "sha1": "f04a81468a32155570208c45c1d5346114dccb68",
     "championCount": 175
   },
   "champions": {
@@ -2143,8 +2143,7 @@
       "alias": "Kalista",
       "stats": {
         "aram": {
-          "dmg_dealt": 1.1,
-          "dmg_taken": 0.9
+          "dmg_dealt": 1.05
         },
         "urf": {
           "dmg_dealt": 1.1,
