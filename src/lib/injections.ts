@@ -548,12 +548,15 @@ const TFT_HIDDEN_ATTR = `${HIJACKED_ATTR}-tft`
 function tryRemoveTFT(): boolean {
   if (!hideTFTEnabled) return true
 
-  // 顶部导航栏 TFT 菜单项
-  const navItem = document.querySelector(`.menu_item_navbar_tft:not([${TFT_HIDDEN_ATTR}])`)
-  if (navItem) {
+  // 顶部导航栏 TFT 菜单项。16.23 起国服 class 从 menu_item_navbar_tft 变成了本地化名称
+  // menu_item_云顶之弈，两种都匹配以兼容新旧客户端。
+  const navItems = document.querySelectorAll(
+    `.menu_item_navbar_tft:not([${TFT_HIDDEN_ATTR}]), .menu_item_云顶之弈:not([${TFT_HIDDEN_ATTR}])`,
+  )
+  navItems.forEach((navItem) => {
     navItem.setAttribute(TFT_HIDDEN_ATTR, 'true')
     ;(navItem as HTMLElement).style.display = 'none'
-  }
+  })
 
   // 主界面 TFT 游戏模式卡片
   // const gameCard = document.querySelector(`[data-game-mode="TFT"].game-type-card:not([${TFT_HIDDEN_ATTR}])`)

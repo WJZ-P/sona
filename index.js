@@ -1,6 +1,6 @@
 /**
  * @name Sona
- * @version 1.11.0
+ * @version 1.11.2
  * @description 基于 Pengu Loader 的全服可用英雄联盟客户端增强插件
  * @author WJZ_P
  * @link https://github.com/WJZ-P/sona
@@ -19,10 +19,10 @@ var Up = { exports: {} }, wr = {};
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-var GA;
+var zA;
 function CN() {
-  if (GA) return wr;
-  GA = 1;
+  if (zA) return wr;
+  zA = 1;
   var t = Symbol.for("react.transitional.element"), n = Symbol.for("react.fragment");
   function i(l, r, m) {
     var f = null;
@@ -41,9 +41,9 @@ function CN() {
   }
   return wr.Fragment = n, wr.jsx = i, wr.jsxs = i, wr;
 }
-var zA;
+var PA;
 function TN() {
-  return zA || (zA = 1, Up.exports = CN()), Up.exports;
+  return PA || (PA = 1, Up.exports = CN()), Up.exports;
 }
 var c = TN(), Gp = { exports: {} }, kr = {}, zp = { exports: {} }, Pp = {};
 /**
@@ -55,9 +55,9 @@ var c = TN(), Gp = { exports: {} }, kr = {}, zp = { exports: {} }, Pp = {};
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-var PA;
+var HA;
 function wN() {
-  return PA || (PA = 1, (function(t) {
+  return HA || (HA = 1, (function(t) {
     function n(K, ne) {
       var ge = K.length;
       K.push(ne);
@@ -275,9 +275,9 @@ function wN() {
     };
   })(Pp)), Pp;
 }
-var HA;
+var qA;
 function kN() {
-  return HA || (HA = 1, zp.exports = wN()), zp.exports;
+  return qA || (qA = 1, zp.exports = wN()), zp.exports;
 }
 var Hp = { exports: {} }, Be = {};
 /**
@@ -289,10 +289,10 @@ var Hp = { exports: {} }, Be = {};
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-var qA;
+var KA;
 function xN() {
-  if (qA) return Be;
-  qA = 1;
+  if (KA) return Be;
+  KA = 1;
   var t = Symbol.for("react.transitional.element"), n = Symbol.for("react.portal"), i = Symbol.for("react.fragment"), l = Symbol.for("react.strict_mode"), r = Symbol.for("react.profiler"), m = Symbol.for("react.consumer"), f = Symbol.for("react.context"), g = Symbol.for("react.forward_ref"), h = Symbol.for("react.suspense"), y = Symbol.for("react.memo"), A = Symbol.for("react.lazy"), T = Symbol.for("react.activity"), E = Symbol.iterator;
   function j(N) {
     return N === null || typeof N != "object" ? null : (N = E && N[E] || N["@@iterator"], typeof N == "function" ? N : null);
@@ -648,9 +648,9 @@ function xN() {
     return B.H.useTransition();
   }, Be.version = "19.2.4", Be;
 }
-var KA;
-function a0() {
-  return KA || (KA = 1, Hp.exports = xN()), Hp.exports;
+var VA;
+function n0() {
+  return VA || (VA = 1, Hp.exports = xN()), Hp.exports;
 }
 var qp = { exports: {} }, Jt = {};
 /**
@@ -662,11 +662,11 @@ var qp = { exports: {} }, Jt = {};
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-var VA;
+var FA;
 function NN() {
-  if (VA) return Jt;
-  VA = 1;
-  var t = a0();
+  if (FA) return Jt;
+  FA = 1;
+  var t = n0();
   function n(h) {
     var y = "https://react.dev/errors/" + h;
     if (1 < arguments.length) {
@@ -795,10 +795,10 @@ function NN() {
     return f.H.useHostTransitionStatus();
   }, Jt.version = "19.2.4", Jt;
 }
-var FA;
+var QA;
 function _C() {
-  if (FA) return qp.exports;
-  FA = 1;
+  if (QA) return qp.exports;
+  QA = 1;
   function t() {
     if (!(typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ > "u" || typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.checkDCE != "function"))
       try {
@@ -818,11 +818,11 @@ function _C() {
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-var QA;
+var XA;
 function IN() {
-  if (QA) return kr;
-  QA = 1;
-  var t = kN(), n = a0(), i = _C();
+  if (XA) return kr;
+  XA = 1;
+  var t = kN(), n = n0(), i = _C();
   function l(e) {
     var a = "https://react.dev/errors/" + e;
     if (1 < arguments.length) {
@@ -997,11 +997,11 @@ function IN() {
     switch (Y(Se, a), Y(he, e), Y(ie, null), a.nodeType) {
       case 9:
       case 11:
-        e = (e = a.documentElement) && (e = e.namespaceURI) ? oA(e) : 0;
+        e = (e = a.documentElement) && (e = e.namespaceURI) ? rA(e) : 0;
         break;
       default:
         if (e = a.tagName, a = a.namespaceURI)
-          a = oA(a), e = rA(a, e);
+          a = rA(a), e = cA(a, e);
         else
           switch (e) {
             case "svg":
@@ -1021,7 +1021,7 @@ function IN() {
   }
   function je(e) {
     e.memoizedState !== null && Y(ue, e);
-    var a = ie.current, s = rA(a, e.type);
+    var a = ie.current, s = cA(a, e.type);
     a !== s && (Y(he, e), Y(ie, s));
   }
   function mt(e) {
@@ -1377,7 +1377,7 @@ Error generating stack: ` + o.message + `
   }
   function si() {
     var e = ne.p;
-    return e !== 0 ? e : (e = window.event, e === void 0 ? 32 : MA(e.type));
+    return e !== 0 ? e : (e = window.event, e === void 0 ? 32 : DA(e.type));
   }
   function sl(e, a) {
     var s = ne.p;
@@ -1397,9 +1397,9 @@ Error generating stack: ` + o.message + `
     for (var s = e.parentNode; s; ) {
       if (a = s[Sa] || s[bt]) {
         if (s = a.alternate, a.child !== null || s !== null && s.child !== null)
-          for (e = pA(e); e !== null; ) {
+          for (e = hA(e); e !== null; ) {
             if (s = e[bt]) return s;
-            e = pA(e);
+            e = hA(e);
           }
         return a;
       }
@@ -1868,7 +1868,7 @@ Error generating stack: ` + o.message + `
       Uf = !1;
     }
   var cs = null, Gf = null, uu = null;
-  function rb() {
+  function cb() {
     if (uu) return uu;
     var e, a = Gf, s = a.length, o, u = "value" in cs ? cs.value : cs.textContent, d = u.length;
     for (e = 0; e < s && a[e] === u[e]; e++) ;
@@ -1883,7 +1883,7 @@ Error generating stack: ` + o.message + `
   function mu() {
     return !0;
   }
-  function cb() {
+  function ub() {
     return !1;
   }
   function ua(e) {
@@ -1891,7 +1891,7 @@ Error generating stack: ` + o.message + `
       this._reactName = s, this._targetInst = u, this.type = o, this.nativeEvent = d, this.target = p, this.currentTarget = null;
       for (var S in e)
         e.hasOwnProperty(S) && (s = e[S], this[S] = s ? s(d) : d[S]);
-      return this.isDefaultPrevented = (d.defaultPrevented != null ? d.defaultPrevented : d.returnValue === !1) ? mu : cb, this.isPropagationStopped = cb, this;
+      return this.isDefaultPrevented = (d.defaultPrevented != null ? d.defaultPrevented : d.returnValue === !1) ? mu : ub, this.isPropagationStopped = ub, this;
     }
     return T(a.prototype, {
       preventDefault: function() {
@@ -1940,7 +1940,7 @@ Error generating stack: ` + o.message + `
     movementY: function(e) {
       return "movementY" in e ? e.movementY : Pf;
     }
-  }), ub = ua(gu), S2 = T({}, gu, { dataTransfer: 0 }), A2 = ua(S2), E2 = T({}, Po, { relatedTarget: 0 }), Hf = ua(E2), C2 = T({}, ci, {
+  }), db = ua(gu), S2 = T({}, gu, { dataTransfer: 0 }), A2 = ua(S2), E2 = T({}, Po, { relatedTarget: 0 }), Hf = ua(E2), C2 = T({}, ci, {
     animationName: 0,
     elapsedTime: 0,
     pseudoElement: 0
@@ -1948,7 +1948,7 @@ Error generating stack: ` + o.message + `
     clipboardData: function(e) {
       return "clipboardData" in e ? e.clipboardData : window.clipboardData;
     }
-  }), k2 = ua(w2), x2 = T({}, ci, { data: 0 }), db = ua(x2), N2 = {
+  }), k2 = ua(w2), x2 = T({}, ci, { data: 0 }), mb = ua(x2), N2 = {
     Esc: "Escape",
     Spacebar: " ",
     Left: "ArrowLeft",
@@ -2048,7 +2048,7 @@ Error generating stack: ` + o.message + `
     twist: 0,
     pointerType: 0,
     isPrimary: 0
-  }), mb = ua(B2), O2 = T({}, Po, {
+  }), fb = ua(B2), O2 = T({}, Po, {
     touches: 0,
     targetTouches: 0,
     changedTouches: 0,
@@ -2075,8 +2075,8 @@ Error generating stack: ` + o.message + `
     oldState: 0
   }), q2 = ua(H2), K2 = [9, 13, 27, 32], Kf = xn && "CompositionEvent" in window, qo = null;
   xn && "documentMode" in document && (qo = document.documentMode);
-  var V2 = xn && "TextEvent" in window && !qo, fb = xn && (!Kf || qo && 8 < qo && 11 >= qo), gb = " ", pb = !1;
-  function hb(e, a) {
+  var V2 = xn && "TextEvent" in window && !qo, gb = xn && (!Kf || qo && 8 < qo && 11 >= qo), pb = " ", hb = !1;
+  function yb(e, a) {
     switch (e) {
       case "keyup":
         return K2.indexOf(a.keyCode) !== -1;
@@ -2090,25 +2090,25 @@ Error generating stack: ` + o.message + `
         return !1;
     }
   }
-  function yb(e) {
+  function bb(e) {
     return e = e.detail, typeof e == "object" && "data" in e ? e.data : null;
   }
   var cl = !1;
   function F2(e, a) {
     switch (e) {
       case "compositionend":
-        return yb(a);
+        return bb(a);
       case "keypress":
-        return a.which !== 32 ? null : (pb = !0, gb);
+        return a.which !== 32 ? null : (hb = !0, pb);
       case "textInput":
-        return e = a.data, e === gb && pb ? null : e;
+        return e = a.data, e === pb && hb ? null : e;
       default:
         return null;
     }
   }
   function Q2(e, a) {
     if (cl)
-      return e === "compositionend" || !Kf && hb(e, a) ? (e = rb(), uu = Gf = cs = null, cl = !1, e) : null;
+      return e === "compositionend" || !Kf && yb(e, a) ? (e = cb(), uu = Gf = cs = null, cl = !1, e) : null;
     switch (e) {
       case "paste":
         return null;
@@ -2120,7 +2120,7 @@ Error generating stack: ` + o.message + `
         }
         return null;
       case "compositionend":
-        return fb && a.locale !== "ko" ? null : a.data;
+        return gb && a.locale !== "ko" ? null : a.data;
       default:
         return null;
     }
@@ -2142,11 +2142,11 @@ Error generating stack: ` + o.message + `
     url: !0,
     week: !0
   };
-  function bb(e) {
+  function vb(e) {
     var a = e && e.nodeName && e.nodeName.toLowerCase();
     return a === "input" ? !!X2[e.type] : a === "textarea";
   }
-  function vb(e, a, s, o) {
+  function Sb(e, a, s, o) {
     Re ? vt ? vt.push(o) : vt = [o] : Re = o, a = nd(a, "onChange"), 0 < a.length && (s = new fu(
       "onChange",
       "change",
@@ -2157,35 +2157,35 @@ Error generating stack: ` + o.message + `
   }
   var Ko = null, Vo = null;
   function Z2(e) {
-    tA(e, 0);
+    aA(e, 0);
   }
   function pu(e) {
     var a = ln(e);
     if (lu(a)) return e;
   }
-  function Sb(e, a) {
+  function Ab(e, a) {
     if (e === "change") return a;
   }
-  var Ab = !1;
+  var Eb = !1;
   if (xn) {
     var Vf;
     if (xn) {
       var Ff = "oninput" in document;
       if (!Ff) {
-        var Eb = document.createElement("div");
-        Eb.setAttribute("oninput", "return;"), Ff = typeof Eb.oninput == "function";
+        var Cb = document.createElement("div");
+        Cb.setAttribute("oninput", "return;"), Ff = typeof Cb.oninput == "function";
       }
       Vf = Ff;
     } else Vf = !1;
-    Ab = Vf && (!document.documentMode || 9 < document.documentMode);
+    Eb = Vf && (!document.documentMode || 9 < document.documentMode);
   }
-  function Cb() {
-    Ko && (Ko.detachEvent("onpropertychange", Tb), Vo = Ko = null);
+  function Tb() {
+    Ko && (Ko.detachEvent("onpropertychange", wb), Vo = Ko = null);
   }
-  function Tb(e) {
+  function wb(e) {
     if (e.propertyName === "value" && pu(Vo)) {
       var a = [];
-      vb(
+      Sb(
         a,
         Vo,
         e,
@@ -2194,7 +2194,7 @@ Error generating stack: ` + o.message + `
     }
   }
   function Y2(e, a, s) {
-    e === "focusin" ? (Cb(), Ko = a, Vo = s, Ko.attachEvent("onpropertychange", Tb)) : e === "focusout" && Cb();
+    e === "focusin" ? (Tb(), Ko = a, Vo = s, Ko.attachEvent("onpropertychange", wb)) : e === "focusout" && Tb();
   }
   function J2(e) {
     if (e === "selectionchange" || e === "keyup" || e === "keydown")
@@ -2224,12 +2224,12 @@ Error generating stack: ` + o.message + `
     }
     return !0;
   }
-  function wb(e) {
+  function kb(e) {
     for (; e && e.firstChild; ) e = e.firstChild;
     return e;
   }
-  function kb(e, a) {
-    var s = wb(e);
+  function xb(e, a) {
+    var s = kb(e);
     e = 0;
     for (var o; s; ) {
       if (s.nodeType === 3) {
@@ -2247,13 +2247,13 @@ Error generating stack: ` + o.message + `
         }
         s = void 0;
       }
-      s = wb(s);
+      s = kb(s);
     }
   }
-  function xb(e, a) {
-    return e && a ? e === a ? !0 : e && e.nodeType === 3 ? !1 : a && a.nodeType === 3 ? xb(e, a.parentNode) : "contains" in e ? e.contains(a) : e.compareDocumentPosition ? !!(e.compareDocumentPosition(a) & 16) : !1 : !1;
+  function Nb(e, a) {
+    return e && a ? e === a ? !0 : e && e.nodeType === 3 ? !1 : a && a.nodeType === 3 ? Nb(e, a.parentNode) : "contains" in e ? e.contains(a) : e.compareDocumentPosition ? !!(e.compareDocumentPosition(a) & 16) : !1 : !1;
   }
-  function Nb(e) {
+  function Ib(e) {
     e = e != null && e.ownerDocument != null && e.ownerDocument.defaultView != null ? e.ownerDocument.defaultView : window;
     for (var a = li(e.document); a instanceof e.HTMLIFrameElement; ) {
       try {
@@ -2272,7 +2272,7 @@ Error generating stack: ` + o.message + `
     return a && (a === "input" && (e.type === "text" || e.type === "search" || e.type === "tel" || e.type === "url" || e.type === "password") || a === "textarea" || e.contentEditable === "true");
   }
   var ex = xn && "documentMode" in document && 11 >= document.documentMode, ul = null, Xf = null, Qo = null, Zf = !1;
-  function Ib(e, a, s) {
+  function Rb(e, a, s) {
     var o = s.window === s ? s.document : s.nodeType === 9 ? s : s.ownerDocument;
     Zf || ul == null || ul !== li(o) || (o = ul, "selectionStart" in o && Qf(o) ? o = { start: o.selectionStart, end: o.selectionEnd } : (o = (o.ownerDocument && o.ownerDocument.defaultView || window).getSelection(), o = {
       anchorNode: o.anchorNode,
@@ -2299,23 +2299,23 @@ Error generating stack: ` + o.message + `
     transitionstart: ui("Transition", "TransitionStart"),
     transitioncancel: ui("Transition", "TransitionCancel"),
     transitionend: ui("Transition", "TransitionEnd")
-  }, Yf = {}, Rb = {};
-  xn && (Rb = document.createElement("div").style, "AnimationEvent" in window || (delete dl.animationend.animation, delete dl.animationiteration.animation, delete dl.animationstart.animation), "TransitionEvent" in window || delete dl.transitionend.transition);
+  }, Yf = {}, Mb = {};
+  xn && (Mb = document.createElement("div").style, "AnimationEvent" in window || (delete dl.animationend.animation, delete dl.animationiteration.animation, delete dl.animationstart.animation), "TransitionEvent" in window || delete dl.transitionend.transition);
   function di(e) {
     if (Yf[e]) return Yf[e];
     if (!dl[e]) return e;
     var a = dl[e], s;
     for (s in a)
-      if (a.hasOwnProperty(s) && s in Rb)
+      if (a.hasOwnProperty(s) && s in Mb)
         return Yf[e] = a[s];
     return e;
   }
-  var Mb = di("animationend"), Db = di("animationiteration"), jb = di("animationstart"), tx = di("transitionrun"), ax = di("transitionstart"), nx = di("transitioncancel"), Bb = di("transitionend"), Ob = /* @__PURE__ */ new Map(), Jf = "abort auxClick beforeToggle cancel canPlay canPlayThrough click close contextMenu copy cut drag dragEnd dragEnter dragExit dragLeave dragOver dragStart drop durationChange emptied encrypted ended error gotPointerCapture input invalid keyDown keyPress keyUp load loadedData loadedMetadata loadStart lostPointerCapture mouseDown mouseMove mouseOut mouseOver mouseUp paste pause play playing pointerCancel pointerDown pointerMove pointerOut pointerOver pointerUp progress rateChange reset resize seeked seeking stalled submit suspend timeUpdate touchCancel touchEnd touchStart volumeChange scroll toggle touchMove waiting wheel".split(
+  var Db = di("animationend"), jb = di("animationiteration"), Bb = di("animationstart"), tx = di("transitionrun"), ax = di("transitionstart"), nx = di("transitioncancel"), Ob = di("transitionend"), Lb = /* @__PURE__ */ new Map(), Jf = "abort auxClick beforeToggle cancel canPlay canPlayThrough click close contextMenu copy cut drag dragEnd dragEnter dragExit dragLeave dragOver dragStart drop durationChange emptied encrypted ended error gotPointerCapture input invalid keyDown keyPress keyUp load loadedData loadedMetadata loadStart lostPointerCapture mouseDown mouseMove mouseOut mouseOver mouseUp paste pause play playing pointerCancel pointerDown pointerMove pointerOut pointerOver pointerUp progress rateChange reset resize seeked seeking stalled submit suspend timeUpdate touchCancel touchEnd touchStart volumeChange scroll toggle touchMove waiting wheel".split(
     " "
   );
   Jf.push("scrollEnd");
   function $a(e, a) {
-    Ob.set(e, a), Ya(a, [e]);
+    Lb.set(e, a), Ya(a, [e]);
   }
   var hu = typeof reportError == "function" ? reportError : function(e) {
     if (typeof window == "object" && typeof window.ErrorEvent == "function") {
@@ -2345,7 +2345,7 @@ Error generating stack: ` + o.message + `
         var p = o.pending;
         p === null ? u.next = u : (u.next = p.next, p.next = u), o.pending = u;
       }
-      d !== 0 && Lb(s, u, d);
+      d !== 0 && Ub(s, u, d);
     }
   }
   function bu(e, a, s, o) {
@@ -2357,7 +2357,7 @@ Error generating stack: ` + o.message + `
   function mi(e, a) {
     return bu(e, null, null, a), vu(e);
   }
-  function Lb(e, a, s) {
+  function Ub(e, a, s) {
     e.lanes |= s;
     var o = e.alternate;
     o !== null && (o.lanes |= s);
@@ -2391,7 +2391,7 @@ Error generating stack: ` + o.message + `
       e.mode
     ), s.elementType = e.elementType, s.type = e.type, s.stateNode = e.stateNode, s.alternate = e, e.alternate = s) : (s.pendingProps = a, s.type = e.type, s.flags = 0, s.subtreeFlags = 0, s.deletions = null), s.flags = e.flags & 65011712, s.childLanes = e.childLanes, s.lanes = e.lanes, s.child = e.child, s.memoizedProps = e.memoizedProps, s.memoizedState = e.memoizedState, s.updateQueue = e.updateQueue, a = e.dependencies, s.dependencies = a === null ? null : { lanes: a.lanes, firstContext: a.firstContext }, s.sibling = e.sibling, s.index = e.index, s.ref = e.ref, s.refCleanup = e.refCleanup, s;
   }
-  function Ub(e, a) {
+  function Gb(e, a) {
     e.flags &= 65011714;
     var s = e.alternate;
     return s === null ? (e.childLanes = 0, e.lanes = a, e.child = null, e.subtreeFlags = 0, e.memoizedProps = null, e.memoizedState = null, e.updateQueue = null, e.dependencies = null, e.stateNode = null) : (e.childLanes = s.childLanes, e.lanes = s.lanes, e.child = s.child, e.subtreeFlags = 0, e.deletions = null, e.memoizedProps = s.memoizedProps, e.memoizedState = s.memoizedState, e.updateQueue = s.updateQueue, e.type = s.type, a = s.dependencies, e.dependencies = a === null ? null : {
@@ -2454,7 +2454,7 @@ Error generating stack: ` + o.message + `
   function eg(e, a, s) {
     return e = Ea(6, e, null, a), e.lanes = s, e;
   }
-  function Gb(e) {
+  function zb(e) {
     var a = Ea(18, null, null, 0);
     return a.stateNode = e, a;
   }
@@ -2470,15 +2470,15 @@ Error generating stack: ` + o.message + `
       implementation: e.implementation
     }, a;
   }
-  var zb = /* @__PURE__ */ new WeakMap();
+  var Pb = /* @__PURE__ */ new WeakMap();
   function ja(e, a) {
     if (typeof e == "object" && e !== null) {
-      var s = zb.get(e);
+      var s = Pb.get(e);
       return s !== void 0 ? s : (a = {
         value: e,
         source: a,
         stack: ta(a)
-      }, zb.set(e, a), a);
+      }, Pb.set(e, a), a);
     }
     return {
       value: e,
@@ -2490,7 +2490,7 @@ Error generating stack: ` + o.message + `
   function In(e, a) {
     gl[pl++] = Xo, gl[pl++] = Au, Au = e, Xo = a;
   }
-  function Pb(e, a, s) {
+  function Hb(e, a, s) {
     Ba[Oa++] = rn, Ba[Oa++] = cn, Ba[Oa++] = us, us = e;
     var o = rn;
     e = cn;
@@ -2504,7 +2504,7 @@ Error generating stack: ` + o.message + `
       rn = 1 << d | s << u | o, cn = e;
   }
   function ag(e) {
-    e.return !== null && (In(e, 1), Pb(e, 1, 0));
+    e.return !== null && (In(e, 1), Hb(e, 1, 0));
   }
   function ng(e) {
     for (; e === Au; )
@@ -2512,7 +2512,7 @@ Error generating stack: ` + o.message + `
     for (; e === us; )
       us = Ba[--Oa], Ba[Oa] = null, cn = Ba[--Oa], Ba[Oa] = null, rn = Ba[--Oa], Ba[Oa] = null;
   }
-  function Hb(e, a) {
+  function qb(e, a) {
     Ba[Oa++] = rn, Ba[Oa++] = cn, Ba[Oa++] = us, rn = a.id, cn = a.overflow, us = e;
   }
   var Ht = null, ut = null, Ze = !1, ds = null, La = !1, sg = Error(l(519));
@@ -2526,7 +2526,7 @@ Error generating stack: ` + o.message + `
     );
     throw Zo(ja(a, e)), sg;
   }
-  function qb(e) {
+  function Kb(e) {
     var a = e.stateNode, s = e.type, o = e.memoizedProps;
     switch (a[bt] = e, a[jt] = o, s) {
       case "dialog":
@@ -2571,9 +2571,9 @@ Error generating stack: ` + o.message + `
       case "textarea":
         Ve("invalid", a), ri(a, o.value, o.defaultValue, o.children);
     }
-    s = o.children, typeof s != "string" && typeof s != "number" && typeof s != "bigint" || a.textContent === "" + s || o.suppressHydrationWarning === !0 || iA(a.textContent, s) ? (o.popover != null && (Ve("beforetoggle", a), Ve("toggle", a)), o.onScroll != null && Ve("scroll", a), o.onScrollEnd != null && Ve("scrollend", a), o.onClick != null && (a.onclick = Wa), a = !0) : a = !1, a || ms(e, !0);
+    s = o.children, typeof s != "string" && typeof s != "number" && typeof s != "bigint" || a.textContent === "" + s || o.suppressHydrationWarning === !0 || lA(a.textContent, s) ? (o.popover != null && (Ve("beforetoggle", a), Ve("toggle", a)), o.onScroll != null && Ve("scroll", a), o.onScrollEnd != null && Ve("scrollend", a), o.onClick != null && (a.onclick = Wa), a = !0) : a = !1, a || ms(e, !0);
   }
-  function Kb(e) {
+  function Vb(e) {
     for (Ht = e.return; Ht; )
       switch (Ht.tag) {
         case 5:
@@ -2591,14 +2591,14 @@ Error generating stack: ` + o.message + `
   }
   function hl(e) {
     if (e !== Ht) return !1;
-    if (!Ze) return Kb(e), Ze = !0, !1;
+    if (!Ze) return Vb(e), Ze = !0, !1;
     var a = e.tag, s;
-    if ((s = a !== 3 && a !== 27) && ((s = a === 5) && (s = e.type, s = !(s !== "form" && s !== "button") || Ep(e.type, e.memoizedProps)), s = !s), s && ut && ms(e), Kb(e), a === 13) {
+    if ((s = a !== 3 && a !== 27) && ((s = a === 5) && (s = e.type, s = !(s !== "form" && s !== "button") || Ep(e.type, e.memoizedProps)), s = !s), s && ut && ms(e), Vb(e), a === 13) {
       if (e = e.memoizedState, e = e !== null ? e.dehydrated : null, !e) throw Error(l(317));
-      ut = gA(e);
+      ut = pA(e);
     } else if (a === 31) {
       if (e = e.memoizedState, e = e !== null ? e.dehydrated : null, !e) throw Error(l(317));
-      ut = gA(e);
+      ut = pA(e);
     } else
       a === 27 ? (a = ut, ks(e.type) ? (e = xp, xp = null, ut = e) : ut = a) : ut = Ht ? Ga(e.stateNode.nextSibling) : null;
     return !0;
@@ -2713,12 +2713,12 @@ Error generating stack: ` + o.message + `
     pi = e, Rn = null, e = e.dependencies, e !== null && (e.firstContext = null);
   }
   function qt(e) {
-    return Vb(pi, e);
+    return Fb(pi, e);
   }
   function Cu(e, a) {
-    return pi === null && hi(e), Vb(e, a);
+    return pi === null && hi(e), Fb(e, a);
   }
-  function Vb(e, a) {
+  function Fb(e, a) {
     var s = a._currentValue;
     if (a = { context: a, memoizedValue: s, next: null }, Rn === null) {
       if (e === null) throw Error(l(308));
@@ -2770,9 +2770,9 @@ Error generating stack: ` + o.message + `
         }
       };
     }
-    return ug++, a.then(Fb, Fb), a;
+    return ug++, a.then(Qb, Qb), a;
   }
-  function Fb() {
+  function Qb() {
     if (--ug === 0 && Jo !== null) {
       vl !== null && (vl.status = "fulfilled");
       var e = Jo;
@@ -2800,9 +2800,9 @@ Error generating stack: ` + o.message + `
       }
     ), o;
   }
-  var Qb = K.S;
+  var Xb = K.S;
   K.S = function(e, a) {
-    IS = z(), typeof a == "object" && a !== null && typeof a.then == "function" && rx(e, a), Qb !== null && Qb(e, a);
+    RS = z(), typeof a == "object" && a !== null && typeof a.then == "function" && rx(e, a), Xb !== null && Xb(e, a);
   };
   var yi = N(null);
   function dg() {
@@ -2812,21 +2812,21 @@ Error generating stack: ` + o.message + `
   function Tu(e, a) {
     a === null ? Y(yi, yi.current) : Y(yi, a.pool);
   }
-  function Xb() {
+  function Zb() {
     var e = dg();
     return e === null ? null : { parent: Nt._currentValue, pool: e };
   }
   var Sl = Error(l(460)), mg = Error(l(474)), wu = Error(l(542)), ku = { then: function() {
   } };
-  function Zb(e) {
+  function Yb(e) {
     return e = e.status, e === "fulfilled" || e === "rejected";
   }
-  function Yb(e, a, s) {
+  function Jb(e, a, s) {
     switch (s = e[s], s === void 0 ? e.push(a) : s !== a && (a.then(Wa, Wa), a = s), a.status) {
       case "fulfilled":
         return a.value;
       case "rejected":
-        throw e = a.reason, Wb(e), e;
+        throw e = a.reason, _b(e), e;
       default:
         if (typeof a.status == "string") a.then(Wa, Wa);
         else {
@@ -2851,7 +2851,7 @@ Error generating stack: ` + o.message + `
           case "fulfilled":
             return a.value;
           case "rejected":
-            throw e = a.reason, Wb(e), e;
+            throw e = a.reason, _b(e), e;
         }
         throw vi = a, Sl;
     }
@@ -2865,19 +2865,19 @@ Error generating stack: ` + o.message + `
     }
   }
   var vi = null;
-  function Jb() {
+  function Wb() {
     if (vi === null) throw Error(l(459));
     var e = vi;
     return vi = null, e;
   }
-  function Wb(e) {
+  function _b(e) {
     if (e === Sl || e === wu)
       throw Error(l(483));
   }
   var Al = null, Wo = 0;
   function xu(e) {
     var a = Wo;
-    return Wo += 1, Al === null && (Al = []), Yb(Al, e, a);
+    return Wo += 1, Al === null && (Al = []), Jb(Al, e, a);
   }
   function _o(e, a) {
     a = a.props.ref, e.ref = a !== void 0 ? a : null;
@@ -2890,7 +2890,7 @@ Error generating stack: ` + o.message + `
       )
     ));
   }
-  function _b(e) {
+  function $b(e) {
     function a(O, D) {
       if (e) {
         var U = O.deletions;
@@ -3264,7 +3264,7 @@ Error generating stack: ` + o.message + `
       }
     };
   }
-  var Si = _b(!0), $b = _b(!1), gs = !1;
+  var Si = $b(!0), ev = $b(!1), gs = !1;
   function fg(e) {
     e.updateQueue = {
       baseState: e.memoizedState,
@@ -3291,7 +3291,7 @@ Error generating stack: ` + o.message + `
     if (o === null) return null;
     if (o = o.shared, (_e & 2) !== 0) {
       var u = o.pending;
-      return u === null ? a.next = a : (a.next = u.next, u.next = a), o.pending = a, a = vu(e), Lb(e, null, s), a;
+      return u === null ? a.next = a : (a.next = u.next, u.next = a), o.pending = a, a = vu(e), Ub(e, null, s), a;
     }
     return bu(e, o, a, s), vu(e);
   }
@@ -3401,19 +3401,19 @@ Error generating stack: ` + o.message + `
       X === null && (k = te), u.baseState = k, u.firstBaseUpdate = G, u.lastBaseUpdate = X, d === null && (u.shared.lanes = 0), As |= p, e.lanes = p, e.memoizedState = te;
     }
   }
-  function ev(e, a) {
+  function tv(e, a) {
     if (typeof e != "function")
       throw Error(l(191, e));
     e.call(a);
   }
-  function tv(e, a) {
+  function av(e, a) {
     var s = e.callbacks;
     if (s !== null)
       for (e.callbacks = null, e = 0; e < s.length; e++)
-        ev(s[e], a);
+        tv(s[e], a);
   }
   var El = N(null), Iu = N(0);
-  function av(e, a) {
+  function nv(e, a) {
     e = Pn, Y(Iu, e), Y(El, a), Pn = e | a.baseLanes;
   }
   function yg() {
@@ -3430,7 +3430,7 @@ Error generating stack: ` + o.message + `
   function vg(e) {
     Y(Tt, Tt.current), Y(Ca, e), Ua === null && (Ua = e);
   }
-  function nv(e) {
+  function sv(e) {
     e.tag === 22 ? (Y(Tt, Tt.current), Y(Ca, e), Ua === null && (Ua = e)) : bs();
   }
   function bs() {
@@ -3472,20 +3472,20 @@ Error generating stack: ` + o.message + `
     return !0;
   }
   function Ag(e, a, s, o, u, d) {
-    return Dn = d, Ue = a, a.memoizedState = null, a.updateQueue = null, a.lanes = 0, K.H = e === null || e.memoizedState === null ? Pv : Lg, Ai = !1, d = s(o, u), Ai = !1, Cl && (d = iv(
+    return Dn = d, Ue = a, a.memoizedState = null, a.updateQueue = null, a.lanes = 0, K.H = e === null || e.memoizedState === null ? Hv : Lg, Ai = !1, d = s(o, u), Ai = !1, Cl && (d = lv(
       a,
       s,
       o,
       u
-    )), sv(e), d;
+    )), iv(e), d;
   }
-  function sv(e) {
+  function iv(e) {
     K.H = ir;
     var a = lt !== null && lt.next !== null;
     if (Dn = 0, It = lt = Ue = null, Mu = !1, ar = 0, Tl = null, a) throw Error(l(300));
     e === null || Rt || (e = e.dependencies, e !== null && Eu(e) && (Rt = !0));
   }
-  function iv(e, a, s, o) {
+  function lv(e, a, s, o) {
     Ue = e;
     var u = 0;
     do {
@@ -3494,7 +3494,7 @@ Error generating stack: ` + o.message + `
         var d = e.updateQueue;
         d.lastEffect = null, d.events = null, d.stores = null, d.memoCache != null && (d.memoCache.index = 0);
       }
-      K.H = Hv, d = a(s, o);
+      K.H = qv, d = a(s, o);
     } while (Cl);
     return d;
   }
@@ -3555,7 +3555,7 @@ Error generating stack: ` + o.message + `
   }
   function nr(e) {
     var a = ar;
-    return ar += 1, Tl === null && (Tl = []), e = Yb(Tl, e, a), a = Ue, (It === null ? a.memoizedState : It.next) === null && (a = a.alternate, K.H = a === null || a.memoizedState === null ? Pv : Lg), e;
+    return ar += 1, Tl === null && (Tl = []), e = Jb(Tl, e, a), a = Ue, (It === null ? a.memoizedState : It.next) === null && (a = a.alternate, K.H = a === null || a.memoizedState === null ? Hv : Lg), e;
   }
   function Bu(e) {
     if (e !== null && typeof e == "object") {
@@ -3664,7 +3664,7 @@ Error generating stack: ` + o.message + `
     }
     return [d, o];
   }
-  function lv(e, a, s) {
+  function ov(e, a, s) {
     var o = Ue, u = wt(), d = Ze;
     if (d) {
       if (s === void 0) throw Error(l(407));
@@ -3674,13 +3674,13 @@ Error generating stack: ` + o.message + `
       (lt || u).memoizedState,
       s
     );
-    if (p && (u.memoizedState = s, Rt = !0), u = u.queue, Rg(cv.bind(null, o, u, e), [
+    if (p && (u.memoizedState = s, Rt = !0), u = u.queue, Rg(uv.bind(null, o, u, e), [
       e
     ]), u.getSnapshot !== a || p || It !== null && It.memoizedState.tag & 1) {
       if (o.flags |= 2048, wl(
         9,
         { destroy: void 0 },
-        rv.bind(
+        cv.bind(
           null,
           o,
           u,
@@ -3689,22 +3689,22 @@ Error generating stack: ` + o.message + `
         ),
         null
       ), ct === null) throw Error(l(349));
-      d || (Dn & 127) !== 0 || ov(o, a, s);
+      d || (Dn & 127) !== 0 || rv(o, a, s);
     }
     return s;
   }
-  function ov(e, a, s) {
+  function rv(e, a, s) {
     e.flags |= 16384, e = { getSnapshot: a, value: s }, a = Ue.updateQueue, a === null ? (a = ju(), Ue.updateQueue = a, a.stores = [e]) : (s = a.stores, s === null ? a.stores = [e] : s.push(e));
   }
-  function rv(e, a, s, o) {
-    a.value = s, a.getSnapshot = o, uv(a) && dv(e);
+  function cv(e, a, s, o) {
+    a.value = s, a.getSnapshot = o, dv(a) && mv(e);
   }
-  function cv(e, a, s) {
+  function uv(e, a, s) {
     return s(function() {
-      uv(a) && dv(e);
+      dv(a) && mv(e);
     });
   }
-  function uv(e) {
+  function dv(e) {
     var a = e.getSnapshot;
     e = e.value;
     try {
@@ -3714,7 +3714,7 @@ Error generating stack: ` + o.message + `
       return !0;
     }
   }
-  function dv(e) {
+  function mv(e) {
     var a = mi(e, 2);
     a !== null && pa(a, e, 2);
   }
@@ -3739,7 +3739,7 @@ Error generating stack: ` + o.message + `
       lastRenderedState: e
     }, a;
   }
-  function mv(e, a, s, o) {
+  function fv(e, a, s, o) {
     return e.baseState = s, kg(
       e,
       lt,
@@ -3762,17 +3762,17 @@ Error generating stack: ` + o.message + `
           d.listeners.push(p);
         }
       };
-      K.T !== null ? s(!0) : d.isTransition = !1, o(d), s = a.pending, s === null ? (d.next = a.pending = d, fv(a, d)) : (d.next = s.next, a.pending = s.next = d);
+      K.T !== null ? s(!0) : d.isTransition = !1, o(d), s = a.pending, s === null ? (d.next = a.pending = d, gv(a, d)) : (d.next = s.next, a.pending = s.next = d);
     }
   }
-  function fv(e, a) {
+  function gv(e, a) {
     var s = a.action, o = a.payload, u = e.state;
     if (a.isTransition) {
       var d = K.T, p = {};
       K.T = p;
       try {
         var S = s(u, o), k = K.S;
-        k !== null && k(p, S), gv(e, a, S);
+        k !== null && k(p, S), pv(e, a, S);
       } catch (G) {
         Ig(e, a, G);
       } finally {
@@ -3780,42 +3780,42 @@ Error generating stack: ` + o.message + `
       }
     } else
       try {
-        d = s(u, o), gv(e, a, d);
+        d = s(u, o), pv(e, a, d);
       } catch (G) {
         Ig(e, a, G);
       }
   }
-  function gv(e, a, s) {
+  function pv(e, a, s) {
     s !== null && typeof s == "object" && typeof s.then == "function" ? s.then(
       function(o) {
-        pv(e, a, o);
+        hv(e, a, o);
       },
       function(o) {
         return Ig(e, a, o);
       }
-    ) : pv(e, a, s);
+    ) : hv(e, a, s);
   }
-  function pv(e, a, s) {
-    a.status = "fulfilled", a.value = s, hv(a), e.state = s, a = e.pending, a !== null && (s = a.next, s === a ? e.pending = null : (s = s.next, a.next = s, fv(e, s)));
+  function hv(e, a, s) {
+    a.status = "fulfilled", a.value = s, yv(a), e.state = s, a = e.pending, a !== null && (s = a.next, s === a ? e.pending = null : (s = s.next, a.next = s, gv(e, s)));
   }
   function Ig(e, a, s) {
     var o = e.pending;
     if (e.pending = null, o !== null) {
       o = o.next;
       do
-        a.status = "rejected", a.reason = s, hv(a), a = a.next;
+        a.status = "rejected", a.reason = s, yv(a), a = a.next;
       while (a !== o);
     }
     e.action = null;
   }
-  function hv(e) {
+  function yv(e) {
     e = e.listeners;
     for (var a = 0; a < e.length; a++) (0, e[a])();
   }
-  function yv(e, a) {
+  function bv(e, a) {
     return a;
   }
-  function bv(e, a) {
+  function vv(e, a) {
     if (Ze) {
       var s = ct.formState;
       if (s !== null) {
@@ -3856,9 +3856,9 @@ Error generating stack: ` + o.message + `
       pending: null,
       lanes: 0,
       dispatch: null,
-      lastRenderedReducer: yv,
+      lastRenderedReducer: bv,
       lastRenderedState: a
-    }, s.queue = o, s = Uv.bind(
+    }, s.queue = o, s = Gv.bind(
       null,
       Ue,
       o
@@ -3880,15 +3880,15 @@ Error generating stack: ` + o.message + `
       s
     ), u.dispatch = s, o.memoizedState = e, [a, s, !1];
   }
-  function vv(e) {
+  function Sv(e) {
     var a = wt();
-    return Sv(a, lt, e);
+    return Av(a, lt, e);
   }
-  function Sv(e, a, s) {
+  function Av(e, a, s) {
     if (a = kg(
       e,
       a,
-      yv
+      bv
     )[0], e = Ou(jn)[0], typeof a == "object" && a !== null && typeof a.then == "function")
       try {
         var o = nr(a);
@@ -3908,10 +3908,10 @@ Error generating stack: ` + o.message + `
   function fx(e, a) {
     e.action = a;
   }
-  function Av(e) {
+  function Ev(e) {
     var a = wt(), s = lt;
     if (s !== null)
-      return Sv(a, s, e);
+      return Av(a, s, e);
     wt(), a = a.memoizedState, s = wt();
     var o = s.queue.dispatch;
     return s.memoizedState = e, [a, o, !1];
@@ -3919,7 +3919,7 @@ Error generating stack: ` + o.message + `
   function wl(e, a, s, o) {
     return e = { tag: e, create: s, deps: o, inst: a, next: null }, a = Ue.updateQueue, a === null && (a = ju(), Ue.updateQueue = a), s = a.lastEffect, s === null ? a.lastEffect = e.next = e : (o = s.next, s.next = e, e.next = o, a.lastEffect = e), e;
   }
-  function Ev() {
+  function Cv() {
     return wt().memoizedState;
   }
   function Lu(e, a, s, o) {
@@ -3942,7 +3942,7 @@ Error generating stack: ` + o.message + `
       o
     ));
   }
-  function Cv(e, a) {
+  function Tv(e, a) {
     Lu(8390656, 8, e, a);
   }
   function Rg(e, a) {
@@ -3958,20 +3958,20 @@ Error generating stack: ` + o.message + `
       s === null ? a.events = [e] : s.push(e);
     }
   }
-  function Tv(e) {
+  function wv(e) {
     var a = wt().memoizedState;
     return gx({ ref: a, nextImpl: e }), function() {
       if ((_e & 2) !== 0) throw Error(l(440));
       return a.impl.apply(void 0, arguments);
     };
   }
-  function wv(e, a) {
+  function kv(e, a) {
     return Uu(4, 2, e, a);
   }
-  function kv(e, a) {
+  function xv(e, a) {
     return Uu(4, 4, e, a);
   }
-  function xv(e, a) {
+  function Nv(e, a) {
     if (typeof a == "function") {
       e = e();
       var s = a(e);
@@ -3984,18 +3984,18 @@ Error generating stack: ` + o.message + `
         a.current = null;
       };
   }
-  function Nv(e, a, s) {
-    s = s != null ? s.concat([e]) : null, Uu(4, 4, xv.bind(null, a, e), s);
+  function Iv(e, a, s) {
+    s = s != null ? s.concat([e]) : null, Uu(4, 4, Nv.bind(null, a, e), s);
   }
   function Mg() {
   }
-  function Iv(e, a) {
+  function Rv(e, a) {
     var s = wt();
     a = a === void 0 ? null : a;
     var o = s.memoizedState;
     return a !== null && Sg(a, o[1]) ? o[0] : (s.memoizedState = [e, a], e);
   }
-  function Rv(e, a) {
+  function Mv(e, a) {
     var s = wt();
     a = a === void 0 ? null : a;
     var o = s.memoizedState;
@@ -4012,12 +4012,12 @@ Error generating stack: ` + o.message + `
     return s.memoizedState = [o, a], o;
   }
   function Dg(e, a, s) {
-    return s === void 0 || (Dn & 1073741824) !== 0 && (Qe & 261930) === 0 ? e.memoizedState = a : (e.memoizedState = s, e = MS(), Ue.lanes |= e, As |= e, s);
+    return s === void 0 || (Dn & 1073741824) !== 0 && (Qe & 261930) === 0 ? e.memoizedState = a : (e.memoizedState = s, e = DS(), Ue.lanes |= e, As |= e, s);
   }
-  function Mv(e, a, s, o) {
-    return Aa(s, a) ? s : El.current !== null ? (e = Dg(e, s, o), Aa(e, a) || (Rt = !0), e) : (Dn & 42) === 0 || (Dn & 1073741824) !== 0 && (Qe & 261930) === 0 ? (Rt = !0, e.memoizedState = s) : (e = MS(), Ue.lanes |= e, As |= e, a);
+  function Dv(e, a, s, o) {
+    return Aa(s, a) ? s : El.current !== null ? (e = Dg(e, s, o), Aa(e, a) || (Rt = !0), e) : (Dn & 42) === 0 || (Dn & 1073741824) !== 0 && (Qe & 261930) === 0 ? (Rt = !0, e.memoizedState = s) : (e = DS(), Ue.lanes |= e, As |= e, a);
   }
-  function Dv(e, a, s, o, u) {
+  function jv(e, a, s, o, u) {
     var d = ne.p;
     ne.p = d !== 0 && 8 > d ? d : 8;
     var p = K.T, S = {};
@@ -4058,18 +4058,18 @@ Error generating stack: ` + o.message + `
   }
   function jg(e, a, s, o) {
     if (e.tag !== 5) throw Error(l(476));
-    var u = jv(e).queue;
-    Dv(
+    var u = Bv(e).queue;
+    jv(
       e,
       u,
       a,
       ge,
       s === null ? px : function() {
-        return Bv(e), s(o);
+        return Ov(e), s(o);
       }
     );
   }
-  function jv(e) {
+  function Bv(e) {
     var a = e.memoizedState;
     if (a !== null) return a;
     a = {
@@ -4100,8 +4100,8 @@ Error generating stack: ` + o.message + `
       next: null
     }, e.memoizedState = a, e = e.alternate, e !== null && (e.memoizedState = a), a;
   }
-  function Bv(e) {
-    var a = jv(e);
+  function Ov(e) {
+    var a = Bv(e);
     a.next === null && (a = e.alternate.memoizedState), sr(
       e,
       a.next.queue,
@@ -4112,10 +4112,10 @@ Error generating stack: ` + o.message + `
   function Bg() {
     return qt(Ar);
   }
-  function Ov() {
+  function Lv() {
     return wt().memoizedState;
   }
-  function Lv() {
+  function Uv() {
     return wt().memoizedState;
   }
   function hx(e) {
@@ -4142,9 +4142,9 @@ Error generating stack: ` + o.message + `
       hasEagerState: !1,
       eagerState: null,
       next: null
-    }, Gu(e) ? Gv(a, s) : (s = _f(e, a, s, o), s !== null && (pa(s, e, o), zv(s, a, o)));
+    }, Gu(e) ? zv(a, s) : (s = _f(e, a, s, o), s !== null && (pa(s, e, o), Pv(s, a, o)));
   }
-  function Uv(e, a, s) {
+  function Gv(e, a, s) {
     var o = xa();
     sr(e, a, s, o);
   }
@@ -4158,7 +4158,7 @@ Error generating stack: ` + o.message + `
       eagerState: null,
       next: null
     };
-    if (Gu(e)) Gv(a, u);
+    if (Gu(e)) zv(a, u);
     else {
       var d = e.alternate;
       if (e.lanes === 0 && (d === null || d.lanes === 0) && (d = a.lastRenderedReducer, d !== null))
@@ -4170,7 +4170,7 @@ Error generating stack: ` + o.message + `
         } finally {
         }
       if (s = _f(e, a, u, o), s !== null)
-        return pa(s, e, o), zv(s, a, o), !0;
+        return pa(s, e, o), Pv(s, a, o), !0;
     }
     return !1;
   }
@@ -4197,12 +4197,12 @@ Error generating stack: ` + o.message + `
     var a = e.alternate;
     return e === Ue || a !== null && a === Ue;
   }
-  function Gv(e, a) {
+  function zv(e, a) {
     Cl = Mu = !0;
     var s = e.pending;
     s === null ? a.next = a : (a.next = s.next, s.next = a), e.pending = a;
   }
-  function zv(e, a, s) {
+  function Pv(e, a, s) {
     if ((s & 4194048) !== 0) {
       var o = a.lanes;
       o &= e.pendingLanes, s |= o, a.lanes = s, is(e, s);
@@ -4234,7 +4234,7 @@ Error generating stack: ` + o.message + `
     useCacheRefresh: St
   };
   ir.useEffectEvent = St;
-  var Pv = {
+  var Hv = {
     readContext: qt,
     use: Bu,
     useCallback: function(e, a) {
@@ -4244,12 +4244,12 @@ Error generating stack: ` + o.message + `
       ], e;
     },
     useContext: qt,
-    useEffect: Cv,
+    useEffect: Tv,
     useImperativeHandle: function(e, a, s) {
       s = s != null ? s.concat([e]) : null, Lu(
         4194308,
         4,
-        xv.bind(null, a, e),
+        Nv.bind(null, a, e),
         s
       );
     },
@@ -4304,7 +4304,7 @@ Error generating stack: ` + o.message + `
     },
     useState: function(e) {
       e = Ng(e);
-      var a = e.queue, s = Uv.bind(null, Ue, a);
+      var a = e.queue, s = Gv.bind(null, Ue, a);
       return a.dispatch = s, [e.memoizedState, s];
     },
     useDebugValue: Mg,
@@ -4314,7 +4314,7 @@ Error generating stack: ` + o.message + `
     },
     useTransition: function() {
       var e = Ng(!1);
-      return e = Dv.bind(
+      return e = jv.bind(
         null,
         Ue,
         e.queue,
@@ -4331,16 +4331,16 @@ Error generating stack: ` + o.message + `
       } else {
         if (s = a(), ct === null)
           throw Error(l(349));
-        (Qe & 127) !== 0 || ov(o, a, s);
+        (Qe & 127) !== 0 || rv(o, a, s);
       }
       u.memoizedState = s;
       var d = { value: s, getSnapshot: a };
-      return u.queue = d, Cv(cv.bind(null, o, d, e), [
+      return u.queue = d, Tv(uv.bind(null, o, d, e), [
         e
       ]), o.flags |= 2048, wl(
         9,
         { destroy: void 0 },
-        rv.bind(
+        cv.bind(
           null,
           o,
           d,
@@ -4360,8 +4360,8 @@ Error generating stack: ` + o.message + `
       return e.memoizedState = a;
     },
     useHostTransitionStatus: Bg,
-    useFormState: bv,
-    useActionState: bv,
+    useFormState: vv,
+    useActionState: vv,
     useOptimistic: function(e) {
       var a = na();
       a.memoizedState = a.baseState = e;
@@ -4397,22 +4397,22 @@ Error generating stack: ` + o.message + `
   }, Lg = {
     readContext: qt,
     use: Bu,
-    useCallback: Iv,
+    useCallback: Rv,
     useContext: qt,
     useEffect: Rg,
-    useImperativeHandle: Nv,
-    useInsertionEffect: wv,
-    useLayoutEffect: kv,
-    useMemo: Rv,
+    useImperativeHandle: Iv,
+    useInsertionEffect: kv,
+    useLayoutEffect: xv,
+    useMemo: Mv,
     useReducer: Ou,
-    useRef: Ev,
+    useRef: Cv,
     useState: function() {
       return Ou(jn);
     },
     useDebugValue: Mg,
     useDeferredValue: function(e, a) {
       var s = wt();
-      return Mv(
+      return Dv(
         s,
         lt.memoizedState,
         e,
@@ -4426,38 +4426,38 @@ Error generating stack: ` + o.message + `
         a
       ];
     },
-    useSyncExternalStore: lv,
-    useId: Ov,
+    useSyncExternalStore: ov,
+    useId: Lv,
     useHostTransitionStatus: Bg,
-    useFormState: vv,
-    useActionState: vv,
+    useFormState: Sv,
+    useActionState: Sv,
     useOptimistic: function(e, a) {
       var s = wt();
-      return mv(s, lt, e, a);
+      return fv(s, lt, e, a);
     },
     useMemoCache: wg,
-    useCacheRefresh: Lv
+    useCacheRefresh: Uv
   };
-  Lg.useEffectEvent = Tv;
-  var Hv = {
+  Lg.useEffectEvent = wv;
+  var qv = {
     readContext: qt,
     use: Bu,
-    useCallback: Iv,
+    useCallback: Rv,
     useContext: qt,
     useEffect: Rg,
-    useImperativeHandle: Nv,
-    useInsertionEffect: wv,
-    useLayoutEffect: kv,
-    useMemo: Rv,
+    useImperativeHandle: Iv,
+    useInsertionEffect: kv,
+    useLayoutEffect: xv,
+    useMemo: Mv,
     useReducer: xg,
-    useRef: Ev,
+    useRef: Cv,
     useState: function() {
       return xg(jn);
     },
     useDebugValue: Mg,
     useDeferredValue: function(e, a) {
       var s = wt();
-      return lt === null ? Dg(s, e, a) : Mv(
+      return lt === null ? Dg(s, e, a) : Dv(
         s,
         lt.memoizedState,
         e,
@@ -4471,19 +4471,19 @@ Error generating stack: ` + o.message + `
         a
       ];
     },
-    useSyncExternalStore: lv,
-    useId: Ov,
+    useSyncExternalStore: ov,
+    useId: Lv,
     useHostTransitionStatus: Bg,
-    useFormState: Av,
-    useActionState: Av,
+    useFormState: Ev,
+    useActionState: Ev,
     useOptimistic: function(e, a) {
       var s = wt();
-      return lt !== null ? mv(s, lt, e, a) : (s.baseState = e, [e, s.queue.dispatch]);
+      return lt !== null ? fv(s, lt, e, a) : (s.baseState = e, [e, s.queue.dispatch]);
     },
     useMemoCache: wg,
-    useCacheRefresh: Lv
+    useCacheRefresh: Uv
   };
-  Hv.useEffectEvent = Tv;
+  qv.useEffectEvent = wv;
   function Ug(e, a, s, o) {
     a = e.memoizedState, s = s(o, a), s = s == null ? a : T({}, a, s), e.memoizedState = s, e.lanes === 0 && (e.updateQueue.baseState = s);
   }
@@ -4504,10 +4504,10 @@ Error generating stack: ` + o.message + `
       o.tag = 2, a != null && (o.callback = a), a = hs(e, o, s), a !== null && (pa(a, e, s), $o(a, e, s));
     }
   };
-  function qv(e, a, s, o, u, d, p) {
+  function Kv(e, a, s, o, u, d, p) {
     return e = e.stateNode, typeof e.shouldComponentUpdate == "function" ? e.shouldComponentUpdate(o, d, p) : a.prototype && a.prototype.isPureReactComponent ? !Fo(s, o) || !Fo(u, d) : !0;
   }
-  function Kv(e, a, s, o) {
+  function Vv(e, a, s, o) {
     e = a.state, typeof a.componentWillReceiveProps == "function" && a.componentWillReceiveProps(s, o), typeof a.UNSAFE_componentWillReceiveProps == "function" && a.UNSAFE_componentWillReceiveProps(s, o), a.state !== e && Gg.enqueueReplaceState(a, a.state, null);
   }
   function Ei(e, a) {
@@ -4524,13 +4524,13 @@ Error generating stack: ` + o.message + `
     }
     return s;
   }
-  function Vv(e) {
+  function Fv(e) {
     hu(e);
   }
-  function Fv(e) {
+  function Qv(e) {
     console.error(e);
   }
-  function Qv(e) {
+  function Xv(e) {
     hu(e);
   }
   function zu(e, a) {
@@ -4543,7 +4543,7 @@ Error generating stack: ` + o.message + `
       });
     }
   }
-  function Xv(e, a, s) {
+  function Zv(e, a, s) {
     try {
       var o = e.onCaughtError;
       o(s.value, {
@@ -4561,22 +4561,22 @@ Error generating stack: ` + o.message + `
       zu(e, a);
     }, s;
   }
-  function Zv(e) {
+  function Yv(e) {
     return e = ps(e), e.tag = 3, e;
   }
-  function Yv(e, a, s, o) {
+  function Jv(e, a, s, o) {
     var u = s.type.getDerivedStateFromError;
     if (typeof u == "function") {
       var d = o.value;
       e.payload = function() {
         return u(d);
       }, e.callback = function() {
-        Xv(a, s, o);
+        Zv(a, s, o);
       };
     }
     var p = s.stateNode;
     p !== null && typeof p.componentDidCatch == "function" && (e.callback = function() {
-      Xv(a, s, o), typeof u != "function" && (Es === null ? Es = /* @__PURE__ */ new Set([this]) : Es.add(this));
+      Zv(a, s, o), typeof u != "function" && (Es === null ? Es = /* @__PURE__ */ new Set([this]) : Es.add(this));
       var S = o.stack;
       this.componentDidCatch(o.value, {
         componentStack: S !== null ? S : ""
@@ -4625,7 +4625,7 @@ Error generating stack: ` + o.message + `
           return s.flags |= 65536, e = u & -u, s.lanes |= e, e = zg(s.stateNode, o, e), pg(s, e), !1;
         case 1:
           if (a = s.type, d = s.stateNode, (s.flags & 128) === 0 && (typeof a.getDerivedStateFromError == "function" || d !== null && typeof d.componentDidCatch == "function" && (Es === null || !Es.has(d))))
-            return s.flags |= 65536, u &= -u, s.lanes |= u, u = Zv(u), Yv(
+            return s.flags |= 65536, u &= -u, s.lanes |= u, u = Yv(u), Jv(
               u,
               e,
               s,
@@ -4638,14 +4638,14 @@ Error generating stack: ` + o.message + `
   }
   var Pg = Error(l(461)), Rt = !1;
   function Kt(e, a, s, o) {
-    a.child = e === null ? $b(a, null, s, o) : Si(
+    a.child = e === null ? ev(a, null, s, o) : Si(
       a,
       e.child,
       s,
       o
     );
   }
-  function Jv(e, a, s, o, u) {
+  function Wv(e, a, s, o, u) {
     s = s.render;
     var d = a.ref;
     if ("ref" in o) {
@@ -4662,10 +4662,10 @@ Error generating stack: ` + o.message + `
       u
     ), S = Eg(), e !== null && !Rt ? (Cg(e, a, u), Bn(e, a, u)) : (Ze && S && ag(a), a.flags |= 1, Kt(e, a, o, u), a.child);
   }
-  function Wv(e, a, s, o, u) {
+  function _v(e, a, s, o, u) {
     if (e === null) {
       var d = s.type;
-      return typeof d == "function" && !$f(d) && d.defaultProps === void 0 && s.compare === null ? (a.tag = 15, a.type = d, _v(
+      return typeof d == "function" && !$f(d) && d.defaultProps === void 0 && s.compare === null ? (a.tag = 15, a.type = d, $v(
         e,
         a,
         d,
@@ -4687,7 +4687,7 @@ Error generating stack: ` + o.message + `
     }
     return a.flags |= 1, e = Nn(d, o), e.ref = a.ref, e.return = a, a.child = e;
   }
-  function _v(e, a, s, o, u) {
+  function $v(e, a, s, o, u) {
     if (e !== null) {
       var d = e.memoizedProps;
       if (Fo(d, o) && e.ref === a.ref)
@@ -4704,7 +4704,7 @@ Error generating stack: ` + o.message + `
       u
     );
   }
-  function $v(e, a, s, o) {
+  function eS(e, a, s, o) {
     var u = o.children, d = e !== null ? e.memoizedState : null;
     if (e === null && a.stateNode === null && (a.stateNode = {
       _visibility: 1,
@@ -4718,7 +4718,7 @@ Error generating stack: ` + o.message + `
             u = u | o.lanes | o.childLanes, o = o.sibling;
           o = u & ~d;
         } else o = 0, a.child = null;
-        return eS(
+        return tS(
           e,
           a,
           d,
@@ -4730,9 +4730,9 @@ Error generating stack: ` + o.message + `
         a.memoizedState = { baseLanes: 0, cachePool: null }, e !== null && Tu(
           a,
           d !== null ? d.cachePool : null
-        ), d !== null ? av(a, d) : yg(), nv(a);
+        ), d !== null ? nv(a, d) : yg(), sv(a);
       else
-        return o = a.lanes = 536870912, eS(
+        return o = a.lanes = 536870912, tS(
           e,
           a,
           d !== null ? d.baseLanes | s : s,
@@ -4740,7 +4740,7 @@ Error generating stack: ` + o.message + `
           o
         );
     } else
-      d !== null ? (Tu(a, d.cachePool), av(a, d), bs(), a.memoizedState = null) : (e !== null && Tu(a, null), yg(), bs());
+      d !== null ? (Tu(a, d.cachePool), nv(a, d), bs(), a.memoizedState = null) : (e !== null && Tu(a, null), yg(), bs());
     return Kt(e, a, u, s), a.child;
   }
   function lr(e, a) {
@@ -4751,12 +4751,12 @@ Error generating stack: ` + o.message + `
       _transitions: null
     }), a.sibling;
   }
-  function eS(e, a, s, o, u) {
+  function tS(e, a, s, o, u) {
     var d = dg();
     return d = d === null ? null : { parent: Nt._currentValue, pool: d }, a.memoizedState = {
       baseLanes: s,
       cachePool: d
-    }, e !== null && Tu(a, null), yg(), nv(a), e !== null && yl(e, a, o, !0), a.childLanes = u, null;
+    }, e !== null && Tu(a, null), yg(), sv(a), e !== null && yl(e, a, o, !0), a.childLanes = u, null;
   }
   function Pu(e, a) {
     return a = qu(
@@ -4764,7 +4764,7 @@ Error generating stack: ` + o.message + `
       e.mode
     ), a.ref = e.ref, e.child = a, a.return = e, a;
   }
-  function tS(e, a, s) {
+  function aS(e, a, s) {
     return Si(a, e.child, null, s), e = Pu(a, a.pendingProps), e.flags |= 2, Ta(a), a.memoizedState = null, e;
   }
   function vx(e, a, s) {
@@ -4773,7 +4773,7 @@ Error generating stack: ` + o.message + `
       if (Ze) {
         if (o.mode === "hidden")
           return e = Pu(a, o), a.lanes = 536870912, lr(null, e);
-        if (vg(a), (e = ut) ? (e = fA(
+        if (vg(a), (e = ut) ? (e = gA(
           e,
           La
         ), e = e !== null && e.data === "&" ? e : null, e !== null && (a.memoizedState = {
@@ -4781,7 +4781,7 @@ Error generating stack: ` + o.message + `
           treeContext: us !== null ? { id: rn, overflow: cn } : null,
           retryLane: 536870912,
           hydrationErrors: null
-        }, s = Gb(e), s.return = a, a.child = s, Ht = a, ut = null)) : e = null, e === null) throw ms(a);
+        }, s = zb(e), s.return = a, a.child = s, Ht = a, ut = null)) : e = null, e === null) throw ms(a);
         return a.lanes = 536870912, null;
       }
       return Pu(a, o);
@@ -4791,7 +4791,7 @@ Error generating stack: ` + o.message + `
       var p = d.dehydrated;
       if (vg(a), u)
         if (a.flags & 256)
-          a.flags &= -257, a = tS(
+          a.flags &= -257, a = aS(
             e,
             a,
             s
@@ -4802,13 +4802,13 @@ Error generating stack: ` + o.message + `
       else if (Rt || yl(e, a, s, !1), u = (s & e.childLanes) !== 0, Rt || u) {
         if (o = ct, o !== null && (p = sn(o, s), p !== 0 && p !== d.retryLane))
           throw d.retryLane = p, mi(e, p), pa(o, e, p), Pg;
-        Wu(), a = tS(
+        Wu(), a = aS(
           e,
           a,
           s
         );
       } else
-        e = d.treeContext, ut = Ga(p.nextSibling), Ht = a, Ze = !0, ds = null, La = !1, e !== null && Hb(a, e), a = Pu(a, o), a.flags |= 4096;
+        e = d.treeContext, ut = Ga(p.nextSibling), Ht = a, Ze = !0, ds = null, La = !1, e !== null && qb(a, e), a = Pu(a, o), a.flags |= 4096;
       return a;
     }
     return e = Nn(e.child, {
@@ -4836,15 +4836,15 @@ Error generating stack: ` + o.message + `
       u
     ), o = Eg(), e !== null && !Rt ? (Cg(e, a, u), Bn(e, a, u)) : (Ze && o && ag(a), a.flags |= 1, Kt(e, a, s, u), a.child);
   }
-  function aS(e, a, s, o, u, d) {
-    return hi(a), a.updateQueue = null, s = iv(
+  function nS(e, a, s, o, u, d) {
+    return hi(a), a.updateQueue = null, s = lv(
       a,
       o,
       s,
       u
-    ), sv(e), o = Eg(), e !== null && !Rt ? (Cg(e, a, d), Bn(e, a, d)) : (Ze && o && ag(a), a.flags |= 1, Kt(e, a, s, d), a.child);
+    ), iv(e), o = Eg(), e !== null && !Rt ? (Cg(e, a, d), Bn(e, a, d)) : (Ze && o && ag(a), a.flags |= 1, Kt(e, a, s, d), a.child);
   }
-  function nS(e, a, s, o, u) {
+  function sS(e, a, s, o, u) {
     if (hi(a), a.stateNode === null) {
       var d = fl, p = s.contextType;
       typeof p == "object" && p !== null && (d = qt(p)), d = new s(o, d), a.memoizedState = d.state !== null && d.state !== void 0 ? d.state : null, d.updater = Gg, a.stateNode = d, d._reactInternals = a, d = a.stateNode, d.props = o, d.state = a.memoizedState, d.refs = {}, fg(a), p = s.contextType, d.context = typeof p == "object" && p !== null ? qt(p) : fl, d.state = a.memoizedState, p = s.getDerivedStateFromProps, typeof p == "function" && (Ug(
@@ -4860,7 +4860,7 @@ Error generating stack: ` + o.message + `
       var G = d.context, X = s.contextType;
       p = fl, typeof X == "object" && X !== null && (p = qt(X));
       var te = s.getDerivedStateFromProps;
-      X = typeof te == "function" || typeof d.getSnapshotBeforeUpdate == "function", S = a.pendingProps !== S, X || typeof d.UNSAFE_componentWillReceiveProps != "function" && typeof d.componentWillReceiveProps != "function" || (S || G !== p) && Kv(
+      X = typeof te == "function" || typeof d.getSnapshotBeforeUpdate == "function", S = a.pendingProps !== S, X || typeof d.UNSAFE_componentWillReceiveProps != "function" && typeof d.componentWillReceiveProps != "function" || (S || G !== p) && Vv(
         a,
         d,
         o,
@@ -4872,7 +4872,7 @@ Error generating stack: ` + o.message + `
         s,
         te,
         o
-      ), G = a.memoizedState), (k = gs || qv(
+      ), G = a.memoizedState), (k = gs || Kv(
         a,
         s,
         k,
@@ -4882,7 +4882,7 @@ Error generating stack: ` + o.message + `
         p
       )) ? (X || typeof d.UNSAFE_componentWillMount != "function" && typeof d.componentWillMount != "function" || (typeof d.componentWillMount == "function" && d.componentWillMount(), typeof d.UNSAFE_componentWillMount == "function" && d.UNSAFE_componentWillMount()), typeof d.componentDidMount == "function" && (a.flags |= 4194308)) : (typeof d.componentDidMount == "function" && (a.flags |= 4194308), a.memoizedProps = o, a.memoizedState = G), d.props = o, d.state = G, d.context = p, o = k) : (typeof d.componentDidMount == "function" && (a.flags |= 4194308), o = !1);
     } else {
-      d = a.stateNode, gg(e, a), p = a.memoizedProps, X = Ei(s, p), d.props = X, te = a.pendingProps, H = d.context, G = s.contextType, k = fl, typeof G == "object" && G !== null && (k = qt(G)), S = s.getDerivedStateFromProps, (G = typeof S == "function" || typeof d.getSnapshotBeforeUpdate == "function") || typeof d.UNSAFE_componentWillReceiveProps != "function" && typeof d.componentWillReceiveProps != "function" || (p !== te || H !== k) && Kv(
+      d = a.stateNode, gg(e, a), p = a.memoizedProps, X = Ei(s, p), d.props = X, te = a.pendingProps, H = d.context, G = s.contextType, k = fl, typeof G == "object" && G !== null && (k = qt(G)), S = s.getDerivedStateFromProps, (G = typeof S == "function" || typeof d.getSnapshotBeforeUpdate == "function") || typeof d.UNSAFE_componentWillReceiveProps != "function" && typeof d.componentWillReceiveProps != "function" || (p !== te || H !== k) && Vv(
         a,
         d,
         o,
@@ -4894,7 +4894,7 @@ Error generating stack: ` + o.message + `
         s,
         S,
         o
-      ), V = a.memoizedState), (X = gs || qv(
+      ), V = a.memoizedState), (X = gs || Kv(
         a,
         s,
         X,
@@ -4924,7 +4924,7 @@ Error generating stack: ` + o.message + `
       u
     ), e;
   }
-  function sS(e, a, s, o) {
+  function iS(e, a, s, o) {
     return gi(), a.flags |= 256, Kt(e, a, s, o), a.child;
   }
   var qg = {
@@ -4934,16 +4934,16 @@ Error generating stack: ` + o.message + `
     hydrationErrors: null
   };
   function Kg(e) {
-    return { baseLanes: e, cachePool: Xb() };
+    return { baseLanes: e, cachePool: Zb() };
   }
   function Vg(e, a, s) {
     return e = e !== null ? e.childLanes & ~s : 0, a && (e |= ka), e;
   }
-  function iS(e, a, s) {
+  function lS(e, a, s) {
     var o = a.pendingProps, u = !1, d = (a.flags & 128) !== 0, p;
     if ((p = d) || (p = e !== null && e.memoizedState === null ? !1 : (Tt.current & 2) !== 0), p && (u = !0, a.flags &= -129), p = (a.flags & 32) !== 0, a.flags &= -33, e === null) {
       if (Ze) {
-        if (u ? ys(a) : bs(), (e = ut) ? (e = fA(
+        if (u ? ys(a) : bs(), (e = ut) ? (e = gA(
           e,
           La
         ), e = e !== null && e.data !== "&" ? e : null, e !== null && (a.memoizedState = {
@@ -4951,7 +4951,7 @@ Error generating stack: ` + o.message + `
           treeContext: us !== null ? { id: rn, overflow: cn } : null,
           retryLane: 536870912,
           hydrationErrors: null
-        }, s = Gb(e), s.return = a, a.child = s, Ht = a, ut = null)) : e = null, e === null) throw ms(a);
+        }, s = zb(e), s.return = a, a.child = s, Ht = a, ut = null)) : e = null, e === null) throw ms(a);
         return kp(e) ? a.lanes = 32 : a.lanes = 536870912, null;
       }
       var S = o.children;
@@ -5012,7 +5012,7 @@ Error generating stack: ` + o.message + `
       } else
         wp(S) ? (a.flags |= 192, a.child = e.child, a = null) : (e = k.treeContext, ut = Ga(
           S.nextSibling
-        ), Ht = a, Ze = !0, ds = null, La = !1, e !== null && Hb(a, e), a = Fg(
+        ), Ht = a, Ze = !0, ds = null, La = !1, e !== null && qb(a, e), a = Fg(
           a,
           o.children
         ), a.flags |= 4096);
@@ -5029,7 +5029,7 @@ Error generating stack: ` + o.message + `
       u,
       s,
       null
-    ), S.flags |= 2), S.return = a, o.return = a, o.sibling = S, a.child = o, lr(null, o), o = a.child, S = e.child.memoizedState, S === null ? S = Kg(s) : (u = S.cachePool, u !== null ? (k = Nt._currentValue, u = u.parent !== k ? { parent: k, pool: k } : u) : u = Xb(), S = {
+    ), S.flags |= 2), S.return = a, o.return = a, o.sibling = S, a.child = o, lr(null, o), o = a.child, S = e.child.memoizedState, S === null ? S = Kg(s) : (u = S.cachePool, u !== null ? (k = Nt._currentValue, u = u.parent !== k ? { parent: k, pool: k } : u) : u = Zb(), S = {
       baseLanes: S.baseLanes | s,
       cachePool: u
     }), o.memoizedState = S, o.childLanes = Vg(
@@ -5056,7 +5056,7 @@ Error generating stack: ` + o.message + `
       a.pendingProps.children
     ), e.flags |= 2, a.memoizedState = null, e;
   }
-  function lS(e, a, s) {
+  function oS(e, a, s) {
     e.lanes |= a;
     var o = e.alternate;
     o !== null && (o.lanes |= a), og(e.return, a, s);
@@ -5073,16 +5073,16 @@ Error generating stack: ` + o.message + `
       treeForkCount: d
     } : (p.isBackwards = a, p.rendering = null, p.renderingStartTime = 0, p.last = o, p.tail = s, p.tailMode = u, p.treeForkCount = d);
   }
-  function oS(e, a, s) {
+  function rS(e, a, s) {
     var o = a.pendingProps, u = o.revealOrder, d = o.tail;
     o = o.children;
     var p = Tt.current, S = (p & 2) !== 0;
     if (S ? (p = p & 1 | 2, a.flags |= 128) : p &= 1, Y(Tt, p), Kt(e, a, o, s), o = Ze ? Xo : 0, !S && e !== null && (e.flags & 128) !== 0)
       e: for (e = a.child; e !== null; ) {
         if (e.tag === 13)
-          e.memoizedState !== null && lS(e, s, a);
+          e.memoizedState !== null && oS(e, s, a);
         else if (e.tag === 19)
-          lS(e, s, a);
+          oS(e, s, a);
         else if (e.child !== null) {
           e.child.return = e, e = e.child;
           continue;
@@ -5190,7 +5190,7 @@ Error generating stack: ` + o.message + `
       case 13:
         var o = a.memoizedState;
         if (o !== null)
-          return o.dehydrated !== null ? (ys(a), a.flags |= 128, null) : (s & a.child.childLanes) !== 0 ? iS(e, a, s) : (ys(a), e = Bn(
+          return o.dehydrated !== null ? (ys(a), a.flags |= 128, null) : (s & a.child.childLanes) !== 0 ? lS(e, a, s) : (ys(a), e = Bn(
             e,
             a,
             s
@@ -5206,7 +5206,7 @@ Error generating stack: ` + o.message + `
           !1
         ), o = (s & a.childLanes) !== 0), u) {
           if (o)
-            return oS(
+            return rS(
               e,
               a,
               s
@@ -5216,7 +5216,7 @@ Error generating stack: ` + o.message + `
         if (u = a.memoizedState, u !== null && (u.rendering = null, u.tail = null, u.lastEffect = null), Y(Tt, Tt.current), o) break;
         return null;
       case 22:
-        return a.lanes = 0, $v(
+        return a.lanes = 0, eS(
           e,
           a,
           s,
@@ -5227,7 +5227,7 @@ Error generating stack: ` + o.message + `
     }
     return Bn(e, a, s);
   }
-  function rS(e, a, s) {
+  function cS(e, a, s) {
     if (e !== null)
       if (e.memoizedProps !== a.pendingProps)
         Rt = !0;
@@ -5241,13 +5241,13 @@ Error generating stack: ` + o.message + `
         Rt = (e.flags & 131072) !== 0;
       }
     else
-      Rt = !1, Ze && (a.flags & 1048576) !== 0 && Pb(a, Xo, a.index);
+      Rt = !1, Ze && (a.flags & 1048576) !== 0 && Hb(a, Xo, a.index);
     switch (a.lanes = 0, a.tag) {
       case 16:
         e: {
           var o = a.pendingProps;
           if (e = bi(a.elementType), a.type = e, typeof e == "function")
-            $f(e) ? (o = Ei(e, o), a.tag = 1, a = nS(
+            $f(e) ? (o = Ei(e, o), a.tag = 1, a = sS(
               null,
               a,
               e,
@@ -5264,7 +5264,7 @@ Error generating stack: ` + o.message + `
             if (e != null) {
               var u = e.$$typeof;
               if (u === oe) {
-                a.tag = 11, a = Jv(
+                a.tag = 11, a = Wv(
                   null,
                   a,
                   e,
@@ -5273,7 +5273,7 @@ Error generating stack: ` + o.message + `
                 );
                 break e;
               } else if (u === B) {
-                a.tag = 14, a = Wv(
+                a.tag = 14, a = _v(
                   null,
                   a,
                   e,
@@ -5299,7 +5299,7 @@ Error generating stack: ` + o.message + `
         return o = a.type, u = Ei(
           o,
           a.pendingProps
-        ), nS(
+        ), sS(
           e,
           a,
           o,
@@ -5327,7 +5327,7 @@ Error generating stack: ` + o.message + `
               isDehydrated: !1,
               cache: p.cache
             }, a.updateQueue.baseState = d, a.memoizedState = d, a.flags & 256) {
-              a = sS(
+              a = iS(
                 e,
                 a,
                 o,
@@ -5338,7 +5338,7 @@ Error generating stack: ` + o.message + `
               u = ja(
                 Error(l(424)),
                 a
-              ), Zo(u), a = sS(
+              ), Zo(u), a = iS(
                 e,
                 a,
                 o,
@@ -5353,7 +5353,7 @@ Error generating stack: ` + o.message + `
                 default:
                   e = e.nodeName === "HTML" ? e.ownerDocument.body : e;
               }
-              for (ut = Ga(e.firstChild), Ht = a, Ze = !0, ds = null, La = !0, s = $b(
+              for (ut = Ga(e.firstChild), Ht = a, Ze = !0, ds = null, La = !0, s = ev(
                 a,
                 null,
                 o,
@@ -5376,21 +5376,21 @@ Error generating stack: ` + o.message + `
         }
         return a;
       case 26:
-        return Hu(e, a), e === null ? (s = vA(
+        return Hu(e, a), e === null ? (s = SA(
           a.type,
           null,
           a.pendingProps,
           null
         )) ? a.memoizedState = s : Ze || (s = a.type, e = a.pendingProps, o = sd(
           Se.current
-        ).createElement(s), o[bt] = a, o[jt] = e, Vt(o, s, e), Ct(o), a.stateNode = o) : a.memoizedState = vA(
+        ).createElement(s), o[bt] = a, o[jt] = e, Vt(o, s, e), Ct(o), a.stateNode = o) : a.memoizedState = SA(
           a.type,
           e.memoizedProps,
           a.pendingProps,
           e.memoizedState
         ), null;
       case 27:
-        return je(a), e === null && Ze && (o = a.stateNode = hA(
+        return je(a), e === null && Ze && (o = a.stateNode = yA(
           a.type,
           a.pendingProps,
           Se.current
@@ -5421,7 +5421,7 @@ Error generating stack: ` + o.message + `
           La
         ), s !== null ? (a.stateNode = s, Ht = a, ut = null, e = !0) : e = !1), e || ms(a)), null;
       case 13:
-        return iS(e, a, s);
+        return lS(e, a, s);
       case 4:
         return Ne(
           a,
@@ -5433,7 +5433,7 @@ Error generating stack: ` + o.message + `
           s
         ) : Kt(e, a, o, s), a.child;
       case 11:
-        return Jv(
+        return Wv(
           e,
           a,
           a.type,
@@ -5466,14 +5466,6 @@ Error generating stack: ` + o.message + `
       case 9:
         return u = a.type._context, o = a.pendingProps.children, hi(a), u = qt(u), o = o(u), a.flags |= 1, Kt(e, a, o, s), a.child;
       case 14:
-        return Wv(
-          e,
-          a,
-          a.type,
-          a.pendingProps,
-          s
-        );
-      case 15:
         return _v(
           e,
           a,
@@ -5481,12 +5473,20 @@ Error generating stack: ` + o.message + `
           a.pendingProps,
           s
         );
+      case 15:
+        return $v(
+          e,
+          a,
+          a.type,
+          a.pendingProps,
+          s
+        );
       case 19:
-        return oS(e, a, s);
+        return rS(e, a, s);
       case 31:
         return vx(e, a, s);
       case 22:
-        return $v(
+        return eS(
           e,
           a,
           s,
@@ -5516,16 +5516,16 @@ Error generating stack: ` + o.message + `
     if ((a = (e.mode & 32) !== 0) && (a = !1), a) {
       if (e.flags |= 16777216, (u & 335544128) === u)
         if (e.stateNode.complete) e.flags |= 8192;
-        else if (OS()) e.flags |= 8192;
+        else if (LS()) e.flags |= 8192;
         else
           throw vi = ku, mg;
     } else e.flags &= -16777217;
   }
-  function cS(e, a) {
+  function uS(e, a) {
     if (a.type !== "stylesheet" || (a.state.loading & 4) !== 0)
       e.flags &= -16777217;
-    else if (e.flags |= 16777216, !TA(a))
-      if (OS()) e.flags |= 8192;
+    else if (e.flags |= 16777216, !wA(a))
+      if (LS()) e.flags |= 8192;
       else
         throw vi = ku, mg;
   }
@@ -5577,13 +5577,13 @@ Error generating stack: ` + o.message + `
         return s = a.stateNode, o = null, e !== null && (o = e.memoizedState.cache), a.memoizedState.cache !== o && (a.flags |= 2048), Mn(Nt), qe(), s.pendingContext && (s.context = s.pendingContext, s.pendingContext = null), (e === null || e.child === null) && (hl(a) ? On(a) : e === null || e.memoizedState.isDehydrated && (a.flags & 256) === 0 || (a.flags |= 1024, ig())), dt(a), null;
       case 26:
         var u = a.type, d = a.memoizedState;
-        return e === null ? (On(a), d !== null ? (dt(a), cS(a, d)) : (dt(a), Yg(
+        return e === null ? (On(a), d !== null ? (dt(a), uS(a, d)) : (dt(a), Yg(
           a,
           u,
           null,
           o,
           s
-        ))) : d ? d !== e.memoizedState ? (On(a), dt(a), cS(a, d)) : (dt(a), a.flags &= -16777217) : (e = e.memoizedProps, e !== o && On(a), dt(a), Yg(
+        ))) : d ? d !== e.memoizedState ? (On(a), dt(a), uS(a, d)) : (dt(a), a.flags &= -16777217) : (e = e.memoizedProps, e !== o && On(a), dt(a), Yg(
           a,
           u,
           e,
@@ -5599,7 +5599,7 @@ Error generating stack: ` + o.message + `
               throw Error(l(166));
             return dt(a), null;
           }
-          e = ie.current, hl(a) ? qb(a) : (e = hA(u, o, s), a.stateNode = e, On(a));
+          e = ie.current, hl(a) ? Kb(a) : (e = yA(u, o, s), a.stateNode = e, On(a));
         }
         return dt(a), null;
       case 5:
@@ -5612,7 +5612,7 @@ Error generating stack: ` + o.message + `
             return dt(a), null;
           }
           if (d = ie.current, hl(a))
-            qb(a);
+            Kb(a);
           else {
             var p = sd(
               Se.current
@@ -5711,7 +5711,7 @@ Error generating stack: ` + o.message + `
                 case 5:
                   o = u.memoizedProps;
               }
-            e[bt] = a, e = !!(e.nodeValue === s || o !== null && o.suppressHydrationWarning === !0 || iA(e.nodeValue, s)), e || ms(a, !0);
+            e[bt] = a, e = !!(e.nodeValue === s || o !== null && o.suppressHydrationWarning === !0 || lA(e.nodeValue, s)), e || ms(a, !0);
           } else
             e = sd(e).createTextNode(
               o
@@ -5765,7 +5765,7 @@ Error generating stack: ` + o.message + `
               for (e = a.child; e !== null; ) {
                 if (d = Ru(e), d !== null) {
                   for (a.flags |= 128, or(o, !1), e = d.updateQueue, a.updateQueue = e, Ku(a, e), a.subtreeFlags = 0, e = s, s = a.child; s !== null; )
-                    Ub(s, e), s = s.sibling;
+                    Gb(s, e), s = s.sibling;
                   return Y(
                     Tt,
                     Tt.current & 1 | 2
@@ -5841,7 +5841,7 @@ Error generating stack: ` + o.message + `
         return null;
     }
   }
-  function uS(e, a) {
+  function dS(e, a) {
     switch (ng(a), a.tag) {
       case 3:
         Mn(Nt), qe();
@@ -5923,18 +5923,18 @@ Error generating stack: ` + o.message + `
       st(a, a.return, X);
     }
   }
-  function dS(e) {
+  function mS(e) {
     var a = e.updateQueue;
     if (a !== null) {
       var s = e.stateNode;
       try {
-        tv(a, s);
+        av(a, s);
       } catch (o) {
         st(e, e.return, o);
       }
     }
   }
-  function mS(e, a, s) {
+  function fS(e, a, s) {
     s.props = Ei(
       e.type,
       e.memoizedProps
@@ -5986,7 +5986,7 @@ Error generating stack: ` + o.message + `
         }
       else s.current = null;
   }
-  function fS(e) {
+  function gS(e) {
     var a = e.type, s = e.memoizedProps, o = e.stateNode;
     try {
       e: switch (a) {
@@ -6011,13 +6011,13 @@ Error generating stack: ` + o.message + `
       st(e, e.return, u);
     }
   }
-  function gS(e) {
+  function pS(e) {
     return e.tag === 5 || e.tag === 3 || e.tag === 26 || e.tag === 27 && ks(e.type) || e.tag === 4;
   }
   function Wg(e) {
     e: for (; ; ) {
       for (; e.sibling === null; ) {
-        if (e.return === null || gS(e.return)) return null;
+        if (e.return === null || pS(e.return)) return null;
         e = e.return;
       }
       for (e.sibling.return = e.return, e = e.sibling; e.tag !== 5 && e.tag !== 6 && e.tag !== 18; ) {
@@ -6043,7 +6043,7 @@ Error generating stack: ` + o.message + `
       for (Vu(e, a, s), e = e.sibling; e !== null; )
         Vu(e, a, s), e = e.sibling;
   }
-  function pS(e) {
+  function hS(e) {
     var a = e.stateNode, s = e.memoizedProps;
     try {
       for (var o = e.type, u = a.attributes; u.length; )
@@ -6053,9 +6053,9 @@ Error generating stack: ` + o.message + `
       st(e, e.return, d);
     }
   }
-  var Ln = !1, Mt = !1, $g = !1, hS = typeof WeakSet == "function" ? WeakSet : Set, Ut = null;
+  var Ln = !1, Mt = !1, $g = !1, yS = typeof WeakSet == "function" ? WeakSet : Set, Ut = null;
   function Cx(e, a) {
-    if (e = e.containerInfo, Sp = dd, e = Nb(e), Qf(e)) {
+    if (e = e.containerInfo, Sp = dd, e = Ib(e), Qf(e)) {
       if ("selectionStart" in e)
         var s = {
           start: e.selectionStart,
@@ -6159,7 +6159,7 @@ Error generating stack: ` + o.message + `
           Ut = a.return;
         }
   }
-  function yS(e, a, s) {
+  function bS(e, a, s) {
     var o = s.flags;
     switch (s.tag) {
       case 0:
@@ -6195,7 +6195,7 @@ Error generating stack: ` + o.message + `
               );
             }
           }
-        o & 64 && dS(s), o & 512 && cr(s, s.return);
+        o & 64 && mS(s), o & 512 && cr(s, s.return);
         break;
       case 3:
         if (Gn(e, s), o & 64 && (e = s.updateQueue, e !== null)) {
@@ -6209,26 +6209,26 @@ Error generating stack: ` + o.message + `
                 a = s.child.stateNode;
             }
           try {
-            tv(e, a);
+            av(e, a);
           } catch (p) {
             st(s, s.return, p);
           }
         }
         break;
       case 27:
-        a === null && o & 4 && pS(s);
+        a === null && o & 4 && hS(s);
       case 26:
       case 5:
-        Gn(e, s), a === null && o & 4 && fS(s), o & 512 && cr(s, s.return);
+        Gn(e, s), a === null && o & 4 && gS(s), o & 512 && cr(s, s.return);
         break;
       case 12:
         Gn(e, s);
         break;
       case 31:
-        Gn(e, s), o & 4 && SS(e, s);
+        Gn(e, s), o & 4 && AS(e, s);
         break;
       case 13:
-        Gn(e, s), o & 4 && AS(e, s), o & 64 && (e = s.memoizedState, e !== null && (e = e.dehydrated, e !== null && (s = Dx.bind(
+        Gn(e, s), o & 4 && ES(e, s), o & 64 && (e = s.memoizedState, e !== null && (e = e.dehydrated, e !== null && (s = Dx.bind(
           null,
           s
         ), _x(e, s))));
@@ -6250,16 +6250,16 @@ Error generating stack: ` + o.message + `
         Gn(e, s);
     }
   }
-  function bS(e) {
+  function vS(e) {
     var a = e.alternate;
-    a !== null && (e.alternate = null, bS(a)), e.child = null, e.deletions = null, e.sibling = null, e.tag === 5 && (a = e.stateNode, a !== null && pt(a)), e.stateNode = null, e.return = null, e.dependencies = null, e.memoizedProps = null, e.memoizedState = null, e.pendingProps = null, e.stateNode = null, e.updateQueue = null;
+    a !== null && (e.alternate = null, vS(a)), e.child = null, e.deletions = null, e.sibling = null, e.tag === 5 && (a = e.stateNode, a !== null && pt(a)), e.stateNode = null, e.return = null, e.dependencies = null, e.memoizedProps = null, e.memoizedState = null, e.pendingProps = null, e.stateNode = null, e.updateQueue = null;
   }
   var ht = null, da = !1;
   function Un(e, a, s) {
     for (s = s.child; s !== null; )
-      vS(e, a, s), s = s.sibling;
+      SS(e, a, s), s = s.sibling;
   }
-  function vS(e, a, s) {
+  function SS(e, a, s) {
     if (ft && typeof ft.onCommitFiberUnmount == "function")
       try {
         ft.onCommitFiberUnmount(Pt, s);
@@ -6312,10 +6312,10 @@ Error generating stack: ` + o.message + `
             }
         break;
       case 18:
-        ht !== null && (da ? (e = ht, dA(
+        ht !== null && (da ? (e = ht, mA(
           e.nodeType === 9 ? e.body : e.nodeName === "HTML" ? e.ownerDocument.body : e,
           s.stateNode
-        ), Ul(e)) : dA(ht, s.stateNode));
+        ), Ul(e)) : mA(ht, s.stateNode));
         break;
       case 4:
         o = ht, u = da, ht = s.stateNode.containerInfo, da = !0, Un(
@@ -6335,7 +6335,7 @@ Error generating stack: ` + o.message + `
         );
         break;
       case 1:
-        Mt || (un(s, a), o = s.stateNode, typeof o.componentWillUnmount == "function" && mS(
+        Mt || (un(s, a), o = s.stateNode, typeof o.componentWillUnmount == "function" && fS(
           s,
           a,
           o
@@ -6367,7 +6367,7 @@ Error generating stack: ` + o.message + `
         );
     }
   }
-  function SS(e, a) {
+  function AS(e, a) {
     if (a.memoizedState === null && (e = a.alternate, e !== null && (e = e.memoizedState, e !== null))) {
       e = e.dehydrated;
       try {
@@ -6377,7 +6377,7 @@ Error generating stack: ` + o.message + `
       }
     }
   }
-  function AS(e, a) {
+  function ES(e, a) {
     if (a.memoizedState === null && (e = a.alternate, e !== null && (e = e.memoizedState, e !== null && (e = e.dehydrated, e !== null))))
       try {
         Ul(e);
@@ -6391,9 +6391,9 @@ Error generating stack: ` + o.message + `
       case 13:
       case 19:
         var a = e.stateNode;
-        return a === null && (a = e.stateNode = new hS()), a;
+        return a === null && (a = e.stateNode = new yS()), a;
       case 22:
-        return e = e.stateNode, a = e._retryCache, a === null && (a = e._retryCache = new hS()), a;
+        return e = e.stateNode, a = e._retryCache, a === null && (a = e._retryCache = new yS()), a;
       default:
         throw Error(l(435, e.tag));
     }
@@ -6432,14 +6432,14 @@ Error generating stack: ` + o.message + `
           S = S.return;
         }
         if (ht === null) throw Error(l(160));
-        vS(d, p, u), ht = null, da = !1, d = u.alternate, d !== null && (d.return = null), u.return = null;
+        SS(d, p, u), ht = null, da = !1, d = u.alternate, d !== null && (d.return = null), u.return = null;
       }
     if (a.subtreeFlags & 13886)
       for (a = a.child; a !== null; )
-        ES(a, e), a = a.sibling;
+        CS(a, e), a = a.sibling;
   }
   var en = null;
-  function ES(e, a) {
+  function CS(e, a) {
     var s = e.alternate, o = e.flags;
     switch (e.tag) {
       case 0:
@@ -6468,7 +6468,7 @@ Error generating stack: ` + o.message + `
                       )), Vt(d, o, s), d[bt] = e, Ct(d), o = d;
                       break e;
                     case "link":
-                      var p = EA(
+                      var p = CA(
                         "link",
                         "href",
                         u
@@ -6483,7 +6483,7 @@ Error generating stack: ` + o.message + `
                       d = u.createElement(o), Vt(d, o, s), u.head.appendChild(d);
                       break;
                     case "meta":
-                      if (p = EA(
+                      if (p = CA(
                         "meta",
                         "content",
                         u
@@ -6503,23 +6503,23 @@ Error generating stack: ` + o.message + `
                 }
                 e.stateNode = o;
               } else
-                CA(
+                TA(
                   u,
                   e.type,
                   e.stateNode
                 );
             else
-              e.stateNode = AA(
+              e.stateNode = EA(
                 u,
                 o,
                 e.memoizedProps
               );
           else
-            d !== o ? (d === null ? s.stateNode !== null && (s = s.stateNode, s.parentNode.removeChild(s)) : d.count--, o === null ? CA(
+            d !== o ? (d === null ? s.stateNode !== null && (s = s.stateNode, s.parentNode.removeChild(s)) : d.count--, o === null ? TA(
               u,
               e.type,
               e.stateNode
-            ) : AA(
+            ) : EA(
               u,
               o,
               e.memoizedProps
@@ -6571,7 +6571,7 @@ Error generating stack: ` + o.message + `
           } catch (be) {
             st(e, e.return, be);
           }
-        $g && ($g = !1, CS(e));
+        $g && ($g = !1, TS(e));
         break;
       case 4:
         o = en, en = id(
@@ -6621,7 +6621,7 @@ Error generating stack: ` + o.message + `
                 k = a;
                 try {
                   var V = k.stateNode;
-                  u ? mA(V, !0) : mA(k.stateNode, !1);
+                  u ? fA(V, !0) : fA(k.stateNode, !1);
                 } catch (be) {
                   st(k, k.return, be);
                 }
@@ -6655,7 +6655,7 @@ Error generating stack: ` + o.message + `
     if (a & 2) {
       try {
         for (var s, o = e.return; o !== null; ) {
-          if (gS(o)) {
+          if (pS(o)) {
             s = o;
             break;
           }
@@ -6692,17 +6692,17 @@ Error generating stack: ` + o.message + `
     }
     a & 4096 && (e.flags &= -4097);
   }
-  function CS(e) {
+  function TS(e) {
     if (e.subtreeFlags & 1024)
       for (e = e.child; e !== null; ) {
         var a = e;
-        CS(a), a.tag === 5 && a.flags & 1024 && a.stateNode.reset(), e = e.sibling;
+        TS(a), a.tag === 5 && a.flags & 1024 && a.stateNode.reset(), e = e.sibling;
       }
   }
   function Gn(e, a) {
     if (a.subtreeFlags & 8772)
       for (a = a.child; a !== null; )
-        yS(e, a.alternate, a), a = a.sibling;
+        bS(e, a.alternate, a), a = a.sibling;
   }
   function Ci(e) {
     for (e = e.child; e !== null; ) {
@@ -6717,7 +6717,7 @@ Error generating stack: ` + o.message + `
         case 1:
           un(a, a.return);
           var s = a.stateNode;
-          typeof s.componentWillUnmount == "function" && mS(
+          typeof s.componentWillUnmount == "function" && fS(
             a,
             a.return,
             s
@@ -6771,22 +6771,22 @@ Error generating stack: ` + o.message + `
               var k = u.shared.hiddenCallbacks;
               if (k !== null)
                 for (u.shared.hiddenCallbacks = null, u = 0; u < k.length; u++)
-                  ev(k[u], S);
+                  tv(k[u], S);
             } catch (G) {
               st(o, o.return, G);
             }
           }
-          s && p & 64 && dS(d), cr(d, d.return);
+          s && p & 64 && mS(d), cr(d, d.return);
           break;
         case 27:
-          pS(d);
+          hS(d);
         case 26:
         case 5:
           zn(
             u,
             d,
             s
-          ), s && o === null && p & 4 && fS(d), cr(d, d.return);
+          ), s && o === null && p & 4 && gS(d), cr(d, d.return);
           break;
         case 12:
           zn(
@@ -6800,14 +6800,14 @@ Error generating stack: ` + o.message + `
             u,
             d,
             s
-          ), s && p & 4 && SS(u, d);
+          ), s && p & 4 && AS(u, d);
           break;
         case 13:
           zn(
             u,
             d,
             s
-          ), s && p & 4 && AS(u, d);
+          ), s && p & 4 && ES(u, d);
           break;
         case 22:
           d.memoizedState === null && zn(
@@ -6838,14 +6838,14 @@ Error generating stack: ` + o.message + `
   function tn(e, a, s, o) {
     if (a.subtreeFlags & 10256)
       for (a = a.child; a !== null; )
-        TS(
+        wS(
           e,
           a,
           s,
           o
         ), a = a.sibling;
   }
-  function TS(e, a, s, o) {
+  function wS(e, a, s, o) {
     var u = a.flags;
     switch (a.tag) {
       case 0:
@@ -7039,13 +7039,13 @@ Error generating stack: ` + o.message + `
   function xl(e, a, s) {
     if (e.subtreeFlags & dr)
       for (e = e.child; e !== null; )
-        wS(
+        kS(
           e,
           a,
           s
         ), e = e.sibling;
   }
-  function wS(e, a, s) {
+  function kS(e, a, s) {
     switch (e.tag) {
       case 26:
         xl(
@@ -7094,7 +7094,7 @@ Error generating stack: ` + o.message + `
         );
     }
   }
-  function kS(e) {
+  function xS(e) {
     var a = e.alternate;
     if (a !== null && (e = a.child, e !== null)) {
       a.child = null;
@@ -7109,18 +7109,18 @@ Error generating stack: ` + o.message + `
       if (a !== null)
         for (var s = 0; s < a.length; s++) {
           var o = a[s];
-          Ut = o, NS(
+          Ut = o, IS(
             o,
             e
           );
         }
-      kS(e);
+      xS(e);
     }
     if (e.subtreeFlags & 10256)
       for (e = e.child; e !== null; )
-        xS(e), e = e.sibling;
+        NS(e), e = e.sibling;
   }
-  function xS(e) {
+  function NS(e) {
     switch (e.tag) {
       case 0:
       case 11:
@@ -7147,12 +7147,12 @@ Error generating stack: ` + o.message + `
       if (a !== null)
         for (var s = 0; s < a.length; s++) {
           var o = a[s];
-          Ut = o, NS(
+          Ut = o, IS(
             o,
             e
           );
         }
-      kS(e);
+      xS(e);
     }
     for (e = e.child; e !== null; ) {
       switch (a = e, a.tag) {
@@ -7170,7 +7170,7 @@ Error generating stack: ` + o.message + `
       e = e.sibling;
     }
   }
-  function NS(e, a) {
+  function IS(e, a) {
     for (; Ut !== null; ) {
       var s = Ut;
       switch (s.tag) {
@@ -7194,7 +7194,7 @@ Error generating stack: ` + o.message + `
         e: for (s = e; Ut !== null; ) {
           o = Ut;
           var u = o.sibling, d = o.return;
-          if (bS(o), o === s) {
+          if (vS(o), o === s) {
             Ut = null;
             break e;
           }
@@ -7214,11 +7214,11 @@ Error generating stack: ` + o.message + `
     cacheSignal: function() {
       return qt(Nt).controller.signal;
     }
-  }, kx = typeof WeakMap == "function" ? WeakMap : Map, _e = 0, ct = null, Ke = null, Qe = 0, nt = 0, wa = null, Ss = !1, Nl = !1, ap = !1, Pn = 0, At = 0, As = 0, Ti = 0, np = 0, ka = 0, Il = 0, fr = null, ga = null, sp = !1, Xu = 0, IS = 0, Zu = 1 / 0, Yu = null, Es = null, Bt = 0, Cs = null, Rl = null, Hn = 0, ip = 0, lp = null, RS = null, gr = 0, op = null;
+  }, kx = typeof WeakMap == "function" ? WeakMap : Map, _e = 0, ct = null, Ke = null, Qe = 0, nt = 0, wa = null, Ss = !1, Nl = !1, ap = !1, Pn = 0, At = 0, As = 0, Ti = 0, np = 0, ka = 0, Il = 0, fr = null, ga = null, sp = !1, Xu = 0, RS = 0, Zu = 1 / 0, Yu = null, Es = null, Bt = 0, Cs = null, Rl = null, Hn = 0, ip = 0, lp = null, MS = null, gr = 0, op = null;
   function xa() {
     return (_e & 2) !== 0 && Qe !== 0 ? Qe & -Qe : K.T !== null ? fp() : si();
   }
-  function MS() {
+  function DS() {
     if (ka === 0)
       if ((Qe & 536870912) === 0 || Ze) {
         var e = as;
@@ -7239,7 +7239,7 @@ Error generating stack: ` + o.message + `
       !1
     )), dn(e));
   }
-  function DS(e, a, s) {
+  function jS(e, a, s) {
     if ((_e & 6) !== 0) throw Error(l(327));
     var o = !s && (a & 127) === 0 && (a & e.expiredLanes) === 0 || En(e, a), u = o ? Ix(e, a) : cp(e, a, !0), d = o;
     do {
@@ -7316,8 +7316,8 @@ Error generating stack: ` + o.message + `
               ka,
               !Ss
             ), An(o, 0, !0) !== 0) break e;
-            Hn = a, o.timeoutHandle = cA(
-              jS.bind(
+            Hn = a, o.timeoutHandle = uA(
+              BS.bind(
                 null,
                 o,
                 s,
@@ -7338,7 +7338,7 @@ Error generating stack: ` + o.message + `
             );
             break e;
           }
-          jS(
+          BS(
             o,
             s,
             ga,
@@ -7360,7 +7360,7 @@ Error generating stack: ` + o.message + `
     } while (!0);
     dn(e);
   }
-  function jS(e, a, s, o, u, d, p, S, k, G, X, te, H, V) {
+  function BS(e, a, s, o, u, d, p, S, k, G, X, te, H, V) {
     if (e.timeoutHandle = -1, te = a.subtreeFlags, te & 8192 || (te & 16785408) === 16785408) {
       te = {
         stylesheets: null,
@@ -7371,18 +7371,18 @@ Error generating stack: ` + o.message + `
         waitingForImages: !0,
         waitingForViewTransition: !1,
         unsuspend: Wa
-      }, wS(
+      }, kS(
         a,
         d,
         te
       );
-      var be = (d & 62914560) === d ? Xu - z() : (d & 4194048) === d ? IS - z() : 0;
+      var be = (d & 62914560) === d ? Xu - z() : (d & 4194048) === d ? RS - z() : 0;
       if (be = dN(
         te,
         be
       ), be !== null) {
         Hn = d, e.cancelPendingCommit = be(
-          HS.bind(
+          qS.bind(
             null,
             e,
             a,
@@ -7403,7 +7403,7 @@ Error generating stack: ` + o.message + `
         return;
       }
     }
-    HS(
+    qS(
       e,
       a,
       d,
@@ -7459,7 +7459,7 @@ Error generating stack: ` + o.message + `
       else
         e = Ke, Rn = pi = null, Tg(e), Al = null, Wo = 0, e = Ke;
       for (; e !== null; )
-        uS(e.alternate, e), e = e.return;
+        dS(e.alternate, e), e = e.return;
       Ke = null;
     }
   }
@@ -7474,21 +7474,21 @@ Error generating stack: ` + o.message + `
       }
     return Pn = a, yu(), s;
   }
-  function BS(e, a) {
-    Ue = null, K.H = ir, a === Sl || a === wu ? (a = Jb(), nt = 3) : a === mg ? (a = Jb(), nt = 4) : nt = a === Pg ? 8 : a !== null && typeof a == "object" && typeof a.then == "function" ? 6 : 1, wa = a, Ke === null && (At = 1, zu(
+  function OS(e, a) {
+    Ue = null, K.H = ir, a === Sl || a === wu ? (a = Wb(), nt = 3) : a === mg ? (a = Wb(), nt = 4) : nt = a === Pg ? 8 : a !== null && typeof a == "object" && typeof a.then == "function" ? 6 : 1, wa = a, Ke === null && (At = 1, zu(
       e,
       ja(a, e.current)
     ));
   }
-  function OS() {
+  function LS() {
     var e = Ca.current;
     return e === null ? !0 : (Qe & 4194048) === Qe ? Ua === null : (Qe & 62914560) === Qe || (Qe & 536870912) !== 0 ? e === Ua : !1;
   }
-  function LS() {
+  function US() {
     var e = K.H;
     return K.H = ir, e === null ? ir : e;
   }
-  function US() {
+  function GS() {
     var e = K.A;
     return K.A = wx, e;
   }
@@ -7503,7 +7503,7 @@ Error generating stack: ` + o.message + `
   function cp(e, a, s) {
     var o = _e;
     _e |= 2;
-    var u = LS(), d = US();
+    var u = US(), d = GS();
     (ct !== e || Qe !== a) && (Yu = null, Ml(e, a)), a = !1;
     var p = At;
     e: do
@@ -7532,18 +7532,18 @@ Error generating stack: ` + o.message + `
         Nx(), p = At;
         break;
       } catch (X) {
-        BS(e, X);
+        OS(e, X);
       }
     while (!0);
     return a && e.shellSuspendCounter++, Rn = pi = null, _e = o, K.H = u, K.A = d, Ke === null && (ct = null, Qe = 0, yu()), p;
   }
   function Nx() {
-    for (; Ke !== null; ) GS(Ke);
+    for (; Ke !== null; ) zS(Ke);
   }
   function Ix(e, a) {
     var s = _e;
     _e |= 2;
-    var o = LS(), u = US();
+    var o = US(), u = GS();
     ct !== e || Qe !== a ? (Yu = null, Zu = z() + 500, Ml(e, a)) : Nl = En(
       e,
       a
@@ -7559,8 +7559,8 @@ Error generating stack: ` + o.message + `
               break;
             case 2:
             case 9:
-              if (Zb(d)) {
-                nt = 0, wa = null, zS(a);
+              if (Yb(d)) {
+                nt = 0, wa = null, PS(a);
                 break;
               }
               a = function() {
@@ -7574,7 +7574,7 @@ Error generating stack: ` + o.message + `
               nt = 5;
               break e;
             case 7:
-              Zb(d) ? (nt = 0, wa = null, zS(a)) : (nt = 0, wa = null, Dl(e, a, d, 7));
+              Yb(d) ? (nt = 0, wa = null, PS(a)) : (nt = 0, wa = null, Dl(e, a, d, 7));
               break;
             case 5:
               var p = null;
@@ -7584,7 +7584,7 @@ Error generating stack: ` + o.message + `
                 case 5:
                 case 27:
                   var S = Ke;
-                  if (p ? TA(p) : S.stateNode.complete) {
+                  if (p ? wA(p) : S.stateNode.complete) {
                     nt = 0, wa = null;
                     var k = S.sibling;
                     if (k !== null) Ke = k;
@@ -7610,25 +7610,25 @@ Error generating stack: ` + o.message + `
         Rx();
         break;
       } catch (X) {
-        BS(e, X);
+        OS(e, X);
       }
     while (!0);
     return Rn = pi = null, K.H = o, K.A = u, _e = s, Ke !== null ? 0 : (ct = null, Qe = 0, yu(), At);
   }
   function Rx() {
     for (; Ke !== null && !oa(); )
-      GS(Ke);
-  }
-  function GS(e) {
-    var a = rS(e.alternate, e, Pn);
-    e.memoizedProps = e.pendingProps, a === null ? _u(e) : Ke = a;
+      zS(Ke);
   }
   function zS(e) {
+    var a = cS(e.alternate, e, Pn);
+    e.memoizedProps = e.pendingProps, a === null ? _u(e) : Ke = a;
+  }
+  function PS(e) {
     var a = e, s = a.alternate;
     switch (a.tag) {
       case 15:
       case 0:
-        a = aS(
+        a = nS(
           s,
           a,
           a.pendingProps,
@@ -7638,7 +7638,7 @@ Error generating stack: ` + o.message + `
         );
         break;
       case 11:
-        a = aS(
+        a = nS(
           s,
           a,
           a.pendingProps,
@@ -7650,7 +7650,7 @@ Error generating stack: ` + o.message + `
       case 5:
         Tg(a);
       default:
-        uS(s, a), a = Ke = Ub(a, Pn), a = rS(s, a, Pn);
+        dS(s, a), a = Ke = Gb(a, Pn), a = cS(s, a, Pn);
     }
     e.memoizedProps = e.pendingProps, a === null ? _u(e) : Ke = a;
   }
@@ -7679,13 +7679,13 @@ Error generating stack: ` + o.message + `
       ), Ke = null;
       return;
     }
-    a.flags & 32768 ? (Ze || o === 1 ? e = !0 : Nl || (Qe & 536870912) !== 0 ? e = !1 : (Ss = e = !0, (o === 2 || o === 9 || o === 3 || o === 6) && (o = Ca.current, o !== null && o.tag === 13 && (o.flags |= 16384))), PS(a, e)) : _u(a);
+    a.flags & 32768 ? (Ze || o === 1 ? e = !0 : Nl || (Qe & 536870912) !== 0 ? e = !1 : (Ss = e = !0, (o === 2 || o === 9 || o === 3 || o === 6) && (o = Ca.current, o !== null && o.tag === 13 && (o.flags |= 16384))), HS(a, e)) : _u(a);
   }
   function _u(e) {
     var a = e;
     do {
       if ((a.flags & 32768) !== 0) {
-        PS(
+        HS(
           a,
           Ss
         );
@@ -7709,7 +7709,7 @@ Error generating stack: ` + o.message + `
     } while (a !== null);
     At === 0 && (At = 5);
   }
-  function PS(e, a) {
+  function HS(e, a) {
     do {
       var s = Ex(e.alternate, e);
       if (s !== null) {
@@ -7724,7 +7724,7 @@ Error generating stack: ` + o.message + `
     } while (e !== null);
     At = 6, Ke = null;
   }
-  function HS(e, a, s, o, u, d, p, S, k) {
+  function qS(e, a, s, o, u, d, p, S, k) {
     e.cancelPendingCommit = null;
     do
       $u();
@@ -7739,8 +7739,8 @@ Error generating stack: ` + o.message + `
         p,
         S,
         k
-      ), e === ct && (Ke = ct = null, Qe = 0), Rl = a, Cs = e, Hn = s, ip = d, lp = u, RS = o, (a.subtreeFlags & 10256) !== 0 || (a.flags & 10256) !== 0 ? (e.callbackNode = null, e.callbackPriority = 0, Bx(de, function() {
-        return QS(), null;
+      ), e === ct && (Ke = ct = null, Qe = 0), Rl = a, Cs = e, Hn = s, ip = d, lp = u, MS = o, (a.subtreeFlags & 10256) !== 0 || (a.flags & 10256) !== 0 ? (e.callbackNode = null, e.callbackPriority = 0, Bx(de, function() {
+        return XS(), null;
       })) : (e.callbackNode = null, e.callbackPriority = 0), o = (a.flags & 13878) !== 0, (a.subtreeFlags & 13878) !== 0 || o) {
         o = K.T, K.T = null, u = ne.p, ne.p = 2, p = _e, _e |= 4;
         try {
@@ -7749,10 +7749,10 @@ Error generating stack: ` + o.message + `
           _e = p, ne.p = u, K.T = o;
         }
       }
-      Bt = 1, qS(), KS(), VS();
+      Bt = 1, KS(), VS(), FS();
     }
   }
-  function qS() {
+  function KS() {
     if (Bt === 1) {
       Bt = 0;
       var e = Cs, a = Rl, s = (a.flags & 13878) !== 0;
@@ -7763,9 +7763,9 @@ Error generating stack: ` + o.message + `
         var u = _e;
         _e |= 4;
         try {
-          ES(a, e);
-          var d = Ap, p = Nb(e.containerInfo), S = d.focusedElem, k = d.selectionRange;
-          if (p !== S && S && S.ownerDocument && xb(
+          CS(a, e);
+          var d = Ap, p = Ib(e.containerInfo), S = d.focusedElem, k = d.selectionRange;
+          if (p !== S && S && S.ownerDocument && Nb(
             S.ownerDocument.documentElement,
             S
           )) {
@@ -7781,10 +7781,10 @@ Error generating stack: ` + o.message + `
                 if (H.getSelection) {
                   var V = H.getSelection(), be = S.textContent.length, Me = Math.min(k.start, be), rt = k.end === void 0 ? Me : Math.min(k.end, be);
                   !V.extend && Me > rt && (p = rt, rt = Me, Me = p);
-                  var O = kb(
+                  var O = xb(
                     S,
                     Me
-                  ), D = kb(
+                  ), D = xb(
                     S,
                     rt
                   );
@@ -7814,7 +7814,7 @@ Error generating stack: ` + o.message + `
       e.current = a, Bt = 2;
     }
   }
-  function KS() {
+  function VS() {
     if (Bt === 2) {
       Bt = 0;
       var e = Cs, a = Rl, s = (a.flags & 8772) !== 0;
@@ -7825,7 +7825,7 @@ Error generating stack: ` + o.message + `
         var u = _e;
         _e |= 4;
         try {
-          yS(e, a.alternate, a);
+          bS(e, a.alternate, a);
         } finally {
           _e = u, ne.p = o, K.T = s;
         }
@@ -7833,11 +7833,11 @@ Error generating stack: ` + o.message + `
       Bt = 3;
     }
   }
-  function VS() {
+  function FS() {
     if (Bt === 4 || Bt === 3) {
       Bt = 0, I();
-      var e = Cs, a = Rl, s = Hn, o = RS;
-      (a.subtreeFlags & 10256) !== 0 || (a.flags & 10256) !== 0 ? Bt = 5 : (Bt = 0, Rl = Cs = null, FS(e, e.pendingLanes));
+      var e = Cs, a = Rl, s = Hn, o = MS;
+      (a.subtreeFlags & 10256) !== 0 || (a.flags & 10256) !== 0 ? Bt = 5 : (Bt = 0, Rl = Cs = null, QS(e, e.pendingLanes));
       var u = e.pendingLanes;
       if (u === 0 && (Es = null), Za(s), a = a.stateNode, ft && typeof ft.onCommitFiberRoot == "function")
         try {
@@ -7865,13 +7865,13 @@ Error generating stack: ` + o.message + `
       (Hn & 3) !== 0 && $u(), dn(e), u = e.pendingLanes, (s & 261930) !== 0 && (u & 42) !== 0 ? e === op ? gr++ : (gr = 0, op = e) : gr = 0, pr(0);
     }
   }
-  function FS(e, a) {
+  function QS(e, a) {
     (e.pooledCacheLanes &= a) === 0 && (a = e.pooledCache, a != null && (e.pooledCache = null, Yo(a)));
   }
   function $u() {
-    return qS(), KS(), VS(), QS();
+    return KS(), VS(), FS(), XS();
   }
-  function QS() {
+  function XS() {
     if (Bt !== 5) return !1;
     var e = Cs, a = ip;
     ip = 0;
@@ -7881,7 +7881,7 @@ Error generating stack: ` + o.message + `
       var d = Cs, p = Hn;
       if (Bt = 0, Rl = Cs = null, Hn = 0, (_e & 6) !== 0) throw Error(l(331));
       var S = _e;
-      if (_e |= 4, xS(d.current), TS(
+      if (_e |= 4, NS(d.current), wS(
         d,
         d.current,
         p,
@@ -7893,19 +7893,19 @@ Error generating stack: ` + o.message + `
         }
       return !0;
     } finally {
-      ne.p = u, K.T = o, FS(e, a);
+      ne.p = u, K.T = o, QS(e, a);
     }
   }
-  function XS(e, a, s) {
+  function ZS(e, a, s) {
     a = ja(s, a), a = zg(e.stateNode, a, 2), e = hs(e, a, 2), e !== null && (ba(e, 2), dn(e));
   }
   function st(e, a, s) {
     if (e.tag === 3)
-      XS(e, e, s);
+      ZS(e, e, s);
     else
       for (; a !== null; ) {
         if (a.tag === 3) {
-          XS(
+          ZS(
             a,
             e,
             s
@@ -7914,7 +7914,7 @@ Error generating stack: ` + o.message + `
         } else if (a.tag === 1) {
           var o = a.stateNode;
           if (typeof a.type.getDerivedStateFromError == "function" || typeof o.componentDidCatch == "function" && (Es === null || !Es.has(o))) {
-            e = ja(s, e), s = Zv(2), o = hs(a, s, 2), o !== null && (Yv(
+            e = ja(s, e), s = Yv(2), o = hs(a, s, 2), o !== null && (Jv(
               s,
               o,
               a,
@@ -7940,12 +7940,12 @@ Error generating stack: ` + o.message + `
     var o = e.pingCache;
     o !== null && o.delete(a), e.pingedLanes |= e.suspendedLanes & s, e.warmLanes &= ~s, ct === e && (Qe & s) === s && (At === 4 || At === 3 && (Qe & 62914560) === Qe && 300 > z() - Xu ? (_e & 2) === 0 && Ml(e, 0) : np |= s, Il === Qe && (Il = 0)), dn(e);
   }
-  function ZS(e, a) {
+  function YS(e, a) {
     a === 0 && (a = ns()), e = mi(e, a), e !== null && (ba(e, a), dn(e));
   }
   function Dx(e) {
     var a = e.memoizedState, s = 0;
-    a !== null && (s = a.retryLane), ZS(e, s);
+    a !== null && (s = a.retryLane), YS(e, s);
   }
   function jx(e, a) {
     var s = 0;
@@ -7964,7 +7964,7 @@ Error generating stack: ` + o.message + `
       default:
         throw Error(l(314));
     }
-    o !== null && o.delete(a), ZS(e, s);
+    o !== null && o.delete(a), YS(e, s);
   }
   function Bx(e, a) {
     return aa(e, a);
@@ -7985,13 +7985,13 @@ Error generating stack: ` + o.message + `
               var p = o.suspendedLanes, S = o.pingedLanes;
               d = (1 << 31 - gt(42 | e) + 1) - 1, d &= u & ~(p & ~S), d = d & 201326741 ? d & 201326741 | 1 : d ? d | 2 : 0;
             }
-            d !== 0 && (s = !0, _S(o, d));
+            d !== 0 && (s = !0, $S(o, d));
           } else
             d = Qe, d = An(
               o,
               o === ct ? d : 0,
               o.cancelPendingCommit !== null || o.timeoutHandle !== -1
-            ), (d & 3) === 0 || En(o, d) || (s = !0, _S(o, d));
+            ), (d & 3) === 0 || En(o, d) || (s = !0, $S(o, d));
           o = o.next;
         }
       while (s);
@@ -7999,19 +7999,19 @@ Error generating stack: ` + o.message + `
     }
   }
   function Ox() {
-    YS();
+    JS();
   }
-  function YS() {
+  function JS() {
     td = dp = !1;
     var e = 0;
     ws !== 0 && Qx() && (e = ws);
     for (var a = z(), s = null, o = ed; o !== null; ) {
-      var u = o.next, d = JS(o, a);
+      var u = o.next, d = WS(o, a);
       d === 0 ? (o.next = null, s === null ? ed = u : s.next = u, u === null && (jl = s)) : (s = o, (e !== 0 || (d & 3) !== 0) && (td = !0)), o = u;
     }
     Bt !== 0 && Bt !== 5 || pr(e), ws !== 0 && (ws = 0);
   }
-  function JS(e, a) {
+  function WS(e, a) {
     for (var s = e.suspendedLanes, o = e.pingedLanes, u = e.expirationTimes, d = e.pendingLanes & -62914561; 0 < d; ) {
       var p = 31 - gt(d), S = 1 << p, k = u[p];
       k === -1 ? ((S & s) === 0 || (S & o) !== 0) && (u[p] = al(S, a)) : k <= a && (e.expiredLanes |= S), d &= ~S;
@@ -8038,11 +8038,11 @@ Error generating stack: ` + o.message + `
         default:
           s = de;
       }
-      return o = WS.bind(null, e), s = aa(s, o), e.callbackPriority = a, e.callbackNode = s, a;
+      return o = _S.bind(null, e), s = aa(s, o), e.callbackPriority = a, e.callbackNode = s, a;
     }
     return o !== null && o !== null && it(o), e.callbackPriority = 2, e.callbackNode = null, 2;
   }
-  function WS(e, a) {
+  function _S(e, a) {
     if (Bt !== 0 && Bt !== 5)
       return e.callbackNode = null, e.callbackPriority = 0, null;
     var s = e.callbackNode;
@@ -8053,18 +8053,18 @@ Error generating stack: ` + o.message + `
       e,
       e === ct ? o : 0,
       e.cancelPendingCommit !== null || e.timeoutHandle !== -1
-    ), o === 0 ? null : (DS(e, o, a), JS(e, z()), e.callbackNode != null && e.callbackNode === s ? WS.bind(null, e) : null);
+    ), o === 0 ? null : (jS(e, o, a), WS(e, z()), e.callbackNode != null && e.callbackNode === s ? _S.bind(null, e) : null);
   }
-  function _S(e, a) {
+  function $S(e, a) {
     if ($u()) return null;
-    DS(e, a, !0);
+    jS(e, a, !0);
   }
   function Lx() {
     Zx(function() {
       (_e & 6) !== 0 ? aa(
         pe,
         Ox
-      ) : YS();
+      ) : JS();
     });
   }
   function fp() {
@@ -8074,19 +8074,19 @@ Error generating stack: ` + o.message + `
     }
     return ws;
   }
-  function $S(e) {
+  function eA(e) {
     return e == null || typeof e == "symbol" || typeof e == "boolean" ? null : typeof e == "function" ? e : ol("" + e);
   }
-  function eA(e, a) {
+  function tA(e, a) {
     var s = a.ownerDocument.createElement("input");
     return s.name = a.name, s.value = a.value, e.id && s.setAttribute("form", e.id), a.parentNode.insertBefore(s, a), e = new FormData(e), s.parentNode.removeChild(s), e;
   }
   function Ux(e, a, s, o, u) {
     if (a === "submit" && s && s.stateNode === u) {
-      var d = $S(
+      var d = eA(
         (u[jt] || null).action
       ), p = o.submitter;
-      p && (a = (a = p[jt] || null) ? $S(a.formAction) : p.getAttribute("formAction"), a !== null && (d = a, p = null));
+      p && (a = (a = p[jt] || null) ? eA(a.formAction) : p.getAttribute("formAction"), a !== null && (d = a, p = null));
       var S = new fu(
         "action",
         "action",
@@ -8102,7 +8102,7 @@ Error generating stack: ` + o.message + `
             listener: function() {
               if (o.defaultPrevented) {
                 if (ws !== 0) {
-                  var k = p ? eA(u, p) : new FormData(u);
+                  var k = p ? tA(u, p) : new FormData(u);
                   jg(
                     s,
                     {
@@ -8116,7 +8116,7 @@ Error generating stack: ` + o.message + `
                   );
                 }
               } else
-                typeof d == "function" && (S.preventDefault(), k = p ? eA(u, p) : new FormData(u), jg(
+                typeof d == "function" && (S.preventDefault(), k = p ? tA(u, p) : new FormData(u), jg(
                   s,
                   {
                     pending: !0,
@@ -8141,7 +8141,7 @@ Error generating stack: ` + o.message + `
       "on" + zx
     );
   }
-  $a(Mb, "onAnimationEnd"), $a(Db, "onAnimationIteration"), $a(jb, "onAnimationStart"), $a("dblclick", "onDoubleClick"), $a("focusin", "onFocus"), $a("focusout", "onBlur"), $a(tx, "onTransitionRun"), $a(ax, "onTransitionStart"), $a(nx, "onTransitionCancel"), $a(Bb, "onTransitionEnd"), ls("onMouseEnter", ["mouseout", "mouseover"]), ls("onMouseLeave", ["mouseout", "mouseover"]), ls("onPointerEnter", ["pointerout", "pointerover"]), ls("onPointerLeave", ["pointerout", "pointerover"]), Ya(
+  $a(Db, "onAnimationEnd"), $a(jb, "onAnimationIteration"), $a(Bb, "onAnimationStart"), $a("dblclick", "onDoubleClick"), $a("focusin", "onFocus"), $a("focusout", "onBlur"), $a(tx, "onTransitionRun"), $a(ax, "onTransitionStart"), $a(nx, "onTransitionCancel"), $a(Ob, "onTransitionEnd"), ls("onMouseEnter", ["mouseout", "mouseover"]), ls("onMouseLeave", ["mouseout", "mouseover"]), ls("onPointerEnter", ["pointerout", "pointerover"]), ls("onPointerLeave", ["pointerout", "pointerover"]), Ya(
     "onChange",
     "change click focusin focusout input keydown keyup selectionchange".split(" ")
   ), Ya(
@@ -8169,7 +8169,7 @@ Error generating stack: ` + o.message + `
   ), Px = new Set(
     "beforetoggle cancel close invalid load scroll scrollend toggle".split(" ").concat(hr)
   );
-  function tA(e, a) {
+  function aA(e, a) {
     a = (a & 4) !== 0;
     for (var s = 0; s < e.length; s++) {
       var o = e[s], u = o.event;
@@ -8208,11 +8208,11 @@ Error generating stack: ` + o.message + `
     var s = a[Tn];
     s === void 0 && (s = a[Tn] = /* @__PURE__ */ new Set());
     var o = e + "__bubble";
-    s.has(o) || (aA(a, e, 2, !1), s.add(o));
+    s.has(o) || (nA(a, e, 2, !1), s.add(o));
   }
   function hp(e, a, s) {
     var o = 0;
-    a && (o |= 4), aA(
+    a && (o |= 4), nA(
       s,
       e,
       o,
@@ -8229,8 +8229,8 @@ Error generating stack: ` + o.message + `
       a === null || a[ad] || (a[ad] = !0, hp("selectionchange", !1, a));
     }
   }
-  function aA(e, a, s, o) {
-    switch (MA(a)) {
+  function nA(e, a, s, o) {
+    switch (DA(a)) {
       case 2:
         var u = gN;
         break;
@@ -8282,7 +8282,7 @@ Error generating stack: ` + o.message + `
     Go(function() {
       var G = d, X = M(s), te = [];
       e: {
-        var H = Ob.get(e);
+        var H = Lb.get(e);
         if (H !== void 0) {
           var V = fu, be = e;
           switch (e) {
@@ -8312,7 +8312,7 @@ Error generating stack: ` + o.message + `
             case "mouseout":
             case "mouseover":
             case "contextmenu":
-              V = ub;
+              V = db;
               break;
             case "drag":
             case "dragend":
@@ -8330,12 +8330,12 @@ Error generating stack: ` + o.message + `
             case "touchstart":
               V = L2;
               break;
-            case Mb:
             case Db:
             case jb:
+            case Bb:
               V = T2;
               break;
-            case Bb:
+            case Ob:
               V = G2;
               break;
             case "scroll":
@@ -8358,7 +8358,7 @@ Error generating stack: ` + o.message + `
             case "pointerout":
             case "pointerover":
             case "pointerup":
-              V = mb;
+              V = fb;
               break;
             case "toggle":
             case "beforetoggle":
@@ -8387,7 +8387,7 @@ Error generating stack: ` + o.message + `
           if (H = e === "mouseover" || e === "pointerover", V = e === "mouseout" || e === "pointerout", H && s !== Uo && (be = s.relatedTarget || s.fromElement) && (at(be) || be[Sa]))
             break e;
           if ((V || H) && (H = X.window === X ? X : (H = X.ownerDocument) ? H.defaultView || H.parentWindow : window, V ? (be = s.relatedTarget || s.toElement, V = G, be = be ? at(be) : null, be !== null && (rt = m(be), Me = be.tag, be !== rt || Me !== 5 && Me !== 27 && Me !== 6) && (be = null)) : (V = null, be = G), V !== be)) {
-            if (Me = ub, J = "onMouseLeave", O = "onMouseEnter", D = "mouse", (e === "pointerout" || e === "pointerover") && (Me = mb, J = "onPointerLeave", O = "onPointerEnter", D = "pointer"), rt = V == null ? H : ln(V), U = be == null ? H : ln(be), H = new Me(
+            if (Me = db, J = "onMouseLeave", O = "onMouseEnter", D = "mouse", (e === "pointerout" || e === "pointerover") && (Me = fb, J = "onPointerLeave", O = "onPointerEnter", D = "pointer"), rt = V == null ? H : ln(V), U = be == null ? H : ln(be), H = new Me(
               J,
               D + "leave",
               V,
@@ -8420,13 +8420,13 @@ Error generating stack: ` + o.message + `
                 Me = null;
               }
             else Me = null;
-            V !== null && nA(
+            V !== null && sA(
               te,
               H,
               V,
               Me,
               !1
-            ), be !== null && rt !== null && nA(
+            ), be !== null && rt !== null && sA(
               te,
               rt,
               be,
@@ -8437,18 +8437,18 @@ Error generating stack: ` + o.message + `
         }
         e: {
           if (H = G ? ln(G) : window, V = H.nodeName && H.nodeName.toLowerCase(), V === "select" || V === "input" && H.type === "file")
-            var Je = Sb;
-          else if (bb(H))
-            if (Ab)
+            var Je = Ab;
+          else if (vb(H))
+            if (Eb)
               Je = _2;
             else {
               Je = J2;
               var Ae = Y2;
             }
           else
-            V = H.nodeName, !V || V.toLowerCase() !== "input" || H.type !== "checkbox" && H.type !== "radio" ? G && Lo(G.elementType) && (Je = Sb) : Je = W2;
+            V = H.nodeName, !V || V.toLowerCase() !== "input" || H.type !== "checkbox" && H.type !== "radio" ? G && Lo(G.elementType) && (Je = Ab) : Je = W2;
           if (Je && (Je = Je(e, G))) {
-            vb(
+            Sb(
               te,
               Je,
               s,
@@ -8460,7 +8460,7 @@ Error generating stack: ` + o.message + `
         }
         switch (Ae = G ? ln(G) : window, e) {
           case "focusin":
-            (bb(Ae) || Ae.contentEditable === "true") && (ul = Ae, Xf = G, Qo = null);
+            (vb(Ae) || Ae.contentEditable === "true") && (ul = Ae, Xf = G, Qo = null);
             break;
           case "focusout":
             Qo = Xf = ul = null;
@@ -8471,13 +8471,13 @@ Error generating stack: ` + o.message + `
           case "contextmenu":
           case "mouseup":
           case "dragend":
-            Zf = !1, Ib(te, s, X);
+            Zf = !1, Rb(te, s, X);
             break;
           case "selectionchange":
             if (ex) break;
           case "keydown":
           case "keyup":
-            Ib(te, s, X);
+            Rb(te, s, X);
         }
         var Ge;
         if (Kf)
@@ -8496,14 +8496,14 @@ Error generating stack: ` + o.message + `
             Xe = void 0;
           }
         else
-          cl ? hb(e, s) && (Xe = "onCompositionEnd") : e === "keydown" && s.keyCode === 229 && (Xe = "onCompositionStart");
-        Xe && (fb && s.locale !== "ko" && (cl || Xe !== "onCompositionStart" ? Xe === "onCompositionEnd" && cl && (Ge = rb()) : (cs = X, Gf = "value" in cs ? cs.value : cs.textContent, cl = !0)), Ae = nd(G, Xe), 0 < Ae.length && (Xe = new db(
+          cl ? yb(e, s) && (Xe = "onCompositionEnd") : e === "keydown" && s.keyCode === 229 && (Xe = "onCompositionStart");
+        Xe && (gb && s.locale !== "ko" && (cl || Xe !== "onCompositionStart" ? Xe === "onCompositionEnd" && cl && (Ge = cb()) : (cs = X, Gf = "value" in cs ? cs.value : cs.textContent, cl = !0)), Ae = nd(G, Xe), 0 < Ae.length && (Xe = new mb(
           Xe,
           e,
           null,
           s,
           X
-        ), te.push({ event: Xe, listeners: Ae }), Ge ? Xe.data = Ge : (Ge = yb(s), Ge !== null && (Xe.data = Ge)))), (Ge = V2 ? F2(e, s) : Q2(e, s)) && (Xe = nd(G, "onBeforeInput"), 0 < Xe.length && (Ae = new db(
+        ), te.push({ event: Xe, listeners: Ae }), Ge ? Xe.data = Ge : (Ge = bb(s), Ge !== null && (Xe.data = Ge)))), (Ge = V2 ? F2(e, s) : Q2(e, s)) && (Xe = nd(G, "onBeforeInput"), 0 < Xe.length && (Ae = new mb(
           "onBeforeInput",
           "beforeinput",
           null,
@@ -8520,7 +8520,7 @@ Error generating stack: ` + o.message + `
           X
         );
       }
-      tA(te, a);
+      aA(te, a);
     });
   }
   function yr(e, a, s) {
@@ -8549,7 +8549,7 @@ Error generating stack: ` + o.message + `
     while (e && e.tag !== 5 && e.tag !== 27);
     return e || null;
   }
-  function nA(e, a, s, o, u) {
+  function sA(e, a, s, o, u) {
     for (var d = a._reactName, p = []; s !== null && s !== o; ) {
       var S = s, k = S.alternate, G = S.stateNode;
       if (S = S.tag, k !== null && k === o) break;
@@ -8562,12 +8562,12 @@ Error generating stack: ` + o.message + `
     p.length !== 0 && e.push({ event: a, listeners: p });
   }
   var qx = /\r\n?/g, Kx = /\u0000|\uFFFD/g;
-  function sA(e) {
+  function iA(e) {
     return (typeof e == "string" ? e : "" + e).replace(qx, `
 `).replace(Kx, "");
   }
-  function iA(e, a) {
-    return a = sA(a), sA(e) === a;
+  function lA(e, a) {
+    return a = iA(a), iA(e) === a;
   }
   function ot(e, a, s, o, u, d) {
     switch (s) {
@@ -9307,7 +9307,7 @@ Error generating stack: ` + o.message + `
     for (te in o)
       H = o[te], V = s[te], !o.hasOwnProperty(te) || H === V || H == null && V == null || ot(e, a, te, H, o, V);
   }
-  function lA(e) {
+  function oA(e) {
     switch (e) {
       case "css":
       case "script":
@@ -9325,12 +9325,12 @@ Error generating stack: ` + o.message + `
     if (typeof performance.getEntriesByType == "function") {
       for (var e = 0, a = 0, s = performance.getEntriesByType("resource"), o = 0; o < s.length; o++) {
         var u = s[o], d = u.transferSize, p = u.initiatorType, S = u.duration;
-        if (d && S && lA(p)) {
+        if (d && S && oA(p)) {
           for (p = 0, S = u.responseEnd, o += 1; o < s.length; o++) {
             var k = s[o], G = k.startTime;
             if (G > S) break;
             var X = k.transferSize, te = k.initiatorType;
-            X && lA(te) && (k = k.responseEnd, p += X * (k < S ? 1 : (S - G) / (k - G)));
+            X && oA(te) && (k = k.responseEnd, p += X * (k < S ? 1 : (S - G) / (k - G)));
           }
           if (--o, a += 8 * (d + p) / (u.duration / 1e3), e++, 10 < e) break;
         }
@@ -9343,7 +9343,7 @@ Error generating stack: ` + o.message + `
   function sd(e) {
     return e.nodeType === 9 ? e : e.ownerDocument;
   }
-  function oA(e) {
+  function rA(e) {
     switch (e) {
       case "http://www.w3.org/2000/svg":
         return 1;
@@ -9353,7 +9353,7 @@ Error generating stack: ` + o.message + `
         return 0;
     }
   }
-  function rA(e, a) {
+  function cA(e, a) {
     if (e === 0)
       switch (a) {
         case "svg":
@@ -9373,9 +9373,9 @@ Error generating stack: ` + o.message + `
     var e = window.event;
     return e && e.type === "popstate" ? e === Cp ? !1 : (Cp = e, !0) : (Cp = null, !1);
   }
-  var cA = typeof setTimeout == "function" ? setTimeout : void 0, Xx = typeof clearTimeout == "function" ? clearTimeout : void 0, uA = typeof Promise == "function" ? Promise : void 0, Zx = typeof queueMicrotask == "function" ? queueMicrotask : typeof uA < "u" ? function(e) {
-    return uA.resolve(null).then(e).catch(Yx);
-  } : cA;
+  var uA = typeof setTimeout == "function" ? setTimeout : void 0, Xx = typeof clearTimeout == "function" ? clearTimeout : void 0, dA = typeof Promise == "function" ? Promise : void 0, Zx = typeof queueMicrotask == "function" ? queueMicrotask : typeof dA < "u" ? function(e) {
+    return dA.resolve(null).then(e).catch(Yx);
+  } : uA;
   function Yx(e) {
     setTimeout(function() {
       throw e;
@@ -9384,7 +9384,7 @@ Error generating stack: ` + o.message + `
   function ks(e) {
     return e === "head";
   }
-  function dA(e, a) {
+  function mA(e, a) {
     var s = a, o = 0;
     do {
       var u = s.nextSibling;
@@ -9411,7 +9411,7 @@ Error generating stack: ` + o.message + `
     } while (s);
     Ul(a);
   }
-  function mA(e, a) {
+  function fA(e, a) {
     var s = e;
     e = 0;
     do {
@@ -9487,7 +9487,7 @@ Error generating stack: ` + o.message + `
       if ((e.nodeType !== 1 || e.nodeName !== "INPUT" || e.type !== "hidden") && !s || (e = Ga(e.nextSibling), e === null)) return null;
     return e;
   }
-  function fA(e, a) {
+  function gA(e, a) {
     for (; e.nodeType !== 8; )
       if ((e.nodeType !== 1 || e.nodeName !== "INPUT" || e.type !== "hidden") && !a || (e = Ga(e.nextSibling), e === null)) return null;
     return e;
@@ -9523,7 +9523,7 @@ Error generating stack: ` + o.message + `
     return e;
   }
   var xp = null;
-  function gA(e) {
+  function pA(e) {
     e = e.nextSibling;
     for (var a = 0; e; ) {
       if (e.nodeType === 8) {
@@ -9539,7 +9539,7 @@ Error generating stack: ` + o.message + `
     }
     return null;
   }
-  function pA(e) {
+  function hA(e) {
     e = e.previousSibling;
     for (var a = 0; e; ) {
       if (e.nodeType === 8) {
@@ -9553,7 +9553,7 @@ Error generating stack: ` + o.message + `
     }
     return null;
   }
-  function hA(e, a, s) {
+  function yA(e, a, s) {
     switch (a = sd(s), e) {
       case "html":
         if (e = a.documentElement, !e) throw Error(l(452));
@@ -9573,7 +9573,7 @@ Error generating stack: ` + o.message + `
       e.removeAttributeNode(a[0]);
     pt(e);
   }
-  var za = /* @__PURE__ */ new Map(), yA = /* @__PURE__ */ new Set();
+  var za = /* @__PURE__ */ new Map(), bA = /* @__PURE__ */ new Set();
   function id(e) {
     return typeof e.getRootNode == "function" ? e.getRootNode() : e.nodeType === 9 ? e : e.ownerDocument;
   }
@@ -9595,21 +9595,21 @@ Error generating stack: ` + o.message + `
   }
   function eN(e) {
     var a = Yt(e);
-    a !== null && a.tag === 5 && a.type === "form" ? Bv(a) : qn.r(e);
+    a !== null && a.tag === 5 && a.type === "form" ? Ov(a) : qn.r(e);
   }
   var Bl = typeof document > "u" ? null : document;
-  function bA(e, a, s) {
+  function vA(e, a, s) {
     var o = Bl;
     if (o && typeof a == "string" && a) {
       var u = ca(a);
-      u = 'link[rel="' + e + '"][href="' + u + '"]', typeof s == "string" && (u += '[crossorigin="' + s + '"]'), yA.has(u) || (yA.add(u), e = { rel: e, crossOrigin: s, href: a }, o.querySelector(u) === null && (a = o.createElement("link"), Vt(a, "link", e), Ct(a), o.head.appendChild(a)));
+      u = 'link[rel="' + e + '"][href="' + u + '"]', typeof s == "string" && (u += '[crossorigin="' + s + '"]'), bA.has(u) || (bA.add(u), e = { rel: e, crossOrigin: s, href: a }, o.querySelector(u) === null && (a = o.createElement("link"), Vt(a, "link", e), Ct(a), o.head.appendChild(a)));
     }
   }
   function tN(e) {
-    qn.D(e), bA("dns-prefetch", e, null);
+    qn.D(e), vA("dns-prefetch", e, null);
   }
   function aN(e, a) {
-    qn.C(e, a), bA("preconnect", e, a);
+    qn.C(e, a), vA("preconnect", e, a);
   }
   function nN(e, a, s) {
     qn.L(e, a, s);
@@ -9730,7 +9730,7 @@ Error generating stack: ` + o.message + `
       }, o.set(u, d));
     }
   }
-  function vA(e, a, s, o) {
+  function SA(e, a, s, o) {
     var u = (u = Se.current) ? id(u) : null;
     if (!u) throw Error(l(446));
     switch (e) {
@@ -9799,7 +9799,7 @@ Error generating stack: ` + o.message + `
   function vr(e) {
     return 'link[rel="stylesheet"][' + e + "]";
   }
-  function SA(e) {
+  function AA(e) {
     return T({}, e, {
       "data-precedence": e.precedence,
       precedence: null
@@ -9818,7 +9818,7 @@ Error generating stack: ` + o.message + `
   function Sr(e) {
     return "script[async]" + e;
   }
-  function AA(e, a, s) {
+  function EA(e, a, s) {
     if (a.count++, a.instance === null)
       switch (a.type) {
         case "style":
@@ -9843,7 +9843,7 @@ Error generating stack: ` + o.message + `
           );
           if (d)
             return a.state.loading |= 4, a.instance = d, Ct(d), d;
-          o = SA(s), (u = za.get(u)) && Np(o, u), d = (e.ownerDocument || e).createElement("link"), Ct(d);
+          o = AA(s), (u = za.get(u)) && Np(o, u), d = (e.ownerDocument || e).createElement("link"), Ct(d);
           var p = d;
           return p._p = new Promise(function(S, k) {
             p.onload = S, p.onerror = k;
@@ -9878,7 +9878,7 @@ Error generating stack: ` + o.message + `
     e.crossOrigin == null && (e.crossOrigin = a.crossOrigin), e.referrerPolicy == null && (e.referrerPolicy = a.referrerPolicy), e.integrity == null && (e.integrity = a.integrity);
   }
   var od = null;
-  function EA(e, a, s) {
+  function CA(e, a, s) {
     if (od === null) {
       var o = /* @__PURE__ */ new Map(), u = od = /* @__PURE__ */ new Map();
       u.set(s, o);
@@ -9896,7 +9896,7 @@ Error generating stack: ` + o.message + `
     }
     return o;
   }
-  function CA(e, a, s) {
+  function TA(e, a, s) {
     e = e.ownerDocument || e, e.head.insertBefore(
       s,
       a === "title" ? e.querySelector("head > title") : null
@@ -9927,7 +9927,7 @@ Error generating stack: ` + o.message + `
     }
     return !1;
   }
-  function TA(e) {
+  function wA(e) {
     return !(e.type === "stylesheet" && (e.state.loading & 3) === 0);
   }
   function uN(e, a, s, o) {
@@ -9940,7 +9940,7 @@ Error generating stack: ` + o.message + `
           a = d._p, a !== null && typeof a == "object" && typeof a.then == "function" && (e.count++, e = rd.bind(e), a.then(e, e)), s.state.loading |= 4, s.instance = d, Ct(d);
           return;
         }
-        d = a.ownerDocument || a, o = SA(o), (u = za.get(u)) && Np(o, u), d = d.createElement("link"), Ct(d);
+        d = a.ownerDocument || a, o = AA(o), (u = za.get(u)) && Np(o, u), d = d.createElement("link"), Ct(d);
         var p = d;
         p._p = new Promise(function(S, k) {
           p.onload = S, p.onerror = k;
@@ -10014,7 +10014,7 @@ Error generating stack: ` + o.message + `
   function fN(e, a, s, o, u, d, p, S, k) {
     this.tag = 1, this.containerInfo = e, this.pingCache = this.current = this.pendingChildren = null, this.timeoutHandle = -1, this.callbackNode = this.next = this.pendingContext = this.context = this.cancelPendingCommit = null, this.callbackPriority = 0, this.expirationTimes = ss(-1), this.entangledLanes = this.shellSuspendCounter = this.errorRecoveryDisabledLanes = this.expiredLanes = this.warmLanes = this.pingedLanes = this.suspendedLanes = this.pendingLanes = 0, this.entanglements = ss(0), this.hiddenUpdates = ss(null), this.identifierPrefix = o, this.onUncaughtError = u, this.onCaughtError = d, this.onRecoverableError = p, this.pooledCache = null, this.pooledCacheLanes = 0, this.formState = k, this.incompleteTransitions = /* @__PURE__ */ new Map();
   }
-  function wA(e, a, s, o, u, d, p, S, k, G, X, te) {
+  function kA(e, a, s, o, u, d, p, S, k, G, X, te) {
     return e = new fN(
       e,
       a,
@@ -10031,28 +10031,28 @@ Error generating stack: ` + o.message + `
       cache: a
     }, fg(d), e;
   }
-  function kA(e) {
+  function xA(e) {
     return e ? (e = fl, e) : fl;
   }
-  function xA(e, a, s, o, u, d) {
-    u = kA(u), o.context === null ? o.context = u : o.pendingContext = u, o = ps(a), o.payload = { element: s }, d = d === void 0 ? null : d, d !== null && (o.callback = d), s = hs(e, o, a), s !== null && (pa(s, e, a), $o(s, e, a));
+  function NA(e, a, s, o, u, d) {
+    u = xA(u), o.context === null ? o.context = u : o.pendingContext = u, o = ps(a), o.payload = { element: s }, d = d === void 0 ? null : d, d !== null && (o.callback = d), s = hs(e, o, a), s !== null && (pa(s, e, a), $o(s, e, a));
   }
-  function NA(e, a) {
+  function IA(e, a) {
     if (e = e.memoizedState, e !== null && e.dehydrated !== null) {
       var s = e.retryLane;
       e.retryLane = s !== 0 && s < a ? s : a;
     }
   }
   function Mp(e, a) {
-    NA(e, a), (e = e.alternate) && NA(e, a);
+    IA(e, a), (e = e.alternate) && IA(e, a);
   }
-  function IA(e) {
+  function RA(e) {
     if (e.tag === 13 || e.tag === 31) {
       var a = mi(e, 67108864);
       a !== null && pa(a, e, 67108864), Mp(e, 67108864);
     }
   }
-  function RA(e) {
+  function MA(e) {
     if (e.tag === 13 || e.tag === 31) {
       var a = xa();
       a = Cn(a);
@@ -10091,7 +10091,7 @@ Error generating stack: ` + o.message + `
           o,
           md,
           s
-        ), DA(e, o);
+        ), jA(e, o);
       else if (yN(
         u,
         e,
@@ -10100,7 +10100,7 @@ Error generating stack: ` + o.message + `
         o
       ))
         o.stopPropagation();
-      else if (DA(e, o), a & 4 && -1 < hN.indexOf(e)) {
+      else if (jA(e, o), a & 4 && -1 < hN.indexOf(e)) {
         for (; u !== null; ) {
           var d = Yt(u);
           if (d !== null)
@@ -10167,7 +10167,7 @@ Error generating stack: ` + o.message + `
     }
     return md = e, null;
   }
-  function MA(e) {
+  function DA(e) {
     switch (e) {
       case "beforetoggle":
       case "cancel":
@@ -10263,7 +10263,7 @@ Error generating stack: ` + o.message + `
   var Op = !1, xs = null, Ns = null, Is = null, Er = /* @__PURE__ */ new Map(), Cr = /* @__PURE__ */ new Map(), Rs = [], hN = "mousedown mouseup touchcancel touchend touchstart auxclick dblclick pointercancel pointerdown pointerup dragend dragstart drop compositionend compositionstart keydown keypress keyup input textInput copy cut paste click change contextmenu reset".split(
     " "
   );
-  function DA(e, a) {
+  function jA(e, a) {
     switch (e) {
       case "focusin":
       case "focusout":
@@ -10293,7 +10293,7 @@ Error generating stack: ` + o.message + `
       eventSystemFlags: o,
       nativeEvent: d,
       targetContainers: [u]
-    }, a !== null && (a = Yt(a), a !== null && IA(a)), e) : (e.eventSystemFlags |= o, a = e.targetContainers, u !== null && a.indexOf(u) === -1 && a.push(u), e);
+    }, a !== null && (a = Yt(a), a !== null && RA(a)), e) : (e.eventSystemFlags |= o, a = e.targetContainers, u !== null && a.indexOf(u) === -1 && a.push(u), e);
   }
   function yN(e, a, s, o, u) {
     switch (a) {
@@ -10352,7 +10352,7 @@ Error generating stack: ` + o.message + `
     }
     return !1;
   }
-  function jA(e) {
+  function BA(e) {
     var a = at(e.target);
     if (a !== null) {
       var s = m(a);
@@ -10360,14 +10360,14 @@ Error generating stack: ` + o.message + `
         if (a = s.tag, a === 13) {
           if (a = f(s), a !== null) {
             e.blockedOn = a, sl(e.priority, function() {
-              RA(s);
+              MA(s);
             });
             return;
           }
         } else if (a === 31) {
           if (a = g(s), a !== null) {
             e.blockedOn = a, sl(e.priority, function() {
-              RA(s);
+              MA(s);
             });
             return;
           }
@@ -10391,16 +10391,16 @@ Error generating stack: ` + o.message + `
         );
         Uo = o, s.target.dispatchEvent(o), Uo = null;
       } else
-        return a = Yt(s), a !== null && IA(a), e.blockedOn = s, !1;
+        return a = Yt(s), a !== null && RA(a), e.blockedOn = s, !1;
       a.shift();
     }
     return !0;
   }
-  function BA(e, a, s) {
+  function OA(e, a, s) {
     fd(e) && s.delete(a);
   }
   function bN() {
-    Op = !1, xs !== null && fd(xs) && (xs = null), Ns !== null && fd(Ns) && (Ns = null), Is !== null && fd(Is) && (Is = null), Er.forEach(BA), Cr.forEach(BA);
+    Op = !1, xs !== null && fd(xs) && (xs = null), Ns !== null && fd(Ns) && (Ns = null), Is !== null && fd(Is) && (Is = null), Er.forEach(OA), Cr.forEach(OA);
   }
   function gd(e, a) {
     e.blockedOn === a && (e.blockedOn = null, Op || (Op = !0, t.unstable_scheduleCallback(
@@ -10409,7 +10409,7 @@ Error generating stack: ` + o.message + `
     )));
   }
   var pd = null;
-  function OA(e) {
+  function LA(e) {
     pd !== e && (pd = e, t.unstable_scheduleCallback(
       t.unstable_NormalPriority,
       function() {
@@ -10447,12 +10447,12 @@ Error generating stack: ` + o.message + `
       o.blockedOn === e && (o.blockedOn = null);
     }
     for (; 0 < Rs.length && (s = Rs[0], s.blockedOn === null); )
-      jA(s), s.blockedOn === null && Rs.shift();
+      BA(s), s.blockedOn === null && Rs.shift();
     if (s = (e.ownerDocument || e).$$reactFormReplay, s != null)
       for (o = 0; o < s.length; o += 3) {
         var u = s[o], d = s[o + 1], p = u[jt] || null;
         if (typeof d == "function")
-          p || OA(s);
+          p || LA(s);
         else if (p) {
           var S = null;
           if (d && d.hasAttribute("formAction")) {
@@ -10460,11 +10460,11 @@ Error generating stack: ` + o.message + `
               S = p.formAction;
             else if (Bp(u) !== null) continue;
           } else S = p.action;
-          typeof S == "function" ? s[o + 1] = S : (s.splice(o, 3), o -= 3), OA(s);
+          typeof S == "function" ? s[o + 1] = S : (s.splice(o, 3), o -= 3), LA(s);
         }
       }
   }
-  function LA() {
+  function UA() {
     function e(d) {
       d.canIntercept && d.info === "react-transition" && d.intercept({
         handler: function() {
@@ -10503,13 +10503,13 @@ Error generating stack: ` + o.message + `
     var a = this._internalRoot;
     if (a === null) throw Error(l(409));
     var s = a.current, o = xa();
-    xA(s, o, e, a, null, null);
+    NA(s, o, e, a, null, null);
   }, hd.prototype.unmount = Lp.prototype.unmount = function() {
     var e = this._internalRoot;
     if (e !== null) {
       this._internalRoot = null;
       var a = e.containerInfo;
-      xA(e.current, 2, null, e, null, null), Ju(), a[Sa] = null;
+      NA(e.current, 2, null, e, null, null), Ju(), a[Sa] = null;
     }
   };
   function hd(e) {
@@ -10520,15 +10520,15 @@ Error generating stack: ` + o.message + `
       var a = si();
       e = { blockedOn: null, target: e, priority: a };
       for (var s = 0; s < Rs.length && a !== 0 && a < Rs[s].priority; s++) ;
-      Rs.splice(s, 0, e), s === 0 && jA(e);
+      Rs.splice(s, 0, e), s === 0 && BA(e);
     }
   };
-  var UA = n.version;
-  if (UA !== "19.2.4")
+  var GA = n.version;
+  if (GA !== "19.2.4")
     throw Error(
       l(
         527,
-        UA,
+        GA,
         "19.2.4"
       )
     );
@@ -10557,8 +10557,8 @@ Error generating stack: ` + o.message + `
   }
   return kr.createRoot = function(e, a) {
     if (!r(e)) throw Error(l(299));
-    var s = !1, o = "", u = Vv, d = Fv, p = Qv;
-    return a != null && (a.unstable_strictMode === !0 && (s = !0), a.identifierPrefix !== void 0 && (o = a.identifierPrefix), a.onUncaughtError !== void 0 && (u = a.onUncaughtError), a.onCaughtError !== void 0 && (d = a.onCaughtError), a.onRecoverableError !== void 0 && (p = a.onRecoverableError)), a = wA(
+    var s = !1, o = "", u = Fv, d = Qv, p = Xv;
+    return a != null && (a.unstable_strictMode === !0 && (s = !0), a.identifierPrefix !== void 0 && (o = a.identifierPrefix), a.onUncaughtError !== void 0 && (u = a.onUncaughtError), a.onCaughtError !== void 0 && (d = a.onCaughtError), a.onRecoverableError !== void 0 && (p = a.onRecoverableError)), a = kA(
       e,
       1,
       !1,
@@ -10570,12 +10570,12 @@ Error generating stack: ` + o.message + `
       u,
       d,
       p,
-      LA
+      UA
     ), e[Sa] = a.current, yp(e), new Lp(a);
   }, kr.hydrateRoot = function(e, a, s) {
     if (!r(e)) throw Error(l(299));
-    var o = !1, u = "", d = Vv, p = Fv, S = Qv, k = null;
-    return s != null && (s.unstable_strictMode === !0 && (o = !0), s.identifierPrefix !== void 0 && (u = s.identifierPrefix), s.onUncaughtError !== void 0 && (d = s.onUncaughtError), s.onCaughtError !== void 0 && (p = s.onCaughtError), s.onRecoverableError !== void 0 && (S = s.onRecoverableError), s.formState !== void 0 && (k = s.formState)), a = wA(
+    var o = !1, u = "", d = Fv, p = Qv, S = Xv, k = null;
+    return s != null && (s.unstable_strictMode === !0 && (o = !0), s.identifierPrefix !== void 0 && (u = s.identifierPrefix), s.onUncaughtError !== void 0 && (d = s.onUncaughtError), s.onCaughtError !== void 0 && (p = s.onCaughtError), s.onRecoverableError !== void 0 && (S = s.onRecoverableError), s.formState !== void 0 && (k = s.formState)), a = kA(
       e,
       1,
       !0,
@@ -10587,14 +10587,14 @@ Error generating stack: ` + o.message + `
       d,
       p,
       S,
-      LA
-    ), a.context = kA(null), s = a.current, o = xa(), o = Cn(o), u = ps(o), u.callback = null, hs(s, u, o), s = o, a.current.lanes = s, ba(a, s), dn(a), e[Sa] = a.current, yp(e), new hd(a);
+      UA
+    ), a.context = xA(null), s = a.current, o = xa(), o = Cn(o), u = ps(o), u.callback = null, hs(s, u, o), s = o, a.current.lanes = s, ba(a, s), dn(a), e[Sa] = a.current, yp(e), new hd(a);
   }, kr.version = "19.2.4", kr;
 }
-var XA;
+var ZA;
 function RN() {
-  if (XA) return Gp.exports;
-  XA = 1;
+  if (ZA) return Gp.exports;
+  ZA = 1;
   function t() {
     if (!(typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ > "u" || typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.checkDCE != "function"))
       try {
@@ -10605,7 +10605,7 @@ function RN() {
   }
   return t(), Gp.exports = IN(), Gp.exports;
 }
-var bn = RN(), C = a0(), n0 = _C();
+var bn = RN(), C = n0(), s0 = _C();
 const MN = 400;
 function es({
   open: t,
@@ -10703,7 +10703,7 @@ function es({
     const _ = m && T.current && B.target === B.currentTarget;
     T.current = !1, B.stopPropagation(), _ && ae();
   };
-  return n0.createPortal(
+  return s0.createPortal(
     /* @__PURE__ */ c.jsx(
       "div",
       {
@@ -10932,7 +10932,7 @@ const Ds = {
   autoReturnMode: "queue",
   quickLobbyMode: !1,
   quickLobbyQueueId: 430
-}, ZA = "sona:";
+}, YA = "sona:";
 class FN {
   constructor() {
     Fe(this, "listeners", /* @__PURE__ */ new Map());
@@ -10953,7 +10953,7 @@ class FN {
    */
   set(n, i) {
     if (this.cache[n] === i) return;
-    this.cache[n] = i, DataStore.set(`${ZA}${n}`, i);
+    this.cache[n] = i, DataStore.set(`${YA}${n}`, i);
     const r = this.listeners.get(n);
     r && r.forEach((m) => {
       try {
@@ -11005,7 +11005,7 @@ class FN {
   }
   // ---- 内部方法 ----
   readFromDisk(n) {
-    const i = DataStore.get(`${ZA}${n}`);
+    const i = DataStore.get(`${YA}${n}`);
     return i !== void 0 ? i : Ds[n];
   }
 }
@@ -11996,18 +11996,18 @@ const v = new FN(), QN = {
 function ZN(t) {
   return (t ?? "").trim().replace("_", "-").toLowerCase().startsWith("zh") ? "zh-CN" : "en-US";
 }
-function s0(t) {
+function i0(t) {
   return t === "auto" || t === "zh-CN" || t === "en-US" ? t : "auto";
 }
 function YN() {
   return ZN(document.documentElement.lang);
 }
 function eT(t) {
-  const n = s0(t);
+  const n = i0(t);
   return n === "auto" ? YN() : n;
 }
 function tT() {
-  return s0(v.get("locale"));
+  return i0(v.get("locale"));
 }
 function JN() {
   return eT(tT());
@@ -12023,7 +12023,7 @@ function Et() {
   const [t, n] = C.useState(() => tT()), [i, l] = C.useState(() => document.documentElement.lang);
   C.useEffect(() => {
     const g = v.onChange("locale", (y) => {
-      n(s0(y));
+      n(i0(y));
     }), h = new MutationObserver(() => {
       l(document.documentElement.lang);
     });
@@ -12059,7 +12059,7 @@ function WN({ items: t, activeId: n, onSelect: i, collapsed: l, onToggle: r }) {
         /* @__PURE__ */ c.jsx("span", { className: "sona-sidebar-logo-text", children: "Sona" }),
         /* @__PURE__ */ c.jsxs("span", { className: "sona-sidebar-logo-version", children: [
           "v",
-          "1.11.0"
+          "1.11.2"
         ] })
       ] })
     ] }),
@@ -12123,7 +12123,7 @@ function _N() {
     };
   }, []), /* @__PURE__ */ c.jsx("canvas", { ref: t, className: "sona-home-particle-canvas" });
 }
-function YA() {
+function JA() {
   const { t } = Et();
   return /* @__PURE__ */ c.jsxs("div", { className: "sona-home", children: [
     /* @__PURE__ */ c.jsx("h1", { className: "sona-home-brand", children: /* @__PURE__ */ c.jsx("span", { className: "sona-home-brand-text", children: "SONA" }) }),
@@ -12308,7 +12308,7 @@ const bm = {
 function Rc(t) {
   return t > 0 ? `q_${t}` : "";
 }
-const JA = [
+const WA = [
   129,
   112,
   118,
@@ -12326,14 +12326,14 @@ const JA = [
   23,
   231
 ], $N = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-function i0(t) {
+function l0(t) {
   const n = t.trim().toLowerCase();
   if (!$N.test(n)) return "";
   const i = n.replace(/-/g, "");
   let l = "";
-  for (let r = 0; r < JA.length; r++) {
+  for (let r = 0; r < WA.length; r++) {
     const m = Number.parseInt(i.slice(r * 2, r * 2 + 2), 16);
-    l += (m ^ JA[r]).toString(16).padStart(2, "0");
+    l += (m ^ WA[r]).toString(16).padStart(2, "0");
   }
   return [
     l.slice(0, 8),
@@ -12373,11 +12373,11 @@ function wi(t, n) {
     body: n != null ? JSON.stringify(n) : void 0
   });
 }
-function WA(t) {
+function _A(t) {
   return !!(t && typeof t == "object" && Array.isArray(t.items));
 }
 function eI(t) {
-  return Array.isArray(t) ? t.filter(WA) : t && typeof t == "object" ? Object.values(t).filter(WA) : [];
+  return Array.isArray(t) ? t.filter(_A) : t && typeof t == "object" ? Object.values(t).filter(_A) : [];
 }
 function ki(t, n) {
   return Eo(t, {
@@ -12864,7 +12864,7 @@ class nI {
    */
   async getChampSelectPlayers() {
     const n = await this.getChampSelectSession(), i = async (m) => {
-      const f = m.puuid || (m.nameVisibilityType === "HIDDEN" ? i0(m.obfuscatedPuuid) : "");
+      const f = m.puuid || (m.nameVisibilityType === "HIDDEN" ? l0(m.obfuscatedPuuid) : "");
       try {
         const g = f ? await this.getSummonerByPuuid(f) : await this.getSummonerById(m.summonerId), [h, y] = await Promise.all([
           this.getRankedStats(g.puuid).catch(() => null),
@@ -13692,7 +13692,7 @@ class nI {
     this.penguContext && this.penguContext.socket.disconnect(), this.eventListeners.clear(), this.observedUris.clear();
   }
 }
-const x = new nI(), sI = { source: "lol-wiki", sourceUrl: "https://wiki.leagueoflegends.com/en-us/Module:ChampionData/data", updatedAt: "2026-10-07T16:13:48.156Z", sha1: "00af491f3036d8ee03ff23258bf358ded828a28a", championCount: 175 }, iI = /* @__PURE__ */ JSON.parse('{"1":{"id":1,"alias":"Annie","stats":{"aram":{"dmg_dealt":0.95,"dmg_taken":1.05,"shielding":0.9},"urf":{"dmg_dealt":0.9,"dmg_taken":1.1,"shielding":0.9}}},"2":{"id":2,"alias":"Olaf","stats":{"aram":{"dmg_dealt":1.05}}},"3":{"id":3,"alias":"Galio","stats":{"aram":{"dmg_dealt":0.9,"dmg_taken":1.05}}},"4":{"id":4,"alias":"TwistedFate","stats":{"urf":{"dmg_dealt":0.95}}},"5":{"id":5,"alias":"XinZhao","stats":{"aram":{"dmg_dealt":0.95},"urf":{"dmg_taken":1.1},"ofa":{"dmg_dealt":0.97,"dmg_taken":1.02,"healing":1.2},"usb":{"dmg_dealt":0.95,"dmg_taken":1.05}}},"6":{"id":6,"alias":"Urgot","stats":{"aram":{"dmg_taken":1.05},"urf":{"dmg_dealt":1.15,"dmg_taken":0.85},"ofa":{"dmg_dealt":0.95,"dmg_taken":1.02}}},"7":{"id":7,"alias":"Leblanc","stats":{"aram":{"dmg_dealt":1.1,"dmg_taken":0.9,"ability_haste":20},"ofa":{"dmg_taken":0.95},"nb":{"dmg_taken":0.9,"ability_haste":20}}},"8":{"id":8,"alias":"Vladimir","stats":{"urf":{"dmg_dealt":0.92,"dmg_taken":1.05,"healing":1.2}}},"9":{"id":9,"alias":"Fiddlesticks","stats":{"aram":{"dmg_dealt":0.95,"dmg_taken":1.05},"urf":{"dmg_dealt":1.1,"dmg_taken":0.85},"ofa":{"dmg_dealt":1.05,"dmg_taken":0.93,"healing":1.2},"usb":{"dmg_dealt":1.05,"dmg_taken":0.95}}},"10":{"id":10,"alias":"Kayle","stats":{"aram":{"dmg_dealt":0.95,"dmg_taken":1.1},"urf":{"dmg_dealt":0.85,"dmg_taken":1.1},"ofa":{"dmg_dealt":0.95,"dmg_taken":1.05},"nb":{"dmg_dealt":0.9,"dmg_taken":1.05}}},"11":{"id":11,"alias":"MasterYi","stats":{"urf":{"dmg_dealt":0.9,"healing":0.8},"usb":{"dmg_taken":1.05}}},"12":{"id":12,"alias":"Alistar","stats":{"aram":{"dmg_dealt":0.95,"dmg_taken":1.05,"healing":0.8},"urf":{"dmg_taken":0.95},"ofa":{"dmg_dealt":1.05,"dmg_taken":0.97},"usb":{"dmg_dealt":0.95}}},"13":{"id":13,"alias":"Ryze","stats":{"aram":{"dmg_dealt":1.05,"dmg_taken":0.95},"ofa":{"dmg_dealt":1.03}}},"14":{"id":14,"alias":"Sion","stats":{"aram":{"dmg_dealt":0.9,"dmg_taken":1.1,"ability_haste":-10},"urf":{"dmg_dealt":1.1,"dmg_taken":0.92,"shielding":1.2},"nb":{"dmg_taken":1.05}}},"15":{"id":15,"alias":"Sivir","stats":{"aram":{"dmg_dealt":0.93,"dmg_taken":1.05},"urf":{"dmg_dealt":0.85,"dmg_taken":1.05},"nb":{"dmg_dealt":0.95,"dmg_taken":1.05}}},"16":{"id":16,"alias":"Soraka","stats":{"aram":{"ability_haste":10},"urf":{"dmg_dealt":1.05,"dmg_taken":0.92},"ofa":{"dmg_dealt":1.03,"dmg_taken":0.97,"healing":1.1}}},"17":{"id":17,"alias":"Teemo","stats":{"aram":{"dmg_dealt":0.95,"dmg_taken":1.1,"ability_haste":-15},"urf":{"dmg_dealt":0.9},"nb":{"dmg_dealt":0.9,"dmg_taken":1.05}}},"18":{"id":18,"alias":"Tristana","stats":{"aram":{"dmg_dealt":1.05,"dmg_taken":0.95},"urf":{"dmg_dealt":0.9,"dmg_taken":1.05}}},"19":{"id":19,"alias":"Warwick","stats":{"aram":{"dmg_dealt":1.05,"dmg_taken":0.95},"usb":{"dmg_dealt":0.95}}},"20":{"id":20,"alias":"Nunu","stats":{"aram":{"dmg_dealt":1.1,"dmg_taken":0.9,"healing":1.1,"shielding":1.2,"tenacity":1.2},"urf":{"dmg_dealt":1.08,"dmg_taken":0.95},"ofa":{"dmg_dealt":1.05,"dmg_taken":0.92,"healing":1.05,"shielding":1.2},"nb":{"dmg_dealt":1.1,"dmg_taken":0.9,"ability_haste":20},"usb":{"dmg_dealt":1.05,"dmg_taken":0.95,"healing":1.2}}},"21":{"id":21,"alias":"MissFortune","stats":{"aram":{"dmg_dealt":0.95,"dmg_taken":1.05},"usb":{"dmg_dealt":1.05,"dmg_taken":0.95}}},"22":{"id":22,"alias":"Ashe","stats":{"aram":{"dmg_dealt":1.05},"usb":{"dmg_taken":0.95}}},"23":{"id":23,"alias":"Tryndamere","stats":{"aram":{"dmg_dealt":1.1,"dmg_taken":0.9,"healing":1.2}}},"24":{"id":24,"alias":"Jax","stats":{"aram":{"dmg_dealt":1.05,"dmg_taken":0.97},"urf":{"dmg_dealt":0.9,"dmg_taken":1.15},"ofa":{"dmg_dealt":0.95,"dmg_taken":1.05},"usb":{"dmg_dealt":0.95,"dmg_taken":1.05}}},"25":{"id":25,"alias":"Morgana","stats":{"aram":{"dmg_dealt":0.95,"dmg_taken":1.1},"urf":{"dmg_dealt":0.9,"dmg_taken":1.05},"nb":{"dmg_dealt":0.95}}},"26":{"id":26,"alias":"Zilean","stats":{"aram":{"dmg_dealt":1.05,"dmg_taken":0.95},"urf":{"dmg_dealt":1.05,"dmg_taken":0.9},"ofa":{"dmg_dealt":1.05,"dmg_taken":0.95}}},"27":{"id":27,"alias":"Singed","stats":{"aram":{"dmg_taken":1.08},"urf":{"dmg_dealt":0.9},"nb":{"dmg_dealt":0.95},"usb":{"dmg_taken":1.05}}},"28":{"id":28,"alias":"Evelynn","stats":{"aram":{"dmg_dealt":1.1,"dmg_taken":0.9,"tenacity":1.2},"urf":{"dmg_dealt":1.05,"dmg_taken":0.95},"ofa":{"dmg_dealt":1.07,"dmg_taken":0.93},"nb":{"dmg_taken":0.9,"ability_haste":20},"usb":{"dmg_dealt":1.1}}},"29":{"id":29,"alias":"Twitch","stats":{"aram":{"dmg_taken":0.95},"urf":{"dmg_dealt":0.85,"dmg_taken":1.1},"ofa":{"dmg_dealt":0.98}}},"30":{"id":30,"alias":"Karthus","stats":{"aram":{"dmg_dealt":0.93,"dmg_taken":1.05},"urf":{"dmg_dealt":0.9}}},"31":{"id":31,"alias":"Chogath","stats":{"aram":{"dmg_taken":1.1},"ofa":{"dmg_dealt":0.98,"dmg_taken":1.05}}},"32":{"id":32,"alias":"Amumu","stats":{"urf":{"dmg_dealt":1.1,"dmg_taken":0.9},"ofa":{"dmg_taken":1.05}}},"33":{"id":33,"alias":"Rammus","stats":{"urf":{"dmg_dealt":1.1,"dmg_taken":0.85},"ofa":{"dmg_dealt":1.05},"usb":{"dmg_dealt":1.05,"dmg_taken":0.95}}},"34":{"id":34,"alias":"Anivia","stats":{"aram":{"dmg_dealt":1.05},"urf":{"dmg_dealt":1.15,"dmg_taken":0.92},"usb":{"dmg_dealt":1.1,"dmg_taken":0.9}}},"35":{"id":35,"alias":"Shaco","stats":{"aram":{"dmg_dealt":1.05},"urf":{"dmg_dealt":0.9,"dmg_taken":1.1}}},"36":{"id":36,"alias":"DrMundo","stats":{"aram":{"dmg_dealt":0.9,"dmg_taken":1.05,"healing":0.9},"ofa":{"dmg_dealt":0.95,"dmg_taken":1.05,"healing":0.9}}},"37":{"id":37,"alias":"Sona","stats":{"urf":{"dmg_dealt":0.9,"healing":0.7},"nb":{"dmg_dealt":0.95,"healing":0.9,"shielding":0.9}}},"38":{"id":38,"alias":"Kassadin","stats":{"aram":{"dmg_taken":0.95}}},"39":{"id":39,"alias":"Irelia","stats":{"aram":{"dmg_dealt":1.05,"ability_haste":20},"ofa":{"dmg_dealt":0.97}}},"40":{"id":40,"alias":"Janna","stats":{"aram":{"dmg_dealt":0.95,"dmg_taken":1.05,"healing":0.9},"ofa":{"dmg_dealt":1.03}}},"41":{"id":41,"alias":"Gangplank","stats":{"aram":{"dmg_dealt":1.05},"ofa":{"dmg_dealt":1.05,"dmg_taken":0.9}}},"42":{"id":42,"alias":"Corki","stats":{"aram":{"dmg_taken":0.9,"ability_haste":-20},"nb":{"dmg_dealt":1.05}}},"43":{"id":43,"alias":"Karma","stats":{}},"44":{"id":44,"alias":"Taric","stats":{"aram":{"dmg_taken":1.1},"urf":{"healing":0.85},"ofa":{"dmg_taken":0.92}}},"45":{"id":45,"alias":"Veigar","stats":{"aram":{"dmg_dealt":0.93,"dmg_taken":1.1},"urf":{"dmg_dealt":0.9}}},"48":{"id":48,"alias":"Trundle","stats":{"aram":{"dmg_taken":1.05},"urf":{"dmg_dealt":0.95,"dmg_taken":0.95,"healing":0.8},"ofa":{"dmg_dealt":0.95,"dmg_taken":1.07},"usb":{"dmg_taken":1.05}}},"50":{"id":50,"alias":"Swain","stats":{"aram":{"dmg_dealt":0.95,"dmg_taken":1.15,"healing":0.8},"nb":{"dmg_dealt":0.95,"dmg_taken":1.05}}},"51":{"id":51,"alias":"Caitlyn","stats":{}},"53":{"id":53,"alias":"Blitzcrank","stats":{"ofa":{"dmg_dealt":1.06,"dmg_taken":0.97},"nb":{"dmg_dealt":1.05},"usb":{"dmg_dealt":1.05,"dmg_taken":0.95}}},"54":{"id":54,"alias":"Malphite","stats":{"urf":{"dmg_dealt":0.95},"ofa":{"dmg_dealt":0.95}}},"55":{"id":55,"alias":"Katarina","stats":{"aram":{"ability_haste":10,"tenacity":1.2},"urf":{"dmg_dealt":1.1,"dmg_taken":0.95},"ofa":{"dmg_taken":0.95}}},"56":{"id":56,"alias":"Nocturne","stats":{"aram":{"dmg_dealt":1.1,"dmg_taken":0.9,"healing":1.2},"urf":{"dmg_dealt":0.95},"ofa":{"dmg_dealt":0.95}}},"57":{"id":57,"alias":"Maokai","stats":{"aram":{"dmg_dealt":0.85,"dmg_taken":1.1},"urf":{"dmg_taken":1.05,"healing":0.7},"ofa":{"dmg_taken":1.05},"nb":{"dmg_dealt":0.95,"dmg_taken":1.05,"healing":0.95,"shielding":0.95}}},"58":{"id":58,"alias":"Renekton","stats":{"aram":{"healing":1.1},"urf":{"dmg_dealt":0.95,"dmg_taken":0.95}}},"59":{"id":59,"alias":"JarvanIV","stats":{"ofa":{"dmg_dealt":0.95},"usb":{"dmg_dealt":0.95}}},"60":{"id":60,"alias":"Elise","stats":{"aram":{"dmg_dealt":1.05,"dmg_taken":0.9,"tenacity":1.1},"urf":{"dmg_taken":0.95},"ofa":{"dmg_dealt":1.05,"dmg_taken":0.92},"usb":{"dmg_dealt":1.05,"dmg_taken":0.95}}},"61":{"id":61,"alias":"Orianna","stats":{"urf":{"dmg_dealt":0.9,"dmg_taken":1.1,"shielding":0.8}}},"62":{"id":62,"alias":"MonkeyKing","stats":{"urf":{"dmg_dealt":0.9,"dmg_taken":1.1},"ofa":{"dmg_dealt":0.95,"dmg_taken":1.05},"usb":{"dmg_dealt":0.95}}},"63":{"id":63,"alias":"Brand","stats":{"aram":{"dmg_dealt":0.95,"dmg_taken":1.1,"ability_haste":-10},"ofa":{"dmg_taken":1.03},"nb":{"dmg_dealt":0.9,"dmg_taken":1.08},"usb":{"dmg_dealt":0.95}}},"64":{"id":64,"alias":"LeeSin","stats":{"aram":{"dmg_dealt":1.05,"dmg_taken":0.95,"healing":1.1,"shielding":1.2},"urf":{"dmg_dealt":1.05},"ofa":{"dmg_taken":0.95}}},"67":{"id":67,"alias":"Vayne","stats":{"aram":{"dmg_taken":0.95},"urf":{"dmg_dealt":0.95,"dmg_taken":1.05},"ofa":{"dmg_dealt":0.97}}},"68":{"id":68,"alias":"Rumble","stats":{}},"69":{"id":69,"alias":"Cassiopeia","stats":{"urf":{"dmg_dealt":0.95,"dmg_taken":1.05}}},"72":{"id":72,"alias":"Skarner","stats":{"urf":{"dmg_dealt":1.1,"shielding":0.9},"ofa":{"dmg_taken":0.97}}},"74":{"id":74,"alias":"Heimerdinger","stats":{"aram":{"dmg_dealt":0.9,"dmg_taken":1.1},"ofa":{"dmg_dealt":0.97}}},"75":{"id":75,"alias":"Nasus","stats":{"aram":{"dmg_dealt":0.9,"dmg_taken":1.05},"nb":{"dmg_dealt":0.95},"usb":{"dmg_taken":0.95}}},"76":{"id":76,"alias":"Nidalee","stats":{"aram":{"dmg_dealt":1.1},"urf":{"dmg_dealt":1.1,"dmg_taken":0.95},"ofa":{"dmg_dealt":1.07,"dmg_taken":0.95},"nb":{"dmg_dealt":1.05,"dmg_taken":0.9,"healing":1.1,"shielding":1.1},"usb":{"dmg_dealt":1.05,"dmg_taken":0.95,"healing":1.2}}},"77":{"id":77,"alias":"Udyr","stats":{"urf":{"dmg_dealt":1.1,"dmg_taken":0.92}}},"78":{"id":78,"alias":"Poppy","stats":{}},"79":{"id":79,"alias":"Gragas","stats":{"aram":{"dmg_taken":0.95}}},"80":{"id":80,"alias":"Pantheon","stats":{"ofa":{"dmg_dealt":0.98,"dmg_taken":1.02}}},"81":{"id":81,"alias":"Ezreal","stats":{"urf":{"dmg_dealt":0.95}}},"82":{"id":82,"alias":"Mordekaiser","stats":{"urf":{"dmg_taken":0.85},"ofa":{"dmg_dealt":0.95,"dmg_taken":1.05},"usb":{"dmg_taken":1.05}}},"83":{"id":83,"alias":"Yorick","stats":{"ofa":{"dmg_dealt":0.9,"dmg_taken":1.05}}},"84":{"id":84,"alias":"Akali","stats":{"aram":{"dmg_taken":0.95,"tenacity":1.2},"urf":{"dmg_taken":0.9},"ofa":{"dmg_dealt":1.05,"dmg_taken":0.97},"nb":{"dmg_taken":0.9,"ability_haste":20}}},"85":{"id":85,"alias":"Kennen","stats":{"urf":{"dmg_taken":0.95},"ofa":{"dmg_dealt":0.98,"dmg_taken":1.02}}},"86":{"id":86,"alias":"Garen","stats":{"aram":{"dmg_taken":0.95},"urf":{"dmg_dealt":1.1,"dmg_taken":0.95},"ofa":{"dmg_dealt":0.95}}},"89":{"id":89,"alias":"Leona","stats":{"aram":{"dmg_dealt":0.95,"dmg_taken":1.05}}},"90":{"id":90,"alias":"Malzahar","stats":{"aram":{"dmg_dealt":0.9,"dmg_taken":1.1},"urf":{"dmg_dealt":0.92,"dmg_taken":1.08}}},"91":{"id":91,"alias":"Talon","stats":{"aram":{"dmg_dealt":1.05,"dmg_taken":0.95,"tenacity":1.2}}},"92":{"id":92,"alias":"Riven","stats":{"aram":{"dmg_dealt":1.05,"dmg_taken":0.92},"urf":{"dmg_taken":0.95},"nb":{"dmg_dealt":1.05}}},"96":{"id":96,"alias":"KogMaw","stats":{"aram":{"dmg_dealt":0.92,"dmg_taken":1.1},"urf":{"dmg_dealt":0.85,"dmg_taken":1.05},"ofa":{"dmg_dealt":0.97,"dmg_taken":1.03},"nb":{"dmg_dealt":0.9,"dmg_taken":1.05}}},"98":{"id":98,"alias":"Shen","stats":{"aram":{"dmg_dealt":0.95,"dmg_taken":1.05},"urf":{"dmg_taken":1.05},"ofa":{"dmg_dealt":0.95}}},"99":{"id":99,"alias":"Lux","stats":{"aram":{"dmg_dealt":0.9,"dmg_taken":1.1,"shielding":0.9},"urf":{"dmg_dealt":0.95}}},"101":{"id":101,"alias":"Xerath","stats":{"aram":{"dmg_dealt":0.93,"dmg_taken":1.05},"ofa":{"dmg_dealt":1.03}}},"102":{"id":102,"alias":"Shyvana","stats":{"aram":{"dmg_taken":0.95},"urf":{"dmg_dealt":0.85},"ofa":{"dmg_taken":1.02}}},"103":{"id":103,"alias":"Ahri","stats":{"aram":{"healing":0.9},"urf":{"dmg_dealt":0.9,"dmg_taken":1.05},"usb":{"dmg_taken":0.95}}},"104":{"id":104,"alias":"Graves","stats":{"ofa":{"dmg_dealt":0.98,"dmg_taken":1.05},"usb":{"dmg_dealt":0.95}}},"105":{"id":105,"alias":"Fizz","stats":{"aram":{"dmg_dealt":1.05,"dmg_taken":0.95,"tenacity":1.1},"urf":{"dmg_dealt":0.9,"dmg_taken":1.1}}},"106":{"id":106,"alias":"Volibear","stats":{"urf":{"dmg_dealt":0.95,"dmg_taken":1.1,"healing":0.8},"ofa":{"dmg_dealt":0.9,"dmg_taken":1.1,"shielding":0.8}}},"107":{"id":107,"alias":"Rengar","stats":{"aram":{"dmg_dealt":1.05,"dmg_taken":0.92,"tenacity":1.2},"ofa":{"dmg_dealt":1.05,"dmg_taken":0.95}}},"110":{"id":110,"alias":"Varus","stats":{}},"111":{"id":111,"alias":"Nautilus","stats":{"aram":{"dmg_dealt":0.95,"dmg_taken":1.1}}},"112":{"id":112,"alias":"Viktor","stats":{"urf":{"dmg_dealt":0.95}}},"113":{"id":113,"alias":"Sejuani","stats":{}},"114":{"id":114,"alias":"Fiora","stats":{"aram":{"dmg_taken":0.95},"urf":{"dmg_dealt":0.9,"dmg_taken":1.1,"healing":0.65},"usb":{"dmg_dealt":0.95,"dmg_taken":1.05}}},"115":{"id":115,"alias":"Ziggs","stats":{"aram":{"dmg_dealt":0.92,"dmg_taken":1.2,"ability_haste":-20},"ofa":{"dmg_taken":0.95},"nb":{"dmg_dealt":0.95,"ability_haste":-10}}},"117":{"id":117,"alias":"Lulu","stats":{}},"119":{"id":119,"alias":"Draven","stats":{"aram":{"dmg_dealt":1.05,"dmg_taken":0.95},"urf":{"dmg_dealt":0.95,"dmg_taken":1.05},"ofa":{"dmg_taken":0.95}}},"120":{"id":120,"alias":"Hecarim","stats":{"aram":{"dmg_dealt":1.05,"dmg_taken":0.9,"healing":1.2,"ability_haste":10},"nb":{"dmg_taken":0.95}}},"121":{"id":121,"alias":"Khazix","stats":{"aram":{"dmg_dealt":1.1,"dmg_taken":0.9,"healing":1.2,"tenacity":1.2}}},"122":{"id":122,"alias":"Darius","stats":{"aram":{"dmg_dealt":1.05},"urf":{"dmg_dealt":1.05,"dmg_taken":0.85},"ofa":{"dmg_dealt":0.9,"dmg_taken":1.05}}},"126":{"id":126,"alias":"Jayce","stats":{"aram":{"dmg_dealt":1.05},"urf":{"dmg_dealt":0.92,"dmg_taken":1.05}}},"127":{"id":127,"alias":"Lissandra","stats":{"aram":{"dmg_dealt":0.95,"dmg_taken":1.05}}},"131":{"id":131,"alias":"Diana","stats":{"ofa":{"dmg_dealt":0.95}}},"133":{"id":133,"alias":"Quinn","stats":{"aram":{"dmg_dealt":1.1,"dmg_taken":0.9,"tenacity":1.2},"urf":{"dmg_taken":0.95}}},"134":{"id":134,"alias":"Syndra","stats":{"aram":{"dmg_dealt":1.05,"ability_haste":5},"urf":{"dmg_dealt":0.9,"dmg_taken":1.1}}},"136":{"id":136,"alias":"AurelionSol","stats":{"urf":{"dmg_dealt":1.1,"dmg_taken":0.9},"ofa":{"dmg_dealt":1.02,"dmg_taken":0.92,"ability_haste":-20},"usb":{"dmg_dealt":1.05}}},"141":{"id":141,"alias":"Kayn","stats":{"aram":{"healing":0.8,"tenacity":1.2}}},"142":{"id":142,"alias":"Zoe","stats":{"aram":{"dmg_dealt":1.1,"dmg_taken":0.95},"ofa":{"dmg_dealt":1.1,"dmg_taken":0.9}}},"143":{"id":143,"alias":"Zyra","stats":{"aram":{"dmg_dealt":0.9,"dmg_taken":1.05,"ability_haste":-10},"nb":{"dmg_dealt":0.95,"dmg_taken":1.08}}},"145":{"id":145,"alias":"Kaisa","stats":{"aram":{"dmg_taken":0.9},"urf":{"dmg_dealt":0.9,"dmg_taken":1.1},"ofa":{"dmg_dealt":1.03}}},"147":{"id":147,"alias":"Seraphine","stats":{"aram":{"dmg_taken":1.2,"healing":0.8,"shielding":0.8,"ability_haste":-20},"urf":{"dmg_dealt":0.92,"healing":0.8},"nb":{"dmg_dealt":0.95,"healing":0.9,"shielding":0.9}}},"150":{"id":150,"alias":"Gnar","stats":{"aram":{"dmg_dealt":1.05,"dmg_taken":0.95},"urf":{"dmg_dealt":1.1,"dmg_taken":0.9}}},"154":{"id":154,"alias":"Zac","stats":{"aram":{"dmg_taken":0.96,"healing":1.1}}},"157":{"id":157,"alias":"Yasuo","stats":{"urf":{"dmg_taken":0.9}}},"161":{"id":161,"alias":"Velkoz","stats":{"aram":{"dmg_dealt":0.95,"dmg_taken":1.05},"urf":{"dmg_dealt":0.95}}},"163":{"id":163,"alias":"Taliyah","stats":{"ofa":{"dmg_dealt":1.05,"dmg_taken":0.9},"nb":{"dmg_dealt":0.95,"ability_haste":-10}}},"164":{"id":164,"alias":"Camille","stats":{"aram":{"dmg_dealt":1.05,"dmg_taken":0.95,"healing":1.2,"shielding":1.1,"ability_haste":10},"nb":{"dmg_taken":0.95}}},"166":{"id":166,"alias":"Akshan","stats":{"aram":{"dmg_dealt":1.05,"dmg_taken":0.95},"urf":{"dmg_dealt":1.05}}},"200":{"id":200,"alias":"Belveth","stats":{"usb":{"dmg_dealt":0.9}}},"201":{"id":201,"alias":"Braum","stats":{"urf":{"dmg_dealt":1.05,"dmg_taken":0.82},"ofa":{"dmg_dealt":1.1,"dmg_taken":0.9}}},"202":{"id":202,"alias":"Jhin","stats":{"aram":{"dmg_dealt":0.95,"dmg_taken":1.05},"urf":{"dmg_dealt":1.01}}},"203":{"id":203,"alias":"Kindred","stats":{"aram":{"dmg_dealt":1.1,"dmg_taken":0.9},"ofa":{"dmg_taken":0.95},"usb":{"dmg_dealt":0.95,"dmg_taken":1.05}}},"221":{"id":221,"alias":"Zeri","stats":{"aram":{"dmg_dealt":1.1,"dmg_taken":0.95}}},"222":{"id":222,"alias":"Jinx","stats":{"aram":{"dmg_dealt":0.9,"dmg_taken":1.05},"nb":{"dmg_dealt":0.95,"dmg_taken":1.05}}},"223":{"id":223,"alias":"TahmKench","stats":{"aram":{"dmg_taken":1.05},"urf":{"dmg_dealt":1.2,"dmg_taken":0.85}}},"233":{"id":233,"alias":"Briar","stats":{"aram":{"dmg_dealt":1.05,"healing":1.1}}},"234":{"id":234,"alias":"Viego","stats":{"aram":{"dmg_dealt":1.05},"urf":{"dmg_dealt":1.05,"dmg_taken":0.9},"usb":{"dmg_dealt":0.95,"healing":0.8}}},"235":{"id":235,"alias":"Senna","stats":{"aram":{"dmg_dealt":0.92,"dmg_taken":1.05},"urf":{"dmg_dealt":1.1},"ofa":{"dmg_dealt":1.05,"dmg_taken":0.9},"usb":{"dmg_dealt":1.1,"healing":1.2}}},"236":{"id":236,"alias":"Lucian","stats":{"aram":{"dmg_dealt":1.05,"dmg_taken":0.95,"ability_haste":10,"tenacity":1.2},"urf":{"dmg_dealt":0.95,"dmg_taken":1.05}}},"238":{"id":238,"alias":"Zed","stats":{"aram":{"dmg_dealt":1.05,"dmg_taken":0.95,"tenacity":1.2},"urf":{"dmg_dealt":0.85,"dmg_taken":1.1}}},"240":{"id":240,"alias":"Kled","stats":{"aram":{"dmg_dealt":1.05},"urf":{"dmg_taken":0.9}}},"245":{"id":245,"alias":"Ekko","stats":{"aram":{"dmg_dealt":1.1,"tenacity":1.2},"ofa":{"dmg_dealt":0.95}}},"246":{"id":246,"alias":"Qiyana","stats":{"aram":{"dmg_dealt":1.15,"dmg_taken":0.9,"ability_haste":20,"tenacity":1.2},"urf":{"dmg_taken":0.9},"ofa":{"dmg_dealt":1.05,"dmg_taken":0.92}}},"254":{"id":254,"alias":"Vi","stats":{"aram":{"dmg_dealt":1.05,"dmg_taken":0.95},"urf":{"dmg_dealt":0.95,"dmg_taken":1.05},"ofa":{"dmg_dealt":0.95,"dmg_taken":1.05},"usb":{"dmg_dealt":0.95,"dmg_taken":1.05}}},"266":{"id":266,"alias":"Aatrox","stats":{"aram":{"dmg_dealt":1.05},"urf":{"dmg_dealt":1.15,"dmg_taken":0.7}}},"267":{"id":267,"alias":"Nami","stats":{"aram":{"dmg_dealt":0.95,"dmg_taken":1.05},"ofa":{"dmg_dealt":1.05,"dmg_taken":0.93,"healing":1.2}}},"268":{"id":268,"alias":"Azir","stats":{"aram":{"dmg_taken":0.95,"ability_haste":20},"ofa":{"dmg_dealt":1.08,"dmg_taken":0.9}}},"350":{"id":350,"alias":"Yuumi","stats":{"urf":{"dmg_dealt":0.75,"dmg_taken":0.9,"healing":0.7},"ofa":{"dmg_dealt":1.15,"dmg_taken":0.8,"healing":1.2,"shielding":1.2},"usb":{"dmg_dealt":0.95,"healing":0.75,"shielding":0.75}}},"360":{"id":360,"alias":"Samira","stats":{"urf":{"dmg_dealt":0.95},"usb":{"dmg_dealt":0.9,"shielding":0.99}}},"412":{"id":412,"alias":"Thresh","stats":{"aram":{"dmg_taken":1.05},"urf":{"dmg_taken":0.87,"shielding":1.2},"nb":{"ability_haste":20}}},"420":{"id":420,"alias":"Illaoi","stats":{"aram":{"dmg_dealt":0.95,"dmg_taken":1.05,"healing":0.8},"urf":{"dmg_taken":0.9},"ofa":{"dmg_dealt":0.92,"dmg_taken":1.05}}},"421":{"id":421,"alias":"RekSai","stats":{"aram":{"dmg_dealt":1.05,"dmg_taken":0.9},"urf":{"dmg_dealt":1.07,"dmg_taken":0.93,"healing":1.2},"ofa":{"dmg_dealt":1.05,"dmg_taken":0.93,"healing":1.2},"nb":{"dmg_dealt":1.05,"dmg_taken":0.9}}},"427":{"id":427,"alias":"Ivern","stats":{"aram":{"dmg_dealt":0.95,"shielding":0.9},"ofa":{"dmg_dealt":1.1,"dmg_taken":0.93,"shielding":1.2},"usb":{"dmg_taken":0.95}}},"429":{"id":429,"alias":"Kalista","stats":{"aram":{"dmg_dealt":1.1,"dmg_taken":0.9},"urf":{"dmg_dealt":1.1,"dmg_taken":0.9}}},"432":{"id":432,"alias":"Bard","stats":{"aram":{"dmg_dealt":1.15,"dmg_taken":0.85,"healing":1.2},"urf":{"dmg_dealt":1.15,"dmg_taken":0.85,"healing":1.2},"ofa":{"dmg_dealt":1.15,"dmg_taken":0.85,"healing":1.2},"nb":{"dmg_taken":0.9,"ability_haste":20},"usb":{"dmg_dealt":1.08,"dmg_taken":0.92}}},"497":{"id":497,"alias":"Rakan","stats":{"aram":{"dmg_taken":0.95,"ability_haste":10}}},"498":{"id":498,"alias":"Xayah","stats":{"aram":{"dmg_dealt":1.05},"urf":{"dmg_dealt":0.85,"dmg_taken":1.1},"usb":{"dmg_taken":0.95}}},"516":{"id":516,"alias":"Ornn","stats":{"aram":{"dmg_dealt":0.9,"dmg_taken":1.05},"urf":{"dmg_dealt":1.05,"dmg_taken":0.95}}},"517":{"id":517,"alias":"Sylas","stats":{"aram":{"dmg_dealt":1.05},"urf":{"dmg_dealt":0.95}}},"518":{"id":518,"alias":"Neeko","stats":{"ofa":{"dmg_dealt":0.98},"usb":{"dmg_taken":0.95}}},"523":{"id":523,"alias":"Aphelios","stats":{"urf":{"dmg_dealt":1.05},"ofa":{"dmg_dealt":1.08},"usb":{"dmg_dealt":0.95}}},"526":{"id":526,"alias":"Rell","stats":{"aram":{"dmg_dealt":0.95,"shielding":0.9},"ofa":{"dmg_dealt":1.05},"usb":{"dmg_dealt":0.9,"dmg_taken":1.05}}},"555":{"id":555,"alias":"Pyke","stats":{"aram":{"dmg_dealt":1.1,"dmg_taken":0.9,"tenacity":1.2},"urf":{"dmg_taken":0.95},"ofa":{"dmg_taken":0.95},"nb":{"dmg_dealt":1.05}}},"711":{"id":711,"alias":"Vex","stats":{"aram":{"dmg_dealt":0.95},"urf":{"dmg_dealt":0.9}}},"777":{"id":777,"alias":"Yone","stats":{"aram":{"dmg_dealt":1.05,"dmg_taken":0.97},"urf":{"dmg_dealt":1.1,"dmg_taken":0.9,"shielding":1.2},"ofa":{"dmg_dealt":0.98}}},"799":{"id":799,"alias":"Ambessa","stats":{"aram":{"dmg_taken":1.05}}},"800":{"id":800,"alias":"Mel","stats":{"aram":{"ability_haste":-10},"urf":{"dmg_dealt":0.9}}},"804":{"id":804,"alias":"Yunara","stats":{}},"805":{"id":805,"alias":"Locke","stats":{"aram":{"dmg_dealt":1.15}}},"875":{"id":875,"alias":"Sett","stats":{"aram":{"dmg_taken":1.1},"urf":{"dmg_dealt":1.05,"dmg_taken":0.92},"ofa":{"dmg_dealt":0.95,"dmg_taken":1.05},"nb":{"dmg_dealt":0.95},"usb":{"dmg_dealt":0.95,"dmg_taken":1.05}}},"876":{"id":876,"alias":"Lillia","stats":{"aram":{"dmg_dealt":0.95,"dmg_taken":1.05},"ofa":{"dmg_dealt":0.98},"usb":{"dmg_dealt":0.95}}},"887":{"id":887,"alias":"Gwen","stats":{"aram":{"dmg_dealt":1.02},"usb":{"dmg_dealt":0.95,"dmg_taken":1.05}}},"888":{"id":888,"alias":"Renata","stats":{"aram":{"dmg_dealt":0.95,"dmg_taken":1.05},"ofa":{"dmg_dealt":1.1,"dmg_taken":0.95,"shielding":1.2}}},"893":{"id":893,"alias":"Aurora","stats":{"aram":{"ability_haste":10}}},"895":{"id":895,"alias":"Nilah","stats":{}},"897":{"id":897,"alias":"KSante","stats":{"aram":{"dmg_dealt":1.05},"urf":{"dmg_dealt":1.05}}},"901":{"id":901,"alias":"Smolder","stats":{"aram":{"dmg_taken":1.02,"ability_haste":-10}}},"902":{"id":902,"alias":"Milio","stats":{"aram":{"healing":0.95,"shielding":0.9,"ability_haste":-10}}},"904":{"id":904,"alias":"Zaahen","stats":{"aram":{"dmg_dealt":0.95,"dmg_taken":1.05}}},"910":{"id":910,"alias":"Hwei","stats":{"aram":{"dmg_dealt":0.95}}},"950":{"id":950,"alias":"Naafiri","stats":{"aram":{"dmg_dealt":1.1,"ability_haste":10}}},"150.2":{"id":150.2,"alias":"GnarBig","stats":{}},"240.1":{"id":240.1,"alias":"Kled","stats":{}}}'), Bh = {
+const x = new nI(), sI = { source: "lol-wiki", sourceUrl: "https://wiki.leagueoflegends.com/en-us/Module:ChampionData/data", updatedAt: "2026-11-18T17:53:47.025Z", sha1: "f04a81468a32155570208c45c1d5346114dccb68", championCount: 175 }, iI = /* @__PURE__ */ JSON.parse('{"1":{"id":1,"alias":"Annie","stats":{"aram":{"dmg_dealt":0.95,"dmg_taken":1.05,"shielding":0.9},"urf":{"dmg_dealt":0.9,"dmg_taken":1.1,"shielding":0.9}}},"2":{"id":2,"alias":"Olaf","stats":{"aram":{"dmg_dealt":1.05}}},"3":{"id":3,"alias":"Galio","stats":{"aram":{"dmg_dealt":0.9,"dmg_taken":1.05}}},"4":{"id":4,"alias":"TwistedFate","stats":{"urf":{"dmg_dealt":0.95}}},"5":{"id":5,"alias":"XinZhao","stats":{"aram":{"dmg_dealt":0.95},"urf":{"dmg_taken":1.1},"ofa":{"dmg_dealt":0.97,"dmg_taken":1.02,"healing":1.2},"usb":{"dmg_dealt":0.95,"dmg_taken":1.05}}},"6":{"id":6,"alias":"Urgot","stats":{"aram":{"dmg_taken":1.05},"urf":{"dmg_dealt":1.15,"dmg_taken":0.85},"ofa":{"dmg_dealt":0.95,"dmg_taken":1.02}}},"7":{"id":7,"alias":"Leblanc","stats":{"aram":{"dmg_dealt":1.1,"dmg_taken":0.9,"ability_haste":20},"ofa":{"dmg_taken":0.95},"nb":{"dmg_taken":0.9,"ability_haste":20}}},"8":{"id":8,"alias":"Vladimir","stats":{"urf":{"dmg_dealt":0.92,"dmg_taken":1.05,"healing":1.2}}},"9":{"id":9,"alias":"Fiddlesticks","stats":{"aram":{"dmg_dealt":0.95,"dmg_taken":1.05},"urf":{"dmg_dealt":1.1,"dmg_taken":0.85},"ofa":{"dmg_dealt":1.05,"dmg_taken":0.93,"healing":1.2},"usb":{"dmg_dealt":1.05,"dmg_taken":0.95}}},"10":{"id":10,"alias":"Kayle","stats":{"aram":{"dmg_dealt":0.95,"dmg_taken":1.1},"urf":{"dmg_dealt":0.85,"dmg_taken":1.1},"ofa":{"dmg_dealt":0.95,"dmg_taken":1.05},"nb":{"dmg_dealt":0.9,"dmg_taken":1.05}}},"11":{"id":11,"alias":"MasterYi","stats":{"urf":{"dmg_dealt":0.9,"healing":0.8},"usb":{"dmg_taken":1.05}}},"12":{"id":12,"alias":"Alistar","stats":{"aram":{"dmg_dealt":0.95,"dmg_taken":1.05,"healing":0.8},"urf":{"dmg_taken":0.95},"ofa":{"dmg_dealt":1.05,"dmg_taken":0.97},"usb":{"dmg_dealt":0.95}}},"13":{"id":13,"alias":"Ryze","stats":{"aram":{"dmg_dealt":1.05,"dmg_taken":0.95},"ofa":{"dmg_dealt":1.03}}},"14":{"id":14,"alias":"Sion","stats":{"aram":{"dmg_dealt":0.9,"dmg_taken":1.1,"ability_haste":-10},"urf":{"dmg_dealt":1.1,"dmg_taken":0.92,"shielding":1.2},"nb":{"dmg_taken":1.05}}},"15":{"id":15,"alias":"Sivir","stats":{"aram":{"dmg_dealt":0.93,"dmg_taken":1.05},"urf":{"dmg_dealt":0.85,"dmg_taken":1.05},"nb":{"dmg_dealt":0.95,"dmg_taken":1.05}}},"16":{"id":16,"alias":"Soraka","stats":{"aram":{"ability_haste":10},"urf":{"dmg_dealt":1.05,"dmg_taken":0.92},"ofa":{"dmg_dealt":1.03,"dmg_taken":0.97,"healing":1.1}}},"17":{"id":17,"alias":"Teemo","stats":{"aram":{"dmg_dealt":0.95,"dmg_taken":1.1,"ability_haste":-15},"urf":{"dmg_dealt":0.9},"nb":{"dmg_dealt":0.9,"dmg_taken":1.05}}},"18":{"id":18,"alias":"Tristana","stats":{"aram":{"dmg_dealt":1.05,"dmg_taken":0.95},"urf":{"dmg_dealt":0.9,"dmg_taken":1.05}}},"19":{"id":19,"alias":"Warwick","stats":{"aram":{"dmg_dealt":1.05,"dmg_taken":0.95},"usb":{"dmg_dealt":0.95}}},"20":{"id":20,"alias":"Nunu","stats":{"aram":{"dmg_dealt":1.1,"dmg_taken":0.9,"healing":1.1,"shielding":1.2,"tenacity":1.2},"urf":{"dmg_dealt":1.08,"dmg_taken":0.95},"ofa":{"dmg_dealt":1.05,"dmg_taken":0.92,"healing":1.05,"shielding":1.2},"nb":{"dmg_dealt":1.1,"dmg_taken":0.9,"ability_haste":20},"usb":{"dmg_dealt":1.05,"dmg_taken":0.95,"healing":1.2}}},"21":{"id":21,"alias":"MissFortune","stats":{"aram":{"dmg_dealt":0.95,"dmg_taken":1.05},"usb":{"dmg_dealt":1.05,"dmg_taken":0.95}}},"22":{"id":22,"alias":"Ashe","stats":{"aram":{"dmg_dealt":1.05},"usb":{"dmg_taken":0.95}}},"23":{"id":23,"alias":"Tryndamere","stats":{"aram":{"dmg_dealt":1.1,"dmg_taken":0.9,"healing":1.2}}},"24":{"id":24,"alias":"Jax","stats":{"aram":{"dmg_dealt":1.05,"dmg_taken":0.97},"urf":{"dmg_dealt":0.9,"dmg_taken":1.15},"ofa":{"dmg_dealt":0.95,"dmg_taken":1.05},"usb":{"dmg_dealt":0.95,"dmg_taken":1.05}}},"25":{"id":25,"alias":"Morgana","stats":{"aram":{"dmg_dealt":0.95,"dmg_taken":1.1},"urf":{"dmg_dealt":0.9,"dmg_taken":1.05},"nb":{"dmg_dealt":0.95}}},"26":{"id":26,"alias":"Zilean","stats":{"aram":{"dmg_dealt":1.05,"dmg_taken":0.95},"urf":{"dmg_dealt":1.05,"dmg_taken":0.9},"ofa":{"dmg_dealt":1.05,"dmg_taken":0.95}}},"27":{"id":27,"alias":"Singed","stats":{"aram":{"dmg_taken":1.08},"urf":{"dmg_dealt":0.9},"nb":{"dmg_dealt":0.95},"usb":{"dmg_taken":1.05}}},"28":{"id":28,"alias":"Evelynn","stats":{"aram":{"dmg_dealt":1.1,"dmg_taken":0.9,"tenacity":1.2},"urf":{"dmg_dealt":1.05,"dmg_taken":0.95},"ofa":{"dmg_dealt":1.07,"dmg_taken":0.93},"nb":{"dmg_taken":0.9,"ability_haste":20},"usb":{"dmg_dealt":1.1}}},"29":{"id":29,"alias":"Twitch","stats":{"aram":{"dmg_taken":0.95},"urf":{"dmg_dealt":0.85,"dmg_taken":1.1},"ofa":{"dmg_dealt":0.98}}},"30":{"id":30,"alias":"Karthus","stats":{"aram":{"dmg_dealt":0.93,"dmg_taken":1.05},"urf":{"dmg_dealt":0.9}}},"31":{"id":31,"alias":"Chogath","stats":{"aram":{"dmg_taken":1.1},"ofa":{"dmg_dealt":0.98,"dmg_taken":1.05}}},"32":{"id":32,"alias":"Amumu","stats":{"urf":{"dmg_dealt":1.1,"dmg_taken":0.9},"ofa":{"dmg_taken":1.05}}},"33":{"id":33,"alias":"Rammus","stats":{"urf":{"dmg_dealt":1.1,"dmg_taken":0.85},"ofa":{"dmg_dealt":1.05},"usb":{"dmg_dealt":1.05,"dmg_taken":0.95}}},"34":{"id":34,"alias":"Anivia","stats":{"aram":{"dmg_dealt":1.05},"urf":{"dmg_dealt":1.15,"dmg_taken":0.92},"usb":{"dmg_dealt":1.1,"dmg_taken":0.9}}},"35":{"id":35,"alias":"Shaco","stats":{"aram":{"dmg_dealt":1.05},"urf":{"dmg_dealt":0.9,"dmg_taken":1.1}}},"36":{"id":36,"alias":"DrMundo","stats":{"aram":{"dmg_dealt":0.9,"dmg_taken":1.05,"healing":0.9},"ofa":{"dmg_dealt":0.95,"dmg_taken":1.05,"healing":0.9}}},"37":{"id":37,"alias":"Sona","stats":{"urf":{"dmg_dealt":0.9,"healing":0.7},"nb":{"dmg_dealt":0.95,"healing":0.9,"shielding":0.9}}},"38":{"id":38,"alias":"Kassadin","stats":{"aram":{"dmg_taken":0.95}}},"39":{"id":39,"alias":"Irelia","stats":{"aram":{"dmg_dealt":1.05,"ability_haste":20},"ofa":{"dmg_dealt":0.97}}},"40":{"id":40,"alias":"Janna","stats":{"aram":{"dmg_dealt":0.95,"dmg_taken":1.05,"healing":0.9},"ofa":{"dmg_dealt":1.03}}},"41":{"id":41,"alias":"Gangplank","stats":{"aram":{"dmg_dealt":1.05},"ofa":{"dmg_dealt":1.05,"dmg_taken":0.9}}},"42":{"id":42,"alias":"Corki","stats":{"aram":{"dmg_taken":0.9,"ability_haste":-20},"nb":{"dmg_dealt":1.05}}},"43":{"id":43,"alias":"Karma","stats":{}},"44":{"id":44,"alias":"Taric","stats":{"aram":{"dmg_taken":1.1},"urf":{"healing":0.85},"ofa":{"dmg_taken":0.92}}},"45":{"id":45,"alias":"Veigar","stats":{"aram":{"dmg_dealt":0.93,"dmg_taken":1.1},"urf":{"dmg_dealt":0.9}}},"48":{"id":48,"alias":"Trundle","stats":{"aram":{"dmg_taken":1.05},"urf":{"dmg_dealt":0.95,"dmg_taken":0.95,"healing":0.8},"ofa":{"dmg_dealt":0.95,"dmg_taken":1.07},"usb":{"dmg_taken":1.05}}},"50":{"id":50,"alias":"Swain","stats":{"aram":{"dmg_dealt":0.95,"dmg_taken":1.15,"healing":0.8},"nb":{"dmg_dealt":0.95,"dmg_taken":1.05}}},"51":{"id":51,"alias":"Caitlyn","stats":{}},"53":{"id":53,"alias":"Blitzcrank","stats":{"ofa":{"dmg_dealt":1.06,"dmg_taken":0.97},"nb":{"dmg_dealt":1.05},"usb":{"dmg_dealt":1.05,"dmg_taken":0.95}}},"54":{"id":54,"alias":"Malphite","stats":{"urf":{"dmg_dealt":0.95},"ofa":{"dmg_dealt":0.95}}},"55":{"id":55,"alias":"Katarina","stats":{"aram":{"ability_haste":10,"tenacity":1.2},"urf":{"dmg_dealt":1.1,"dmg_taken":0.95},"ofa":{"dmg_taken":0.95}}},"56":{"id":56,"alias":"Nocturne","stats":{"aram":{"dmg_dealt":1.1,"dmg_taken":0.9,"healing":1.2},"urf":{"dmg_dealt":0.95},"ofa":{"dmg_dealt":0.95}}},"57":{"id":57,"alias":"Maokai","stats":{"aram":{"dmg_dealt":0.85,"dmg_taken":1.1},"urf":{"dmg_taken":1.05,"healing":0.7},"ofa":{"dmg_taken":1.05},"nb":{"dmg_dealt":0.95,"dmg_taken":1.05,"healing":0.95,"shielding":0.95}}},"58":{"id":58,"alias":"Renekton","stats":{"aram":{"healing":1.1},"urf":{"dmg_dealt":0.95,"dmg_taken":0.95}}},"59":{"id":59,"alias":"JarvanIV","stats":{"ofa":{"dmg_dealt":0.95},"usb":{"dmg_dealt":0.95}}},"60":{"id":60,"alias":"Elise","stats":{"aram":{"dmg_dealt":1.05,"dmg_taken":0.9,"tenacity":1.1},"urf":{"dmg_taken":0.95},"ofa":{"dmg_dealt":1.05,"dmg_taken":0.92},"usb":{"dmg_dealt":1.05,"dmg_taken":0.95}}},"61":{"id":61,"alias":"Orianna","stats":{"urf":{"dmg_dealt":0.9,"dmg_taken":1.1,"shielding":0.8}}},"62":{"id":62,"alias":"MonkeyKing","stats":{"urf":{"dmg_dealt":0.9,"dmg_taken":1.1},"ofa":{"dmg_dealt":0.95,"dmg_taken":1.05},"usb":{"dmg_dealt":0.95}}},"63":{"id":63,"alias":"Brand","stats":{"aram":{"dmg_dealt":0.95,"dmg_taken":1.1,"ability_haste":-10},"ofa":{"dmg_taken":1.03},"nb":{"dmg_dealt":0.9,"dmg_taken":1.08},"usb":{"dmg_dealt":0.95}}},"64":{"id":64,"alias":"LeeSin","stats":{"aram":{"dmg_dealt":1.05,"dmg_taken":0.95,"healing":1.1,"shielding":1.2},"urf":{"dmg_dealt":1.05},"ofa":{"dmg_taken":0.95}}},"67":{"id":67,"alias":"Vayne","stats":{"aram":{"dmg_taken":0.95},"urf":{"dmg_dealt":0.95,"dmg_taken":1.05},"ofa":{"dmg_dealt":0.97}}},"68":{"id":68,"alias":"Rumble","stats":{}},"69":{"id":69,"alias":"Cassiopeia","stats":{"urf":{"dmg_dealt":0.95,"dmg_taken":1.05}}},"72":{"id":72,"alias":"Skarner","stats":{"urf":{"dmg_dealt":1.1,"shielding":0.9},"ofa":{"dmg_taken":0.97}}},"74":{"id":74,"alias":"Heimerdinger","stats":{"aram":{"dmg_dealt":0.9,"dmg_taken":1.1},"ofa":{"dmg_dealt":0.97}}},"75":{"id":75,"alias":"Nasus","stats":{"aram":{"dmg_dealt":0.9,"dmg_taken":1.05},"nb":{"dmg_dealt":0.95},"usb":{"dmg_taken":0.95}}},"76":{"id":76,"alias":"Nidalee","stats":{"aram":{"dmg_dealt":1.1},"urf":{"dmg_dealt":1.1,"dmg_taken":0.95},"ofa":{"dmg_dealt":1.07,"dmg_taken":0.95},"nb":{"dmg_dealt":1.05,"dmg_taken":0.9,"healing":1.1,"shielding":1.1},"usb":{"dmg_dealt":1.05,"dmg_taken":0.95,"healing":1.2}}},"77":{"id":77,"alias":"Udyr","stats":{"urf":{"dmg_dealt":1.1,"dmg_taken":0.92}}},"78":{"id":78,"alias":"Poppy","stats":{}},"79":{"id":79,"alias":"Gragas","stats":{"aram":{"dmg_taken":0.95}}},"80":{"id":80,"alias":"Pantheon","stats":{"ofa":{"dmg_dealt":0.98,"dmg_taken":1.02}}},"81":{"id":81,"alias":"Ezreal","stats":{"urf":{"dmg_dealt":0.95}}},"82":{"id":82,"alias":"Mordekaiser","stats":{"urf":{"dmg_taken":0.85},"ofa":{"dmg_dealt":0.95,"dmg_taken":1.05},"usb":{"dmg_taken":1.05}}},"83":{"id":83,"alias":"Yorick","stats":{"ofa":{"dmg_dealt":0.9,"dmg_taken":1.05}}},"84":{"id":84,"alias":"Akali","stats":{"aram":{"dmg_taken":0.95,"tenacity":1.2},"urf":{"dmg_taken":0.9},"ofa":{"dmg_dealt":1.05,"dmg_taken":0.97},"nb":{"dmg_taken":0.9,"ability_haste":20}}},"85":{"id":85,"alias":"Kennen","stats":{"urf":{"dmg_taken":0.95},"ofa":{"dmg_dealt":0.98,"dmg_taken":1.02}}},"86":{"id":86,"alias":"Garen","stats":{"aram":{"dmg_taken":0.95},"urf":{"dmg_dealt":1.1,"dmg_taken":0.95},"ofa":{"dmg_dealt":0.95}}},"89":{"id":89,"alias":"Leona","stats":{"aram":{"dmg_dealt":0.95,"dmg_taken":1.05}}},"90":{"id":90,"alias":"Malzahar","stats":{"aram":{"dmg_dealt":0.9,"dmg_taken":1.1},"urf":{"dmg_dealt":0.92,"dmg_taken":1.08}}},"91":{"id":91,"alias":"Talon","stats":{"aram":{"dmg_dealt":1.05,"dmg_taken":0.95,"tenacity":1.2}}},"92":{"id":92,"alias":"Riven","stats":{"aram":{"dmg_dealt":1.05,"dmg_taken":0.92},"urf":{"dmg_taken":0.95},"nb":{"dmg_dealt":1.05}}},"96":{"id":96,"alias":"KogMaw","stats":{"aram":{"dmg_dealt":0.92,"dmg_taken":1.1},"urf":{"dmg_dealt":0.85,"dmg_taken":1.05},"ofa":{"dmg_dealt":0.97,"dmg_taken":1.03},"nb":{"dmg_dealt":0.9,"dmg_taken":1.05}}},"98":{"id":98,"alias":"Shen","stats":{"aram":{"dmg_dealt":0.95,"dmg_taken":1.05},"urf":{"dmg_taken":1.05},"ofa":{"dmg_dealt":0.95}}},"99":{"id":99,"alias":"Lux","stats":{"aram":{"dmg_dealt":0.9,"dmg_taken":1.1,"shielding":0.9},"urf":{"dmg_dealt":0.95}}},"101":{"id":101,"alias":"Xerath","stats":{"aram":{"dmg_dealt":0.93,"dmg_taken":1.05},"ofa":{"dmg_dealt":1.03}}},"102":{"id":102,"alias":"Shyvana","stats":{"aram":{"dmg_taken":0.95},"urf":{"dmg_dealt":0.85},"ofa":{"dmg_taken":1.02}}},"103":{"id":103,"alias":"Ahri","stats":{"aram":{"healing":0.9},"urf":{"dmg_dealt":0.9,"dmg_taken":1.05},"usb":{"dmg_taken":0.95}}},"104":{"id":104,"alias":"Graves","stats":{"ofa":{"dmg_dealt":0.98,"dmg_taken":1.05},"usb":{"dmg_dealt":0.95}}},"105":{"id":105,"alias":"Fizz","stats":{"aram":{"dmg_dealt":1.05,"dmg_taken":0.95,"tenacity":1.1},"urf":{"dmg_dealt":0.9,"dmg_taken":1.1}}},"106":{"id":106,"alias":"Volibear","stats":{"urf":{"dmg_dealt":0.95,"dmg_taken":1.1,"healing":0.8},"ofa":{"dmg_dealt":0.9,"dmg_taken":1.1,"shielding":0.8}}},"107":{"id":107,"alias":"Rengar","stats":{"aram":{"dmg_dealt":1.05,"dmg_taken":0.92,"tenacity":1.2},"ofa":{"dmg_dealt":1.05,"dmg_taken":0.95}}},"110":{"id":110,"alias":"Varus","stats":{}},"111":{"id":111,"alias":"Nautilus","stats":{"aram":{"dmg_dealt":0.95,"dmg_taken":1.1}}},"112":{"id":112,"alias":"Viktor","stats":{"urf":{"dmg_dealt":0.95}}},"113":{"id":113,"alias":"Sejuani","stats":{}},"114":{"id":114,"alias":"Fiora","stats":{"aram":{"dmg_taken":0.95},"urf":{"dmg_dealt":0.9,"dmg_taken":1.1,"healing":0.65},"usb":{"dmg_dealt":0.95,"dmg_taken":1.05}}},"115":{"id":115,"alias":"Ziggs","stats":{"aram":{"dmg_dealt":0.92,"dmg_taken":1.2,"ability_haste":-20},"ofa":{"dmg_taken":0.95},"nb":{"dmg_dealt":0.95,"ability_haste":-10}}},"117":{"id":117,"alias":"Lulu","stats":{}},"119":{"id":119,"alias":"Draven","stats":{"aram":{"dmg_dealt":1.05,"dmg_taken":0.95},"urf":{"dmg_dealt":0.95,"dmg_taken":1.05},"ofa":{"dmg_taken":0.95}}},"120":{"id":120,"alias":"Hecarim","stats":{"aram":{"dmg_dealt":1.05,"dmg_taken":0.9,"healing":1.2,"ability_haste":10},"nb":{"dmg_taken":0.95}}},"121":{"id":121,"alias":"Khazix","stats":{"aram":{"dmg_dealt":1.1,"dmg_taken":0.9,"healing":1.2,"tenacity":1.2}}},"122":{"id":122,"alias":"Darius","stats":{"aram":{"dmg_dealt":1.05},"urf":{"dmg_dealt":1.05,"dmg_taken":0.85},"ofa":{"dmg_dealt":0.9,"dmg_taken":1.05}}},"126":{"id":126,"alias":"Jayce","stats":{"aram":{"dmg_dealt":1.05},"urf":{"dmg_dealt":0.92,"dmg_taken":1.05}}},"127":{"id":127,"alias":"Lissandra","stats":{"aram":{"dmg_dealt":0.95,"dmg_taken":1.05}}},"131":{"id":131,"alias":"Diana","stats":{"ofa":{"dmg_dealt":0.95}}},"133":{"id":133,"alias":"Quinn","stats":{"aram":{"dmg_dealt":1.1,"dmg_taken":0.9,"tenacity":1.2},"urf":{"dmg_taken":0.95}}},"134":{"id":134,"alias":"Syndra","stats":{"aram":{"dmg_dealt":1.05,"ability_haste":5},"urf":{"dmg_dealt":0.9,"dmg_taken":1.1}}},"136":{"id":136,"alias":"AurelionSol","stats":{"urf":{"dmg_dealt":1.1,"dmg_taken":0.9},"ofa":{"dmg_dealt":1.02,"dmg_taken":0.92,"ability_haste":-20},"usb":{"dmg_dealt":1.05}}},"141":{"id":141,"alias":"Kayn","stats":{"aram":{"healing":0.8,"tenacity":1.2}}},"142":{"id":142,"alias":"Zoe","stats":{"aram":{"dmg_dealt":1.1,"dmg_taken":0.95},"ofa":{"dmg_dealt":1.1,"dmg_taken":0.9}}},"143":{"id":143,"alias":"Zyra","stats":{"aram":{"dmg_dealt":0.9,"dmg_taken":1.05,"ability_haste":-10},"nb":{"dmg_dealt":0.95,"dmg_taken":1.08}}},"145":{"id":145,"alias":"Kaisa","stats":{"aram":{"dmg_taken":0.9},"urf":{"dmg_dealt":0.9,"dmg_taken":1.1},"ofa":{"dmg_dealt":1.03}}},"147":{"id":147,"alias":"Seraphine","stats":{"aram":{"dmg_taken":1.2,"healing":0.8,"shielding":0.8,"ability_haste":-20},"urf":{"dmg_dealt":0.92,"healing":0.8},"nb":{"dmg_dealt":0.95,"healing":0.9,"shielding":0.9}}},"150":{"id":150,"alias":"Gnar","stats":{"aram":{"dmg_dealt":1.05,"dmg_taken":0.95},"urf":{"dmg_dealt":1.1,"dmg_taken":0.9}}},"154":{"id":154,"alias":"Zac","stats":{"aram":{"dmg_taken":0.96,"healing":1.1}}},"157":{"id":157,"alias":"Yasuo","stats":{"urf":{"dmg_taken":0.9}}},"161":{"id":161,"alias":"Velkoz","stats":{"aram":{"dmg_dealt":0.95,"dmg_taken":1.05},"urf":{"dmg_dealt":0.95}}},"163":{"id":163,"alias":"Taliyah","stats":{"ofa":{"dmg_dealt":1.05,"dmg_taken":0.9},"nb":{"dmg_dealt":0.95,"ability_haste":-10}}},"164":{"id":164,"alias":"Camille","stats":{"aram":{"dmg_dealt":1.05,"dmg_taken":0.95,"healing":1.2,"shielding":1.1,"ability_haste":10},"nb":{"dmg_taken":0.95}}},"166":{"id":166,"alias":"Akshan","stats":{"aram":{"dmg_dealt":1.05,"dmg_taken":0.95},"urf":{"dmg_dealt":1.05}}},"200":{"id":200,"alias":"Belveth","stats":{"usb":{"dmg_dealt":0.9}}},"201":{"id":201,"alias":"Braum","stats":{"urf":{"dmg_dealt":1.05,"dmg_taken":0.82},"ofa":{"dmg_dealt":1.1,"dmg_taken":0.9}}},"202":{"id":202,"alias":"Jhin","stats":{"aram":{"dmg_dealt":0.95,"dmg_taken":1.05},"urf":{"dmg_dealt":1.01}}},"203":{"id":203,"alias":"Kindred","stats":{"aram":{"dmg_dealt":1.1,"dmg_taken":0.9},"ofa":{"dmg_taken":0.95},"usb":{"dmg_dealt":0.95,"dmg_taken":1.05}}},"221":{"id":221,"alias":"Zeri","stats":{"aram":{"dmg_dealt":1.1,"dmg_taken":0.95}}},"222":{"id":222,"alias":"Jinx","stats":{"aram":{"dmg_dealt":0.9,"dmg_taken":1.05},"nb":{"dmg_dealt":0.95,"dmg_taken":1.05}}},"223":{"id":223,"alias":"TahmKench","stats":{"aram":{"dmg_taken":1.05},"urf":{"dmg_dealt":1.2,"dmg_taken":0.85}}},"233":{"id":233,"alias":"Briar","stats":{"aram":{"dmg_dealt":1.05,"healing":1.1}}},"234":{"id":234,"alias":"Viego","stats":{"aram":{"dmg_dealt":1.05},"urf":{"dmg_dealt":1.05,"dmg_taken":0.9},"usb":{"dmg_dealt":0.95,"healing":0.8}}},"235":{"id":235,"alias":"Senna","stats":{"aram":{"dmg_dealt":0.92,"dmg_taken":1.05},"urf":{"dmg_dealt":1.1},"ofa":{"dmg_dealt":1.05,"dmg_taken":0.9},"usb":{"dmg_dealt":1.1,"healing":1.2}}},"236":{"id":236,"alias":"Lucian","stats":{"aram":{"dmg_dealt":1.05,"dmg_taken":0.95,"ability_haste":10,"tenacity":1.2},"urf":{"dmg_dealt":0.95,"dmg_taken":1.05}}},"238":{"id":238,"alias":"Zed","stats":{"aram":{"dmg_dealt":1.05,"dmg_taken":0.95,"tenacity":1.2},"urf":{"dmg_dealt":0.85,"dmg_taken":1.1}}},"240":{"id":240,"alias":"Kled","stats":{"aram":{"dmg_dealt":1.05},"urf":{"dmg_taken":0.9}}},"245":{"id":245,"alias":"Ekko","stats":{"aram":{"dmg_dealt":1.1,"tenacity":1.2},"ofa":{"dmg_dealt":0.95}}},"246":{"id":246,"alias":"Qiyana","stats":{"aram":{"dmg_dealt":1.15,"dmg_taken":0.9,"ability_haste":20,"tenacity":1.2},"urf":{"dmg_taken":0.9},"ofa":{"dmg_dealt":1.05,"dmg_taken":0.92}}},"254":{"id":254,"alias":"Vi","stats":{"aram":{"dmg_dealt":1.05,"dmg_taken":0.95},"urf":{"dmg_dealt":0.95,"dmg_taken":1.05},"ofa":{"dmg_dealt":0.95,"dmg_taken":1.05},"usb":{"dmg_dealt":0.95,"dmg_taken":1.05}}},"266":{"id":266,"alias":"Aatrox","stats":{"aram":{"dmg_dealt":1.05},"urf":{"dmg_dealt":1.15,"dmg_taken":0.7}}},"267":{"id":267,"alias":"Nami","stats":{"aram":{"dmg_dealt":0.95,"dmg_taken":1.05},"ofa":{"dmg_dealt":1.05,"dmg_taken":0.93,"healing":1.2}}},"268":{"id":268,"alias":"Azir","stats":{"aram":{"dmg_taken":0.95,"ability_haste":20},"ofa":{"dmg_dealt":1.08,"dmg_taken":0.9}}},"350":{"id":350,"alias":"Yuumi","stats":{"urf":{"dmg_dealt":0.75,"dmg_taken":0.9,"healing":0.7},"ofa":{"dmg_dealt":1.15,"dmg_taken":0.8,"healing":1.2,"shielding":1.2},"usb":{"dmg_dealt":0.95,"healing":0.75,"shielding":0.75}}},"360":{"id":360,"alias":"Samira","stats":{"urf":{"dmg_dealt":0.95},"usb":{"dmg_dealt":0.9,"shielding":0.99}}},"412":{"id":412,"alias":"Thresh","stats":{"aram":{"dmg_taken":1.05},"urf":{"dmg_taken":0.87,"shielding":1.2},"nb":{"ability_haste":20}}},"420":{"id":420,"alias":"Illaoi","stats":{"aram":{"dmg_dealt":0.95,"dmg_taken":1.05,"healing":0.8},"urf":{"dmg_taken":0.9},"ofa":{"dmg_dealt":0.92,"dmg_taken":1.05}}},"421":{"id":421,"alias":"RekSai","stats":{"aram":{"dmg_dealt":1.05,"dmg_taken":0.9},"urf":{"dmg_dealt":1.07,"dmg_taken":0.93,"healing":1.2},"ofa":{"dmg_dealt":1.05,"dmg_taken":0.93,"healing":1.2},"nb":{"dmg_dealt":1.05,"dmg_taken":0.9}}},"427":{"id":427,"alias":"Ivern","stats":{"aram":{"dmg_dealt":0.95,"shielding":0.9},"ofa":{"dmg_dealt":1.1,"dmg_taken":0.93,"shielding":1.2},"usb":{"dmg_taken":0.95}}},"429":{"id":429,"alias":"Kalista","stats":{"aram":{"dmg_dealt":1.05},"urf":{"dmg_dealt":1.1,"dmg_taken":0.9}}},"432":{"id":432,"alias":"Bard","stats":{"aram":{"dmg_dealt":1.15,"dmg_taken":0.85,"healing":1.2},"urf":{"dmg_dealt":1.15,"dmg_taken":0.85,"healing":1.2},"ofa":{"dmg_dealt":1.15,"dmg_taken":0.85,"healing":1.2},"nb":{"dmg_taken":0.9,"ability_haste":20},"usb":{"dmg_dealt":1.08,"dmg_taken":0.92}}},"497":{"id":497,"alias":"Rakan","stats":{"aram":{"dmg_taken":0.95,"ability_haste":10}}},"498":{"id":498,"alias":"Xayah","stats":{"aram":{"dmg_dealt":1.05},"urf":{"dmg_dealt":0.85,"dmg_taken":1.1},"usb":{"dmg_taken":0.95}}},"516":{"id":516,"alias":"Ornn","stats":{"aram":{"dmg_dealt":0.9,"dmg_taken":1.05},"urf":{"dmg_dealt":1.05,"dmg_taken":0.95}}},"517":{"id":517,"alias":"Sylas","stats":{"aram":{"dmg_dealt":1.05},"urf":{"dmg_dealt":0.95}}},"518":{"id":518,"alias":"Neeko","stats":{"ofa":{"dmg_dealt":0.98},"usb":{"dmg_taken":0.95}}},"523":{"id":523,"alias":"Aphelios","stats":{"urf":{"dmg_dealt":1.05},"ofa":{"dmg_dealt":1.08},"usb":{"dmg_dealt":0.95}}},"526":{"id":526,"alias":"Rell","stats":{"aram":{"dmg_dealt":0.95,"shielding":0.9},"ofa":{"dmg_dealt":1.05},"usb":{"dmg_dealt":0.9,"dmg_taken":1.05}}},"555":{"id":555,"alias":"Pyke","stats":{"aram":{"dmg_dealt":1.1,"dmg_taken":0.9,"tenacity":1.2},"urf":{"dmg_taken":0.95},"ofa":{"dmg_taken":0.95},"nb":{"dmg_dealt":1.05}}},"711":{"id":711,"alias":"Vex","stats":{"aram":{"dmg_dealt":0.95},"urf":{"dmg_dealt":0.9}}},"777":{"id":777,"alias":"Yone","stats":{"aram":{"dmg_dealt":1.05,"dmg_taken":0.97},"urf":{"dmg_dealt":1.1,"dmg_taken":0.9,"shielding":1.2},"ofa":{"dmg_dealt":0.98}}},"799":{"id":799,"alias":"Ambessa","stats":{"aram":{"dmg_taken":1.05}}},"800":{"id":800,"alias":"Mel","stats":{"aram":{"ability_haste":-10},"urf":{"dmg_dealt":0.9}}},"804":{"id":804,"alias":"Yunara","stats":{}},"805":{"id":805,"alias":"Locke","stats":{"aram":{"dmg_dealt":1.15}}},"875":{"id":875,"alias":"Sett","stats":{"aram":{"dmg_taken":1.1},"urf":{"dmg_dealt":1.05,"dmg_taken":0.92},"ofa":{"dmg_dealt":0.95,"dmg_taken":1.05},"nb":{"dmg_dealt":0.95},"usb":{"dmg_dealt":0.95,"dmg_taken":1.05}}},"876":{"id":876,"alias":"Lillia","stats":{"aram":{"dmg_dealt":0.95,"dmg_taken":1.05},"ofa":{"dmg_dealt":0.98},"usb":{"dmg_dealt":0.95}}},"887":{"id":887,"alias":"Gwen","stats":{"aram":{"dmg_dealt":1.02},"usb":{"dmg_dealt":0.95,"dmg_taken":1.05}}},"888":{"id":888,"alias":"Renata","stats":{"aram":{"dmg_dealt":0.95,"dmg_taken":1.05},"ofa":{"dmg_dealt":1.1,"dmg_taken":0.95,"shielding":1.2}}},"893":{"id":893,"alias":"Aurora","stats":{"aram":{"ability_haste":10}}},"895":{"id":895,"alias":"Nilah","stats":{}},"897":{"id":897,"alias":"KSante","stats":{"aram":{"dmg_dealt":1.05},"urf":{"dmg_dealt":1.05}}},"901":{"id":901,"alias":"Smolder","stats":{"aram":{"dmg_taken":1.02,"ability_haste":-10}}},"902":{"id":902,"alias":"Milio","stats":{"aram":{"healing":0.95,"shielding":0.9,"ability_haste":-10}}},"904":{"id":904,"alias":"Zaahen","stats":{"aram":{"dmg_dealt":0.95,"dmg_taken":1.05}}},"910":{"id":910,"alias":"Hwei","stats":{"aram":{"dmg_dealt":0.95}}},"950":{"id":950,"alias":"Naafiri","stats":{"aram":{"dmg_dealt":1.1,"ability_haste":10}}},"150.2":{"id":150.2,"alias":"GnarBig","stats":{}},"240.1":{"id":240.1,"alias":"Kled","stats":{}}}'), Oh = {
   _meta: sI,
   champions: iI
 };
@@ -13713,15 +13713,15 @@ function Vp(t, n) {
   }
   return "";
 }
-const tm = /* @__PURE__ */ new Map(), nT = /* @__PURE__ */ new Map(), sT = /* @__PURE__ */ new Map(), l0 = /* @__PURE__ */ new Map(), dc = /* @__PURE__ */ new Map(), o0 = /* @__PURE__ */ new Map(), iT = /* @__PURE__ */ new Map(), vm = /* @__PURE__ */ new Map(), r0 = /* @__PURE__ */ new Map(), lT = /* @__PURE__ */ new Map(), Oh = /* @__PURE__ */ new Map(), oT = /* @__PURE__ */ new Map(), Lh = /* @__PURE__ */ new Map(), eo = /* @__PURE__ */ new Map(), Uh = /* @__PURE__ */ new Map(), to = /* @__PURE__ */ new Map(), Sm = /* @__PURE__ */ new Map();
-let rT = !1, Gh = "";
+const tm = /* @__PURE__ */ new Map(), nT = /* @__PURE__ */ new Map(), sT = /* @__PURE__ */ new Map(), o0 = /* @__PURE__ */ new Map(), dc = /* @__PURE__ */ new Map(), r0 = /* @__PURE__ */ new Map(), iT = /* @__PURE__ */ new Map(), vm = /* @__PURE__ */ new Map(), c0 = /* @__PURE__ */ new Map(), lT = /* @__PURE__ */ new Map(), Lh = /* @__PURE__ */ new Map(), oT = /* @__PURE__ */ new Map(), Uh = /* @__PURE__ */ new Map(), eo = /* @__PURE__ */ new Map(), Gh = /* @__PURE__ */ new Map(), to = /* @__PURE__ */ new Map(), Sm = /* @__PURE__ */ new Map();
+let rT = !1, zh = "";
 function Am() {
-  return Gh;
+  return zh;
 }
 async function oI() {
   if (!rT) {
     try {
-      Gh = (await x.getSummonerInfo()).puuid || "", b.info("[Assets] 当前账号 puuid=%s", Gh);
+      zh = (await x.getSummonerInfo()).puuid || "", b.info("[Assets] 当前账号 puuid=%s", zh);
     } catch (t) {
       b.warn("[Assets] 获取 puuid 失败:", t);
     }
@@ -13731,13 +13731,13 @@ async function oI() {
 function rI() {
   var t;
   try {
-    const n = Bh.champions;
+    const n = Oh.champions;
     for (const [i, l] of Object.entries(n))
       Sm.set(Number(i), l);
     b.info(
       "[Assets] 英雄平衡数据加载完成 → %d 个英雄 (数据更新于 %s)",
       Sm.size,
-      ((t = Bh._meta) == null ? void 0 : t.updatedAt) ?? "未知"
+      ((t = Oh._meta) == null ? void 0 : t.updatedAt) ?? "未知"
     );
   } catch (n) {
     b.error("[Assets] 英雄平衡数据加载失败:", n);
@@ -13765,10 +13765,10 @@ async function cT(t) {
       ]);
       j && sT.set(E.id, j);
       const R = E.priceTotal ?? E.price ?? 0;
-      Number.isFinite(R) && R > 0 && l0.set(E.id, R);
+      Number.isFinite(R) && R > 0 && o0.set(E.id, R);
     }
   for (const E of r)
-    if (E.id > 0 && E.iconPath && dc.set(E.id, Nr(E.iconPath)), E.id > 0 && E.name && o0.set(E.id, E.name), E.id > 0) {
+    if (E.id > 0 && E.iconPath && dc.set(E.id, Nr(E.iconPath)), E.id > 0 && E.name && r0.set(E.id, E.name), E.id > 0) {
       const j = Vp(E, [
         "description",
         "shortDescription",
@@ -13781,9 +13781,9 @@ async function cT(t) {
   for (const E of m)
     eo.set(E.id, E);
   for (const E of f)
-    E.id != null && Uh.set(E.id, E);
+    E.id != null && Gh.set(E.id, E);
   for (const E of g)
-    if (E.id > 0 && E.iconPath && vm.set(E.id, Nr(E.iconPath)), E.id > 0 && E.name && r0.set(E.id, E.name), E.id > 0) {
+    if (E.id > 0 && E.iconPath && vm.set(E.id, Nr(E.iconPath)), E.id > 0 && E.name && c0.set(E.id, E.name), E.id > 0) {
       const j = Vp(E, [
         "shortDesc",
         "longDesc",
@@ -13794,7 +13794,7 @@ async function cT(t) {
       j && lT.set(E.id, j);
     }
   for (const E of h.styles)
-    E.id > 0 && E.iconPath && Oh.set(E.id, Nr(E.iconPath)), E.id > 0 && E.name && oT.set(E.id, E.name);
+    E.id > 0 && E.iconPath && Lh.set(E.id, Nr(E.iconPath)), E.id > 0 && E.name && oT.set(E.id, E.name);
   for (const E of y)
     E.id > 0 && to.set(E.id, {
       id: E.id,
@@ -13803,7 +13803,7 @@ async function cT(t) {
       alias: E.alias
     });
   for (const E of A)
-    E.id > 0 && Lh.set(E.id, {
+    E.id > 0 && Uh.set(E.id, {
       name: E.nameTRA || String(E.id),
       iconPath: E.augmentSmallIconPath ? Nr(E.augmentSmallIconPath) : "",
       rarity: E.rarity || "",
@@ -13816,10 +13816,10 @@ async function cT(t) {
     tm.size,
     dc.size,
     vm.size,
-    Oh.size,
     Lh.size,
-    eo.size,
     Uh.size,
+    eo.size,
+    Gh.size,
     to.size
   );
   const T = [
@@ -13837,29 +13837,29 @@ async function cT(t) {
 function Em(t) {
   return `/lol-game-data/assets/v1/champion-icons/${t}.png`;
 }
-function c0(t) {
+function u0(t) {
   return tm.get(t) ?? (t > 0 ? `/lol-game-data/assets/v1/item-icons/${t}.png` : "");
 }
 function cI(t) {
-  return l0.get(t) ?? 0;
+  return o0.get(t) ?? 0;
 }
 function uT(t) {
   return {
     name: nT.get(t) ?? String(t),
-    iconPath: c0(t),
+    iconPath: u0(t),
     description: sT.get(t) ?? "",
-    price: l0.get(t) ?? 0
+    price: o0.get(t) ?? 0
   };
 }
 function Mc(t) {
   return dc.get(t) ?? "";
 }
 function uI(t) {
-  return o0.get(t) ?? String(t);
+  return r0.get(t) ?? String(t);
 }
 function dI(t) {
   return {
-    name: o0.get(t) ?? String(t),
+    name: r0.get(t) ?? String(t),
     iconPath: dc.get(t) ?? "",
     description: iT.get(t) ?? ""
   };
@@ -13868,23 +13868,23 @@ function ao(t) {
   return vm.get(t) ?? "";
 }
 function Fp(t) {
-  return r0.get(t) ?? String(t);
+  return c0.get(t) ?? String(t);
 }
 function Qp(t) {
   return {
-    name: r0.get(t) ?? String(t),
+    name: c0.get(t) ?? String(t),
     iconPath: vm.get(t) ?? "",
     description: lT.get(t) ?? ""
   };
 }
 function Cm(t) {
-  return Oh.get(t) ?? "";
+  return Lh.get(t) ?? "";
 }
 function mI(t) {
   return oT.get(t) ?? String(t);
 }
 function dT(t) {
-  return Lh.get(t);
+  return Uh.get(t);
 }
 function _i(t) {
   var n;
@@ -13895,7 +13895,7 @@ function Co(t) {
 }
 function mT(t) {
   var n;
-  return ((n = Uh.get(t)) == null ? void 0 : n.name) ?? `地图${t}`;
+  return ((n = Gh.get(t)) == null ? void 0 : n.name) ?? `地图${t}`;
 }
 function fT() {
   return Array.from(to.values()).filter((t) => t.id > 0);
@@ -13903,7 +13903,7 @@ function fT() {
 function To(t) {
   return to.get(t);
 }
-function zh(t, n = 8) {
+function Ph(t, n = 8) {
   if (!t.trim()) return [];
   const i = t.trim().toLowerCase(), l = [];
   return to.forEach((r) => {
@@ -13920,7 +13920,7 @@ function gI() {
   return Array.from(Sm.values());
 }
 function pI() {
-  return Bh._meta;
+  return Oh._meta;
 }
 function gT() {
   const t = /* @__PURE__ */ new Set([
@@ -13951,7 +13951,7 @@ const hI = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAYAAADhAJiYAA
   IRON: "#7e7e7e",
   UNRANKED: "#5c5b57"
 };
-function Ph(t) {
+function Hh(t) {
   return t >= 1e3 ? `${(t / 1e3).toFixed(1)}k` : String(t);
 }
 function bI(t) {
@@ -14028,11 +14028,11 @@ function wI({ team: t, participants: n, isRed: i }) {
     ] }),
     /* @__PURE__ */ c.jsxs("span", { className: "smd-stat-gold", title: "金币", children: [
       /* @__PURE__ */ c.jsx("span", { className: "smd-stat-icon", style: { WebkitMaskImage: "url(/fe/lol-match-history/icon_gold.png)" } }),
-      Ph(r)
+      Hh(r)
     ] }),
     /* @__PURE__ */ c.jsxs("span", { className: "smd-team-damage", title: "伤害", children: [
       /* @__PURE__ */ c.jsx("span", { className: "smd-damage-icon" }),
-      Ph(m)
+      Hh(m)
     ] }),
     /* @__PURE__ */ c.jsxs("span", { className: "smd-team-turret", title: "防御塔", children: [
       /* @__PURE__ */ c.jsx("img", { src: i ? yI : hI, alt: "" }),
@@ -14093,10 +14093,10 @@ function kI({
         ] }),
         /* @__PURE__ */ c.jsxs("span", { className: "smd-stat-pill smd-stat-gold", title: "金币", children: [
           /* @__PURE__ */ c.jsx("span", { className: "smd-stat-icon", style: { WebkitMaskImage: "url(/fe/lol-match-history/icon_gold.png)" } }),
-          Ph(g.goldEarned)
+          Hh(g.goldEarned)
         ] })
       ] }),
-      /* @__PURE__ */ c.jsx("div", { className: "smd-items", children: h.map((ae, Q) => /* @__PURE__ */ c.jsx("div", { className: "smd-item", children: ae > 0 && /* @__PURE__ */ c.jsx("img", { src: c0(ae), alt: "" }) }, Q)) })
+      /* @__PURE__ */ c.jsx("div", { className: "smd-items", children: h.map((ae, Q) => /* @__PURE__ */ c.jsx("div", { className: "smd-item", children: ae > 0 && /* @__PURE__ */ c.jsx("img", { src: u0(ae), alt: "" }) }, Q)) })
     ] })
   ] });
 }
@@ -14199,14 +14199,14 @@ function xI({ open: t, onClose: n, gameId: i, focusPuuid: l }) {
     ] })
   ] }) });
 }
-function _A(t) {
+function $A(t) {
   return t >= 1e3 ? `${(t / 1e3).toFixed(1)}k` : String(t);
 }
 function NI(t) {
   const n = new Date(t), i = /* @__PURE__ */ new Date(), l = new Date(i.getFullYear(), i.getMonth(), i.getDate()), r = new Date(n.getFullYear(), n.getMonth(), n.getDate()), m = Math.round((l.getTime() - r.getTime()) / (1e3 * 60 * 60 * 24)), f = n.toLocaleTimeString(void 0, { hour: "2-digit", minute: "2-digit", hour12: !1 });
   return m === 0 ? `${Ee("common.today")} ${f}` : m === 1 ? `${Ee("common.yesterday")} ${f}` : m === 2 ? `${Ee("common.dayBeforeYesterday")} ${f}` : n.toLocaleDateString(void 0, { month: "2-digit", day: "2-digit" }) + " " + f;
 }
-function $A(t, n) {
+function e1(t, n) {
   var y, A, T, E, j, R, q;
   const i = t.json, l = i.participants.find((P) => P.puuid === n);
   if (!l) return null;
@@ -14275,7 +14275,7 @@ function II({ match: t, onOpenDetail: n }) {
           ] })
         ] }),
         /* @__PURE__ */ c.jsxs("div", { className: "smh-row-center", children: [
-          /* @__PURE__ */ c.jsx("div", { className: "smh-items", children: t.items.map((g, h) => /* @__PURE__ */ c.jsx("div", { className: "smh-item-slot", children: g > 0 && /* @__PURE__ */ c.jsx("img", { className: "smh-item-icon", src: c0(g), alt: "" }) }, h)) }),
+          /* @__PURE__ */ c.jsx("div", { className: "smh-items", children: t.items.map((g, h) => /* @__PURE__ */ c.jsx("div", { className: "smh-item-slot", children: g > 0 && /* @__PURE__ */ c.jsx("img", { className: "smh-item-icon", src: u0(g), alt: "" }) }, h)) }),
           /* @__PURE__ */ c.jsxs("div", { className: "smh-stats-line", children: [
             /* @__PURE__ */ c.jsxs("span", { className: "smh-kda", children: [
               /* @__PURE__ */ c.jsx("span", { className: "smh-sprite-icon", style: { WebkitMaskImage: "url(/fe/lol-match-history/icons.png)", WebkitMaskPositionY: "0%", width: "22px", height: "22px" } }),
@@ -14291,11 +14291,11 @@ function II({ match: t, onOpenDetail: n }) {
             ] }),
             /* @__PURE__ */ c.jsxs("span", { className: "smh-gold", children: [
               /* @__PURE__ */ c.jsx("span", { className: "smh-stat-icon", style: { WebkitMaskImage: "url(/fe/lol-match-history/icon_gold.png)" } }),
-              _A(t.gold)
+              $A(t.gold)
             ] }),
             /* @__PURE__ */ c.jsxs("span", { className: "smh-damage", children: [
               "🗡️ ",
-              _A(t.damage)
+              $A(t.damage)
             ] })
           ] })
         ] }),
@@ -14345,7 +14345,7 @@ function Zi({ open: t, onClose: n, puuid: i, playerName: l, queueId: r }) {
         startIndex: 0,
         count: Ye,
         tag: ie || void 0
-      })).games ?? [], ue = Se.map((Ne) => $A(Ne, i)).filter((Ne) => Ne !== null);
+      })).games ?? [], ue = Se.map((Ne) => e1(Ne, i)).filter((Ne) => Ne !== null);
       y(ue), ve.current = Ye, Se.length < Ye && ae(!1);
     } catch {
       q(m("matchHistory.error", { error: "" }).trim());
@@ -14360,7 +14360,7 @@ function Zi({ open: t, onClose: n, puuid: i, playerName: l, queueId: r }) {
           startIndex: ve.current,
           count: Pe,
           tag: Y || void 0
-        })).games ?? [], Se = he.map((ue) => $A(ue, i)).filter((ue) => ue !== null);
+        })).games ?? [], Se = he.map((ue) => e1(ue, i)).filter((ue) => ue !== null);
         y((ue) => [...ue, ...Se]), ve.current += he.length, he.length < Pe && ae(!1);
       } catch {
       } finally {
@@ -14507,7 +14507,7 @@ function RI() {
     ] }, E.name)) })
   ] });
 }
-function e1({
+function t1({
   championIds: t,
   emptyText: n,
   onRemove: i
@@ -15121,7 +15121,7 @@ function MI() {
                 value: Mo,
                 onChange: (M) => {
                   w(M);
-                  const Re = zh(M);
+                  const Re = Ph(M);
                   Ce(Re), at(Re.length > 0);
                 },
                 placeholder: t("tools.autoLock.searchPlaceholder")
@@ -15170,7 +15170,7 @@ function MI() {
           )
         ] }),
         /* @__PURE__ */ c.jsx(
-          e1,
+          t1,
           {
             championIds: Sa,
             emptyText: t("tools.autoLock.empty"),
@@ -15202,7 +15202,7 @@ function MI() {
               value: ls,
               onChange: (M) => {
                 jo(M);
-                const Re = zh(M);
+                const Re = Ph(M);
                 su(Re), wn(Re.length > 0);
               },
               placeholder: t("tools.autoBan.searchPlaceholder")
@@ -15224,7 +15224,7 @@ function MI() {
           )) })
         ] }) }),
         /* @__PURE__ */ c.jsx(
-          e1,
+          t1,
           {
             championIds: ii,
             emptyText: t("tools.autoBan.empty"),
@@ -15724,29 +15724,29 @@ function Zp(t, n = {}) {
     pluginFolderName: Kn
   });
 }
-function u0(t) {
+function d0(t) {
   return t.replace(/\\/g, "/");
 }
 function jI(t) {
   return t.split(/[?#]/, 1)[0] ?? t;
 }
-function t1(t) {
-  const n = jI(u0(t)), i = n.match(/(?:^|\/)plugins\/([^/]+)\//i);
+function a1(t) {
+  const n = jI(d0(t)), i = n.match(/(?:^|\/)plugins\/([^/]+)\//i);
   if (!i) return null;
   const l = i.index + i[0].length;
   return n.substring(0, l);
 }
-function a1(t) {
-  const l = u0(t).replace(/\/+$/, "").split("/").at(-1);
+function n1(t) {
+  const l = d0(t).replace(/\/+$/, "").split("/").at(-1);
   return l ? decodeURIComponent(l) : null;
 }
-function n1(t) {
+function s1(t) {
   var i;
   const n = (i = t == null ? void 0 : t.meta) == null ? void 0 : i.name;
   return typeof n == "string" && n ? n : null;
 }
 function BI(t, n) {
-  const i = typeof window.getScriptPath == "function" ? window.getScriptPath() : "", l = i ? t1(i) : null, r = l ? a1(l) : null;
+  const i = typeof window.getScriptPath == "function" ? window.getScriptPath() : "", l = i ? a1(i) : null, r = l ? n1(l) : null;
   if (r) {
     Kn = r, mc = `//plugins/${encodeURIComponent(Kn)}/`, Zp("initialized from window.getScriptPath() plugin folder", {
       metaUrl: t,
@@ -15755,7 +15755,7 @@ function BI(t, n) {
     });
     return;
   }
-  const m = t ? t1(t) : null, f = m ? a1(m) : null;
+  const m = t ? a1(t) : null, f = m ? n1(m) : null;
   if (f) {
     Kn = f, mc = `//plugins/${encodeURIComponent(Kn)}/`, Zp("initialized from import.meta.url plugin folder", {
       metaUrl: t,
@@ -15764,14 +15764,14 @@ function BI(t, n) {
     });
     return;
   }
-  Kn = n1(n) ?? Kn, mc = `//plugins/${encodeURIComponent(Kn)}/`, Zp("initialized from context fallback", {
+  Kn = s1(n) ?? Kn, mc = `//plugins/${encodeURIComponent(Kn)}/`, Zp("initialized from context fallback", {
     metaUrl: t,
-    contextPluginName: n1(n),
+    contextPluginName: s1(n),
     scriptPath: i
   });
 }
 function Sf(t) {
-  const n = u0(t).replace(/^\.\/+/, "").replace(/^assets\/+/i, "").replace(/^\/+/, "");
+  const n = d0(t).replace(/^\.\/+/, "").replace(/^assets\/+/i, "").replace(/^\/+/, "");
   return `${mc}assets/${n.split("/").map(encodeURIComponent).join("/")}`;
 }
 function yT() {
@@ -15781,7 +15781,7 @@ function wo(t) {
   const n = atob(t), i = Uint8Array.from(n, (l) => l.charCodeAt(0));
   return new TextDecoder().decode(i);
 }
-const s1 = wo("aHR0cHM6Ly9hcGktdGFrdW1pLm1paG95b2dpZnQuY29tL3VwbG9hZC9vdXRlci9nZXRQYXJhbXNCeUFjY291bnQ="), OI = wo("aHR0cHM6Ly9wbGF0LXNoLW9wZXJhdGlvbi1wcm9kLXVwbG9hZC11Z2MuY24tc2hhbmdoYWkub3NzLmFsaXl1bmNzLmNvbS8="), LI = wo("aHR0cHM6Ly9vcGVyYXRpb24tdXBsb2FkLm1paG95by5jb20="), i1 = "mall-im-user", UI = 50 * 1024 * 1024, d0 = wo("aHR0cHM6Ly93ZWJzdGF0aWMubWlob3lvZ2lmdC5jb20="), bT = `${d0}/`, vT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/147.0.0.0", m0 = wo("aHR0cHM6Ly9jb3JzcHJveHkuaW8v"), Yp = wo("X01IWVVVSUQ9NWY3NjNlMTYtMjA2Ny00NDhhLTliMzQtN2Q5NmVmMjQ0MmE5OyBNSUhPWU9fTE9HSU5fUExBVEZPUk1fTElGRUNZQ0xFX0lEPTkyYjRjODhlOTA7IERFVklDRUZQX1NFRURfSUQ9ODlhNGM3MjRlYzhmZGNlNzsgREVWSUNFRlBfU0VFRF9USU1FPTE3NzczNDY1NjM4NjU7IERFVklDRUZQPTM4ZDgxN2RiYTA1Zjc7IGNvb2tpZV90b2tlbl92Mj12Ml9iZ253NG80WmRCSS0zZEJCM2h4YTNIQ3BfZF9uS0FRSy1iYjd1ZmEtX1FVbkZjUE1pRFdSTHdBcnNEdFU0RU83S0VwbFNrWktTMk5WdW9lNjhLbTN4b2huQ2pQSnJLNDFIQkllVkRMd0gzTDZxTkxHcTU5QzZjVG90WW9iek1ZTU5jNUR5cEN2bk9hR2xaX25QdmZELkNBRT07IGFjY291bnRfbWlkX3YyPTBwYzNtNHJraTJfbWh5OyBhY2NvdW50X2lkX3YyPTI4MjcwNjA5NDsgbHRva2VuX3YyPXYyX09ZUUpvYzlLUkNpQkUzNEdTaW01aDNndEdFZ29rU1FHQy13aU01RjJXRUt4YTV1Z0RHeUU4cWhoUGpjRzlibHZtU0ZENU5yd3hoNkhWcGZnNkQwWmxRNTd3UmRnZE1QRlRsRThVM3NvOEdJM3lGN2JfcjRkUDhxcm8tRmN3eGFKSlZ3dDJwMzZtNHJhenlaYlM1MnEuQ0FFPTsgbHRtaWRfdjI9MHBjM200cmtpMl9taHk7IGx0dWlkX3YyPTI4MjcwNjA5NDsgY29va2llX3Rva2VuPTkycG90NTN5UEh3V3RnemdRb0JMWllNem1kbGo4NGFpOElsbzV3OU87IGFjY291bnRfaWQ9MjgyNzA2MDk0OyBsdG9rZW49WnBrWkM2bmxTVzdLdEhaZVI0ZURHUlZBN002NFhoY29GYURUUFBTRzsgbHR1aWQ9MjgyNzA2MDk0OyBhbGl5dW5nZl90Yz0zNDBmZTYxZmUyMGJhN2RmYjhiNzY0Mzk2NDUxYTU3MDU1NTg5NjMxMTU0NmVhMzNjM2E3ZGI0ZDc2ZWRhODBm");
+const i1 = wo("aHR0cHM6Ly9hcGktdGFrdW1pLm1paG95b2dpZnQuY29tL3VwbG9hZC9vdXRlci9nZXRQYXJhbXNCeUFjY291bnQ="), OI = wo("aHR0cHM6Ly9wbGF0LXNoLW9wZXJhdGlvbi1wcm9kLXVwbG9hZC11Z2MuY24tc2hhbmdoYWkub3NzLmFsaXl1bmNzLmNvbS8="), LI = wo("aHR0cHM6Ly9vcGVyYXRpb24tdXBsb2FkLm1paG95by5jb20="), l1 = "mall-im-user", UI = 50 * 1024 * 1024, m0 = wo("aHR0cHM6Ly93ZWJzdGF0aWMubWlob3lvZ2lmdC5jb20="), bT = `${m0}/`, vT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/147.0.0.0", f0 = wo("aHR0cHM6Ly9jb3JzcHJveHkuaW8v"), Yp = wo("X01IWVVVSUQ9NWY3NjNlMTYtMjA2Ny00NDhhLTliMzQtN2Q5NmVmMjQ0MmE5OyBNSUhPWU9fTE9HSU5fUExBVEZPUk1fTElGRUNZQ0xFX0lEPTkyYjRjODhlOTA7IERFVklDRUZQX1NFRURfSUQ9ODlhNGM3MjRlYzhmZGNlNzsgREVWSUNFRlBfU0VFRF9USU1FPTE3NzczNDY1NjM4NjU7IERFVklDRUZQPTM4ZDgxN2RiYTA1Zjc7IGNvb2tpZV90b2tlbl92Mj12Ml9iZ253NG80WmRCSS0zZEJCM2h4YTNIQ3BfZF9uS0FRSy1iYjd1ZmEtX1FVbkZjUE1pRFdSTHdBcnNEdFU0RU83S0VwbFNrWktTMk5WdW9lNjhLbTN4b2huQ2pQSnJLNDFIQkllVkRMd0gzTDZxTkxHcTU5QzZjVG90WW9iek1ZTU5jNUR5cEN2bk9hR2xaX25QdmZELkNBRT07IGFjY291bnRfbWlkX3YyPTBwYzNtNHJraTJfbWh5OyBhY2NvdW50X2lkX3YyPTI4MjcwNjA5NDsgbHRva2VuX3YyPXYyX09ZUUpvYzlLUkNpQkUzNEdTaW01aDNndEdFZ29rU1FHQy13aU01RjJXRUt4YTV1Z0RHeUU4cWhoUGpjRzlibHZtU0ZENU5yd3hoNkhWcGZnNkQwWmxRNTd3UmRnZE1QRlRsRThVM3NvOEdJM3lGN2JfcjRkUDhxcm8tRmN3eGFKSlZ3dDJwMzZtNHJhenlaYlM1MnEuQ0FFPTsgbHRtaWRfdjI9MHBjM200cmtpMl9taHk7IGx0dWlkX3YyPTI4MjcwNjA5NDsgY29va2llX3Rva2VuPTkycG90NTN5UEh3V3RnemdRb0JMWllNem1kbGo4NGFpOElsbzV3OU87IGFjY291bnRfaWQ9MjgyNzA2MDk0OyBsdG9rZW49WnBrWkM2bmxTVzdLdEhaZVI0ZURHUlZBN002NFhoY29GYURUUFBTRzsgbHR1aWQ9MjgyNzA2MDk0OyBhbGl5dW5nZl90Yz0zNDBmZTYxZmUyMGJhN2RmYjhiNzY0Mzk2NDUxYTU3MDU1NTg5NjMxMTU0NmVhMzNjM2E3ZGI0ZDc2ZWRhODBm");
 function Zl(t, n, i = {}) {
   t && console.info(`[Sona][ImageHosting] ${n}`, i);
 }
@@ -15793,7 +15793,7 @@ function ST(t) {
   };
 }
 function AT(t, n = {}) {
-  const i = new URL(m0);
+  const i = new URL(f0);
   return i.searchParams.set("url", t), Object.entries(n).forEach(([l, r]) => {
     i.searchParams.append("reqHeaders", `${l}:${r}`);
   }), i.toString();
@@ -15926,9 +15926,9 @@ async function VI(t, n, i) {
   const l = new Headers({
     "Content-Type": "application/json",
     Accept: "application/json"
-  }), r = AT(s1, {
+  }), r = AT(i1, {
     Cookie: Yp,
-    Origin: d0,
+    Origin: m0,
     Referer: bT,
     "User-Agent": vT
   }), m = new Request(r, {
@@ -15938,16 +15938,16 @@ async function VI(t, n, i) {
     body: JSON.stringify({
       md5: t,
       ext: n,
-      biz: i1,
+      biz: l1,
       support_content_type: !0
     })
   }), f = ST(m);
   Zl(i, "Step 1/2 请求上传凭证", {
-    endpoint: s1,
-    proxy: m0,
+    endpoint: i1,
+    proxy: f0,
     md5: t,
     extension: n,
-    biz: i1,
+    biz: l1,
     cookieConfigured: !!Yp,
     cookieLength: Yp.length,
     cookieForwardedByProxy: !0,
@@ -16005,7 +16005,7 @@ async function ET(t, n, i) {
     contentType: f
   });
   const T = AT(y.params.host, {
-    Origin: d0,
+    Origin: m0,
     Referer: bT,
     "User-Agent": vT
   }), E = new Request(T, {
@@ -16014,7 +16014,7 @@ async function ET(t, n, i) {
     body: A
   }), j = ST(E);
   Zl(i, "Step 2/2 请求将通过 CORS 代理发送", {
-    proxy: m0,
+    proxy: f0,
     browserHeaderAcceptance: j
   });
   const R = await fetch(E);
@@ -16044,8 +16044,8 @@ async function QI(t, n = "image.png") {
 function XI(t, n) {
   return ET(t, n, !0);
 }
-const l1 = "sona-avatar:v1:", CT = 2, f0 = 3, TT = "~", wT = "!", Hh = "mall-im-user/", qh = JI("aHR0cHM6Ly9vcGVyYXRpb24tdXBsb2FkLm1paG95by5jb20="), ZI = [120, 320, 700], Kh = Array.from({ length: 16 }, (t, n) => String.fromCharCode(65024 + n)), YI = new Map(Kh.map((t, n) => [t, n])), jc = "​‌‍⁠", Bc = "⁠‍‌​";
-let o1 = Promise.resolve();
+const o1 = "sona-avatar:v1:", CT = 2, g0 = 3, TT = "~", wT = "!", qh = "mall-im-user/", Kh = JI("aHR0cHM6Ly9vcGVyYXRpb24tdXBsb2FkLm1paG95by5jb20="), ZI = [120, 320, 700], Vh = Array.from({ length: 16 }, (t, n) => String.fromCharCode(65024 + n)), YI = new Map(Vh.map((t, n) => [t, n])), jc = "​‌‍⁠", Bc = "⁠‍‌​";
+let r1 = Promise.resolve();
 function JI(t) {
   const n = atob(t), i = Uint8Array.from(n, (l) => l.charCodeAt(0));
   return new TextDecoder().decode(i);
@@ -16054,7 +16054,7 @@ function WI(t) {
   const n = new TextEncoder().encode(t);
   let i = "";
   return n.forEach((l) => {
-    i += Kh[l >> 4], i += Kh[l & 15];
+    i += Vh[l >> 4], i += Vh[l & 15];
   }), i;
 }
 function _I(t) {
@@ -16094,16 +16094,16 @@ function Oc(t) {
 }
 function $I(t) {
   try {
-    const n = new URL(t), i = new URL(qh);
+    const n = new URL(t), i = new URL(Kh);
     if (n.origin !== i.origin || n.search || n.hash) return t;
     const l = n.pathname.replace(/^\/+/, "");
-    return l ? l.startsWith(Hh) ? `${wT}${l.slice(Hh.length)}` : `${TT}${l}` : t;
+    return l ? l.startsWith(qh) ? `${wT}${l.slice(qh.length)}` : `${TT}${l}` : t;
   } catch {
     return t;
   }
 }
 function kT(t) {
-  return t.startsWith(wT) ? `${qh}/${Hh}${t.slice(1)}` : t.startsWith(TT) ? `${qh}/${t.slice(1)}` : t;
+  return t.startsWith(wT) ? `${Kh}/${qh}${t.slice(1)}` : t.startsWith(TT) ? `${Kh}/${t.slice(1)}` : t;
 }
 function eR(t) {
   const n = Oc(t);
@@ -16119,7 +16119,7 @@ function tR(t) {
   });
 }
 function aR(t) {
-  const n = { v: f0 };
+  const n = { v: g0 };
   if (t.avatarUrl && Af(t.avatarUrl) && (n.a = $I(t.avatarUrl)), t.nameGradient) {
     const i = eR(t.nameGradient);
     i && (n.n = i);
@@ -16144,7 +16144,7 @@ function sR(t) {
     const n = JSON.parse(t);
     if (n.v === CT)
       return nR(n);
-    if (n.v !== f0) return null;
+    if (n.v !== g0) return null;
     const i = {};
     if (typeof n.a == "string") {
       const l = kT(n.a);
@@ -16172,8 +16172,8 @@ function $i(t) {
   const n = {};
   let i = !1;
   for (const l of xT(t)) {
-    if (l.startsWith(l1)) {
-      const m = l.slice(l1.length);
+    if (l.startsWith(o1)) {
+      const m = l.slice(o1.length);
       Af(m) && !n.avatarUrl && (n.avatarUrl = m, i = !0);
       continue;
     }
@@ -16200,7 +16200,7 @@ function NT(t, n) {
   const i = yn(t);
   return `${iR(n)}${i}`;
 }
-function g0(t) {
+function p0(t) {
   var n;
   return ((n = $i(t)) == null ? void 0 : n.avatarUrl) ?? null;
 }
@@ -16208,7 +16208,7 @@ function lR(t, n) {
   for (const i of xT(t))
     try {
       const l = JSON.parse(i);
-      if (l.v !== f0 || typeof l.a != "string") continue;
+      if (l.v !== g0 || typeof l.a != "string") continue;
       if (kT(l.a) === n) return !0;
     } catch {
     }
@@ -16239,11 +16239,11 @@ function uR(t) {
   return new Promise((n) => window.setTimeout(n, t));
 }
 function Ef(t, n = "") {
-  const i = o1.then(() => oR(t, n));
-  return o1 = i.catch(() => {
+  const i = r1.then(() => oR(t, n));
+  return r1 = i.catch(() => {
   }), i;
 }
-function Vh(t, n = "") {
+function Fh(t, n = "") {
   return Ef({ avatarUrl: t }, n);
 }
 function dR() {
@@ -16255,11 +16255,11 @@ function mR(t, n = "") {
 function fR() {
   return Ef({ nameGradient: null });
 }
-const gR = ".lol-social-avatar.identity-icon img.icon-image", r1 = ".roster-scrollable.ember-view", pR = ".lol-social-avatar.member-icon img.icon-image", hR = "lol-regalia-parties-v2-element", yR = "lol-regalia-hovercard-v2-element", IT = "lol-regalia-profile-v2-element", c1 = "lol-regalia-crest-v2-element", bR = ".lol-regalia-summoner-icon", vR = ".tft-player-card.tft-player-card-self", SR = ".icon-wrapper .icon-image", Xn = "profile-icon-url", u1 = "member-type", Va = "puuid", Fa = "data-puuid", ro = "voice-puuid", am = 'lol-social-roster-member, [class*="lol-social-roster-member"]', RT = ".member-name", AR = ["data-friend-id", "friend-id", "data-id", "id"], ER = "/lol-chat/v1/friends", CR = /* @__PURE__ */ new Set(["i.ibb.co", "ibb.co"]), TR = [0, 350, 900], wR = 1e4;
-let d1 = !1, Jp = null, Wp = 0, Xs = "", m1 = null, Ir = null, f1 = null, g1 = null, Sd = null, Rr = null, Mr = null, p1 = "";
-const h1 = /* @__PURE__ */ new Map(), y1 = /* @__PURE__ */ new Map(), b1 = /* @__PURE__ */ new Map(), v1 = /* @__PURE__ */ new Map(), S1 = /* @__PURE__ */ new Map(), A1 = /* @__PURE__ */ new Map(), Pi = /* @__PURE__ */ new Set(), wm = /* @__PURE__ */ new Set(), co = /* @__PURE__ */ new Set(), Fh = /* @__PURE__ */ new WeakMap(), MT = /* @__PURE__ */ new WeakMap(), km = /* @__PURE__ */ new WeakMap(), fc = /* @__PURE__ */ new WeakMap(), gc = /* @__PURE__ */ new WeakMap(), Cf = /* @__PURE__ */ new WeakMap(), eu = /* @__PURE__ */ new WeakMap(), Ka = new Map(
+const gR = ".lol-social-avatar.identity-icon img.icon-image", c1 = ".roster-scrollable.ember-view", pR = ".lol-social-avatar.member-icon img.icon-image", hR = "lol-regalia-parties-v2-element", yR = "lol-regalia-hovercard-v2-element", IT = "lol-regalia-profile-v2-element", u1 = "lol-regalia-crest-v2-element", bR = ".lol-regalia-summoner-icon", vR = ".tft-player-card.tft-player-card-self", SR = ".icon-wrapper .icon-image", Xn = "profile-icon-url", d1 = "member-type", Va = "puuid", Fa = "data-puuid", ro = "voice-puuid", am = 'lol-social-roster-member, [class*="lol-social-roster-member"]', RT = ".member-name", AR = ["data-friend-id", "friend-id", "data-id", "id"], ER = "/lol-chat/v1/friends", CR = /* @__PURE__ */ new Set(["i.ibb.co", "ibb.co"]), TR = [0, 350, 900], wR = 1e4;
+let m1 = !1, Jp = null, Wp = 0, Xs = "", f1 = null, Ir = null, g1 = null, p1 = null, Sd = null, Rr = null, Mr = null, h1 = "";
+const y1 = /* @__PURE__ */ new Map(), b1 = /* @__PURE__ */ new Map(), v1 = /* @__PURE__ */ new Map(), S1 = /* @__PURE__ */ new Map(), A1 = /* @__PURE__ */ new Map(), E1 = /* @__PURE__ */ new Map(), Pi = /* @__PURE__ */ new Set(), wm = /* @__PURE__ */ new Set(), co = /* @__PURE__ */ new Set(), Qh = /* @__PURE__ */ new WeakMap(), MT = /* @__PURE__ */ new WeakMap(), km = /* @__PURE__ */ new WeakMap(), fc = /* @__PURE__ */ new WeakMap(), gc = /* @__PURE__ */ new WeakMap(), Cf = /* @__PURE__ */ new WeakMap(), eu = /* @__PURE__ */ new WeakMap(), Ka = new Map(
   Object.entries(v.get("customAvatarRemoteCache"))
-), Tf = /* @__PURE__ */ new Map(), p0 = /* @__PURE__ */ new Map(), xm = /* @__PURE__ */ new Set();
+), Tf = /* @__PURE__ */ new Map(), h0 = /* @__PURE__ */ new Map(), xm = /* @__PURE__ */ new Set();
 function DT(t) {
   return Sf(t);
 }
@@ -16324,7 +16324,7 @@ function OT(t) {
 function RR(t) {
   return !BT(t) && !!OT(t);
 }
-function E1(t, n = "") {
+function C1(t, n = "") {
   const i = BT(t);
   if (i) return i;
   const l = OT(t);
@@ -16334,7 +16334,7 @@ function LT(t) {
   const n = ea(t.puuid);
   if (!n) return;
   const i = Lc(t.id);
-  i && p0.set(i, n), [
+  i && h0.set(i, n), [
     t.gameName,
     t.name,
     t.gameName && t.gameTag ? `${t.gameName}#${t.gameTag}` : ""
@@ -16352,7 +16352,7 @@ function MR(t) {
   for (const f of AR) {
     const g = Lc(i.getAttribute(f));
     if (!g) continue;
-    const h = p0.get(g);
+    const h = h0.get(g);
     if (h) return h;
     if (g.endsWith("@pvp.net")) {
       const y = ea(g.slice(0, -8));
@@ -16366,7 +16366,7 @@ function MR(t) {
 }
 function DR() {
   const t = /* @__PURE__ */ new Set();
-  return document.querySelectorAll(`${r1} ${am}`).forEach((n) => t.add(n)), document.querySelectorAll(r1).forEach((n) => {
+  return document.querySelectorAll(`${c1} ${am}`).forEach((n) => t.add(n)), document.querySelectorAll(c1).forEach((n) => {
     n.querySelectorAll(".ember-view").forEach((i) => {
       const l = i.firstElementChild;
       l && Array.from(l.children).forEach((r) => {
@@ -16391,7 +16391,7 @@ function pc(t, n) {
 }
 function BR(t) {
   const n = /* @__PURE__ */ new Set();
-  return Tf.clear(), p0.clear(), t.forEach((i) => {
+  return Tf.clear(), h0.clear(), t.forEach((i) => {
     const l = ea(i.puuid);
     l && n.add(l), LT(i), UT(i, !0);
   }), Na(), n;
@@ -16413,7 +16413,7 @@ function GR(t) {
 function UT(t, n) {
   const i = ea(t.puuid);
   if (!i || !UR(t)) return !1;
-  const l = g0(LR(t));
+  const l = p0(LR(t));
   return l ? Ka.get(i) === l ? !1 : (Ka.set(i, l), pc(i, l), !0) : !n || GR(t) || !Ka.has(i) && !v.get("customAvatarRemoteCache")[i] ? !1 : (Ka.delete(i), pc(i, null), !0);
 }
 function GT() {
@@ -16429,26 +16429,26 @@ function zT(t) {
     return !1;
   }
 }
-function Qh() {
+function Xh() {
   const t = v.get("statusMessage");
   return yn(t[Am()] || t[el()] || "");
 }
-function C1(t) {
+function T1(t) {
   if (v.get("customAvatarAssetPaths").length === 0) return !1;
   const n = GT();
-  return n ? g0(t) !== n || !lR(t, n) : !1;
+  return n ? p0(t) !== n || !lR(t, n) : !1;
 }
-function Xh(t) {
+function Zh(t) {
   if (Rr) return Rr;
   const n = GT();
   return !n || zT(n) ? Promise.resolve() : (Rr = (async () => {
     if (t !== void 0) {
-      if (!C1(t)) return;
-      await Vh(n, Qh());
+      if (!T1(t)) return;
+      await Fh(n, Xh());
       return;
     }
     const i = await x.getChatMe();
-    C1(i.statusMessage) && await Vh(n, Qh());
+    T1(i.statusMessage) && await Fh(n, Xh());
   })().catch((i) => {
     b.warn("[CustomAvatarSync] 恢复简介头像同步信息失败:", i);
   }).finally(() => {
@@ -16472,7 +16472,7 @@ function zR() {
 function PT(t, n) {
   return Ir || (Ir = x.getFriends().then((i) => {
     const l = BR(i), r = i.reduce(
-      (m, f) => m + (g0(f.statusMessage) ? 1 : 0),
+      (m, f) => m + (p0(f.statusMessage) ? 1 : 0),
       0
     );
     xm.clear(), l.forEach((m) => xm.add(m)), b.info(
@@ -16493,7 +16493,7 @@ function PR(t, n = !1, i = 500) {
     Sd = null, PT(n, t);
   }, i);
 }
-function T1(t) {
+function w1(t) {
   const n = ea(t);
   if (!n) return null;
   if (n === el())
@@ -16502,10 +16502,10 @@ function T1(t) {
     return Ka.get(n);
 }
 function el() {
-  return Xs || (m1 ?? (m1 = x.getSummonerInfo().then((t) => (Xs = t.puuid.toLowerCase(), Na(), Xs)).catch(() => (m1 = null, ""))), "");
+  return Xs || (f1 ?? (f1 = x.getSummonerInfo().then((t) => (Xs = t.puuid.toLowerCase(), Na(), Xs)).catch(() => (f1 = null, ""))), "");
 }
 function HR(t) {
-  if (h1.has(t)) return;
+  if (y1.has(t)) return;
   const n = new MutationObserver((i) => {
     for (const l of i)
       if (l.attributeName === "src") {
@@ -16516,10 +16516,10 @@ function HR(t) {
   n.observe(t, {
     attributes: !0,
     attributeFilter: ["src"]
-  }), h1.set(t, n);
+  }), y1.set(t, n);
 }
 function qR(t) {
-  if (y1.has(t)) return;
+  if (b1.has(t)) return;
   const n = new MutationObserver((i) => {
     for (const l of i)
       if (l.attributeName === "style") {
@@ -16530,7 +16530,7 @@ function qR(t) {
   n.observe(t, {
     attributes: !0,
     attributeFilter: ["style"]
-  }), y1.set(t, n);
+  }), b1.set(t, n);
 }
 function KR() {
   const t = [];
@@ -16549,7 +16549,7 @@ function FR(t) {
   return t.style.backgroundImage = n ?? "", km.delete(t), wm.delete(t), !0;
 }
 function QR(t) {
-  if (b1.has(t)) return;
+  if (v1.has(t)) return;
   const n = new MutationObserver((i) => {
     for (const l of i)
       if (l.attributeName === Xn || l.attributeName === Va || l.attributeName === Fa || l.attributeName === ro) {
@@ -16560,24 +16560,24 @@ function QR(t) {
   n.observe(t, {
     attributes: !0,
     attributeFilter: [Xn, Va, Fa, ro]
-  }), b1.set(t, n);
+  }), v1.set(t, n);
 }
 function XR(t) {
-  if (v1.has(t)) return;
+  if (S1.has(t)) return;
   const n = new MutationObserver((i) => {
     for (const l of i)
-      if (l.attributeName === u1 || l.attributeName === Va || l.attributeName === Fa) {
+      if (l.attributeName === d1 || l.attributeName === Va || l.attributeName === Fa) {
         Na();
         return;
       }
   });
   n.observe(t, {
     attributes: !0,
-    attributeFilter: [u1, Va, Fa]
-  }), v1.set(t, n);
+    attributeFilter: [d1, Va, Fa]
+  }), S1.set(t, n);
 }
 function ZR(t) {
-  if (S1.has(t)) return;
+  if (A1.has(t)) return;
   const n = new MutationObserver((i) => {
     for (const l of i)
       if (l.attributeName === Va || l.attributeName === Fa) {
@@ -16588,17 +16588,17 @@ function ZR(t) {
   n.observe(t, {
     attributes: !0,
     attributeFilter: [Va, Fa]
-  }), S1.set(t, n);
+  }), A1.set(t, n);
 }
 function HT(t) {
   if (!Pi.has(t)) return !1;
-  const n = Fh.get(t);
+  const n = Qh.get(t);
   n == null ? t.removeAttribute("src") : t.setAttribute("src", n);
   const i = MT.get(t);
   return i == null ? t.removeAttribute("referrerpolicy") : t.setAttribute("referrerpolicy", i), Pi.delete(t), Cf.delete(t), !0;
 }
-function w1(t, n, i) {
-  HR(t), Fh.has(t) || (Fh.set(t, t.getAttribute("src")), MT.set(t, t.getAttribute("referrerpolicy")));
+function k1(t, n, i) {
+  HR(t), Qh.has(t) || (Qh.set(t, t.getAttribute("src")), MT.set(t, t.getAttribute("referrerpolicy")));
   let l = !1;
   return /^https?:\/\//i.test(n) && t.getAttribute("referrerpolicy") !== "no-referrer" && (t.setAttribute("referrerpolicy", "no-referrer"), l = !0), t.getAttribute("src") === n ? l : (t.setAttribute("src", n), Pi.add(t), Cf.set(t, i), !0);
 }
@@ -16634,7 +16634,7 @@ function JR(t, n, i) {
   return co.add(t), eu.set(t, i), l.style.backgroundImage === r ? !1 : (l.style.backgroundImage = r, !0);
 }
 function FT(t) {
-  if (A1.has(t)) return;
+  if (E1.has(t)) return;
   const n = new MutationObserver((i) => {
     for (const l of i)
       if (l.type === "childList" || l.attributeName === Xn || l.attributeName === Va || l.attributeName === Fa || l.attributeName === ro || l.attributeName === "style") {
@@ -16647,29 +16647,29 @@ function FT(t) {
     subtree: !0,
     attributes: !0,
     attributeFilter: [Xn, Va, Fa, ro, "style"]
-  }), A1.set(t, n);
+  }), E1.set(t, n);
 }
 function WR() {
   const t = /* @__PURE__ */ new Map(), n = /* @__PURE__ */ new Set(), i = (r, m) => {
     const f = ea(m);
     f && t.set(r, { element: r, puuid: f });
   }, l = (r, m = "") => {
-    n.has(r) || (n.add(r), r instanceof ShadowRoot && FT(r), r.querySelectorAll(c1).forEach((f) => {
-      i(f, E1(f, m));
+    n.has(r) || (n.add(r), r instanceof ShadowRoot && FT(r), r.querySelectorAll(u1).forEach((f) => {
+      i(f, C1(f, m));
     }), r.querySelectorAll("*").forEach((f) => {
       const g = f.shadowRoot;
       g && (f.matches(hR) ? XR(f) : (f.matches(yR) || f.matches(IT)) && ZR(f), l(g, Uc(f) || m));
     }));
   };
-  return document.querySelectorAll(`${c1}[${ro}]`).forEach((r) => {
-    i(r, E1(r));
+  return document.querySelectorAll(`${u1}[${ro}]`).forEach((r) => {
+    i(r, C1(r));
   }), l(document), [...t.values()];
 }
-function Zh() {
+function Yh() {
   let t = !1;
   const n = el(), i = jT();
   n && (i ? document.querySelectorAll(gR).forEach((g) => {
-    t = w1(g, i, n) || t;
+    t = k1(g, i, n) || t;
   }) : t = QT(n) || t), KR().forEach((g) => {
     i ? t = VR(g, i) || t : t = FR(g) || t;
   });
@@ -16678,24 +16678,24 @@ function Zh() {
   l.forEach(({ image: g, puuid: h }) => {
     if (!h) return;
     r++;
-    const y = T1(h);
-    y ? (m++, t = w1(g, y, h) || t) : y === null && Cf.get(g) === h && (t = HT(g) || t);
+    const y = w1(h);
+    y ? (m++, t = k1(g, y, h) || t) : y === null && Cf.get(g) === h && (t = HT(g) || t);
   });
   const f = `${l.length}:${r}:${m}:${Pi.size}`;
-  return f !== p1 && (p1 = f, b.debug(
+  return f !== h1 && (h1 = f, b.debug(
     "[CustomAvatarSync] 好友栏扫描：候选=%d，已映射 PUUID=%d，命中头像=%d，已替换=%d",
     l.length,
     r,
     m,
     Pi.size
   )), WR().forEach(({ element: g, puuid: h }) => {
-    const y = T1(h);
+    const y = w1(h);
     y ? t = YR(g, y, h) || t : y === null && eu.get(g) === h && (t = qT(g) || t);
   }), t || Pi.size > 0 || wm.size > 0 || co.size > 0;
 }
 function Na() {
   Wp || (Wp = requestAnimationFrame(() => {
-    Wp = 0, Zh();
+    Wp = 0, Yh();
   }));
 }
 function _R() {
@@ -16721,22 +16721,22 @@ function QT(t) {
   }), i;
 }
 function $R() {
-  d1 || (Te.register(Zh), d1 = !0), _R(), f1 || (f1 = x.observe(ER, (t) => {
+  m1 || (Te.register(Yh), m1 = !0), _R(), g1 || (g1 = x.observe(ER, (t) => {
     const n = OR(t.data), i = ea(n == null ? void 0 : n.puuid);
     n && UT(n, !1) && Na(), n && i && !xm.has(i) && (LT(n), xm.add(i), b.info("[CustomAvatarSync] 好友 WS 捕获新增 PUUID：%s", i)), PR("friends-ws-update");
-  })), g1 || (g1 = x.observe(tt.CHAT_ME, (t) => {
+  })), p1 || (p1 = x.observe(tt.CHAT_ME, (t) => {
     const n = t.data;
-    Xh(n == null ? void 0 : n.statusMessage);
-  })), PT(!0, "client-startup"), Xh(), Zh();
+    Zh(n == null ? void 0 : n.statusMessage);
+  })), PT(!0, "client-startup"), Zh(), Yh();
 }
-function k1() {
+function x1() {
   if ($R(), v.get("customAvatarAssetPaths").length === 0) {
     const t = el();
     t && QT(t), Na(), dR().catch((n) => {
       b.warn("[CustomAvatarSync] 清理简介头像同步信息失败:", n);
     });
   } else
-    zR(), Xh();
+    zR(), Zh();
 }
 async function XT(t) {
   try {
@@ -16751,7 +16751,7 @@ async function XT(t) {
     const f = Ka.get(n);
     Ka.set(n, m), pc(n, m);
     try {
-      await Vh(m, Qh());
+      await Fh(m, Xh());
     } catch (g) {
       throw f ? (Ka.set(n, f), pc(n, f)) : (Ka.delete(n), pc(n, null)), g;
     }
@@ -16766,7 +16766,7 @@ async function XT(t) {
     }), n;
   }
 }
-const ZT = ["jpg", "jpeg", "png", "webp", "gif", "svg", "bmp", "ico"], YT = ["mp4", "webm", "ogg", "ogv", "mov", "m4v"], x1 = [...ZT, ...YT], eM = new Set(ZT), tM = new Set(YT), JT = 4e3, Ad = "application/x-sona-asset-path", Gl = 76, N1 = 20, _p = { scale: 1, offsetX: 0, offsetY: 0 }, aM = 1, nM = 3, sM = 0.08;
+const ZT = ["jpg", "jpeg", "png", "webp", "gif", "svg", "bmp", "ico"], YT = ["mp4", "webm", "ogg", "ogv", "mov", "m4v"], N1 = [...ZT, ...YT], eM = new Set(ZT), tM = new Set(YT), JT = 4e3, Ad = "application/x-sona-asset-path", Gl = 76, I1 = 20, _p = { scale: 1, offsetX: 0, offsetY: 0 }, aM = 1, nM = 3, sM = 0.08;
 function WT(t) {
   var i;
   const n = (i = t.split(".").pop()) == null ? void 0 : i.toLowerCase();
@@ -16785,7 +16785,7 @@ function iM(t) {
   return (i == null ? void 0 : i.toLowerCase()) ?? "";
 }
 function lM(t) {
-  const n = iM(t), i = _T(t), l = i ? [n, ...x1.filter((m) => m !== n)] : x1, r = i ? [t] : [];
+  const n = iM(t), i = _T(t), l = i ? [n, ...N1.filter((m) => m !== n)] : N1, r = i ? [t] : [];
   for (const m of l)
     r.push(`${t}.${m}`);
   return Array.from(new Set(r));
@@ -17026,10 +17026,10 @@ function fM() {
     let pt = 0;
     if (ye < Ce.top + Gl) {
       const at = (Ce.top + Gl - ye) / Gl;
-      pt = -N1 * Math.min(at, 1);
+      pt = -I1 * Math.min(at, 1);
     } else if (ye > Ce.bottom - Gl) {
       const at = (ye - (Ce.bottom - Gl)) / Gl;
-      pt = N1 * Math.min(at, 1);
+      pt = I1 * Math.min(at, 1);
     }
     pt !== 0 && (w.scrollTop += pt), r.current = requestAnimationFrame(Cn);
   }, Za = (w) => {
@@ -17570,7 +17570,7 @@ function fM() {
   );
 }
 const $T = "https://com.hytale.net.cn/WJZ-P/sona/releases", gM = "https://api.github.com/repos/WJZ-P/sona/releases/latest", pM = "https://api.github.com/repos/WJZ-P/sona/releases";
-function I1(t) {
+function R1(t) {
   return `https://corsproxy.io/?${encodeURIComponent(t)}`;
 }
 let hc = {
@@ -17578,10 +17578,10 @@ let hc = {
   info: null,
   error: ""
 }, Dr = null, yc = "";
-const Yh = /* @__PURE__ */ new Set();
+const Jh = /* @__PURE__ */ new Set();
 function ew() {
   const t = Zn();
-  Yh.forEach((n) => n(t));
+  Jh.forEach((n) => n(t));
 }
 function Ql(t) {
   hc = t, ew();
@@ -17592,13 +17592,13 @@ function Zn() {
     info: hc.info ? { ...hc.info } : null
   };
 }
-function h0(t) {
-  return Yh.add(t), t(Zn()), () => Yh.delete(t);
+function y0(t) {
+  return Jh.add(t), t(Zn()), () => Jh.delete(t);
 }
 function uo(t) {
   return t.trim().replace(/^v/i, "");
 }
-function R1(t, n) {
+function M1(t, n) {
   const i = uo(t).split(/[.-]/), l = uo(n).split(/[.-]/), r = Math.max(i.length, l.length);
   for (let m = 0; m < r; m += 1) {
     const f = Number.parseInt(i[m] ?? "0", 10), g = Number.parseInt(l[m] ?? "0", 10), h = Number.isFinite(f) ? f : 0, y = Number.isFinite(g) ? g : 0;
@@ -17611,8 +17611,8 @@ function hM() {
 }
 async function yM() {
   const t = [], n = [
-    { url: I1(gM), kind: "single" },
-    { url: I1(pM), kind: "array" }
+    { url: R1(gM), kind: "single" },
+    { url: R1(pM), kind: "array" }
   ];
   for (const { url: i, kind: l } of n)
     try {
@@ -17641,10 +17641,10 @@ async function yM() {
 function bM() {
   return $T;
 }
-function y0() {
+function b0() {
   return Dr || (Ql({ status: "checking", info: null, error: "" }), Dr = yM().then((t) => {
-    const n = uo("1.11.0"), i = uo(t.tag_name ?? ""), l = hM();
-    if (l && R1(n, l) >= 0 && v.set("skippedUpdateVersion", null), !i || R1(i, n) <= 0) {
+    const n = uo("1.11.2"), i = uo(t.tag_name ?? ""), l = hM();
+    if (l && M1(n, l) >= 0 && v.set("skippedUpdateVersion", null), !i || M1(i, n) <= 0) {
       const m = { status: "latest", info: null, error: "" };
       return Ql(m), m;
     }
@@ -17783,7 +17783,7 @@ function CM() {
           title: i("settings.skippedUpdate.title", { version: T }),
           description: i("settings.skippedUpdate.description"),
           children: /* @__PURE__ */ c.jsx($, { onClick: () => {
-            SM(), y0();
+            SM(), b0();
           }, children: i("settings.skippedUpdate.clear") })
         }
       )
@@ -17822,13 +17822,13 @@ function TM() {
       /* @__PURE__ */ c.jsx("h2", { className: "sona-about-title", children: "Sona" }),
       /* @__PURE__ */ c.jsxs("span", { className: "sona-about-version", children: [
         "v",
-        "1.11.0"
+        "1.11.2"
       ] })
     ] }),
     /* @__PURE__ */ c.jsx("p", { className: "sona-about-desc", children: t("about.description") }),
     /* @__PURE__ */ c.jsxs("div", { className: "sona-about-row", children: [
       /* @__PURE__ */ c.jsxs("div", { className: "sona-about-cards", children: [
-        /* @__PURE__ */ c.jsx(eh, { icon: /* @__PURE__ */ c.jsx($C, {}), label: t("about.card.plugin"), value: "Sona v1.11.0" }),
+        /* @__PURE__ */ c.jsx(eh, { icon: /* @__PURE__ */ c.jsx($C, {}), label: t("about.card.plugin"), value: "Sona v1.11.2" }),
         /* @__PURE__ */ c.jsx(eh, { icon: /* @__PURE__ */ c.jsx(DN, {}), label: t("about.card.framework"), value: "React + Vite" }),
         /* @__PURE__ */ c.jsx(
           eh,
@@ -18131,7 +18131,7 @@ function KM(t) {
     `;
   }).join("");
 }
-let Xt = null, Pa = null, Pl = null, Jh = !1, Os = null, Wh = "", oc = -2, nh = null;
+let Xt = null, Pa = null, Pl = null, Wh = !1, Os = null, _h = "", oc = -2, nh = null;
 function Nm(t) {
   var l;
   if (t <= 0 || !Pa) return null;
@@ -18184,7 +18184,7 @@ function FM(t) {
   }
   return null;
 }
-function b0() {
+function v0() {
   if (nh) return nh;
   const t = /* @__PURE__ */ new Map();
   for (const n of fT())
@@ -18203,7 +18203,7 @@ function QM(t) {
 }
 function XM(t) {
   const n = QM(t);
-  return n ? { championId: b0().get(n) ?? null, name: n } : { championId: null, name: null };
+  return n ? { championId: v0().get(n) ?? null, name: n } : { championId: null, name: null };
 }
 function aw() {
   if (!Xt || !Pa) return !0;
@@ -18232,7 +18232,7 @@ function aw() {
   }), ZM(), !0;
 }
 function sh(t) {
-  t !== Wh && (Wh = t, b.info("[BalanceBuff] %s", t));
+  t !== _h && (_h = t, b.info("[BalanceBuff] %s", t));
 }
 function ZM() {
   if (!Xt || !Pa) {
@@ -18246,7 +18246,7 @@ function ZM() {
     return;
   }
   if (t.hasAttribute(Zs)) return;
-  t.setAttribute(Zs, "cards-wrapper"), b0();
+  t.setAttribute(Zs, "cards-wrapper"), v0();
   const n = t.querySelectorAll(".champion-card-component").length;
   b.info(
     "[BalanceBuff] ✓ 已绑定英雄网格 card-hovered 观察者（wrapper 命中，初始卡片数=%d，模式=%s）",
@@ -18273,7 +18273,7 @@ function ZM() {
     m ? Xt.show(i, "right", m.caption, m.content) : Xt.hide();
   }), Os.observe(t, { subtree: !0, attributes: !0, attributeFilter: ["class"] });
 }
-async function M1() {
+async function D1() {
   var m, f, g, h;
   b.debug("[BalanceBuff] mountForChampSelect 开始");
   let t = "", n = 0;
@@ -18295,24 +18295,24 @@ async function M1() {
     b.warn("[BalanceBuff] 未找到 layer-manager-wrapper，延迟挂载");
     return;
   }
-  Xt = new PM(r), b0(), Te.register(aw), Jh = !0;
+  Xt = new PM(r), v0(), Te.register(aw), Wh = !0;
 }
 function Ed() {
-  b.debug("[BalanceBuff] unmountForChampSelect 执行"), Jh && (Te.unregister(aw), Jh = !1), Os && (Os.disconnect(), Os = null), Wh = "", oc = -2, Xt && (Xt.destroy(), Xt = null), document.querySelectorAll(`[${Zs}]`).forEach((t) => t.removeAttribute(Zs)), Pa = null;
+  b.debug("[BalanceBuff] unmountForChampSelect 执行"), Wh && (Te.unregister(aw), Wh = !1), Os && (Os.disconnect(), Os = null), _h = "", oc = -2, Xt && (Xt.destroy(), Xt = null), document.querySelectorAll(`[${Zs}]`).forEach((t) => t.removeAttribute(Zs)), Pa = null;
 }
-function D1(t) {
+function j1(t) {
   b.debug("[BalanceBuff] updateBalanceBuffTooltip: enabled=%s, phaseUnsub=%s", t, !!Pl), t && !Pl ? (Pl = x.observe(tt.GAMEFLOW_PHASE_CHANGE, (n) => {
-    n.data === "ChampSelect" ? (Ed(), M1()) : Ed();
+    n.data === "ChampSelect" ? (Ed(), D1()) : Ed();
   }), x.getGameflowPhase().then((n) => {
-    b.debug("[BalanceBuff] 启动时当前阶段=%s", n), n === "ChampSelect" && (Ed(), M1());
+    b.debug("[BalanceBuff] 启动时当前阶段=%s", n), n === "ChampSelect" && (Ed(), D1());
   }).catch(() => {
   }), b.info("[BalanceBuff] 平衡性调整 buff 提示已启用 ✓")) : !t && Pl && (Pl(), Pl = null, Ed(), b.info("[BalanceBuff] 平衡性调整 buff 提示已禁用"));
 }
-const YM = ".bottom-right-buttons", v0 = "data-sona-quit-button", _h = "sona-quit-confirm-overlay";
+const YM = ".bottom-right-buttons", S0 = "data-sona-quit-button", $h = "sona-quit-confirm-overlay";
 function JM(t) {
-  if (document.getElementById(_h)) return;
+  if (document.getElementById($h)) return;
   const n = document.createElement("div");
-  n.id = _h, n.style.cssText = [
+  n.id = $h, n.style.cssText = [
     "position:fixed",
     "inset:0",
     "background:rgba(0,0,0,0.65)",
@@ -18370,7 +18370,7 @@ function JM(t) {
 }
 function WM() {
   const t = document.createElement("lol-uikit-flat-button");
-  return t.setAttribute(v0, "true"), t.textContent = "退出对局", t.style.width = "125px", t.style.marginRight = "10px", t.addEventListener("click", (n) => {
+  return t.setAttribute(S0, "true"), t.textContent = "退出对局", t.style.width = "125px", t.style.marginRight = "10px", t.addEventListener("click", (n) => {
     n.stopPropagation(), n.preventDefault(), JM(async () => {
       try {
         await x.dodgeChampSelect(), b.info("[QuitButton] 已发送秒退请求 ✓");
@@ -18383,26 +18383,26 @@ function WM() {
 function nw() {
   const t = document.querySelector(YM);
   if (!t) return !1;
-  if (t.querySelector(`[${v0}]`)) return !0;
+  if (t.querySelector(`[${S0}]`)) return !0;
   const n = WM();
   return t.insertBefore(n, t.firstChild), b.info("[QuitButton] 已注入选人阶段退出按钮 ✓"), !0;
 }
 let Br = null, Im = !1;
-function j1() {
+function B1() {
   Im || (Te.register(nw), Im = !0);
 }
-function B1() {
-  Im && (Te.unregister(nw), Im = !1), document.querySelectorAll(`[${v0}]`).forEach((n) => n.remove());
-  const t = document.getElementById(_h);
+function O1() {
+  Im && (Te.unregister(nw), Im = !1), document.querySelectorAll(`[${S0}]`).forEach((n) => n.remove());
+  const t = document.getElementById($h);
   t && t.remove();
 }
-function O1(t) {
+function L1(t) {
   t && !Br ? (Br = x.observe(tt.GAMEFLOW_PHASE_CHANGE, (n) => {
-    n.data === "ChampSelect" ? j1() : B1();
+    n.data === "ChampSelect" ? B1() : O1();
   }), x.getGameflowPhase().then((n) => {
-    n === "ChampSelect" && j1();
+    n === "ChampSelect" && B1();
   }).catch(() => {
-  }), b.info("[QuitButton] 选人阶段退出按钮已启用 ✓")) : !t && Br && (Br(), Br = null, B1(), b.info("[QuitButton] 选人阶段退出按钮已禁用"));
+  }), b.info("[QuitButton] 选人阶段退出按钮已启用 ✓")) : !t && Br && (Br(), Br = null, O1(), b.info("[QuitButton] 选人阶段退出按钮已禁用"));
 }
 const _M = 15e3;
 let Or = null, Cd = null, sa = null, rc = !1, Hi = !1;
@@ -18427,7 +18427,7 @@ function t5() {
 function a5() {
   Hi && (Hi = !1, b.info("[AutoAccept] 检测到玩家主动接受，恢复自动接受"));
 }
-function L1(t) {
+function U1(t) {
   t && !Or ? (Or = x.observe(tt.GAMEFLOW_PHASE_CHANGE, (n) => {
     const i = n.data;
     i === "ReadyCheck" ? !rc && !Hi && (rc = !0, e5()) : (rc = !1, sa && (clearTimeout(sa), sa = null), (i === "Lobby" || i === "None") && (Hi = !1));
@@ -18436,9 +18436,9 @@ function L1(t) {
     (i == null ? void 0 : i.playerResponse) === "Declined" && sw("ready-check");
   }), b.info("Auto accept enabled ✓")) : !t && Or && (Or(), Or = null, Cd && (Cd(), Cd = null), rc = !1, Hi = !1, sa && (clearTimeout(sa), sa = null), b.info("Auto accept disabled"));
 }
-const iw = ".ready-check-buttons-element", lw = ".ready-check-button-accept", ow = ".ready-check-button-decline", n5 = ".lol-uikit-flat-button-wrapper, .lol-uikit-flat-button", $h = "data-sona-readycheck-bound", U1 = 300;
+const iw = ".ready-check-buttons-element", lw = ".ready-check-button-accept", ow = ".ready-check-button-decline", n5 = ".lol-uikit-flat-button-wrapper, .lol-uikit-flat-button", ey = "data-sona-readycheck-bound", G1 = 300;
 let qi = "None", Td = null, wd = null, bc = null;
-function G1(t, n) {
+function z1(t, n) {
   const i = t.querySelector(n === "accept" ? lw : ow);
   if (!i) return 0;
   let l = 0;
@@ -18455,30 +18455,30 @@ function s5() {
   const t = document.querySelector(iw);
   if (t) {
     if (qi === "Accepted") {
-      const n = G1(t, "decline");
+      const n = z1(t, "decline");
       n > 0 && b.info("[ReadyCheckControl] 已接受 → 解禁拒绝按钮，移除禁用标记 %d 处", n);
     } else if (qi === "Declined") {
-      const n = G1(t, "accept");
+      const n = z1(t, "accept");
       n > 0 && b.info("[ReadyCheckControl] 已拒绝 → 解禁接受按钮，移除禁用标记 %d 处", n);
     }
   }
 }
-const ey = [];
-function z1(t, n) {
-  if (!t || t.hasAttribute($h)) return;
-  t.setAttribute($h, "true");
+const ty = [];
+function P1(t, n) {
+  if (!t || t.hasAttribute(ey)) return;
+  t.setAttribute(ey, "true");
   const i = () => {
     n === "accept" ? a5() : t5(), (n === "accept" ? x.acceptMatch() : x.declineMatch()).then(() => b.info("[ReadyCheckControl] 已主动%s对局 ✓", n === "accept" ? "接受" : "拒绝")).catch((r) => b.error("[ReadyCheckControl] %s 调用失败:", n, r));
   };
-  t.addEventListener("click", i), ey.push({ el: t, handler: i });
+  t.addEventListener("click", i), ty.push({ el: t, handler: i });
 }
 function i5(t) {
-  z1(t.querySelector(lw), "accept"), z1(t.querySelector(ow), "decline");
+  P1(t.querySelector(lw), "accept"), P1(t.querySelector(ow), "decline");
 }
 function l5() {
-  for (const { el: t, handler: n } of ey)
-    t.removeEventListener("click", n), t.removeAttribute($h);
-  ey.length = 0;
+  for (const { el: t, handler: n } of ty)
+    t.removeEventListener("click", n), t.removeAttribute(ey);
+  ty.length = 0;
 }
 function o5() {
   const t = document.querySelector(iw);
@@ -18487,43 +18487,43 @@ function o5() {
 function rw(t) {
   t !== qi && (qi = t, b.info("[ReadyCheckControl] 玩家响应状态变化 → %s", qi)), o5(), s5();
 }
-async function P1() {
+async function H1() {
   try {
     const t = await x.getReadyCheck();
     rw((t == null ? void 0 : t.playerResponse) ?? "None");
   } catch {
   }
 }
-function H1() {
-  bc || (b.info("[ReadyCheckControl] 进入 ReadyCheck，启动轮询解禁（每 %dms 一次）", U1), P1(), bc = setInterval(() => void P1(), U1));
+function q1() {
+  bc || (b.info("[ReadyCheckControl] 进入 ReadyCheck，启动轮询解禁（每 %dms 一次）", G1), H1(), bc = setInterval(() => void H1(), G1));
 }
 function r5() {
   bc && (clearInterval(bc), bc = null);
 }
-function q1() {
+function K1() {
   r5(), l5(), qi = "None";
 }
 let Lr = !1;
-function K1(t) {
+function V1(t) {
   b.info("[ReadyCheckControl] updateAllowDeclineAfterAccept 调用 → enabled=%s, registered=%s", t, Lr), t && !Lr ? (Lr = !0, qi = "None", wd = x.observe(tt.READY_CHECK, (n) => {
     const i = n.data;
     rw((i == null ? void 0 : i.playerResponse) ?? "None");
   }), Td = x.observe(tt.GAMEFLOW_PHASE_CHANGE, (n) => {
     const i = n.data;
-    b.info("[ReadyCheckControl] gameflow 阶段变化 → %s", i), i === "ReadyCheck" ? H1() : q1();
+    b.info("[ReadyCheckControl] gameflow 阶段变化 → %s", i), i === "ReadyCheck" ? q1() : K1();
   }), x.getGameflowPhase().then((n) => {
-    n === "ReadyCheck" && H1();
+    n === "ReadyCheck" && q1();
   }).catch(() => {
-  }), b.info("[ReadyCheckControl] Allow decline after accept enabled ✓")) : !t && Lr && (Lr = !1, Td && (Td(), Td = null), wd && (wd(), wd = null), q1(), b.info("[ReadyCheckControl] Allow decline after accept disabled"));
+  }), b.info("[ReadyCheckControl] Allow decline after accept enabled ✓")) : !t && Lr && (Lr = !1, Td && (Td(), Td = null), wd && (wd(), wd = null), K1(), b.info("[ReadyCheckControl] Allow decline after accept disabled"));
 }
 const c5 = "iframe#tv-official-pop";
-function V1() {
+function F1() {
   const t = document.querySelector(c5);
   return t && (t.remove(), b.info("[HideEsportsPopup] 已移除右下角赛事弹窗")), !0;
 }
 let kd = !1;
-function F1(t) {
-  t && !kd ? (kd = !0, Te.register(V1), b.info("Hide esports popup enabled ✓")) : !t && kd && (kd = !1, Te.unregister(V1), b.info("Hide esports popup disabled"));
+function Q1(t) {
+  t && !kd ? (kd = !0, Te.register(F1), b.info("Hide esports popup enabled ✓")) : !t && kd && (kd = !1, Te.unregister(F1), b.info("Hide esports popup disabled"));
 }
 let Ur = null;
 const u5 = {
@@ -18536,7 +18536,7 @@ const u5 = {
   PreEndOfGame: "结算准备",
   EndOfGame: "对局结束"
 };
-function Q1(t) {
+function X1(t) {
   t && !Ur ? (Ur = x.observe(tt.GAMEFLOW_PHASE_CHANGE, (n) => {
     const i = n.data, l = u5[i];
     b.info("Gameflow phase → %s%s", i, l ? ` (${l})` : ""), l && x.getGameflowSession().then((r) => {
@@ -18550,51 +18550,51 @@ function Q1(t) {
     }).catch((r) => b.error("获取 %s 对局信息失败:", l, r));
   }), b.info("Debug gameflow logging enabled ✓")) : !t && Ur && (Ur(), Ur = null, b.info("Debug gameflow logging disabled"));
 }
-function X1() {
+function Z1() {
   const t = document.querySelector(".lower-details .status.disabled");
   return t && (t.classList.remove("disabled"), b.info("Status input unlocked ✓")), !0;
 }
 let xd = !1;
-function Z1(t) {
-  t && !xd ? (Te.register(X1), xd = !0, b.info("Unlock status enabled ✓")) : !t && xd && (Te.unregister(X1), xd = !1, b.info("Unlock status disabled"));
+function Y1(t) {
+  t && !xd ? (Te.register(Z1), xd = !0, b.info("Unlock status enabled ✓")) : !t && xd && (Te.unregister(Z1), xd = !1, b.info("Unlock status disabled"));
 }
-const Y1 = "data-sona-bench-hijacked";
+const J1 = "data-sona-bench-hijacked";
 function d5(t) {
   const n = t.querySelector(".bench-champion-background");
   if (!n) return null;
   const l = (n.style.backgroundImage || "").match(/champion-icons\/(\d+)\.png/);
   return l ? Number(l[1]) : null;
 }
-function J1() {
+function W1() {
   const t = document.querySelector(".bench-container");
   return t && (t.querySelectorAll('[class*="on-cooldown"]').forEach((n) => {
     Array.from(n.classList).filter((r) => r.startsWith("on-cooldown")).forEach((r) => n.classList.remove(r));
     const l = n.querySelector(".cooldown-mask");
     l instanceof HTMLElement && (l.style.display = "none");
-  }), t.querySelectorAll(`.champion-bench-item:not([${Y1}])`).forEach((n) => {
-    n.classList.contains("empty-bench-item") || n.classList.contains("locked-out") || (n.setAttribute(Y1, "true"), n.addEventListener("click", (i) => {
+  }), t.querySelectorAll(`.champion-bench-item:not([${J1}])`).forEach((n) => {
+    n.classList.contains("empty-bench-item") || n.classList.contains("locked-out") || (n.setAttribute(J1, "true"), n.addEventListener("click", (i) => {
       const l = d5(n);
       l && (i.stopPropagation(), i.stopImmediatePropagation(), i.preventDefault(), x.benchSwap(l).then(() => b.info("Bench swap → champion %d ✓", l)).catch((r) => b.error("Bench swap failed:", r)));
     }, !0));
   })), !0;
 }
 let Nd = !1;
-function W1(t) {
-  t && !Nd ? (Te.register(J1), Nd = !0, b.info("Bench no-cooldown enabled ✓")) : !t && Nd && (Te.unregister(J1), Nd = !1, b.info("Bench no-cooldown disabled"));
+function _1(t) {
+  t && !Nd ? (Te.register(W1), Nd = !0, b.info("Bench no-cooldown enabled ✓")) : !t && Nd && (Te.unregister(W1), Nd = !1, b.info("Bench no-cooldown disabled"));
 }
-const _1 = "sona-global-particle-canvas";
+const $1 = "sona-global-particle-canvas";
 let ji = null;
 function m5() {
   return document.getElementById("rcp-fe-viewport-root") ?? null;
 }
-function $1() {
+function eE() {
   const t = m5();
   if (!t) return !1;
-  const n = document.getElementById(_1);
+  const n = document.getElementById($1);
   if (n instanceof HTMLCanvasElement && n.isConnected) return !0;
   ji && (ji(), ji = null);
   const i = document.createElement("canvas");
-  i.id = _1, i.style.cssText = "position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:821;", t.appendChild(i);
+  i.id = $1, i.style.cssText = "position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:821;", t.appendChild(i);
   const l = i.getContext("2d");
   if (!l) return !1;
   let r = 0, m = !1;
@@ -18625,10 +18625,10 @@ function $1() {
   }, b.info("Global particle canvas injected ✓"), !0;
 }
 let Id = !1;
-function eE(t) {
-  t && !Id ? (Te.register($1), Id = !0, b.info("Global particle effect enabled ✓")) : !t && Id && (Te.unregister($1), Id = !1, ji && (ji(), ji = null), b.info("Global particle effect disabled"));
+function tE(t) {
+  t && !Id ? (Te.register(eE), Id = !0, b.info("Global particle effect enabled ✓")) : !t && Id && (Te.unregister(eE), Id = !1, ji && (ji(), ji = null), b.info("Global particle effect disabled"));
 }
-const Fn = "data-sona-friend-group", cw = "data-sona-friend-checked", f5 = "/lol-chat/v1/friends", tE = [
+const Fn = "data-sona-friend-group", cw = "data-sona-friend-checked", f5 = "/lol-chat/v1/friends", aE = [
   "#e8a424",
   "#4a9eff",
   "#5bbd72",
@@ -18646,9 +18646,9 @@ const Fn = "data-sona-friend-group", cw = "data-sona-friend-checked", f5 = "/lol
   "#fb923c",
   "#f472b6"
 ];
-let nm = /* @__PURE__ */ new Map(), ty = 0, S0 = /* @__PURE__ */ new Map(), Bi = null, Gr = null;
+let nm = /* @__PURE__ */ new Map(), ay = 0, A0 = /* @__PURE__ */ new Map(), Bi = null, Gr = null;
 function g5(t) {
-  return nm.has(t) || (nm.set(t, tE[ty % tE.length]), ty++), nm.get(t);
+  return nm.has(t) || (nm.set(t, aE[ay % aE.length]), ay++), nm.get(t);
 }
 async function uw(t = 5) {
   return Gr || (Gr = p5(t).finally(() => {
@@ -18668,7 +18668,7 @@ async function p5(t = 5) {
         const h = (n = f.lol) == null ? void 0 : n.gameId, y = h ? Number(h) : 0, A = ((i = f.lol) == null ? void 0 : i.gameStatus) ?? "";
         y > 0 && A && A !== "outOfGame" && m.set(g, { gameId: y, gameStatus: A });
       }
-      S0 = m, b.info("[FriendGroup] 刷新好友游戏状态 → %d 人在游戏中 (attempt %d)", m.size, l), ay();
+      A0 = m, b.info("[FriendGroup] 刷新好友游戏状态 → %d 人在游戏中 (attempt %d)", m.size, l), ny();
       return;
     } catch (r) {
       l < t ? (b.debug("[FriendGroup] 好友接口未就绪，%ds 后重试 (%d/%d)", 2, l + 1, t), await kt(2e3)) : b.error("[FriendGroup] 查询好友状态失败:", r);
@@ -18679,7 +18679,7 @@ function h5(t = 250) {
     Bi = null, uw(0);
   }, t));
 }
-function ay() {
+function ny() {
   const t = document.querySelector(".lol-social-lower-pane-container");
   if (!t) return !0;
   const n = t.querySelectorAll('[class*="lol-social-roster-member"]');
@@ -18694,7 +18694,7 @@ function ay() {
     }
     const g = r.querySelector(".member-name"), h = ((T = g == null ? void 0 : g.textContent) == null ? void 0 : T.trim()) ?? "";
     if (!h) return;
-    const y = S0.get(h), A = y ? String(y.gameId) : void 0;
+    const y = A0.get(h), A = y ? String(y.gameId) : void 0;
     A ? (i.has(A) || i.set(A, []), i.get(A).push(r)) : r.hasAttribute(Fn) && (r.removeAttribute(Fn), r.style.borderRight = "");
   }), i.forEach((l, r) => {
     if (l.length < 2) {
@@ -18710,18 +18710,18 @@ function ay() {
   }), !0;
 }
 let Ni = !1, ih = !1, Rd = null;
-function aE(t) {
-  t && !Ni ? (Ni = !0, Te.register(ay), ih = !0, Rd = x.observe(f5, () => {
+function nE(t) {
+  t && !Ni ? (Ni = !0, Te.register(ny), ih = !0, Rd = x.observe(f5, () => {
     h5();
   }), uw().then(() => {
     Ni && b.info("Friend smart group enabled ✓");
-  })) : !t && Ni && (ih && (Te.unregister(ay), ih = !1), Rd && (Rd(), Rd = null), Bi != null && (window.clearTimeout(Bi), Bi = null), Ni = !1, S0.clear(), nm.clear(), ty = 0, document.querySelectorAll(`[${Fn}]`).forEach((n) => {
+  })) : !t && Ni && (ih && (Te.unregister(ny), ih = !1), Rd && (Rd(), Rd = null), Bi != null && (window.clearTimeout(Bi), Bi = null), Ni = !1, A0.clear(), nm.clear(), ay = 0, document.querySelectorAll(`[${Fn}]`).forEach((n) => {
     const i = n;
     i.removeAttribute(Fn), i.removeAttribute(cw), i.style.borderRight = "";
   }), b.info("Friend smart group disabled"));
 }
-const y5 = "/lol-chat/v1/friends", Gc = "data-sona-enhanced-friend-status", ny = "data-sona-enhanced-friend-status-original";
-let Ls = !1, lh = !1, Md = null, Oi = null, vc = null, zr = null, A0 = /* @__PURE__ */ new Map();
+const y5 = "/lol-chat/v1/friends", Gc = "data-sona-enhanced-friend-status", sy = "data-sona-enhanced-friend-status-original";
+let Ls = !1, lh = !1, Md = null, Oi = null, vc = null, zr = null, E0 = /* @__PURE__ */ new Map();
 function dw(t) {
   return t.gameName || t.name;
 }
@@ -18764,7 +18764,7 @@ async function A5(t = 5) {
           for (const f of b5(r))
             l.set(f, m);
       }
-      A0 = l, b.info("[FriendStatus] 刷新游戏中好友状态 → %d 条索引 (attempt %d)", l.size, n), Rm();
+      E0 = l, b.info("[FriendStatus] 刷新游戏中好友状态 → %d 条索引 (attempt %d)", l.size, n), Rm();
       return;
     } catch (i) {
       n < t ? await kt(2e3) : b.error("[FriendStatus] 查询好友状态失败:", i);
@@ -18785,12 +18785,12 @@ function T5(t) {
 function w5(t) {
   var i, l;
   const n = (l = (i = t.querySelector(".member-name")) == null ? void 0 : i.textContent) == null ? void 0 : l.trim();
-  return n ? A0.get(n) ?? null : null;
+  return n ? E0.get(n) ?? null : null;
 }
 function fw(t) {
   if (!t.hasAttribute(Gc)) return;
-  const n = t.getAttribute(ny);
-  n != null && (t.innerText = n), t.removeAttribute(Gc), t.removeAttribute(ny);
+  const n = t.getAttribute(sy);
+  n != null && (t.innerText = n), t.removeAttribute(Gc), t.removeAttribute(sy);
 }
 function Rm() {
   const t = document.querySelector(".lol-social-lower-pane-container");
@@ -18804,7 +18804,7 @@ function Rm() {
       fw(r);
       return;
     }
-    r.hasAttribute(Gc) || (r.setAttribute(ny, r.innerText), r.setAttribute(Gc, "true")), r.innerText = T5(m);
+    r.hasAttribute(Gc) || (r.setAttribute(sy, r.innerText), r.setAttribute(Gc, "true")), r.innerText = T5(m);
   }), !0;
 }
 function k5() {
@@ -18815,23 +18815,23 @@ function k5() {
 function x5() {
   vc != null && (window.clearInterval(vc), vc = null);
 }
-function nE(t) {
+function sE(t) {
   t && !Ls ? (Ls = !0, Te.register(Rm), lh = !0, k5(), Md = x.observe(y5, () => {
     E5();
   }), mw().then(() => {
     Ls && b.info("Enhanced friend game status enabled ✓");
-  })) : !t && Ls && (lh && (Te.unregister(Rm), lh = !1), Md && (Md(), Md = null), Oi != null && (window.clearTimeout(Oi), Oi = null), x5(), Ls = !1, A0.clear(), document.querySelectorAll(`[${Gc}]`).forEach((n) => {
+  })) : !t && Ls && (lh && (Te.unregister(Rm), lh = !1), Md && (Md(), Md = null), Oi != null && (window.clearTimeout(Oi), Oi = null), x5(), Ls = !1, E0.clear(), document.querySelectorAll(`[${Gc}]`).forEach((n) => {
     fw(n);
   }), b.info("Enhanced friend game status disabled"));
 }
-const wf = 0, zc = 100, Mm = 50, sy = 3, gw = 16, N5 = 1.22, sE = vw(Mm), E0 = {
+const wf = 0, zc = 100, Mm = 50, iy = 3, gw = 16, N5 = 1.22, iE = vw(Mm), C0 = {
   recencyHalfLife: 18,
   minConfidenceGames: 3,
   fullConfidenceGames: 16,
   trimOutliers: !0,
   skipEarlySurrender: !0,
   skipAfkTeammate: !0
-}, C0 = {
+}, T0 = {
   combat: 0.26,
   win: 0.12,
   damage: 0.18,
@@ -18845,12 +18845,12 @@ function pw(t) {
   return Ee(`strength.grade.${t}`);
 }
 function hw(t, n, i = {}) {
-  const l = { ...E0, ...i }, r = t.map((P) => I5(P, n, l)).filter((P) => P !== null);
+  const l = { ...C0, ...i }, r = t.map((P) => I5(P, n, l)).filter((P) => P !== null);
   if (r.length === 0)
     return null;
   const m = l.trimOutliers ? Q5(r.map((P) => P.score)) : r.map((P) => P.score), f = r.map((P, ae) => X5(ae, l.recencyHalfLife)), g = Xl(m, f), h = V5(m), y = F5(m), A = K5(r.length, l), T = _t((h - 50) * 0.012, -0.6, 0.6), E = _t((y - 50) * 0.01, -0.5, 0.5), j = 0.57 + A * 0.43, R = _t(
-    sE + (g - sE) * j + T + E,
-    sy,
+    iE + (g - iE) * j + T + E,
+    iy,
     gw
   ), q = yw(R);
   return {
@@ -18876,13 +18876,13 @@ function hw(t, n, i = {}) {
   };
 }
 function I5(t, n, i = {}) {
-  const l = { ...E0, ...i }, r = t.json.participants.find((re) => re.puuid === n);
+  const l = { ...C0, ...i }, r = t.json.participants.find((re) => re.puuid === n);
   if (!r || bw(t, r, l))
     return null;
   const m = t.json.participants.filter((re) => re.teamId === r.teamId);
   if (m.length === 0)
     return null;
-  const f = M5(t, r), g = q5(C0), h = Math.max((r.timePlayed || t.json.gameDuration || 1) / 60, 1), y = Us(m, (re) => re.kills), A = Us(m, (re) => re.totalDamageDealtToChampions), T = Us(m, (re) => re.goldEarned), E = Us(m, (re) => re.damageDealtToObjectives), j = Us(m, (re) => re.totalDamageTaken), R = sm(r.kills), q = sm(r.deaths), P = sm(r.assists), ae = R + P, Q = Ha(r, "kda") || (R + P) / Math.max(q, 1), ee = _t(
+  const f = M5(t, r), g = q5(T0), h = Math.max((r.timePlayed || t.json.gameDuration || 1) / 60, 1), y = Us(m, (re) => re.kills), A = Us(m, (re) => re.totalDamageDealtToChampions), T = Us(m, (re) => re.goldEarned), E = Us(m, (re) => re.damageDealtToObjectives), j = Us(m, (re) => re.totalDamageTaken), R = sm(r.kills), q = sm(r.deaths), P = sm(r.assists), ae = R + P, Q = Ha(r, "kda") || (R + P) / Math.max(q, 1), ee = _t(
     Ha(r, "killParticipation") || ha(ae, y),
     0,
     1
@@ -18927,9 +18927,9 @@ function I5(t, n, i = {}) {
 }
 function kf(t, n, i = {}) {
   const l = t.json.participants.find((r) => r.puuid === n);
-  return l ? bw(t, l, { ...E0, ...i }) : !0;
+  return l ? bw(t, l, { ...C0, ...i }) : !0;
 }
-function T0(t, n) {
+function w0(t, n) {
   if (!Number.isFinite(n) || n <= 0) return t;
   const i = `q_${n}`;
   return t.filter((l) => {
@@ -19033,11 +19033,11 @@ function P5(t, n) {
   );
 }
 function H5(t, n) {
-  return Object.keys(C0).reduce((l, r) => (l[r] = Xl(t.map((m) => m.breakdown[r]), n), l), {});
+  return Object.keys(T0).reduce((l, r) => (l[r] = Xl(t.map((m) => m.breakdown[r]), n), l), {});
 }
 function q5(t) {
   const n = Us(Object.values(t), (i) => i);
-  return n <= 0 ? C0 : Object.entries(t).reduce((i, [l, r]) => (i[l] = r / n, i), {});
+  return n <= 0 ? T0 : Object.entries(t).reduce((i, [l, r]) => (i[l] = r / n, i), {});
 }
 function xf(t, n) {
   return n[t] ?? n.UNKNOWN;
@@ -19058,13 +19058,13 @@ function F5(t) {
 }
 function Q5(t) {
   if (t.length < 8) return t;
-  const n = [...t].sort((r, m) => r - m), i = iE(n, 0.05), l = iE(n, 0.95);
+  const n = [...t].sort((r, m) => r - m), i = lE(n, 0.05), l = lE(n, 0.95);
   return t.map((r) => _t(r, i, l));
 }
 function X5(t, n) {
   return Math.pow(0.5, t / Math.max(n, 1));
 }
-function iE(t, n) {
+function lE(t, n) {
   if (t.length === 0) return 0;
   const i = n * (t.length - 1), l = Math.floor(i), r = Math.ceil(i);
   if (l === r) return t[l];
@@ -19091,7 +19091,7 @@ function Ha(t, n) {
   const i = (l = t.challenges) == null ? void 0 : l[n];
   return typeof i == "number" && Number.isFinite(i) ? i : 0;
 }
-function lE(t, n) {
+function oE(t, n) {
   var l;
   const i = (l = t.challenges) == null ? void 0 : l[n];
   return i === !0 || typeof i == "number" && i > 0;
@@ -19100,7 +19100,7 @@ function bw(t, n, i) {
   return i.skipEarlySurrender && (n.gameEndedInEarlySurrender || n.teamEarlySurrendered) ? !0 : i.skipAfkTeammate && Y5(t, n);
 }
 function Y5(t, n) {
-  return lE(n, "hadAfkTeammate") ? !0 : t.json.participants.some((i) => i.teamId === n.teamId && i.puuid !== n.puuid && lE(i, "hadAfkTeammate"));
+  return oE(n, "hadAfkTeammate") ? !0 : t.json.participants.some((i) => i.teamId === n.teamId && i.puuid !== n.puuid && oE(i, "hadAfkTeammate"));
 }
 function $t(t, n, i) {
   return i === n ? t >= i ? 1 : 0 : _t((t - n) / (i - n), 0, 1);
@@ -19116,12 +19116,12 @@ function tl(t) {
 }
 function vw(t) {
   const n = _t(t, wf, zc) / zc, i = _t(0.5 + (n - 0.5) * N5, 0, 1);
-  return sy + i * (gw - sy);
+  return iy + i * (gw - iy);
 }
 function _t(t, n, i) {
   return Math.min(i, Math.max(n, t));
 }
-const iy = "data-sona-lobby-history", ly = "data-sona-lobby-stats", oE = "data-sona-lobby-stats-text", J5 = [
+const ly = "data-sona-lobby-history", oy = "data-sona-lobby-stats", rE = "data-sona-lobby-stats-text", J5 = [
   "button",
   "a",
   "input",
@@ -19131,7 +19131,7 @@ const iy = "data-sona-lobby-history", ly = "data-sona-lobby-stats", oE = "data-s
   "lol-uikit-flat-button",
   "lol-uikit-icon-button"
 ].join(","), W5 = 120;
-let Ii = !1, oh = !1, Dd = null, jm = /* @__PURE__ */ new Map(), Sc = 0, mo = /* @__PURE__ */ new Map(), Pr = null, oy = /* @__PURE__ */ new Map(), ry = [], Gs = null, zs = null;
+let Ii = !1, oh = !1, Dd = null, jm = /* @__PURE__ */ new Map(), Sc = 0, mo = /* @__PURE__ */ new Map(), Pr = null, ry = /* @__PURE__ */ new Map(), cy = [], Gs = null, zs = null;
 function _5(t, n, i) {
   zs || (zs = document.createElement("div"), zs.id = "sona-lobby-member-match-history-root", document.body.appendChild(zs), Gs = bn.createRoot(zs));
   const l = () => {
@@ -19147,11 +19147,11 @@ function $5() {
   Gs && (Gs.unmount(), Gs = null), zs && (zs.remove(), zs = null);
 }
 async function e3(t, n) {
-  const i = oy.get(t);
+  const i = ry.get(t);
   if (i) return i;
   try {
     const l = await x.getSummonerByPuuid(t), r = l.gameName && l.tagLine ? `${l.gameName}#${l.tagLine}` : n;
-    return oy.set(t, r), r;
+    return ry.set(t, r), r;
   } catch {
     return n;
   }
@@ -19185,7 +19185,7 @@ async function a3() {
         startIndex: 0,
         count: v.get("lobbyEnhancementFetchCount") || 50,
         tag: n || void 0
-      })).games ?? [], f = T0(m, Sc);
+      })).games ?? [], f = w0(m, Sc);
       let g = 0, h = 0, y = 0, A = 0, T = 0;
       for (const j of f) {
         const R = j.json.participants.find((q) => q.puuid === l.puuid);
@@ -19210,7 +19210,7 @@ async function a3() {
     }
   })), Ii && (mo = i, Om());
 }
-async function rE() {
+async function cE() {
   try {
     const t = await x.getLobby();
     if (!Ii) return;
@@ -19223,11 +19223,11 @@ function n3(t) {
   const n = t.getAttribute("puuid") || "", i = Number(t.getAttribute("summoner-id") || 0);
   return jm.get(`puuid:${n}`) ?? jm.get(`summoner:${i}`) ?? null;
 }
-function cE(t, n) {
+function uE(t, n) {
   const i = t.getBoundingClientRect();
   return n.clientY >= i.bottom - W5;
 }
-function uE(t) {
+function dE(t) {
   return t instanceof Element && !!t.closest(J5);
 }
 function s3(t) {
@@ -19240,8 +19240,8 @@ function l3(t) {
   return t >= 14.5 ? "#5bbd72" : t >= 11.2 ? "#c8aa6e" : "#e74c3c";
 }
 function o3(t) {
-  let n = t.querySelector(`[${ly}]`);
-  return n || (n = document.createElement("div"), n.setAttribute(ly, "true"), n.style.cssText = [
+  let n = t.querySelector(`[${oy}]`);
+  return n || (n = document.createElement("div"), n.setAttribute(oy, "true"), n.style.cssText = [
     "position:absolute",
     "top:12px",
     "left:50%",
@@ -19261,14 +19261,14 @@ function o3(t) {
     "box-shadow:0 2px 8px rgba(0,0,0,0.28)"
   ].join(";"), t.appendChild(n), n);
 }
-function dE(t, n) {
+function mE(t, n) {
   const i = o3(t), l = n ? [
     `胜率 ${Math.round(n.winRate * 100)}%`,
     `KDA ${n.kda >= 99 ? "Perfect" : n.kda.toFixed(2)}`,
     `评分 ${n.score != null ? n.score.toFixed(1) : "--"}`
   ].join("|") : "战绩加载中...";
-  if (i.getAttribute(oE) !== l) {
-    if (i.setAttribute(oE, l), !n) {
+  if (i.getAttribute(rE) !== l) {
+    if (i.setAttribute(rE, l), !n) {
       i.innerHTML = '<span style="color:#a09b8c">战绩加载中...</span>';
       return;
     }
@@ -19282,22 +19282,22 @@ function dE(t, n) {
   }
 }
 function r3(t, n) {
-  if (t.hasAttribute(iy)) {
-    dE(t, mo.get(n.puuid));
+  if (t.hasAttribute(ly)) {
+    mE(t, mo.get(n.puuid));
     return;
   }
   const i = t.style.position;
-  t.setAttribute(iy, "true"), t.style.position || (t.style.position = "relative"), dE(t, mo.get(n.puuid));
+  t.setAttribute(ly, "true"), t.style.position || (t.style.position = "relative"), mE(t, mo.get(n.puuid));
   const l = (f) => {
-    uE(f.target) || cE(t, f) && n.puuid && (f.preventDefault(), f.stopPropagation(), e3(n.puuid, n.name).then((g) => {
+    dE(f.target) || uE(t, f) && n.puuid && (f.preventDefault(), f.stopPropagation(), e3(n.puuid, n.name).then((g) => {
       _5(n.puuid, g, Sc || void 0);
     }));
   }, r = (f) => {
-    t.style.cursor = cE(t, f) && !uE(f.target) ? "pointer" : "";
+    t.style.cursor = uE(t, f) && !dE(f.target) ? "pointer" : "";
   }, m = () => {
     t.style.cursor = "";
   };
-  t.addEventListener("click", l), t.addEventListener("mousemove", r), t.addEventListener("mouseleave", m), ry.push({ element: t, previousPosition: i, clickHandler: l, moveHandler: r, leaveHandler: m });
+  t.addEventListener("click", l), t.addEventListener("mousemove", r), t.addEventListener("mouseleave", m), cy.push({ element: t, previousPosition: i, clickHandler: l, moveHandler: r, leaveHandler: m });
 }
 function Om() {
   const t = document.querySelectorAll("lol-regalia-parties-v2-element[puuid], lol-regalia-parties-v2-element[summoner-id]");
@@ -19308,23 +19308,23 @@ function Om() {
     r && r3(r, l);
   }), !0;
 }
-function mE() {
-  ry.forEach(({ element: t, previousPosition: n, clickHandler: i, moveHandler: l, leaveHandler: r }) => {
-    t.removeEventListener("click", i), t.removeEventListener("mousemove", l), t.removeEventListener("mouseleave", r), t.removeAttribute(iy), t.style.cursor = "", t.style.position = n, t.querySelectorAll(`[${ly}]`).forEach((m) => m.remove());
-  }), ry = [];
+function fE() {
+  cy.forEach(({ element: t, previousPosition: n, clickHandler: i, moveHandler: l, leaveHandler: r }) => {
+    t.removeEventListener("click", i), t.removeEventListener("mousemove", l), t.removeEventListener("mouseleave", r), t.removeAttribute(ly), t.style.cursor = "", t.style.position = n, t.querySelectorAll(`[${oy}]`).forEach((m) => m.remove());
+  }), cy = [];
 }
-function fE(t) {
+function gE(t) {
   t && !Ii ? (Ii = !0, Te.register(Om), oh = !0, Dd = x.observe(tt.LOBBY, (n) => {
     if (n.eventType === "Delete") {
-      Bm(null), mo.clear(), mE();
+      Bm(null), mo.clear(), fE();
       return;
     }
-    rE();
-  }), rE().then(() => {
+    cE();
+  }), cE().then(() => {
     Ii && b.info("Lobby member match history enabled ✓");
-  })) : !t && Ii && (oh && (Te.unregister(Om), oh = !1), Dd && (Dd(), Dd = null), Ii = !1, Bm(null), mo.clear(), oy.clear(), mE(), $5(), b.info("Lobby member match history disabled"));
+  })) : !t && Ii && (oh && (Te.unregister(Om), oh = !1), Dd && (Dd(), Dd = null), Ii = !1, Bm(null), mo.clear(), ry.clear(), fE(), $5(), b.info("Lobby member match history disabled"));
 }
-const gE = ["HEART", "COOL", "SHOTCALLER"];
+const pE = ["HEART", "COOL", "SHOTCALLER"];
 async function c3() {
   var t;
   try {
@@ -19350,7 +19350,7 @@ async function c3() {
     }
     const f = [...l, ...r].slice(0, m);
     for (let g = 0; g < f.length; g++) {
-      const h = f[g], y = gE[Math.floor(Math.random() * gE.length)], A = g < l.length, T = await fetch("/lol-honor-v2/v1/honor-player", {
+      const h = f[g], y = pE[Math.floor(Math.random() * pE.length)], A = g < l.length, T = await fetch("/lol-honor-v2/v1/honor-player", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -19368,7 +19368,7 @@ async function c3() {
   }
 }
 let Hr = null;
-function pE(t) {
+function hE(t) {
   t && !Hr ? (Hr = x.observe(tt.GAMEFLOW_PHASE_CHANGE, (n) => {
     n.data === "PreEndOfGame" && c3();
   }), b.info("Auto honor enabled ✓")) : !t && Hr && (Hr(), Hr = null, b.info("Auto honor disabled"));
@@ -19418,7 +19418,7 @@ async function d3(t) {
   const l = await x.getLobby().catch(() => null), r = ch(n == null ? void 0 : n.assignedPosition), m = ch(l == null ? void 0 : l.localMember.firstPositionPreference), f = ch(l == null ? void 0 : l.localMember.secondPositionPreference);
   return r && m && f && m !== "fill" && f !== "fill" && r !== m && r !== f ? `position-mismatch:${m}/${f}->${r}` : null;
 }
-async function hE(t) {
+async function yE(t) {
   try {
     return new Set(await t());
   } catch {
@@ -19437,12 +19437,12 @@ function m3(t, n) {
     l.cellId !== t.localPlayerCellId && l.championPickIntent > 0 && i.add(l.championPickIntent);
   }), i;
 }
-async function yE(t, n = 0) {
+async function bE(t, n = 0) {
   const i = Sw();
   if (i.length === 0) return null;
   const [l, r] = await Promise.all([
-    hE(() => x.getPickableChampionIds()),
-    hE(() => x.getDisabledChampionIds())
+    yE(() => x.getPickableChampionIds()),
+    yE(() => x.getDisabledChampionIds())
   ]), m = m3(t, n);
   return i.find((f) => !(m.has(f) || r != null && r.has(f) || l && !l.has(f))) ?? null;
 }
@@ -19489,7 +19489,7 @@ async function f3() {
         continue;
       }
       if (l.timer.phase === "PLANNING") {
-        const f = await yE(l, m.championId);
+        const f = await bE(l, m.championId);
         if (!f) {
           await kt(1e3);
           continue;
@@ -19507,7 +19507,7 @@ async function f3() {
         continue;
       }
       if (m.isInProgress) {
-        const f = await yE(l, m.championId);
+        const f = await bE(l, m.championId);
         if (!f) {
           b.warn("[AutoLock] 目标英雄队列中没有当前可选英雄");
           return;
@@ -19543,12 +19543,12 @@ async function f3() {
   b.warn("[AutoLock] 等待超时 (5分钟)，未能秒锁");
 }
 let qr = null;
-function bE(t) {
+function vE(t) {
   t && !qr ? (qr = x.observe(tt.GAMEFLOW_PHASE_CHANGE, (n) => {
     n.data === "ChampSelect" && f3();
   }), b.info("Auto lock champion enabled ✓")) : !t && qr && (qr(), qr = null, b.info("Auto lock champion disabled"));
 }
-const g3 = 600, Hl = 500, p3 = [80, 180], vE = 20;
+const g3 = 600, Hl = 500, p3 = [80, 180], SE = 20;
 async function h3(t) {
   const n = To(t), i = (n == null ? void 0 : n.name) || `英雄#${t}`, l = Ee("champSelect.autoBan.message", { championName: i });
   try {
@@ -19559,7 +19559,7 @@ async function h3(t) {
 function Ew() {
   return [...new Set(v.get("autoBanChampionIds").filter((t) => t > 0))];
 }
-async function SE(t) {
+async function AE(t) {
   try {
     return new Set(await t());
   } catch {
@@ -19580,8 +19580,8 @@ async function b3(t) {
   const n = Ew();
   if (n.length === 0) return null;
   const [i, l] = await Promise.all([
-    SE(() => x.getBannableChampionIds()),
-    SE(() => x.getDisabledChampionIds())
+    AE(() => x.getBannableChampionIds()),
+    AE(() => x.getDisabledChampionIds())
   ]), r = i && i.size > 0 ? i : null, m = y3(t);
   return n.find((f) => !(m.has(f) || l != null && l.has(f) || r && !r.has(f))) ?? null;
 }
@@ -19594,7 +19594,7 @@ function v3(t, n) {
 function S3(t, n) {
   return t.actions.flat(2).find((i) => i.id === n);
 }
-async function AE(t, n) {
+async function EE(t, n) {
   let i = !1;
   for (const l of p3) {
     await kt(l);
@@ -19621,7 +19621,7 @@ async function A3(t, n) {
       })
     });
     if (l.ok) {
-      if (await AE(t.id, n) !== !1) return !0;
+      if (await EE(t.id, n) !== !1) return !0;
       b.warn("[AutoBan] 单步 PATCH 返回成功但会话未确认完成，切换两步式兜底");
     } else
       b.warn("[AutoBan] 单步 PATCH 失败 (status=%d)，切换两步式兜底", l.status);
@@ -19629,12 +19629,12 @@ async function A3(t, n) {
     b.warn("[AutoBan] 单步 PATCH 请求异常，切换两步式兜底:", l);
   }
   try {
-    return await x.lockChampion(n, t.id), await AE(t.id, n) === !1 ? (b.warn("[AutoBan] 两步式提交完成，但会话仍未确认 Ban 结果"), !1) : !0;
+    return await x.lockChampion(n, t.id), await EE(t.id, n) === !1 ? (b.warn("[AutoBan] 两步式提交完成，但会话仍未确认 Ban 结果"), !1) : !0;
   } catch (l) {
     return b.warn("[AutoBan] 两步式提交失败:", l), !1;
   }
 }
-let w0 = 0, cc = null;
+let k0 = 0, cc = null;
 async function E3(t, n) {
   if (Ew().length === 0) {
     b.warn("[AutoBan] 未设置目标英雄队列");
@@ -19642,7 +19642,7 @@ async function E3(t, n) {
   }
   b.info("[AutoBan] 开始监听本局 Ban action：%s", n);
   for (let i = 0; i < g3; i++) {
-    if (t !== w0 || !v.get("autoBanChampion")) return;
+    if (t !== k0 || !v.get("autoBanChampion")) return;
     try {
       const l = await x.getChampSelectSession(), r = l.actions.flat(2);
       if (r.length === 0) {
@@ -19666,7 +19666,7 @@ async function E3(t, n) {
           b.info("[AutoBan] 选人已进入 %s，未发现本地 Ban action，停止等待", l.timer.phase);
           return;
         }
-        (i === 0 || i % vE === 0) && b.debug(
+        (i === 0 || i % SE === 0) && b.debug(
           "[AutoBan] 等待本地 Ban action：attempt=%d phase=%s actions=%d numBans=%d",
           i + 1,
           l.timer.phase,
@@ -19681,7 +19681,7 @@ async function E3(t, n) {
       }
       const g = await b3(l);
       if (!g) {
-        (i === 0 || i % vE === 0) && b.warn("[AutoBan] 暂未解析到可 Ban 目标，等待客户端英雄列表就绪"), await kt(Hl);
+        (i === 0 || i % SE === 0) && b.warn("[AutoBan] 暂未解析到可 Ban 目标，等待客户端英雄列表就绪"), await kt(Hl);
         continue;
       }
       if (b.info(
@@ -19707,30 +19707,30 @@ async function E3(t, n) {
 }
 let Kr = null, Vr = null;
 function uh() {
-  w0++, cc = null;
+  k0++, cc = null;
 }
-function cy(t) {
+function uy(t) {
   if (!v.get("autoBanChampion") || cc) return;
-  const n = ++w0, i = E3(n, t);
+  const n = ++k0, i = E3(n, t);
   cc = i, i.finally(() => {
     cc === i && (cc = null);
   });
 }
-function EE(t) {
+function CE(t) {
   x.getGameflowPhase().then((n) => {
-    n === "ChampSelect" && cy(t);
+    n === "ChampSelect" && uy(t);
   }).catch((n) => b.debug("[AutoBan] 当前阶段探测暂未就绪:", n));
 }
 function dh(t) {
   t && !Kr ? (Kr = x.observe(tt.GAMEFLOW_PHASE_CHANGE, (n) => {
-    n.data === "ChampSelect" ? cy("gameflow-phase") : uh();
+    n.data === "ChampSelect" ? uy("gameflow-phase") : uh();
   }), Vr = x.observe(tt.CHAMP_SELECT, (n) => {
     if (n.eventType === "Delete") {
       uh();
       return;
     }
-    cy("champ-select-session");
-  }), EE("enable-probe"), b.info("Auto ban champion enabled ✓")) : !t && Kr ? (Kr(), Kr = null, Vr == null || Vr(), Vr = null, uh(), b.info("Auto ban champion disabled")) : t && EE("config-refresh");
+    uy("champ-select-session");
+  }), CE("enable-probe"), b.info("Auto ban champion enabled ✓")) : !t && Kr ? (Kr(), Kr = null, Vr == null || Vr(), Vr = null, uh(), b.info("Auto ban champion disabled")) : t && CE("config-refresh");
 }
 async function im() {
   const t = v.get("rankQueue"), n = v.get("rankTier"), i = v.get("rankDivision");
@@ -19766,7 +19766,7 @@ async function C3() {
     b.error("[RankDisguise] 恢复失败:", t);
   }
 }
-function CE(t) {
+function TE(t) {
   t ? im() : C3();
 }
 function T3(t) {
@@ -19775,7 +19775,7 @@ function T3(t) {
 function w3(t, n) {
   return n.name ? n.name : n.stage != null ? `${t.name} 阶段 ${n.stage}` : t.name;
 }
-function TE(t, n, i, l) {
+function wE(t, n, i, l) {
   if (!n.id || t.has(n.id)) return;
   const r = T3(n);
   r && t.set(n.id, {
@@ -19792,15 +19792,15 @@ function k3(t, n, i = "") {
   if (!Number.isFinite(l) || l <= 0) return;
   const r = i || n.name || `英雄 ${l}`;
   for (const f of n.skins ?? []) {
-    TE(t, f, l, r);
+    wE(t, f, l, r);
     for (const g of ((m = f.questSkinInfo) == null ? void 0 : m.tiers) ?? [])
-      TE(t, {
+      wE(t, {
         ...g,
         name: w3(f, g)
       }, l, r);
   }
 }
-function wE({ open: t, onClose: n }) {
+function kE({ open: t, onClose: n }) {
   const [i, l] = C.useState([]), [r, m] = C.useState(!1), [f, g] = C.useState(""), [h, y] = C.useState(null), [A, T] = C.useState(""), E = C.useRef(null);
   C.useEffect(() => {
     t && (m(!0), l([]), T(""), g(""), E.current = null, (async () => {
@@ -19937,25 +19937,25 @@ function x3() {
   Hs || (Hs = document.createElement("div"), Hs.id = "sona-profile-bg-root", document.body.appendChild(Hs), Ps = bn.createRoot(Hs));
   const t = () => {
     Ps == null || Ps.render(
-      C.createElement(wE, { open: !1, onClose: t })
+      C.createElement(kE, { open: !1, onClose: t })
     );
   };
   Ps.render(
-    C.createElement(wE, { open: !0, onClose: t })
+    C.createElement(kE, { open: !0, onClose: t })
   );
 }
 function N3() {
   Ps && (Ps.unmount(), Ps = null), Hs && (Hs.remove(), Hs = null);
 }
-function kE() {
+function xE() {
   const t = document.querySelector(".style-profile-skin-picker-button");
   return !t || t.hasAttribute(Lm) || (t.setAttribute(Lm, "true"), t.addEventListener("click", (n) => {
     n.stopPropagation(), n.stopImmediatePropagation(), n.preventDefault(), x3(), b.info("[ProfileBg] 拦截原生按钮点击，打开自定义弹窗");
   }, !0), b.info("[ProfileBg] 已接管皮肤选择按钮 ✓")), !0;
 }
 let jd = !1;
-function xE(t) {
-  t && !jd ? (Te.register(kE), jd = !0, b.info("Custom profile background enabled ✓")) : !t && jd && (Te.unregister(kE), jd = !1, N3(), document.querySelectorAll(`[${Lm}]`).forEach((n) => {
+function NE(t) {
+  t && !jd ? (Te.register(xE), jd = !0, b.info("Custom profile background enabled ✓")) : !t && jd && (Te.unregister(xE), jd = !1, N3(), document.querySelectorAll(`[${Lm}]`).forEach((n) => {
     n.removeAttribute(Lm);
   }), b.info("Custom profile background disabled"));
 }
@@ -20010,7 +20010,7 @@ function D3(t) {
     };
   }));
 }
-function NE({ open: t, onClose: n, selectedBannerKey: i, onApplyBanner: l }) {
+function IE({ open: t, onClose: n, selectedBannerKey: i, onApplyBanner: l }) {
   const [r, m] = C.useState([]), [f, g] = C.useState(!1), [h, y] = C.useState(null), [A, T] = C.useState("");
   C.useEffect(() => {
     t && (g(!0), T(""), (async () => {
@@ -20085,21 +20085,21 @@ function NE({ open: t, onClose: n, selectedBannerKey: i, onApplyBanner: l }) {
     ] })
   ] }) });
 }
-const k0 = "data-sona-custom-banner-button", Tw = /* @__PURE__ */ new Set([
+const x0 = "data-sona-custom-banner-button", Tw = /* @__PURE__ */ new Set([
   "lol-regalia-identity-customizer-element",
   "lol-regalia-banner-v2-element",
   "lol-regalia-parties-v2-element"
-]), IE = /* @__PURE__ */ new Set([
+]), RE = /* @__PURE__ */ new Set([
   "banner-id",
   "banner-type",
   "banner-rank",
   "summoner-id",
   "puuid",
   "member-type"
-]), x0 = ["banner-id", "banner-type", "banner-rank"];
-let qs = null, Ks = null, Bd = !1, mh = null, Od = "", fh = null, Ld = "", RE = !1, N0 = !1, Qt = null, _s = null;
+]), N0 = ["banner-id", "banner-type", "banner-rank"];
+let qs = null, Ks = null, Bd = !1, mh = null, Od = "", fh = null, Ld = "", ME = !1, I0 = !1, Qt = null, _s = null;
 const Yi = /* @__PURE__ */ new Map(), gh = /* @__PURE__ */ new WeakSet();
-function I0() {
+function R0() {
   const t = v.get("customBannerSelection");
   return !(t != null && t.assetPath) || !t.id || !t.name ? null : {
     id: String(t.id),
@@ -20131,23 +20131,23 @@ function U3(t) {
 function G3(t) {
   return U3(t) ?? t;
 }
-function ME(t, n) {
+function DE(t, n) {
   const i = t.getAttribute("summoner-id");
   return !!(n && i && i !== n);
 }
-function DE(t, n) {
+function jE(t, n) {
   const i = t.getAttribute("puuid");
   return !!(n && i && i.toLowerCase() !== n);
 }
 function z3(t, n, i) {
   if (!Um(t)) return !1;
   const l = G3(t), r = l.getAttribute("member-type");
-  return !(r && r !== "current-player" || DE(l, i) || l !== t && DE(t, i) || ME(l, n) || l !== t && ME(t, n));
+  return !(r && r !== "current-player" || jE(l, i) || l !== t && jE(t, i) || DE(l, n) || l !== t && DE(t, n));
 }
 function P3(t) {
   if (Yi.has(t)) return;
   const n = {};
-  x0.forEach((i) => {
+  N0.forEach((i) => {
     n[i] = t.getAttribute(i);
   }), Yi.set(t, n);
 }
@@ -20157,7 +20157,7 @@ function ww(t, n) {
   i == null ? _s == null || _s.call(t, n) : Qt == null || Qt.call(t, n, i);
 }
 function H3(t) {
-  Yi.has(t) && (x0.forEach((n) => {
+  Yi.has(t) && (N0.forEach((n) => {
     ww(t, n);
   }), Yi.delete(t));
 }
@@ -20169,44 +20169,44 @@ async function kw(t, n) {
   }
   P3(t), Qt == null || Qt.call(t, "banner-id", n.id), Qt == null || Qt.call(t, "banner-type", n.bannerType || "blank"), n.bannerRank ? Qt == null || Qt.call(t, "banner-rank", n.bannerRank) : ww(t, "banner-rank");
 }
-function jE(t) {
-  N0 && Um(t) && (gh.has(t) || (gh.add(t), queueMicrotask(() => {
+function BE(t) {
+  I0 && Um(t) && (gh.has(t) || (gh.add(t), queueMicrotask(() => {
     gh.delete(t);
-    const n = I0();
+    const n = R0();
     n && kw(t, n);
   })));
 }
 function q3() {
-  RE || (RE = !0, Qt = Element.prototype.setAttribute, _s = Element.prototype.removeAttribute, Element.prototype.setAttribute = function(n, i) {
+  ME || (ME = !0, Qt = Element.prototype.setAttribute, _s = Element.prototype.removeAttribute, Element.prototype.setAttribute = function(n, i) {
     Qt.call(this, n, i);
     const l = n.toLowerCase();
-    IE.has(l) && Um(this) && jE(this);
+    RE.has(l) && Um(this) && BE(this);
   }, Element.prototype.removeAttribute = function(n) {
     _s.call(this, n);
     const i = n.toLowerCase();
-    IE.has(i) && Um(this) && jE(this);
+    RE.has(i) && Um(this) && BE(this);
   });
 }
 function K3() {
-  return I0();
+  return R0();
 }
-function BE() {
+function OE() {
   const t = K3();
   return t ? `${t.id}:${t.bannerRank || ""}` : null;
 }
-function OE(t) {
+function LE(t) {
   j3(t), xw();
 }
 async function xw() {
-  const t = I0();
+  const t = R0();
   if (!t) return;
-  q3(), N0 = !0;
+  q3(), I0 = !0;
   const n = Array.from(Tw).join(","), i = Array.from(document.querySelectorAll(n));
   await Promise.all(i.map((l) => kw(l, t)));
 }
 function V3() {
-  N0 = !1, Yi.forEach((t, n) => {
-    x0.forEach((i) => {
+  I0 = !1, Yi.forEach((t, n) => {
+    N0.forEach((i) => {
       const l = t[i];
       l == null ? _s == null || _s.call(n, i) : Qt == null || Qt.call(n, i, l);
     });
@@ -20216,79 +20216,79 @@ function F3() {
   Ks || (Ks = document.createElement("div"), Ks.id = "sona-custom-banner-root", document.body.appendChild(Ks), qs = bn.createRoot(Ks));
   const t = () => {
     qs == null || qs.render(
-      C.createElement(NE, {
+      C.createElement(IE, {
         open: !1,
         onClose: t,
-        selectedBannerKey: BE(),
-        onApplyBanner: OE
+        selectedBannerKey: OE(),
+        onApplyBanner: LE
       })
     );
   };
   qs.render(
-    C.createElement(NE, {
+    C.createElement(IE, {
       open: !0,
       onClose: t,
-      selectedBannerKey: BE(),
-      onApplyBanner: OE
+      selectedBannerKey: OE(),
+      onApplyBanner: LE
     })
   );
 }
 function Q3() {
-  qs && (qs.unmount(), qs = null), Ks && (Ks.remove(), Ks = null), document.querySelectorAll(`[${k0}]`).forEach((t) => t.remove()), V3();
+  qs && (qs.unmount(), qs = null), Ks && (Ks.remove(), Ks = null), document.querySelectorAll(`[${x0}]`).forEach((t) => t.remove()), V3();
 }
 function X3() {
   const t = document.createElement("lol-uikit-flat-button");
-  return t.setAttribute(k0, "true"), t.textContent = "自定义旗帜", t.style.marginLeft = "12px", t.style.verticalAlign = "middle", t.style.height = "24px", t.style.padding = "5px 12px", t.style.marginTop = "-6px", t.addEventListener("click", (n) => {
+  return t.setAttribute(x0, "true"), t.textContent = "自定义旗帜", t.style.marginLeft = "12px", t.style.verticalAlign = "middle", t.style.height = "24px", t.style.padding = "5px 12px", t.style.marginTop = "-6px", t.addEventListener("click", (n) => {
     n.stopPropagation(), n.stopImmediatePropagation(), n.preventDefault(), F3(), b.info("[CustomBanner] 打开自定义旗帜弹窗");
   }, !0), t;
 }
-function LE() {
+function UE() {
   xw();
   const t = document.querySelectorAll(".challenges-identity-customizer-title");
   return t.length === 0 ? !1 : (t.forEach((n) => {
-    if (n.querySelector(`[${k0}]`)) return;
+    if (n.querySelector(`[${x0}]`)) return;
     const i = n;
     i.style.display || (i.style.display = "flex"), i.style.alignItems || (i.style.alignItems = "center"), n.appendChild(X3()), b.info("[CustomBanner] 已注入自定义旗帜按钮 ✓");
   }), !0);
 }
-function UE(t) {
-  t && !Bd ? (Te.register(LE), Bd = !0, b.info("Custom banner enabled ✓")) : !t && Bd && (Te.unregister(LE), Bd = !1, Q3(), b.info("Custom banner disabled"));
+function GE(t) {
+  t && !Bd ? (Te.register(UE), Bd = !0, b.info("Custom banner enabled ✓")) : !t && Bd && (Te.unregister(UE), Bd = !1, Q3(), b.info("Custom banner disabled"));
 }
 let Li = null, Vs = null, mn = null, Fr = 0, ql = !1;
 const Z3 = 240;
-function uy() {
+function dy() {
   mn != null && (window.clearTimeout(mn), mn = null), Vs || (Vs = document.createElement("div"), Vs.id = "sona-game-analysis-root", document.body.appendChild(Vs), Li = bn.createRoot(Vs));
   const t = () => {
-    fy = uc;
+    gy = uc;
     const n = Li;
     n == null || n.render(
-      C.createElement(t0, { open: !1, onClose: t })
-    ), b.info("[GameAnalysis] 战力分析弹窗已关闭 → dismissedGameId=%d", fy), mn != null && window.clearTimeout(mn), mn = window.setTimeout(() => {
-      mn = null, Li === n && dy();
+      C.createElement(a0, { open: !1, onClose: t })
+    ), b.info("[GameAnalysis] 战力分析弹窗已关闭 → dismissedGameId=%d", gy), mn != null && window.clearTimeout(mn), mn = window.setTimeout(() => {
+      mn = null, Li === n && my();
     }, Z3);
   };
   Li.render(
-    C.createElement(t0, { open: !0, onClose: t })
+    C.createElement(a0, { open: !0, onClose: t })
   ), b.info("[GameAnalysis] 战力分析弹窗已显示");
 }
-function dy() {
+function my() {
   mn != null && (window.clearTimeout(mn), mn = null), Li && (Li.unmount(), Li = null), Vs && (Vs.remove(), Vs = null);
 }
-const my = "data-sona-game-analysis";
+const fy = "data-sona-game-analysis";
 function ph() {
   const t = document.querySelector(".game-in-progress-container");
   if (!t) return !1;
-  if (t.querySelector(`[${my}]`)) return !0;
+  if (t.querySelector(`[${fy}]`)) return !0;
   const n = document.createElement("lol-uikit-flat-button");
-  return n.setAttribute(my, "true"), n.textContent = "对局分析", n.addEventListener("click", (i) => {
-    i.stopPropagation(), i.preventDefault(), uy(), b.info("[GameAnalysis] 打开分析弹窗");
+  return n.setAttribute(fy, "true"), n.textContent = "对局分析", n.addEventListener("click", (i) => {
+    i.stopPropagation(), i.preventDefault(), dy(), b.info("[GameAnalysis] 打开分析弹窗");
   }), t.appendChild(n), b.info("[GameAnalysis] 客户端内嵌按钮已注入 ✓"), !0;
 }
-function GE() {
-  document.querySelectorAll(`[${my}]`).forEach((t) => t.remove());
+function zE() {
+  document.querySelectorAll(`[${fy}]`).forEach((t) => t.remove());
 }
-let Kl = !1, uc = 0, fy = 0, xi = null;
-function zE(t) {
+let Kl = !1, uc = 0, gy = 0, xi = null;
+function PE(t) {
   t && !xi ? (xi = x.observe(tt.GAMEFLOW_PHASE_CHANGE, (n) => {
     if (n.data === "InProgress") {
       const l = ++Fr;
@@ -20296,17 +20296,17 @@ function zE(t) {
         var f;
         if (l !== Fr || !xi) return;
         const m = ((f = r.gameData) == null ? void 0 : f.gameId) ?? 0;
-        if (m > 0 && m === fy) {
+        if (m > 0 && m === gy) {
           b.info("[GameAnalysis] 本局已被用户手动关闭，跳过自动弹窗 → gameId=%d", m);
           return;
         }
-        !ql && m > 0 && m !== uc && (ql = !0, uc = m, uy());
+        !ql && m > 0 && m !== uc && (ql = !0, uc = m, dy());
       }).catch(() => {
-        l !== Fr || !xi || ql || (ql = !0, uy());
+        l !== Fr || !xi || ql || (ql = !0, dy());
       });
     } else
-      Fr += 1, uc = 0, ql = !1, Kl && (Te.unregister(ph), Kl = !1), GE(), dy();
-  }), b.info("Game analysis popup enabled ✓")) : !t && xi && (Fr += 1, xi(), xi = null, uc = 0, ql = !1, Kl && (Te.unregister(ph), Kl = !1), GE(), dy(), b.info("Game analysis popup disabled"));
+      Fr += 1, uc = 0, ql = !1, Kl && (Te.unregister(ph), Kl = !1), zE(), my();
+  }), b.info("Game analysis popup enabled ✓")) : !t && xi && (Fr += 1, xi(), xi = null, uc = 0, ql = !1, Kl && (Te.unregister(ph), Kl = !1), zE(), my(), b.info("Game analysis popup disabled"));
 }
 let Qr = null;
 function Ud(t) {
@@ -20334,7 +20334,7 @@ function Ud(t) {
     }
   }), b.info("Auto return to lobby enabled ✓")) : !t && Qr && (Qr(), Qr = null, b.info("Auto return to lobby disabled"));
 }
-const Nw = "data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20width='24'%20height='24'%20viewBox='0%200%2024%2024'%3e%3cg%20fill='none'%20fill-rule='nonzero'%3e%3cpath%20fill='%230093FF'%20d='M2%200h20v18.056L12%2023%202%2018.056z'%3e%3c/path%3e%3cpath%20fill='%23FFF'%20d='M10.148%2015v-1.554h1.484V6.894h-1.484V5.34h3.416v8.106h1.456V15z'%3e%3c/path%3e%3c/g%3e%3c/svg%3e", Iw = "data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20width='24'%20height='24'%20viewBox='0%200%2024%2024'%3e%3cg%20fill='none'%20fill-rule='nonzero'%3e%3cpath%20fill='%2300BBA3'%20d='M2%200h20v18.056L12%2023%202%2018.056z'%3e%3c/path%3e%3cpath%20fill='%23FFF'%20d='M9.165%2015v-4.298l1.064-1.064h2.478l.308-.308V7.188l-.322-.308h-1.246l-.322.308v1.05H9.193V6.572l1.218-1.232h3.304l1.246%201.246v3.64l-1.064%201.064h-2.478l-.308.308v1.778h3.836V15z'%3e%3c/path%3e%3c/g%3e%3c/svg%3e", Rw = "data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20width='24'%20height='24'%20viewBox='0%200%2024%2024'%3e%3cg%20fill='none'%20fill-rule='nonzero'%3e%3cpath%20fill='%23FFB900'%20d='M2%200h20v18.056L12%2023%202%2018.056z'%3e%3c/path%3e%3cpath%20fill='%23FFF'%20d='m10.124%2015-1.232-1.232v-1.722h1.946v1.064l.406.406h1.4l.406-.406v-1.792l-.462-.476h-2.52V9.288h2.52l.462-.462V7.258l-.406-.406h-1.4l-.406.406V8.28H8.892V6.572l1.232-1.232h3.64l1.232%201.218v2.478l-1.008%201.008%201.008%201.022v2.716L13.778%2015z'%3e%3c/path%3e%3c/g%3e%3c/svg%3e", Mw = "data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20width='24'%20height='24'%20viewBox='0%200%2024%2024'%3e%3cg%20fill='none'%20fill-rule='nonzero'%3e%3cpath%20fill='%239AA4AF'%20d='M2%200h20v18.056L12%2023%202%2018.056z'%3e%3c/path%3e%3cpath%20fill='%23FFF'%20d='M12.672%2015v-2.548H8.64v-1.26L9.998%205.34h1.722l-1.092%205.502h2.044V5.34h1.932v5.502h.714v1.61h-.714V15z'%3e%3c/path%3e%3c/g%3e%3c/svg%3e", Dw = "data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20width='24'%20height='24'%20viewBox='0%200%2024%2024'%3e%3cg%20fill='none'%20fill-rule='nonzero'%3e%3cpath%20fill='%23A88A67'%20d='M2%200h20v18.056L12%2023%202%2018.056z'%3e%3c/path%3e%3cpath%20fill='%23FFF'%20d='m10.327%2015-1.232-1.232V12.06h1.946v1.022l.392.392h1.218l.406-.406v-2.646l-.308-.322h-1.232l-.616.616H9.095V5.34h5.782v1.61h-3.836v2.31l.686-.686h2.128l1.148%201.148v4.032L13.757%2015z'%3e%3c/path%3e%3c/g%3e%3c/svg%3e", R0 = 5, Y3 = "/fe/lol-static-assets/images/ranked-mini-crests", J3 = [
+const Nw = "data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20width='24'%20height='24'%20viewBox='0%200%2024%2024'%3e%3cg%20fill='none'%20fill-rule='nonzero'%3e%3cpath%20fill='%230093FF'%20d='M2%200h20v18.056L12%2023%202%2018.056z'%3e%3c/path%3e%3cpath%20fill='%23FFF'%20d='M10.148%2015v-1.554h1.484V6.894h-1.484V5.34h3.416v8.106h1.456V15z'%3e%3c/path%3e%3c/g%3e%3c/svg%3e", Iw = "data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20width='24'%20height='24'%20viewBox='0%200%2024%2024'%3e%3cg%20fill='none'%20fill-rule='nonzero'%3e%3cpath%20fill='%2300BBA3'%20d='M2%200h20v18.056L12%2023%202%2018.056z'%3e%3c/path%3e%3cpath%20fill='%23FFF'%20d='M9.165%2015v-4.298l1.064-1.064h2.478l.308-.308V7.188l-.322-.308h-1.246l-.322.308v1.05H9.193V6.572l1.218-1.232h3.304l1.246%201.246v3.64l-1.064%201.064h-2.478l-.308.308v1.778h3.836V15z'%3e%3c/path%3e%3c/g%3e%3c/svg%3e", Rw = "data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20width='24'%20height='24'%20viewBox='0%200%2024%2024'%3e%3cg%20fill='none'%20fill-rule='nonzero'%3e%3cpath%20fill='%23FFB900'%20d='M2%200h20v18.056L12%2023%202%2018.056z'%3e%3c/path%3e%3cpath%20fill='%23FFF'%20d='m10.124%2015-1.232-1.232v-1.722h1.946v1.064l.406.406h1.4l.406-.406v-1.792l-.462-.476h-2.52V9.288h2.52l.462-.462V7.258l-.406-.406h-1.4l-.406.406V8.28H8.892V6.572l1.232-1.232h3.64l1.232%201.218v2.478l-1.008%201.008%201.008%201.022v2.716L13.778%2015z'%3e%3c/path%3e%3c/g%3e%3c/svg%3e", Mw = "data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20width='24'%20height='24'%20viewBox='0%200%2024%2024'%3e%3cg%20fill='none'%20fill-rule='nonzero'%3e%3cpath%20fill='%239AA4AF'%20d='M2%200h20v18.056L12%2023%202%2018.056z'%3e%3c/path%3e%3cpath%20fill='%23FFF'%20d='M12.672%2015v-2.548H8.64v-1.26L9.998%205.34h1.722l-1.092%205.502h2.044V5.34h1.932v5.502h.714v1.61h-.714V15z'%3e%3c/path%3e%3c/g%3e%3c/svg%3e", Dw = "data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20width='24'%20height='24'%20viewBox='0%200%2024%2024'%3e%3cg%20fill='none'%20fill-rule='nonzero'%3e%3cpath%20fill='%23A88A67'%20d='M2%200h20v18.056L12%2023%202%2018.056z'%3e%3c/path%3e%3cpath%20fill='%23FFF'%20d='m10.327%2015-1.232-1.232V12.06h1.946v1.022l.392.392h1.218l.406-.406v-2.646l-.308-.322h-1.232l-.616.616H9.095V5.34h5.782v1.61h-3.836v2.31l.686-.686h2.128l1.148%201.148v4.032L13.757%2015z'%3e%3c/path%3e%3c/g%3e%3c/svg%3e", M0 = 5, Y3 = "/fe/lol-static-assets/images/ranked-mini-crests", J3 = [
   { value: "all", label: "全部段位" },
   { value: "challenger", label: "最强王者" },
   { value: "grandmaster", label: "傲世宗师" },
@@ -20354,7 +20354,7 @@ const Nw = "data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20wid
 ], W3 = J3.map((t) => ({
   ...t,
   icon: _3(t.value)
-})), PE = ["top", "jungle", "mid", "adc", "support"];
+})), HE = ["top", "jungle", "mid", "adc", "support"];
 function _3(t) {
   return t === "all" || t === "ibsg" ? "" : `${Y3}/${t.replace("_plus", "")}.svg`;
 }
@@ -20383,7 +20383,7 @@ function jw({
   onPositionChange: f,
   onClose: g
 }) {
-  const { t: h } = Et(), y = To(t.championId), A = y ? `${y.title} ${y.name}` : h("opgg.unrecognizedChampion"), T = (n == null ? void 0 : n.modeLabel) || (t.queueId > 0 ? _i(t.queueId) : h("opgg.unknownQueue")), E = (n == null ? void 0 : n.position) ?? t.position, j = [T, Bw(E)].filter(Boolean).join(" · "), R = HE(t) || (n == null ? void 0 : n.mode) === "arena", q = sD(t, n), P = C.useRef(null), ae = C.useRef(null);
+  const { t: h } = Et(), y = To(t.championId), A = y ? `${y.title} ${y.name}` : h("opgg.unrecognizedChampion"), T = (n == null ? void 0 : n.modeLabel) || (t.queueId > 0 ? _i(t.queueId) : h("opgg.unknownQueue")), E = (n == null ? void 0 : n.position) ?? t.position, j = [T, Bw(E)].filter(Boolean).join(" · "), R = qE(t) || (n == null ? void 0 : n.mode) === "arena", q = sD(t, n), P = C.useRef(null), ae = C.useRef(null);
   return tD(P, ae, A), /* @__PURE__ */ c.jsxs("div", { className: "sobp", children: [
     /* @__PURE__ */ c.jsx("div", { className: "sobp-ambient" }),
     /* @__PURE__ */ c.jsxs("header", { className: "sobp-titlebar", children: [
@@ -20409,11 +20409,11 @@ function jw({
       /* @__PURE__ */ c.jsxs("div", { className: "sobp-grid", children: [
         /* @__PURE__ */ c.jsx(mD, { title: h("opgg.section.core"), builds: n == null ? void 0 : n.coreItems, itemLimit: 3 }),
         /* @__PURE__ */ c.jsx(hD, { title: h("opgg.section.runes"), runes: n == null ? void 0 : n.runePages, championName: A, modeLabel: (n == null ? void 0 : n.modeLabel) || T }),
-        /* @__PURE__ */ c.jsx(gD, { title: h("opgg.section.spells"), builds: n == null ? void 0 : n.summonerSpells, limit: R0 })
+        /* @__PURE__ */ c.jsx(gD, { title: h("opgg.section.spells"), builds: n == null ? void 0 : n.summonerSpells, limit: M0 })
       ] }),
       /* @__PURE__ */ c.jsx("div", { className: "sobp-trend-wrap", children: /* @__PURE__ */ c.jsx(fD, { title: h("opgg.section.trends"), builds: n == null ? void 0 : n.lastItems }) }),
       /* @__PURE__ */ c.jsx(pD, { title: h("opgg.section.matchups"), matchups: n == null ? void 0 : n.matchups }),
-      R && /* @__PURE__ */ c.jsx(yD, { title: h("opgg.section.augments"), groups: n == null ? void 0 : n.augments, winRateFirst: HE(t) }),
+      R && /* @__PURE__ */ c.jsx(yD, { title: h("opgg.section.augments"), groups: n == null ? void 0 : n.augments, winRateFirst: qE(t) }),
       l && /* @__PURE__ */ c.jsx(Gd, { children: h("opgg.loading") }),
       i && /* @__PURE__ */ c.jsx(Gd, { warning: !0, children: h("opgg.loadFailed", { error: i }) }),
       (n == null ? void 0 : n.warning) && /* @__PURE__ */ c.jsx(Gd, { warning: !0, children: n.warning }),
@@ -20422,13 +20422,13 @@ function jw({
   ] });
 }
 function aD({ value: t, onChange: n }) {
-  const { t: i } = Et(), l = PE.includes(t) ? t : "mid";
+  const { t: i } = Et(), l = HE.includes(t) ? t : "mid";
   return /* @__PURE__ */ c.jsx("div", { className: "sobp-position-filter", title: i("opgg.position.select"), children: /* @__PURE__ */ c.jsx(
     Ft,
     {
       value: l,
       onChange: (r) => n(r),
-      options: PE.map((r) => ({
+      options: HE.map((r) => ({
         value: r,
         label: Bw(r)
       }))
@@ -20445,7 +20445,7 @@ function nD({ value: t, onChange: n }) {
     }
   ) });
 }
-function HE(t) {
+function qE(t) {
   return t.gameMode.toLowerCase() === "kiwi";
 }
 function sD(t, n) {
@@ -20513,19 +20513,19 @@ function cD(t) {
 }
 function uD(t) {
   const n = t.trim().split(/\s+/);
-  if (n.length < 2) return { label: "", metric: t, kind: qE(t) };
+  if (n.length < 2) return { label: "", metric: t, kind: KE(t) };
   const i = n.slice(0, -1).join(" "), l = n[n.length - 1];
   return i.toLowerCase() === "tier" ? { label: "", metric: dD(l), kind: "tier" } : {
     label: i,
     metric: l,
-    kind: qE(t)
+    kind: KE(t)
   };
 }
 function dD(t) {
   const n = t.trim().replace(/^tier\s*/i, "");
   return n ? `T${n}` : "T-";
 }
-function qE(t) {
+function KE(t) {
   const n = t.toLowerCase();
   if (t.includes("胜率")) {
     const i = Number.parseFloat(t.replace(/[^\d.]/g, ""));
@@ -20544,10 +20544,10 @@ function ko({ title: t, children: n, empty: i = !1, emptyText: l }) {
   ] });
 }
 function mD({ title: t, builds: n, itemLimit: i }) {
-  const l = (n == null ? void 0 : n.slice(0, R0)) ?? [], r = Ow(l, 0.15);
+  const l = (n == null ? void 0 : n.slice(0, M0)) ?? [], r = Ow(l, 0.15);
   return /* @__PURE__ */ c.jsx(ko, { title: t, empty: l.length === 0, children: l.map((m, f) => /* @__PURE__ */ c.jsxs("div", { className: "sobp-row", children: [
     /* @__PURE__ */ c.jsxs("div", { className: "sobp-row-main", children: [
-      /* @__PURE__ */ c.jsx(M0, { rank: f + 1 }),
+      /* @__PURE__ */ c.jsx(D0, { rank: f + 1 }),
       /* @__PURE__ */ c.jsx("div", { className: "sobp-icons sobp-icons--items", children: m.ids.slice(0, i).map((g, h, y) => {
         const A = uT(g);
         return /* @__PURE__ */ c.jsxs("span", { className: "sobp-icon-step", children: [
@@ -20556,7 +20556,7 @@ function mD({ title: t, builds: n, itemLimit: i }) {
         ] }, `${g}-${h}`);
       }) })
     ] }),
-    /* @__PURE__ */ c.jsx(D0, { value: m.pick_rate, maxRate: r })
+    /* @__PURE__ */ c.jsx(j0, { value: m.pick_rate, maxRate: r })
   ] }, `${f}-${m.ids.join("-")}`)) });
 }
 function fD({ title: t, builds: n }) {
@@ -20577,23 +20577,23 @@ function gD({ title: t, builds: n, limit: i }) {
   const l = (n == null ? void 0 : n.slice(0, i)) ?? [], r = Ow(l, 1);
   return /* @__PURE__ */ c.jsx(ko, { title: t, empty: l.length === 0, children: l.map((m, f) => /* @__PURE__ */ c.jsxs("div", { className: "sobp-row", children: [
     /* @__PURE__ */ c.jsxs("div", { className: "sobp-row-main", children: [
-      /* @__PURE__ */ c.jsx(M0, { rank: f + 1 }),
+      /* @__PURE__ */ c.jsx(D0, { rank: f + 1 }),
       /* @__PURE__ */ c.jsx("div", { className: "sobp-icons", children: [...m.ids].reverse().map((g) => {
         const h = dI(g);
         return /* @__PURE__ */ c.jsx(Ys, { src: h.iconPath || Mc(g), title: h.name || uI(g), description: h.description, size: 32 }, g);
       }) })
     ] }),
-    /* @__PURE__ */ c.jsx(D0, { value: m.pick_rate, maxRate: r })
+    /* @__PURE__ */ c.jsx(j0, { value: m.pick_rate, maxRate: r })
   ] }, `${f}-${m.ids.join("-")}`)) });
 }
 function pD({ title: t, matchups: n }) {
   const { t: i } = Et(), l = n ?? [], r = [...l].sort((g, h) => h.winRate - g.winRate || h.play - g.play).slice(0, 9), m = [...l].sort((g, h) => g.winRate - h.winRate || h.play - g.play).slice(0, 9), f = r.length > 0 || m.length > 0;
   return /* @__PURE__ */ c.jsx("div", { className: "sobp-matchup-wrap", children: /* @__PURE__ */ c.jsx(ko, { title: t, empty: !f, emptyText: i("opgg.noMatchups"), children: /* @__PURE__ */ c.jsxs("div", { className: "sobp-matchup-columns", children: [
-    /* @__PURE__ */ c.jsx(KE, { title: i("opgg.matchup.advantage"), items: r, tone: "good" }),
-    /* @__PURE__ */ c.jsx(KE, { title: i("opgg.matchup.disadvantage"), items: m, tone: "bad" })
+    /* @__PURE__ */ c.jsx(VE, { title: i("opgg.matchup.advantage"), items: r, tone: "good" }),
+    /* @__PURE__ */ c.jsx(VE, { title: i("opgg.matchup.disadvantage"), items: m, tone: "bad" })
   ] }) }) });
 }
-function KE({ title: t, items: n, tone: i }) {
+function VE({ title: t, items: n, tone: i }) {
   return /* @__PURE__ */ c.jsxs("div", { className: "sobp-matchup-group", children: [
     /* @__PURE__ */ c.jsx("div", { className: `sobp-matchup-heading sobp-matchup-heading--${i}`, children: t }),
     /* @__PURE__ */ c.jsx("div", { className: "sobp-matchup-list", children: n.map((l) => {
@@ -20615,7 +20615,7 @@ function KE({ title: t, items: n, tone: i }) {
   ] });
 }
 function hD({ title: t, runes: n, championName: i, modeLabel: l }) {
-  const { t: r } = Et(), m = (n == null ? void 0 : n.slice(0, R0)) ?? [], f = AD(m, 0.15), [g, h] = C.useState(""), [y, A] = C.useState(""), [T, E] = C.useState(""), j = async (R, q) => {
+  const { t: r } = Et(), m = (n == null ? void 0 : n.slice(0, M0)) ?? [], f = AD(m, 0.15), [g, h] = C.useState(""), [y, A] = C.useState(""), [T, E] = C.useState(""), j = async (R, q) => {
     const P = `${q}-${R.id}`;
     h(P), A(""), E("");
     try {
@@ -20644,7 +20644,7 @@ function hD({ title: t, runes: n, championName: i, modeLabel: l }) {
     const P = `${q}-${R.id}`, ae = R.primary_rune_ids[0] ?? 0, Q = Qp(ae);
     return /* @__PURE__ */ c.jsxs("div", { className: "sobp-row", children: [
       /* @__PURE__ */ c.jsxs("div", { className: "sobp-row-main", children: [
-        /* @__PURE__ */ c.jsx(M0, { rank: q + 1 }),
+        /* @__PURE__ */ c.jsx(D0, { rank: q + 1 }),
         /* @__PURE__ */ c.jsxs("div", { className: "sobp-runes", children: [
           /* @__PURE__ */ c.jsxs("div", { className: "sobp-rune-group", children: [
             /* @__PURE__ */ c.jsx(Ys, { src: Q.iconPath || ao(ae), title: Q.name || Fp(ae), description: Q.description, size: 32, border: "#c8aa6e", round: !0 }),
@@ -20664,7 +20664,7 @@ function hD({ title: t, runes: n, championName: i, modeLabel: l }) {
         ] })
       ] }),
       /* @__PURE__ */ c.jsxs("div", { className: "sobp-rune-actions", children: [
-        /* @__PURE__ */ c.jsx(D0, { value: R.pick_rate, maxRate: f }),
+        /* @__PURE__ */ c.jsx(j0, { value: R.pick_rate, maxRate: f }),
         /* @__PURE__ */ c.jsx(
           "button",
           {
@@ -20684,7 +20684,7 @@ function hD({ title: t, runes: n, championName: i, modeLabel: l }) {
 function yD({ title: t, groups: n, winRateFirst: i = !1 }) {
   const l = n ?? [];
   return /* @__PURE__ */ c.jsx("div", { className: "sobp-augment-wrap", children: /* @__PURE__ */ c.jsx(ko, { title: t, empty: l.length === 0, children: l.map((r) => /* @__PURE__ */ c.jsxs("div", { className: "sobp-augment-group", children: [
-    /* @__PURE__ */ c.jsx("div", { className: "sobp-augment-rarity", children: r.label ?? FE(r.rarity) }),
+    /* @__PURE__ */ c.jsx("div", { className: "sobp-augment-rarity", children: r.label ?? QE(r.rarity) }),
     /* @__PURE__ */ c.jsx("div", { className: "sobp-augment-grid", children: r.items.map((m) => {
       const f = dT(m.id), g = Number.isFinite(m.winRate) ? bD(m, i) : `登场 ${fo(m.pickRate)} · 均排 ${ED(m.averagePlace)}`;
       return /* @__PURE__ */ c.jsxs("div", { className: "sobp-augment", children: [
@@ -20694,7 +20694,7 @@ function yD({ title: t, groups: n, winRateFirst: i = !1 }) {
             src: (f == null ? void 0 : f.iconPath) ?? "",
             title: (f == null ? void 0 : f.name) ?? String(m.id),
             description: (f == null ? void 0 : f.description) ?? "",
-            subtitle: r.label ?? FE(r.rarity),
+            subtitle: r.label ?? QE(r.rarity),
             size: 40,
             border: CD(f == null ? void 0 : f.rarity)
           }
@@ -20711,13 +20711,13 @@ function bD(t, n) {
   const i = `胜率 ${fo(t.winRate)}`, l = `登场 ${fo(t.pickRate)}`;
   return n ? `${i} · ${l}` : `${l} · ${i}`;
 }
-function M0({ rank: t }) {
+function D0({ rank: t }) {
   return /* @__PURE__ */ c.jsxs("div", { className: `sobp-rank${t === 1 ? " sobp-rank--first" : ""}`, children: [
     "#",
     t
   ] });
 }
-function D0({ value: t, maxRate: n }) {
+function j0({ value: t, maxRate: n }) {
   const i = Number.isFinite(t) ? t ?? 0 : 0, l = n > 0 ? n : 1, r = Math.max(0, Math.min(100, i / l * 100));
   return /* @__PURE__ */ c.jsxs("div", { className: "sobp-stat", children: [
     /* @__PURE__ */ c.jsx("span", { children: fo(t) }),
@@ -20740,9 +20740,9 @@ function Ys({
     borderColor: f,
     borderRadius: g ? "50%" : 3
   };
-  return t ? /* @__PURE__ */ c.jsx(VE, { title: n, description: i, subtitle: l, price: r, iconSrc: t, border: f, children: /* @__PURE__ */ c.jsx("img", { className: "sobp-icon", src: t, alt: "", style: h }) }) : /* @__PURE__ */ c.jsx(VE, { title: n, description: i, subtitle: l, price: r, iconSrc: t, border: f, children: /* @__PURE__ */ c.jsx("span", { className: "sobp-icon sobp-icon--missing", style: h, children: "?" }) });
+  return t ? /* @__PURE__ */ c.jsx(FE, { title: n, description: i, subtitle: l, price: r, iconSrc: t, border: f, children: /* @__PURE__ */ c.jsx("img", { className: "sobp-icon", src: t, alt: "", style: h }) }) : /* @__PURE__ */ c.jsx(FE, { title: n, description: i, subtitle: l, price: r, iconSrc: t, border: f, children: /* @__PURE__ */ c.jsx("span", { className: "sobp-icon sobp-icon--missing", style: h, children: "?" }) });
 }
-function VE({
+function FE({
   title: t,
   description: n,
   subtitle: i,
@@ -20780,7 +20780,7 @@ function VE({
       onMouseLeave: Q,
       children: [
         f,
-        A && n0.createPortal(
+        A && s0.createPortal(
           /* @__PURE__ */ c.jsxs(
             "div",
             {
@@ -20861,7 +20861,7 @@ function fo(t) {
 function ED(t) {
   return Number.isFinite(t) ? `${(t ?? 0).toFixed(2)}名` : "-";
 }
-function FE(t) {
+function QE(t) {
   return t === 1 ? "银色" : t === 4 ? "金色" : t === 8 ? "棱彩" : `稀有度 ${t}`;
 }
 function CD(t) {
@@ -20903,7 +20903,7 @@ function TD(t) {
   }
   return i;
 }
-function gy(t, n) {
+function py(t, n) {
   t.championStats = {
     ...t.championStats ?? {},
     ...n
@@ -20911,10 +20911,10 @@ function gy(t, n) {
 }
 function wD(t, n, i) {
   if (!n) {
-    gy(t, { championId: String(i) });
+    py(t, { championId: String(i) });
     return;
   }
-  gy(t, {
+  py(t, {
     championId: n.championId,
     tier: n.tier,
     num_win_games: n.numWinGames != null ? String(n.numWinGames) : void 0,
@@ -20935,7 +20935,7 @@ function kD(t, n = null, i = Number(t.championId)) {
   for (const m of t.championAugments ?? [])
     if (!(!Array.isArray(m) || typeof m[1] != "string"))
       try {
-        Object.assign(r.augments, TD(m[1])), gy(r, {
+        Object.assign(r.augments, TD(m[1])), py(r, {
           championId: m[0] || String(l),
           version: m[2],
           date: m[3]
@@ -21029,8 +21029,8 @@ const Di = class Di {
   }
 };
 Fe(Di, "BASE_URL", "https://aramgg.com"), Fe(Di, "DEFAULT_TIMEOUT_MS", 1e4);
-let py = Di;
-const Pc = new py();
+let hy = Di;
+const Pc = new hy();
 class yh extends Error {
   constructor(i, l) {
     super(i);
@@ -21098,7 +21098,7 @@ const $l = class $l {
   }
 };
 Fe($l, "BASE_URL", "https://lol-api-champion.op.gg"), Fe($l, "DEFAULT_TIMEOUT_MS", 1e4);
-let hy = $l;
+let yy = $l;
 function xD(t) {
   if (!t) return null;
   try {
@@ -21107,7 +21107,7 @@ function xD(t) {
     return t;
   }
 }
-const Hc = new hy(), ND = ".toggle-ability-previews-button", yy = "data-sona-opgg-build-hijacked", Gm = "sona-opgg-build-panel", by = "data-sona-opgg-ingame-build", ID = "master_plus", RD = "[Sona]", MD = 2003, DD = [11, 12, 30], QE = 1e3, jD = 1500, BD = 1500, OD = 500, LD = 2e3, UD = [
+const Hc = new yy(), ND = ".toggle-ability-previews-button", by = "data-sona-opgg-build-hijacked", Gm = "sona-opgg-build-panel", vy = "data-sona-opgg-ingame-build", ID = "master_plus", RD = "[Sona]", MD = 2003, DD = [11, 12, 30], XE = 1e3, jD = 1500, BD = 1500, OD = 500, LD = 2e3, UD = [
   "all",
   "challenger",
   "grandmaster",
@@ -21124,26 +21124,26 @@ const Hc = new hy(), ND = ".toggle-ability-previews-button", yy = "data-sona-opg
   "silver",
   "bronze",
   "iron"
-], GD = ["top", "mid", "jungle", "adc", "support"], j0 = "mid", XE = 8;
-let Ri = null, lm = null, Ac = null, zm = "", Ec = "", hn = null, vy = 0, no = null, Sy = 0, Pm = !1, Hm = !1, Le = {
+], GD = ["top", "mid", "jungle", "adc", "support"], B0 = "mid", ZE = 8;
+let Ri = null, lm = null, Ac = null, zm = "", Ec = "", hn = null, Sy = 0, no = null, Ay = 0, Pm = !1, Hm = !1, Le = {
   championId: 0,
   queueId: 0,
   gameVersion: "",
   gameMode: "",
   position: "none"
 }, Zt = !1;
-const Ay = [], Js = /* @__PURE__ */ new Map(), bh = /* @__PURE__ */ new Map();
-let so = null, Ey = "", Cc = null, qa = null, an = null, qc = 0, Ki = "", qm = "", Km = "", B0 = 0, O0 = 0, Vm = "", Ui = null, om = null, Fm = "", io = "", Jl = null, Cy = "", Ty = 0;
+const Ey = [], Js = /* @__PURE__ */ new Map(), bh = /* @__PURE__ */ new Map();
+let so = null, Cy = "", Cc = null, qa = null, an = null, qc = 0, Ki = "", qm = "", Km = "", O0 = 0, L0 = 0, Vm = "", Ui = null, om = null, Fm = "", io = "", Jl = null, Ty = "", wy = 0;
 const Vi = /* @__PURE__ */ new Set(), rm = /* @__PURE__ */ new Set(), cm = /* @__PURE__ */ new Set(), um = /* @__PURE__ */ new Set(), Kc = /* @__PURE__ */ new Set(), Vc = /* @__PURE__ */ new Set();
 function zD(t) {
   const n = t.myTeam.find((i) => i.cellId === t.localPlayerCellId);
   return (n == null ? void 0 : n.championId) ?? 0;
 }
-function L0(t) {
+function U0(t) {
   return t.myTeam.find((n) => n.cellId === t.localPlayerCellId);
 }
 function Nf(t) {
-  const n = L0(t);
+  const n = U0(t);
   if (!n || n.championId <= 0) return !1;
   const i = t.actions.flat(2).filter((l) => l.actorCellId === t.localPlayerCellId && l.type === "pick");
   return i.length === 0 ? !0 : i.some((l) => l.completed);
@@ -21227,7 +21227,7 @@ async function Lw(t) {
     t.championId,
     i,
     t.queueId
-  ), i) : t.assignedPosition !== "none" ? t.assignedPosition : (b.warn("[OPGG] 无法识别推荐分路，回退到中路 → championId=%d", t.championId), j0);
+  ), i) : t.assignedPosition !== "none" ? t.assignedPosition : (b.warn("[OPGG] 无法识别推荐分路，回退到中路 → championId=%d", t.championId), B0);
 }
 async function VD(t) {
   var l, r, m, f;
@@ -21240,7 +21240,7 @@ function vn(t) {
   const n = t.gameMode.toLowerCase();
   return n === "aram" || n === "kiwi" ? "aram" : n === "cherry" || n === "arena" ? "arena" : n === "nexusblitz" || n === "nexus_blitz" ? "nexus_blitz" : n === "urf" || n === "arurf" ? "urf" : "ranked";
 }
-function U0(t) {
+function G0(t) {
   return t.gameMode.toLowerCase() === "kiwi";
 }
 function FD(t) {
@@ -21255,8 +21255,8 @@ function Gw(t) {
 function QD(t) {
   return "augment_group" in t.data && Array.isArray(t.data.augment_group) ? t.data.augment_group : [];
 }
-function G0(t) {
-  const n = vn(t), i = n === "ranked" ? t.position === "none" ? j0 : t.position : "none", l = zw(t);
+function z0(t) {
+  const n = vn(t), i = n === "ranked" ? t.position === "none" ? B0 : t.position : "none", l = zw(t);
   return [
     t.championId,
     t.queueId,
@@ -21267,14 +21267,14 @@ function G0(t) {
     "latest"
   ].join("|");
 }
-function z0(t) {
+function P0(t) {
   return UD.includes(t) ? t : ID;
 }
 function Fc() {
-  return z0(v.get("opggBuildRecommendationTier"));
+  return P0(v.get("opggBuildRecommendationTier"));
 }
 function zw(t) {
-  return U0(t) || vn(t) === "arena" ? "all" : Fc();
+  return G0(t) || vn(t) === "arena" ? "all" : Fc();
 }
 function XD(t) {
   const n = t.gameMode.toLowerCase(), i = vn(t);
@@ -21305,9 +21305,9 @@ function po(t) {
 }
 function Pw(t, n, i) {
   const l = `${n}|${i}`, r = Date.now();
-  if (l === Cy && r - Ty < LD)
+  if (l === Ty && r - wy < LD)
     return;
-  Cy = l, Ty = r;
+  Ty = l, wy = r;
   const m = No(t.championId), f = Zw(t);
   x.sendChampSelectMessage(Ee("opgg.chat.runesSaved", { championName: m, modeLabel: f }), "celebration").catch((g) => {
     b.warn("[OPGG] 智能符文保存聊天提示发送失败:", g);
@@ -21369,7 +21369,7 @@ async function JD(t, n, i) {
     um.add(m);
     try {
       let A = !1, T = !1;
-      const E = L0(t);
+      const E = U0(t);
       if (y && r && E) {
         const j = { spell1Id: E.spell1Id, spell2Id: E.spell2Id };
         go(j) && (qw(r, j), T = Vw(n, j, i));
@@ -21396,7 +21396,7 @@ async function JD(t, n, i) {
 }
 function $s(t) {
   if (t.championId <= 0) return null;
-  const n = { ...t }, i = G0(n), l = Js.get(i);
+  const n = { ...t }, i = z0(n), l = Js.get(i);
   if (l) return l;
   const r = {
     key: i,
@@ -21407,9 +21407,9 @@ function $s(t) {
   return r.promise = yj(n).then((m) => (r.data = m, r.updatedAt = Date.now(), b.info("[OPGG] 配装推荐缓存完成 → %s", i), m)).catch((m) => (r.error = m instanceof Error ? m.message : String(m), r.data = null, r.updatedAt = Date.now(), b.warn("[OPGG] 配装推荐预拉取失败:", m), null)), Js.set(i, r), WD(), b.info("[OPGG] 开始后台预拉取配装推荐 → %s", i), r;
 }
 function WD() {
-  if (Js.size <= XE) return;
+  if (Js.size <= ZE) return;
   const t = Array.from(Js.values()).sort((n, i) => n.updatedAt - i.updatedAt);
-  for (const n of t.slice(0, Js.size - XE))
+  for (const n of t.slice(0, Js.size - ZE))
     Js.delete(n.key);
 }
 function _D(t) {
@@ -21432,11 +21432,11 @@ function vh(t) {
 function $D(t) {
   return t.map((n, i) => ({ id: n, index: i, price: cI(n) })).sort((n, i) => i.price - n.price || n.index - i.index).map((n) => n.id);
 }
-function ZE(t) {
+function YE(t) {
   return t.play > 0 ? t.win / t.play : 0;
 }
 function Xr(t) {
-  return [...t].sort((n, i) => ZE(i) - ZE(n) || i.pick_rate - n.pick_rate || i.play - n.play);
+  return [...t].sort((n, i) => YE(i) - YE(n) || i.pick_rate - n.pick_rate || i.play - n.play);
 }
 function ej(t, n) {
   const i = Fw(n);
@@ -21510,7 +21510,7 @@ function Jw(t, n) {
 function nj(t, n) {
   return t.uid === n.uid || t.title === n.title;
 }
-function YE(t, n) {
+function JE(t, n) {
   if (t.length !== n.length) return !1;
   const i = [...t].sort((r, m) => r - m), l = [...n].sort((r, m) => r - m);
   return i.every((r, m) => r === l[m]);
@@ -21525,7 +21525,7 @@ function sj(t, n) {
   });
 }
 function ij(t, n) {
-  return t.title === n.title && t.type === n.type && t.mode === n.mode && YE(t.associatedChampions ?? [], n.associatedChampions) && YE(t.associatedMaps ?? [], n.associatedMaps) && sj(t.blocks ?? [], n.blocks);
+  return t.title === n.title && t.type === n.type && t.mode === n.mode && JE(t.associatedChampions ?? [], n.associatedChampions) && JE(t.associatedMaps ?? [], n.associatedMaps) && sj(t.blocks ?? [], n.blocks);
 }
 function Ww(t, n) {
   const i = [], l = /* @__PURE__ */ new Set();
@@ -21581,7 +21581,7 @@ function lj(t) {
     return;
   }
   const i = po(t);
-  if (i === Vm && Date.now() < B0) {
+  if (i === Vm && Date.now() < O0) {
     b.info("[OPGG] 跳过符文保存：与 Sona 自动恢复的符文相同 → key=%s, signature=%s", n, i);
     return;
   }
@@ -21594,7 +21594,7 @@ function lj(t) {
   }, v.set("smartRunePages", l), Kc.delete(n), b.info("[OPGG] 已保存智能符文 → key=%s, page=%s, signature=%s", n, Yw(Le), i), m !== i && Pw(Le, n, i);
 }
 function oj(t, n) {
-  if (!v.get("smartBuildRecommendation") || Date.now() < O0 || !Zt || n.championId <= 0) return;
+  if (!v.get("smartBuildRecommendation") || Date.now() < L0 || !Zt || n.championId <= 0) return;
   const i = au(n);
   if (!i) return;
   const l = {
@@ -21643,10 +21643,10 @@ async function rj() {
       b.debug("[OPGG] 轮询符文页失败:", n);
     }
 }
-function JE() {
+function WE() {
   Ac == null && (zm = "", Ec = "", Ac = window.setInterval(() => {
     rj();
-  }, QE), b.info("[OPGG] 已启动符文页轮询（每 %dms 读取一次）", QE));
+  }, XE), b.info("[OPGG] 已启动符文页轮询（每 %dms 读取一次）", XE));
 }
 function cj() {
   Ac != null && (window.clearInterval(Ac), Ac = null), zm = "", Ec = "";
@@ -21746,7 +21746,7 @@ async function fj(t) {
   if (!i || !Ji(i)) return !1;
   rm.add(n);
   try {
-    Vm = po(i), B0 = Date.now() + jD;
+    Vm = po(i), O0 = Date.now() + jD;
     const l = Yw(t);
     return await x.applyRunePage({
       name: l,
@@ -21766,7 +21766,7 @@ async function gj(t) {
   if (!i || !go(i)) return !1;
   cm.add(n);
   try {
-    return O0 = Date.now() + BD, await x.updateMySelection({
+    return L0 = Date.now() + BD, await x.updateMySelection({
       spell1Id: i.spell1Id,
       spell2Id: i.spell2Id
     }), Km = n, Fm = n, io = Qm(i), b.info("[OPGG] 已自动恢复召唤师技能 → key=%s, spells=%s", n, io), !0;
@@ -21794,11 +21794,11 @@ function hj(t) {
   }, OD));
 }
 function Tc() {
-  no != null && (window.clearTimeout(no), no = null), Sy = 0;
+  no != null && (window.clearTimeout(no), no = null), Ay = 0;
 }
 function wc(t = 250) {
   no == null && (no = window.setTimeout(async () => {
-    no = null, Sy++;
+    no = null, Ay++;
     try {
       if (await x.getGameflowPhase().catch(() => null) !== "ChampSelect") {
         Tc();
@@ -21811,20 +21811,20 @@ function wc(t = 250) {
       }
     } catch {
     }
-    Sy < 600 ? wc(500) : (Tc(), b.warn("[OPGG] 等待本地英雄锁定超时，未触发智能配置"));
+    Ay < 600 ? wc(500) : (Tc(), b.warn("[OPGG] 等待本地英雄锁定超时，未触发智能配置"));
   }, t));
 }
 async function Zm(t) {
   var i;
-  const n = ++vy;
+  const n = ++Sy;
   try {
-    const l = t ?? await x.getChampSelectSession(), r = L0(l), m = l.queueId ?? 0, f = (r == null ? void 0 : r.championId) ?? zD(l), g = await VD(m), h = tu(r == null ? void 0 : r.assignedPosition), y = await Lw({
+    const l = t ?? await x.getChampSelectSession(), r = U0(l), m = l.queueId ?? 0, f = (r == null ? void 0 : r.championId) ?? zD(l), g = await VD(m), h = tu(r == null ? void 0 : r.assignedPosition), y = await Lw({
       championId: f,
       queueId: m,
       gameMode: g,
       assignedPosition: h
     });
-    if (n !== vy) return;
+    if (n !== Sy) return;
     if (Zt = Nf(l), Le = {
       championId: f,
       queueId: m,
@@ -21854,8 +21854,8 @@ async function Zm(t) {
 }
 async function yj(t) {
   if (t.championId <= 0) return null;
-  const n = vn(t), i = n === "ranked" ? t.position === "none" ? j0 : t.position : "none", l = zw(t);
-  if (U0(t))
+  const n = vn(t), i = n === "ranked" ? t.position === "none" ? B0 : t.position : "none", l = zw(t);
+  if (G0(t))
     return bj(t, n, i, l);
   const r = await ek({
     id: t.championId,
@@ -21919,15 +21919,15 @@ async function bj(t, n, i, l) {
 function vj(t) {
   const n = t.championStats;
   return [
-    `总体胜率 ${WE(_E(n == null ? void 0 : n.win_rate))}`,
-    `登场 ${WE(_E(n == null ? void 0 : n.pick_rate))}`,
+    `总体胜率 ${_E($E(n == null ? void 0 : n.win_rate))}`,
+    `登场 ${_E($E(n == null ? void 0 : n.pick_rate))}`,
     `Tier ${(n == null ? void 0 : n.tier) || "-"}`
   ];
 }
-function WE(t) {
+function _E(t) {
   return t != null && Number.isFinite(t) ? `${(t * 100).toFixed(1)}%` : "-";
 }
-function _E(t) {
+function $E(t) {
   if (t == null || t === "") return null;
   const n = typeof t == "number" ? t : Number(t);
   return Number.isFinite(n) ? n : null;
@@ -22040,7 +22040,7 @@ async function ek(t) {
 }
 function Rf(t, n) {
   const i = n.queueId > 0 ? _i(n.queueId) : "";
-  if (U0(n)) return i || "海克斯大乱斗";
+  if (G0(n)) return i || "海克斯大乱斗";
   if (i) return i;
   switch (t) {
     case "aram":
@@ -22073,7 +22073,7 @@ function Nj(t) {
 }
 function Qc() {
   var t;
-  Cc && (Cc.unmount(), Cc = null), (t = document.getElementById(Gm)) == null || t.remove(), Ey = "", so && (document.removeEventListener("mousedown", so, !0), so = null);
+  Cc && (Cc.unmount(), Cc = null), (t = document.getElementById(Gm)) == null || t.remove(), Cy = "", so && (document.removeEventListener("mousedown", so, !0), so = null);
 }
 function tk() {
   if (!qa) return;
@@ -22097,8 +22097,8 @@ function Ij() {
 function Xc(t, n, i) {
   an || (an = document.createElement("div"), an.id = "sona-opgg-ingame-modal-root", document.body.appendChild(an), qa = bn.createRoot(an));
   const l = (n == null ? void 0 : n.data) ?? null, r = (n == null ? void 0 : n.error) ?? "", m = !!(n && n.data === void 0 && !n.error), f = () => tk(), g = (y) => {
-    const A = z0(y);
-    v.set("opggBuildRecommendationTier", A), Js.delete(G0(t));
+    const A = P0(y);
+    v.set("opggBuildRecommendationTier", A), Js.delete(z0(t));
     const T = $s(t), E = ++qc;
     Xc(t, T, E), Sh(t, T, E);
   }, h = (y) => {
@@ -22176,7 +22176,7 @@ async function Mj() {
 async function Jm(t, n) {
   n ? Le = { ...n } : Le.championId <= 0 ? await Zm() : Zm();
   const i = n ? { ...n } : { ...Le }, l = $s(i), r = (l == null ? void 0 : l.data) ?? null, m = (l == null ? void 0 : l.error) ?? "", f = !!(l && l.data === void 0 && !l.error);
-  Qc(), Ey = (l == null ? void 0 : l.key) ?? "";
+  Qc(), Cy = (l == null ? void 0 : l.key) ?? "";
   const g = document.getElementById("lol-uikit-layer-manager-wrapper") ?? document.body, h = document.createElement("div");
   h.id = Gm, h.style.cssText = [
     "position:fixed",
@@ -22214,8 +22214,8 @@ async function Jm(t, n) {
   const E = bn.createRoot(T);
   Cc = E;
   const j = (F) => {
-    const L = z0(F);
-    v.set("opggBuildRecommendationTier", L), Js.delete(G0(i));
+    const L = P0(F);
+    v.set("opggBuildRecommendationTier", L), Js.delete(z0(i));
     const B = $s(i);
     B && Xm(B), Jm(t, i);
   }, R = (F) => {
@@ -22226,7 +22226,7 @@ async function Jm(t, n) {
     const _ = $s(B);
     _ && Zt && Xm(_), Jm(t, B);
   };
-  eC(
+  tC(
     E,
     i,
     r,
@@ -22243,8 +22243,8 @@ async function Jm(t, n) {
   }, requestAnimationFrame(() => {
     so && document.addEventListener("mousedown", so, !0);
   }), l && f && l.promise.then(() => {
-    if (document.getElementById(Gm) !== h || Ey !== l.key || Cc !== E) return;
-    eC(
+    if (document.getElementById(Gm) !== h || Cy !== l.key || Cc !== E) return;
+    tC(
       E,
       l.context,
       l.data ?? null,
@@ -22258,7 +22258,7 @@ async function Jm(t, n) {
     y.style.left = `${_}px`, y.style.top = `${le}px`;
   });
 }
-async function $E(t, n = 68, i = {}) {
+async function eC(t, n = 68, i = {}) {
   const l = await x.getGameVersion().catch(() => Le.gameVersion);
   await Jm(t, {
     championId: n,
@@ -22268,8 +22268,8 @@ async function $E(t, n = 68, i = {}) {
     position: i.position ?? "none"
   });
 }
-function eC(t, n, i, l, r, m, f, g) {
-  n0.flushSync(() => {
+function tC(t, n, i, l, r, m, f, g) {
+  s0.flushSync(() => {
     t.render(C.createElement(jw, {
       context: n,
       recommendation: i,
@@ -22283,7 +22283,7 @@ function eC(t, n, i, l, r, m, f, g) {
   });
 }
 function ak() {
-  const t = document.querySelectorAll(`${ND}:not([${yy}])`);
+  const t = document.querySelectorAll(`${ND}:not([${by}])`);
   return t.length === 0 ? (b.info("[OPGG] 未找到技能预览面板元素"), !1) : (t.forEach((n) => {
     if (!(n instanceof HTMLElement)) return;
     const i = n.innerText, l = (r) => {
@@ -22293,15 +22293,15 @@ function ak() {
       }
       Jm(n);
     };
-    n.setAttribute(yy, "true"), n.innerText = "配装推荐", n.style.cursor = "pointer", n.addEventListener("click", l, !0), Ay.push({ el: n, handler: l, originalText: i });
+    n.setAttribute(by, "true"), n.innerText = "配装推荐", n.style.cursor = "pointer", n.addEventListener("click", l, !0), Ey.push({ el: n, handler: l, originalText: i });
   }), b.info("[OPGG] 已接管技能预览面板点击 → %d 个元素", t.length), !0);
 }
 function nk() {
   const t = document.querySelector(".game-in-progress-container");
   if (!t) return !1;
-  if (t.querySelector(`[${by}]`)) return !0;
+  if (t.querySelector(`[${vy}]`)) return !0;
   const n = document.createElement("lol-uikit-flat-button");
-  n.setAttribute(by, "true"), n.textContent = "配装推荐", n.addEventListener("click", (l) => {
+  n.setAttribute(vy, "true"), n.textContent = "配装推荐", n.addEventListener("click", (l) => {
     l.stopPropagation(), l.preventDefault(), Mj().catch((r) => {
       b.warn("[OPGG] 游戏内配装推荐弹窗打开失败:", r), typeof Toast < "u" && Toast.error("配装推荐打开失败，请稍后再试");
     });
@@ -22309,40 +22309,40 @@ function nk() {
   const i = t.querySelector("[data-sona-game-analysis]");
   return (i == null ? void 0 : i.parentElement) === t ? i.insertAdjacentElement("afterend", n) : t.appendChild(n), b.info("[OPGG] 游戏内配装推荐按钮已注入 ✓"), !0;
 }
-function wy() {
+function ky() {
   Hm || (Te.register(nk), Hm = !0);
 }
-function ky() {
-  Hm && (Te.unregister(nk), Hm = !1), document.querySelectorAll(`[${by}]`).forEach((t) => t.remove()), Ij();
+function xy() {
+  Hm && (Te.unregister(nk), Hm = !1), document.querySelectorAll(`[${vy}]`).forEach((t) => t.remove()), Ij();
 }
 function Dj() {
   Pm || (Te.register(ak), Pm = !0, b.info("[OPGG] 已检测到本地英雄，开始接管技能预览入口"));
 }
 function sk() {
   Pm && (Te.unregister(ak), Pm = !1);
-  for (const { el: t, handler: n, originalText: i } of Ay)
-    t.removeEventListener("click", n, !0), t.removeAttribute(yy), t.innerText = i, t.style.cursor = "";
-  Ay.length = 0, Qc();
+  for (const { el: t, handler: n, originalText: i } of Ey)
+    t.removeEventListener("click", n, !0), t.removeAttribute(by), t.innerText = i, t.style.cursor = "";
+  Ey.length = 0, Qc();
 }
 function Wm(t = !0) {
-  vy += 1, Tc(), cj(), sk(), t && (Le = {
+  Sy += 1, Tc(), cj(), sk(), t && (Le = {
     championId: 0,
     queueId: 0,
     gameVersion: Le.gameVersion,
     gameMode: "",
     position: "none"
-  }), Zt = !1, Ki = "", qm = "", Km = "", Vm = "", B0 = 0, O0 = 0, Ui != null && (window.clearTimeout(Ui), Ui = null), om = null, Fm = "", io = "", hn = null, Jl = null, Cy = "", Ty = 0, Vi.clear(), rm.clear(), cm.clear(), um.clear(), Kc.clear(), Vc.clear();
+  }), Zt = !1, Ki = "", qm = "", Km = "", Vm = "", O0 = 0, L0 = 0, Ui != null && (window.clearTimeout(Ui), Ui = null), om = null, Fm = "", io = "", hn = null, Jl = null, Ty = "", wy = 0, Vi.clear(), rm.clear(), cm.clear(), um.clear(), Kc.clear(), Vc.clear();
 }
 function jj() {
   Ri || (Ri = x.observe(tt.GAMEFLOW_PHASE_CHANGE, (t) => {
     const n = t.data;
-    (n === "GameStart" || n === "InProgress") && Zt && Le.championId > 0 && YD({ ...Le }, `gameflow:${n}`), n === "ChampSelect" ? (ky(), b.info("[OPGG] 进入 ChampSelect，等待本地英雄锁定"), JE(), wc()) : n === "InProgress" ? (Wm(), wy()) : (ky(), Wm());
+    (n === "GameStart" || n === "InProgress") && Zt && Le.championId > 0 && YD({ ...Le }, `gameflow:${n}`), n === "ChampSelect" ? (xy(), b.info("[OPGG] 进入 ChampSelect，等待本地英雄锁定"), WE(), wc()) : n === "InProgress" ? (Wm(), ky()) : (xy(), Wm());
   }), lm = x.observe(tt.CHAMP_SELECT, (t) => {
     if (t.eventType !== "Create" && t.eventType !== "Update") return;
     const n = t.data;
     Nf(n) ? (Tc(), Zm(n)) : wc(500);
   }), x.getGameflowPhase().then((t) => {
-    t === "ChampSelect" ? (JE(), wc()) : t === "InProgress" && wy();
+    t === "ChampSelect" ? (WE(), wc()) : t === "InProgress" && ky();
   }).catch(() => {
   }), b.info("[OPGG] 配装推荐接管已启用 ✓"));
 }
@@ -22351,30 +22351,30 @@ function Bj(t) {
     jj();
   else if (t && Ri)
     x.getGameflowPhase().then((n) => {
-      n === "ChampSelect" ? wc() : n === "InProgress" && wy();
+      n === "ChampSelect" ? wc() : n === "InProgress" && ky();
     }).catch(() => {
     });
   else if (!t) {
     if (!Ri) return;
-    Ri(), Ri = null, ky(), lm && (lm(), lm = null), Wm(), b.info("[OPGG] 配装推荐接管已禁用");
+    Ri(), Ri = null, xy(), lm && (lm(), lm = null), Wm(), b.info("[OPGG] 配装推荐接管已禁用");
   }
 }
-const Oj = 'div.screen-root[data-screen-name="social"]', xy = "data-sona-social-glass", Ny = "data-sona-social-glass-style";
-let Iy = {
+const Oj = 'div.screen-root[data-screen-name="social"]', Ny = "data-sona-social-glass", Iy = "data-sona-social-glass-style";
+let Ry = {
   blur: 14,
   opacity: 28
 };
-function tC(t, n, i) {
+function aC(t, n, i) {
   return Math.min(Math.max(t, n), i);
 }
 function ik() {
-  const t = tC(Iy.blur, 0, 40), n = tC(Iy.opacity, 0, 100) / 100;
+  const t = aC(Ry.blur, 0, 40), n = aC(Ry.opacity, 0, 100) / 100;
   return `
-    div.screen-root[data-screen-name="social"][${xy}="true"] {
+    div.screen-root[data-screen-name="social"][${Ny}="true"] {
       background: transparent !important;
     }
 
-    div.screen-root[data-screen-name="social"][${xy}="true"] .lol-social-sidebar.ember-view {
+    div.screen-root[data-screen-name="social"][${Ny}="true"] .lol-social-sidebar.ember-view {
       background: rgba(1, 10, 19, ${n}) !important;
       backdrop-filter: blur(${t}px) !important;
       -webkit-backdrop-filter: blur(${t}px) !important;
@@ -22383,27 +22383,27 @@ function ik() {
   `;
 }
 function Lj() {
-  document.querySelectorAll(`style[${Ny}]`).forEach((t) => {
+  document.querySelectorAll(`style[${Iy}]`).forEach((t) => {
     t.textContent = ik();
   });
 }
 function Uj(t) {
-  let n = t.querySelector(`style[${Ny}]`);
-  n || (n = document.createElement("style"), n.setAttribute(Ny, "true"), t.prepend(n)), n.textContent = ik();
+  let n = t.querySelector(`style[${Iy}]`);
+  n || (n = document.createElement("style"), n.setAttribute(Iy, "true"), t.prepend(n)), n.textContent = ik();
 }
 function lk() {
   const t = document.querySelector(Oj);
-  return t && (t.setAttribute(xy, "true"), t.style.setProperty("background", "transparent", "important"), Uj(t)), !0;
+  return t && (t.setAttribute(Ny, "true"), t.style.setProperty("background", "transparent", "important"), Uj(t)), !0;
 }
-let Ry = !1;
+let My = !1;
 function Gj() {
-  Ry || (Ry = !0, Te.register(lk));
+  My || (My = !0, Te.register(lk));
 }
 function zj(t) {
-  Iy = t, Lj(), Ry && lk();
+  Ry = t, Lj(), My && lk();
 }
 const Pj = "div.navbar_backdrop, div#navbar_backdrop";
-let ok = 10, My = !1;
+let ok = 10, Dy = !1;
 function rk(t, n, i) {
   return Math.min(Math.max(t, n), i);
 }
@@ -22414,17 +22414,17 @@ function ck() {
   return t.style.setProperty("backdrop-filter", n, "important"), t.style.setProperty("-webkit-backdrop-filter", n, "important"), !0;
 }
 function Hj() {
-  My || (My = !0, Te.register(ck));
+  Dy || (Dy = !0, Te.register(ck));
 }
-function aC(t) {
-  ok = rk(Number.isFinite(t) ? t : 10, 0, 40), My && ck();
+function nC(t) {
+  ok = rk(Number.isFinite(t) ? t : 10, 0, 40), Dy && ck();
 }
-const Dy = "sona-navbar-lines-style", qj = ".right-nav-vertical-rule", nC = "div.navigation-root-component";
-let uk = !1, jy = !1;
+const jy = "sona-navbar-lines-style", qj = ".right-nav-vertical-rule", sC = "div.navigation-root-component";
+let uk = !1, By = !1;
 const _m = /* @__PURE__ */ new Map();
 function Kj() {
   var t;
-  (t = document.getElementById(Dy)) == null || t.remove();
+  (t = document.getElementById(jy)) == null || t.remove();
 }
 function Vj() {
   _m.forEach(({ parent: t, nextSibling: n }, i) => {
@@ -22440,29 +22440,29 @@ function dk() {
     const i = n.parentNode;
     i && (_m.set(n, { parent: i, nextSibling: n.nextSibling }), n.remove());
   });
-  let t = document.getElementById(Dy);
-  return t || (t = document.createElement("style"), t.id = Dy, t.textContent = `
-      ${nC} {
+  let t = document.getElementById(jy);
+  return t || (t = document.createElement("style"), t.id = jy, t.textContent = `
+      ${sC} {
         border-bottom: none !important;
       }
-    `, document.head.appendChild(t)), !!(_m.size > 0 || document.querySelector(nC));
+    `, document.head.appendChild(t)), !!(_m.size > 0 || document.querySelector(sC));
 }
 function Fj() {
-  jy || (jy = !0, Te.register(dk));
+  By || (By = !0, Te.register(dk));
 }
-function sC(t) {
-  uk = !!t, jy && dk();
+function iC(t) {
+  uk = !!t, By && dk();
 }
-const mk = "span.player-name__game-name", P0 = ".party.visible .summoner-wrapper.visible .player-name-wrapper", fk = [
+const mk = "span.player-name__game-name", H0 = ".party.visible .summoner-wrapper.visible .player-name-wrapper", fk = [
   ".lol-social-lower-pane-container lol-social-roster-member .member-name",
   '.lol-social-lower-pane-container [class*="lol-social-roster-member"] .member-name'
-], gk = fk.join(", "), pk = [mk, P0, ...fk], By = pk.join(", "), Qj = "/lol-chat/v1/friends", Mf = "data-sona-name-gradient", iC = "sona-summoner-name-effect-style", $m = "--sona-name-gradient-start", H0 = "--sona-name-gradient-end", q0 = "--sona-name-gradient-angle";
+], gk = fk.join(", "), pk = [mk, H0, ...fk], Oy = pk.join(", "), Qj = "/lol-chat/v1/friends", Mf = "data-sona-name-gradient", lC = "sona-summoner-name-effect-style", $m = "--sona-name-gradient-start", q0 = "--sona-name-gradient-end", K0 = "--sona-name-gradient-angle";
 let nn = {
   enabled: !1,
   startColor: "#c8aa6e",
   endColor: "#4a9eff",
   angle: 90
-}, lC = !1, Wn = "", _n = "", Oy = /* @__PURE__ */ new Set(), $n = /* @__PURE__ */ new Map(), ti = /* @__PURE__ */ new Map(), ho = /* @__PURE__ */ new Map(), yo = /* @__PURE__ */ new Map(), ef = /* @__PURE__ */ new Map(), hk = [], yk = [], tf = /* @__PURE__ */ new Map(), Pd = null, Hd = null, qd = null, Ah = null, Eh = null, Yr = null, Jr = null, Wr = null, _r = null, Ch = null, Th = null, Ly = 0, Kd = 0, oC = "", rC = "", cC = "";
+}, oC = !1, Wn = "", _n = "", Ly = /* @__PURE__ */ new Set(), $n = /* @__PURE__ */ new Map(), ti = /* @__PURE__ */ new Map(), ho = /* @__PURE__ */ new Map(), yo = /* @__PURE__ */ new Map(), ef = /* @__PURE__ */ new Map(), hk = [], yk = [], tf = /* @__PURE__ */ new Map(), Pd = null, Hd = null, qd = null, Ah = null, Eh = null, Yr = null, Jr = null, Wr = null, _r = null, Ch = null, Th = null, Uy = 0, Kd = 0, rC = "", cC = "", uC = "";
 const lo = /* @__PURE__ */ new Set();
 function ia(t) {
   return (t ?? "").trim().toLowerCase();
@@ -22471,7 +22471,7 @@ function bo(t) {
   const n = String(t ?? "").trim();
   return n && n !== "0" ? n : "";
 }
-function K0(t) {
+function V0(t) {
   const n = String(t ?? "").trim();
   return /^\d+$/.test(n) ? n : "";
 }
@@ -22497,13 +22497,13 @@ function Zj(t, n) {
   return !t || !n ? !t && !n : t.startColor === n.startColor && t.endColor === n.endColor && t.angle === n.angle;
 }
 function Yj() {
-  let t = document.getElementById(iC);
-  t || (t = document.createElement("style"), t.id = iC, t.textContent = `
+  let t = document.getElementById(lC);
+  t || (t = document.createElement("style"), t.id = lC, t.textContent = `
     ${Xj()} {
       background-image: linear-gradient(
-        var(${q0}, 90deg),
+        var(${K0}, 90deg),
         var(${$m}, #c8aa6e) 0%,
-        var(${H0}, #4a9eff) 50%,
+        var(${q0}, #4a9eff) 50%,
         var(${$m}, #c8aa6e) 100%
       ) !important;
       background-size: 200% 100% !important;
@@ -22550,7 +22550,7 @@ function Sk(t) {
   ]));
 }
 function Jj(t) {
-  return K0(Df(t, [
+  return V0(Df(t, [
     "cell-id",
     "data-cell-id",
     "cellid",
@@ -22558,7 +22558,7 @@ function Jj(t) {
   ]));
 }
 function Wj(t) {
-  return K0(Df(t, [
+  return V0(Df(t, [
     "slot-id",
     "data-slot-id"
   ]));
@@ -22578,7 +22578,7 @@ function $j(t) {
   const i = Jj(t);
   return i ? ef.get(i) ?? null : null;
 }
-function uC(t) {
+function dC(t) {
   if (t.isSelf || t.puuid && t.puuid === Wn || t.summonerId && t.summonerId === _n)
     return kc();
   if (t.puuid) {
@@ -22624,9 +22624,9 @@ function eB(t) {
   return m ? yo.get(m) ?? null : null;
 }
 function tB(t) {
-  if (t.matches(P0)) {
+  if (t.matches(H0)) {
     const m = $j(t);
-    return m ? uC(m) : null;
+    return m ? dC(m) : null;
   }
   if (t.matches(gk))
     return eB(t);
@@ -22644,31 +22644,31 @@ function tB(t) {
   }
   const l = ia(t.textContent);
   if (!l) return null;
-  if (Oy.has(l)) return kc();
+  if (Ly.has(l)) return kc();
   const r = tf.get(l);
   if (r) {
-    const m = uC(r);
+    const m = dC(r);
     if (m) return m;
   }
   return yo.get(l) ?? null;
 }
-function dC(t) {
-  t.removeAttribute(Mf), t.style.removeProperty($m), t.style.removeProperty(H0), t.style.removeProperty(q0), lo.delete(t);
+function mC(t) {
+  t.removeAttribute(Mf), t.style.removeProperty($m), t.style.removeProperty(q0), t.style.removeProperty(K0), lo.delete(t);
 }
 function aB(t, n) {
-  t.setAttribute(Mf, "true"), t.style.setProperty($m, n.startColor), t.style.setProperty(H0, n.endColor), t.style.setProperty(q0, `${n.angle}deg`), lo.add(t);
+  t.setAttribute(Mf, "true"), t.style.setProperty($m, n.startColor), t.style.setProperty(q0, n.endColor), t.style.setProperty(K0, `${n.angle}deg`), lo.add(t);
 }
 function ai() {
   Yj();
-  const t = document.querySelectorAll(By);
+  const t = document.querySelectorAll(Oy);
   let n = 0;
   t.forEach((f) => {
     const g = tB(f);
-    g ? (aB(f, g), n++) : (lo.has(f) || f.hasAttribute(Mf)) && dC(f);
+    g ? (aB(f, g), n++) : (lo.has(f) || f.hasAttribute(Mf)) && mC(f);
   }), Array.from(lo).forEach((f) => {
-    f.isConnected ? f.matches(By) || dC(f) : lo.delete(f);
+    f.isConnected ? f.matches(Oy) || mC(f) : lo.delete(f);
   });
-  const i = document.querySelectorAll(mk).length, l = document.querySelectorAll(P0).length, r = document.querySelectorAll(gk).length, m = [
+  const i = document.querySelectorAll(mk).length, l = document.querySelectorAll(H0).length, r = document.querySelectorAll(gk).length, m = [
     nn.enabled,
     i,
     l,
@@ -22682,7 +22682,7 @@ function ai() {
     tf.size,
     r
   ].join(":");
-  return m !== oC && (oC = m, b.debug(
+  return m !== rC && (rC = m, b.debug(
     "[NameEffect] DOM scan: enabled=%s profileTargets=%d champSelectTargets=%d friendTargets=%d applied=%d ownIdentity=%s remotePuuids=%d remoteSummonerIds=%d remoteFriendIds=%d champSelectPlayers=%d lobbyNames=%d",
     nn.enabled,
     i,
@@ -22749,7 +22749,7 @@ function nf(t) {
   }
   tf = n;
   const i = t ? `${t.partyId}:${t.members.map((l) => l.puuid || l.summonerId).join("|")}` : "none";
-  i !== cC && (cC = i, b.debug(
+  i !== uC && (uC = i, b.debug(
     "[NameEffect] Lobby identities: lobby=%s members=%d namedIndexes=%d",
     t ? "ready" : "none",
     (t == null ? void 0 : t.members.length) ?? 0,
@@ -22783,7 +22783,7 @@ function Fi(t) {
   let i = [], l = [];
   if (t) {
     const f = (g) => {
-      const h = ia(g.gameName), y = ia(g.gameName && g.tagLine ? `${g.gameName}#${g.tagLine}` : ""), A = g.puuid || (g.nameVisibilityType === "HIDDEN" ? i0(g.obfuscatedPuuid) : "");
+      const h = ia(g.gameName), y = ia(g.gameName && g.tagLine ? `${g.gameName}#${g.tagLine}` : ""), A = g.puuid || (g.nameVisibilityType === "HIDDEN" ? l0(g.obfuscatedPuuid) : "");
       return {
         isSelf: g.cellId === t.localPlayerCellId,
         puuid: ia(A),
@@ -22792,13 +22792,13 @@ function Fi(t) {
       };
     };
     i = t.myTeam.map(f), l = t.theirTeam.map(f), [...t.myTeam, ...t.theirTeam].forEach((g) => {
-      const h = K0(g.cellId);
+      const h = V0(g.cellId);
       h && n.set(h, f(g));
     });
   }
   ef = n, hk = i, yk = l;
   const r = [...i, ...l].map((f) => f.puuid || f.summonerId || f.names[0] || "-").join("|"), m = t ? `${t.gameId}:${t.localPlayerCellId}:${r}` : "none";
-  m !== rC && (rC = m, b.debug(
+  m !== cC && (cC = m, b.debug(
     "[NameEffect] Champ-select identities: session=%s localCellId=%s players=%d",
     t ? "ready" : "none",
     (t == null ? void 0 : t.localPlayerCellId) ?? "-",
@@ -22815,14 +22815,14 @@ function Tk(t = 200) {
 }
 function oB() {
   if (Ah != null) return;
-  const t = Math.min(500 * 2 ** Math.max(Ly - 1, 0), 5e3);
+  const t = Math.min(500 * 2 ** Math.max(Uy - 1, 0), 5e3);
   b.debug("[NameEffect] Own identity not ready; retry scheduled in %dms", t), Ah = window.setTimeout(() => {
     Ah = null, sf();
   }, t);
 }
 function sf() {
   if (_r) return _r;
-  const t = ++Ly;
+  const t = ++Uy;
   return b.debug("[NameEffect] Loading own identity (attempt %d)", t), _r = x.getSummonerInfo().then((n) => {
     const i = ia(n.puuid), l = bo(n.summonerId), r = new Set([
       n.gameName,
@@ -22832,10 +22832,10 @@ function sf() {
     ].map(ia).filter(Boolean));
     if (!i || r.size === 0)
       throw new Error("LCU returned an incomplete current-summoner response");
-    Wn = i, _n = l, Oy = r, Ly = 0, b.info(
+    Wn = i, _n = l, Ly = r, Uy = 0, b.info(
       "[NameEffect] Own identity ready: summonerId=%s names=%d",
       _n || "missing",
-      Oy.size
+      Ly.size
     ), ai();
   }).catch((n) => {
     b.debug("[NameEffect] Own identity request failed during client startup:", n), oB();
@@ -22877,7 +22877,7 @@ function uB() {
         return r instanceof Element && (r.matches(".party, .summoner-wrapper, .player-name-wrapper, lol-social-roster-member") || !!r.closest('.summoner-wrapper, lol-social-roster-member, [class*="lol-social-roster-member"]'));
       }
       const l = i.target.parentElement;
-      return !!(l != null && l.closest(By));
+      return !!(l != null && l.closest(Oy));
     }) && cB();
   }), Ch.observe(document.body, {
     subtree: !0,
@@ -22919,11 +22919,11 @@ function wk() {
   }, t);
 }
 function dB() {
-  lC || (lC = !0, b.info("[NameEffect] Initializing name effects"), Te.register(ai), uB(), x.observe(Qj, () => Tk()), x.observe(tt.CHAT_ME, () => {
+  oC || (oC = !0, b.info("[NameEffect] Initializing name effects"), Te.register(ai), uB(), x.observe(Qj, () => Tk()), x.observe(tt.CHAT_ME, () => {
     (!Wn || !_n) && sf(), lf(100);
   }), x.observe(tt.CHAMP_SELECT, lB), x.observe(tt.LOBBY, sB), x.observe(tt.GAMEFLOW_PHASE_CHANGE, iB), sf(), Ak(), Ek(), x.getChampSelectSession().then(Fi).catch(() => Fi(null)), lf(0), wk());
 }
-function mC(t) {
+function fC(t) {
   nn = {
     enabled: !!t.enabled,
     startColor: af(t.startColor, "#c8aa6e"),
@@ -22949,16 +22949,16 @@ function xk(t) {
 function fB(t) {
   return t.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
 }
-let Ws = null, Nk = {}, Uy = {
+let Ws = null, Nk = {}, Gy = {
   blur: 0,
   opacity: 0
 };
 function $r(t, n, i) {
   return Math.min(Math.max(t, n), i);
 }
-function V0() {
+function F0() {
   if (!Ws) return;
-  const t = fB(kk(Ws)), n = xk(Ws), i = $r(Uy.blur, 0, 40), l = $r(Uy.opacity, 0, 100) / 100, r = Nk[Ws] ?? { scale: 1, offsetX: 0, offsetY: 0 }, m = $r(r.scale, 1, 3), f = $r(r.offsetX, -100, 100), g = $r(r.offsetY, -100, 100), h = m === 1 ? "cover" : `${Number((m * 100).toFixed(2))}% auto`, y = `calc(50% + ${Number(f.toFixed(2))}%)`, A = `calc(50% + ${Number(g.toFixed(2))}%)`;
+  const t = fB(kk(Ws)), n = xk(Ws), i = $r(Gy.blur, 0, 40), l = $r(Gy.opacity, 0, 100) / 100, r = Nk[Ws] ?? { scale: 1, offsetX: 0, offsetY: 0 }, m = $r(r.scale, 1, 3), f = $r(r.offsetX, -100, 100), g = $r(r.offsetY, -100, 100), h = m === 1 ? "cover" : `${Number((m * 100).toFixed(2))}% auto`, y = `calc(50% + ${Number(f.toFixed(2))}%)`, A = `calc(50% + ${Number(g.toFixed(2))}%)`;
   let T = document.getElementById(of);
   T || (T = document.createElement("style"), T.id = of, document.head.appendChild(T)), T.textContent = `
     ${xc} {
@@ -22997,7 +22997,7 @@ function V0() {
 function gB() {
   const t = document.querySelector(xc);
   if (!t || !Ws || !xk(Ws)) {
-    Gy();
+    zy();
     return;
   }
   const n = kk(Ws);
@@ -23005,42 +23005,42 @@ function gB() {
   i || (i = document.createElement("video"), i.setAttribute(rf, "true"), i.muted = !0, i.loop = !0, i.autoplay = !0, i.playsInline = !0, i.preload = "auto", t.prepend(i)), i.getAttribute("src") !== n && (i.src = n), i.play().catch(() => {
   });
 }
-function Gy() {
+function zy() {
   var t;
   (t = document.querySelector(`${xc} > video[${rf}]`)) == null || t.remove();
 }
 function Vd() {
-  return V0(), gB(), !0;
+  return F0(), gB(), !0;
 }
 let Mi = !1;
 function pB(t) {
   var n, i;
-  Ws = t, t && !Mi ? (Mi = !0, Te.register(Vd), Vd()) : t && Mi ? Vd() : !t && Mi ? (Mi = !1, Te.unregister(Vd), (n = document.getElementById(of)) == null || n.remove(), Gy()) : t || ((i = document.getElementById(of)) == null || i.remove(), Gy());
+  Ws = t, t && !Mi ? (Mi = !0, Te.register(Vd), Vd()) : t && Mi ? Vd() : !t && Mi ? (Mi = !1, Te.unregister(Vd), (n = document.getElementById(of)) == null || n.remove(), zy()) : t || ((i = document.getElementById(of)) == null || i.remove(), zy());
 }
 function hB(t) {
-  Uy = t, Mi && V0();
+  Gy = t, Mi && F0();
 }
-function fC(t) {
-  Nk = t, Mi && V0();
+function gC(t) {
+  Nk = t, Mi && F0();
 }
 const yB = "section#activity-center", bB = 'div.screen-root[data-screen-name="rcp-fe-lol-activity-center"]', vB = "section.rcp-fe-viewport-sidebar", Ik = ".bg-current.uikit-background-switcher", SB = [
   Ik,
   ".style-profile-background-image.uikit-background-switcher"
-].join(", "), zy = "sona-wallpaper-mode-style", Py = /* @__PURE__ */ new Map();
-let Hy = {
+].join(", "), Py = "sona-wallpaper-mode-style", Hy = /* @__PURE__ */ new Map();
+let qy = {
   blur: 14,
   opacity: 28
-}, qy = {
+}, Ky = {
   blur: 0,
   opacity: 0
 };
 function Fd(t, n, i) {
   return Math.min(Math.max(t, n), i);
 }
-function F0() {
-  let t = document.getElementById(zy);
-  t || (t = document.createElement("style"), t.id = zy, document.head.appendChild(t));
-  const n = Fd(Hy.blur, 0, 40), i = Fd(Hy.opacity, 0, 100) / 100, l = Fd(qy.blur, 0, 40), r = Fd(qy.opacity, 0, 100) / 100;
+function Q0() {
+  let t = document.getElementById(Py);
+  t || (t = document.createElement("style"), t.id = Py, document.head.appendChild(t));
+  const n = Fd(qy.blur, 0, 40), i = Fd(qy.opacity, 0, 100) / 100, l = Fd(Ky.blur, 0, 40), r = Fd(Ky.opacity, 0, 100) / 100;
   t.textContent = `
     ${yB} {
       display: none !important;
@@ -23067,30 +23067,30 @@ function AB() {
   document.querySelectorAll(SB).forEach((t) => {
     t.querySelectorAll("img").forEach((n) => {
       const i = n.getAttribute("src");
-      i && (Py.set(n, i), n.setAttribute("src", ""));
+      i && (Hy.set(n, i), n.setAttribute("src", ""));
     });
   });
 }
 function EB() {
-  Py.forEach((t, n) => {
+  Hy.forEach((t, n) => {
     !n.isConnected || n.getAttribute("src") !== "" || n.setAttribute("src", t);
-  }), Py.clear();
+  }), Hy.clear();
 }
 function wh() {
-  return F0(), AB(), !0;
+  return Q0(), AB(), !0;
 }
 let Wl = !1;
 function CB(t) {
   var n;
-  t && !Wl ? (Wl = !0, Te.register(wh), wh()) : !t && Wl && (Wl = !1, Te.unregister(wh), (n = document.getElementById(zy)) == null || n.remove(), EB());
+  t && !Wl ? (Wl = !0, Te.register(wh), wh()) : !t && Wl && (Wl = !1, Te.unregister(wh), (n = document.getElementById(Py)) == null || n.remove(), EB());
 }
 function TB(t) {
-  Hy = t, Wl && F0();
+  qy = t, Wl && Q0();
 }
 function wB(t) {
-  qy = t, Wl && F0();
+  Ky = t, Wl && Q0();
 }
-const Ky = "sona-game-mode-filter-bar", Q0 = "data-sona-mode-filter", Yn = "data-sona-mode-hidden", Qn = "data-sona-mode-animation", Zc = "data-sona-mode-direction", gC = 240, kB = 260, Rk = "sona-game-mode-card-ghost";
+const Vy = "sona-game-mode-filter-bar", X0 = "data-sona-mode-filter", Yn = "data-sona-mode-hidden", Qn = "data-sona-mode-animation", Zc = "data-sona-mode-direction", pC = 240, kB = 260, Rk = "sona-game-mode-card-ghost";
 function Qd(t) {
   if (!t) return "";
   const i = (t.style.backgroundImage || "").match(/url\(['"]?([^'")]+)['"]?\)/);
@@ -23111,7 +23111,7 @@ function xB(t) {
 function dm() {
   const t = document.querySelector(".parties-game-navs-list"), n = document.querySelector(".parties-game-navs"), i = document.querySelector(".parties-game-type-select-wrapper");
   if (!t || !n || !i || (t.getAttribute("selectedindex") ?? "0") !== "0")
-    return Vy(), !0;
+    return Fy(), !0;
   const r = Array.from(i.querySelectorAll(".game-type-card"));
   if (r.length === 0) return !1;
   const m = [];
@@ -23179,7 +23179,7 @@ function RB(t) {
       { opacity: 0, transform: `translateX(${r}px) scale(0.96)`, filter: "blur(2px)" }
     ],
     {
-      duration: gC,
+      duration: pC,
       easing: "cubic-bezier(0.16, 1, 0.3, 1)",
       fill: "forwards"
     }
@@ -23188,10 +23188,10 @@ function RB(t) {
   const g = () => {
     f || (f = !0, l.remove());
   };
-  m.onfinish = g, m.oncancel = g, window.setTimeout(g, gC + 80);
+  m.onfinish = g, m.oncancel = g, window.setTimeout(g, pC + 80);
 }
 function MB(t) {
-  if (t.setAttribute(Q0, "true"), t.style.display === "none" || t.hasAttribute(Yn)) {
+  if (t.setAttribute(X0, "true"), t.style.display === "none" || t.hasAttribute(Yn)) {
     const n = Dk(Mk(t), t);
     t.style.display = "", t.removeAttribute(Yn), t.setAttribute(Qn, "showing"), t.getBoundingClientRect(), jk(n, t), requestAnimationFrame(() => {
       !t.isConnected || t.hasAttribute(Yn) || t.setAttribute(Qn, "visible");
@@ -23201,14 +23201,14 @@ function MB(t) {
   t.getAttribute(Qn) !== "visible" && t.setAttribute(Qn, "visible");
 }
 function DB(t) {
-  if (t.setAttribute(Q0, "true"), t.hasAttribute(Yn) && t.style.display === "none" || !IB(t)) return;
+  if (t.setAttribute(X0, "true"), t.hasAttribute(Yn) && t.style.display === "none" || !IB(t)) return;
   const n = Dk(Mk(t), t);
   RB(t), t.style.display = "", t.setAttribute(Yn, "true"), t.removeAttribute(Qn), t.style.display = "none", t.getBoundingClientRect(), jk(n, t);
 }
 function jB(t, n) {
-  let i = document.getElementById(Ky);
+  let i = document.getElementById(Vy);
   const l = (i == null ? void 0 : i.getAttribute("data-sona-mode-sig")) ?? "", r = n.map((f) => f.mode).join(","), m = t.querySelector(".custom-game-tournament-code-container");
-  if (i ? m && i.nextElementSibling !== m ? t.insertBefore(i, m) : i.isConnected || t.appendChild(i) : (i = document.createElement("div"), i.id = Ky, i.className = "sona-game-mode-filter-bar", i.setAttribute(Q0, "true"), m ? t.insertBefore(i, m) : t.appendChild(i)), l !== r) {
+  if (i ? m && i.nextElementSibling !== m ? t.insertBefore(i, m) : i.isConnected || t.appendChild(i) : (i = document.createElement("div"), i.id = Vy, i.className = "sona-game-mode-filter-bar", i.setAttribute(X0, "true"), m ? t.insertBefore(i, m) : t.appendChild(i)), l !== r) {
     i.innerHTML = "", i.setAttribute("data-sona-mode-sig", r);
     for (const f of n)
       i.appendChild(BB(f));
@@ -23244,9 +23244,9 @@ function LB(t) {
     l.title = m ? `点击隐藏：${g}` : `点击显示：${g}`;
   });
 }
-function Vy() {
+function Fy() {
   var t;
-  (t = document.getElementById(Ky)) == null || t.remove();
+  (t = document.getElementById(Vy)) == null || t.remove();
 }
 function UB() {
   document.querySelectorAll(`.game-type-card[${Yn}]`).forEach((n) => {
@@ -23256,10 +23256,10 @@ function UB() {
   }), document.querySelectorAll(`.${Rk}`).forEach((n) => n.remove());
 }
 let Xd = !1, Zd = null;
-function pC(t) {
+function hC(t) {
   t && !Xd ? (Xd = !0, Te.register(dm), Zd = v.onChange("hiddenGameModes", () => {
     dm();
-  }), b.info("[GameModeFilter] enabled ✓")) : !t && Xd && (Xd = !1, Te.unregister(dm), Zd && (Zd(), Zd = null), Vy(), UB(), b.info("[GameModeFilter] disabled"));
+  }), b.info("[GameModeFilter] enabled ✓")) : !t && Xd && (Xd = !1, Te.unregister(dm), Zd && (Zd(), Zd = null), Fy(), UB(), b.info("[GameModeFilter] disabled"));
 }
 const GB = ".play-button-container", cf = "data-sona-quick-lobby-bound";
 let Yd = !1, Jd = null, mm = "";
@@ -23277,7 +23277,7 @@ async function Bk(t) {
     b.error("[QuickLobby] 创建大厅失败 queueId=%d:", n, i);
   }
 }
-function hC() {
+function yC() {
   const t = document.querySelector(GB);
   return t ? (t.getAttribute(cf) === "true" || (t.addEventListener("click", Bk, !0), t.setAttribute(cf, "true"), b.info("[QuickLobby] 已绑定 Play 按钮点击监听 ✓")), !0) : !1;
 }
@@ -23286,19 +23286,19 @@ function zB() {
     t.removeEventListener("click", Bk, !0), t.removeAttribute(cf);
   });
 }
-function yC(t) {
-  t && !Yd ? (Yd = !0, Te.register(hC), Jd = x.observe(tt.GAMEFLOW_PHASE_CHANGE, (n) => {
+function bC(t) {
+  t && !Yd ? (Yd = !0, Te.register(yC), Jd = x.observe(tt.GAMEFLOW_PHASE_CHANGE, (n) => {
     mm = n.data;
   }), x.getGameflowPhase().then((n) => {
     mm = n;
   }).catch(() => {
-  }), b.info("[QuickLobby] 快速大厅模式已启用 ✓")) : !t && Yd && (Yd = !1, Te.unregister(hC), zB(), Jd && (Jd(), Jd = null), mm = "", b.info("[QuickLobby] 快速大厅模式已禁用"));
+  }), b.info("[QuickLobby] 快速大厅模式已启用 ✓")) : !t && Yd && (Yd = !1, Te.unregister(yC), zB(), Jd && (Jd(), Jd = null), mm = "", b.info("[QuickLobby] 快速大厅模式已禁用"));
 }
 const PB = "data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20width='24'%20height='24'%20viewBox='0%200%2024%2024'%3e%3cg%20fill='none'%20fill-rule='nonzero'%3e%3cpath%20fill='%23E84057'%20d='M2%200h20v18.056L12%2023%202%2018.056z'%3e%3c/path%3e%3cpath%20fill='%23FFF'%20d='m6.666%2015-1.274-1.274V6.614L6.666%205.34h3.598l1.274%201.274v7.112L10.264%2015zm1.12-1.54H9.13l.462-.462V7.342L9.13%206.88H7.786l-.462.462v5.656zM12.854%2015V5.34h4.802l1.26%201.274v3.654l-1.26%201.274H14.8V15zm1.946-4.914h1.75l.42-.434V7.23l-.42-.434H14.8z'%3e%3c/path%3e%3c/g%3e%3c/svg%3e", Ok = [
   { selector: ".champion-grid-champion-thumbnail", size: 22, left: -2, top: 0 },
   { selector: ".champion-card-component-click-target", size: 22, left: -2, top: 0 },
   { selector: ".bench-champion-icon", size: 18, left: -2, top: -2 }
-], HB = { size: 20, left: -2, top: "auto", bottom: -2 }, qB = Ok.map((t) => t.selector).join(","), X0 = "data-sona-champ-tier-badge", fm = "data-sona-original-position", KB = "emerald_plus", VB = [
+], HB = { size: 20, left: -2, top: "auto", bottom: -2 }, qB = Ok.map((t) => t.selector).join(","), Z0 = "data-sona-champ-tier-badge", fm = "data-sona-original-position", KB = "emerald_plus", VB = [
   "all",
   "challenger",
   "grandmaster",
@@ -23322,7 +23322,7 @@ const PB = "data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20wid
   [3, Rw],
   [4, Mw],
   [5, Dw]
-]), Z0 = /* @__PURE__ */ new Map([
+]), Y0 = /* @__PURE__ */ new Map([
   [0, "OP"],
   [1, "T1"],
   [2, "T2"],
@@ -23335,7 +23335,7 @@ const kh = /* @__PURE__ */ new Map();
 function Lk(t) {
   return VB.includes(t) ? t : KB;
 }
-function bC(t) {
+function vC(t) {
   const n = t.toLowerCase();
   return n === "kiwi" ? "kiwi" : n === "aram" ? "aram" : n === "cherry" || n === "arena" ? "arena" : n === "nexusblitz" || n === "nexus_blitz" ? "nexus_blitz" : n === "urf" || n === "arurf" ? "urf" : "ranked";
 }
@@ -23417,9 +23417,9 @@ async function _B(t) {
   var f, g, h, y, A, T;
   const n = t ?? await x.getChampSelectSession().catch(() => null), i = (n == null ? void 0 : n.queueId) ?? 0, l = i > 0 ? (f = Co(i)) == null ? void 0 : f.gameMode : "";
   if (l)
-    return { mode: bC(l), gameMode: l, queueId: i };
+    return { mode: vC(l), gameMode: l, queueId: i };
   const r = await x.getGameflowSession().catch(() => null), m = ((h = (g = r == null ? void 0 : r.gameData) == null ? void 0 : g.queue) == null ? void 0 : h.gameMode) || ((y = r == null ? void 0 : r.map) == null ? void 0 : y.gameMode) || "";
-  return { mode: bC(m), gameMode: m, queueId: i || ((T = (A = r == null ? void 0 : r.gameData) == null ? void 0 : A.queue) == null ? void 0 : T.id) || 0 };
+  return { mode: vC(m), gameMode: m, queueId: i || ((T = (A = r == null ? void 0 : r.gameData) == null ? void 0 : A.queue) == null ? void 0 : T.id) || 0 };
 }
 async function Hk(t) {
   const n = ++gm, i = t ?? await x.getChampSelectSession().catch(() => null);
@@ -23470,10 +23470,10 @@ function $B(t) {
   return null;
 }
 function qk(t, n) {
-  const i = FB.get(t), l = Z0.get(t);
+  const i = FB.get(t), l = Y0.get(t);
   if (!i || !l) return null;
   const r = document.createElement("img");
-  return r.setAttribute(X0, "true"), r.src = i, r.alt = l, r.title = l, r.style.cssText = [
+  return r.setAttribute(Z0, "true"), r.src = i, r.alt = l, r.title = l, r.style.cssText = [
     "position:absolute",
     `left:${n.left}px`,
     n.top != null && n.top !== "auto" ? `top:${n.top}px` : "",
@@ -23489,7 +23489,7 @@ function Kk(t) {
   window.getComputedStyle(t).position === "static" && (t.setAttribute(fm, t.style.position), t.style.position = "relative");
 }
 function Vk(t) {
-  return Array.from(t.children).find((n) => n instanceof HTMLImageElement && n.hasAttribute(X0)) ?? null;
+  return Array.from(t.children).find((n) => n instanceof HTMLImageElement && n.hasAttribute(Z0)) ?? null;
 }
 function Fk() {
   return v.get("champSelectGridTierBadge");
@@ -23513,7 +23513,7 @@ function eO() {
     if (m == null)
       f == null || f.remove();
     else {
-      const g = Z0.get(m);
+      const g = Y0.get(m);
       if (!(f instanceof HTMLImageElement && f.alt === g)) {
         f == null || f.remove();
         const h = qk(m, i);
@@ -23538,7 +23538,7 @@ function tO() {
       f == null || f.remove();
       return;
     }
-    const h = Z0.get(g);
+    const h = Y0.get(g);
     if (f instanceof HTMLImageElement && f.alt === h) return;
     f == null || f.remove();
     const y = qk(g, HB);
@@ -23548,31 +23548,31 @@ function tO() {
 function aO(t) {
   return t.championId > 0 ? t.championId : t.championPickIntent > 0 ? t.championPickIntent : 0;
 }
-function Y0() {
-  document.querySelectorAll(`[${X0}]`).forEach((t) => t.remove()), document.querySelectorAll(`[${fm}]`).forEach((t) => {
+function J0() {
+  document.querySelectorAll(`[${Z0}]`).forEach((t) => t.remove()), document.querySelectorAll(`[${fm}]`).forEach((t) => {
     t instanceof HTMLElement && (t.style.position = t.getAttribute(fm) ?? "", t.removeAttribute(fm));
   });
 }
-function vC(t) {
-  Y0(), Jn = /* @__PURE__ */ new Map(), fn = null, df = "", uf || (Te.register(vo), uf = !0), Hk(t);
+function SC(t) {
+  J0(), Jn = /* @__PURE__ */ new Map(), fn = null, df = "", uf || (Te.register(vo), uf = !0), Hk(t);
 }
-function SC() {
-  gm++, df = "", Jn = /* @__PURE__ */ new Map(), fn = null, uf && (Te.unregister(vo), uf = !1), Y0();
+function AC() {
+  gm++, df = "", Jn = /* @__PURE__ */ new Map(), fn = null, uf && (Te.unregister(vo), uf = !1), J0();
 }
 function xh() {
   const t = Fk() || Qk();
   if (t && Fl) {
-    Y0(), vo();
+    J0(), vo();
     return;
   }
   t && !Fl ? (Fl = x.observe(tt.GAMEFLOW_PHASE_CHANGE, (n) => {
-    n.data === "ChampSelect" ? vC() : SC();
+    n.data === "ChampSelect" ? SC() : AC();
   }), Wd = x.observe(tt.CHAMP_SELECT, (n) => {
     n.eventType !== "Create" && n.eventType !== "Update" || (fn = n.data, Jn.size === 0 ? Hk(n.data) : vo());
   }), x.getGameflowPhase().then((n) => {
-    n === "ChampSelect" && vC();
+    n === "ChampSelect" && SC();
   }).catch(() => {
-  }), b.info("[ChampTier] 英雄选择 T 级角标已启用 ✓")) : !t && Fl && (Fl(), Fl = null, Wd && (Wd(), Wd = null), SC(), b.info("[ChampTier] 英雄选择 T 级角标已禁用"));
+  }), b.info("[ChampTier] 英雄选择 T 级角标已启用 ✓")) : !t && Fl && (Fl(), Fl = null, Wd && (Wd(), Wd = null), AC(), b.info("[ChampTier] 英雄选择 T 级角标已禁用"));
 }
 const mf = /* @__PURE__ */ new Set();
 let So = !1;
@@ -23593,13 +23593,13 @@ function Yk(t) {
     mf.delete(t);
   };
 }
-let Fy = "";
+let Qy = "";
 function iO(t) {
-  t.key === Fy && (t.preventDefault(), t.stopPropagation(), sO());
+  t.key === Qy && (t.preventDefault(), t.stopPropagation(), sO());
 }
 function lO() {
-  Fy = v.get("hotkey"), document.addEventListener("keydown", iO, !0), v.onChange("hotkey", (t) => {
-    Fy = t;
+  Qy = v.get("hotkey"), document.addEventListener("keydown", iO, !0), v.onChange("hotkey", (t) => {
+    Qy = t;
   });
 }
 const Wi = "data-sona-hijacked";
@@ -23607,18 +23607,18 @@ function Jk(t, n) {
   const i = $i(t);
   return i ? NT(n, i) : n;
 }
-const J0 = "sona-entry-btn", oO = "sona-entry-btn--hidden";
-let AC = null;
-function W0(t, n = v.get("hideSonaIcon")) {
+const W0 = "sona-entry-btn", oO = "sona-entry-btn--hidden";
+let EC = null;
+function _0(t, n = v.get("hideSonaIcon")) {
   t.classList.toggle(oO, n), t.setAttribute("aria-hidden", String(n));
 }
 function rO(t = v.get("hideSonaIcon")) {
-  const n = document.getElementById(J0);
-  n && W0(n, t);
+  const n = document.getElementById(W0);
+  n && _0(n, t);
 }
 function cO() {
   const t = document.createElement("div");
-  t.id = J0, t.className = "sona-entry-btn", W0(t), t.innerHTML = `
+  t.id = W0, t.className = "sona-entry-btn", _0(t), t.innerHTML = `
     <img class="sona-entry-icon" src="${aT}" alt="Sona" />
     <span class="sona-entry-update-badge" aria-hidden="true">!</span>
   `, t.addEventListener("mousedown", (i) => i.stopPropagation()), t.addEventListener("mouseup", (i) => i.stopPropagation()), t.addEventListener("click", (i) => {
@@ -23629,24 +23629,24 @@ function cO() {
   const n = () => {
     t.classList.toggle("sona-entry-btn--has-update", Zn().status === "available");
   };
-  return n(), h0(n), t;
+  return n(), y0(n), t;
 }
 function uO() {
-  const t = document.getElementById(J0);
+  const t = document.getElementById(W0);
   if (t != null && t.isConnected)
-    return W0(t), !0;
+    return _0(t), !0;
   const n = document.querySelector(".play-button-container");
   return n != null && n.parentElement ? (n.parentElement.insertBefore(cO(), n), b.info("Entry button injected ✓ (beside play button)"), !0) : !1;
 }
-const _0 = "sona-availability-menu", dO = [
+const $0 = "sona-availability-menu", dO = [
   { value: "chat", label: "在线" },
   { value: "away", label: "离开" },
   //{ value: 'dnd', label: '勿扰' }, 勿扰跟离开看起来是一样的，留一个就行了
   { value: "offline", label: "隐身" },
   { value: "mobile", label: "手机在线" }
 ];
-let Qi = v.get("availability"), Wk = v.get("availability") === "offline" ? "offline" : null, $0 = !1;
-function eb() {
+let Qi = v.get("availability"), Wk = v.get("availability") === "offline" ? "offline" : null, eb = !1;
+function tb() {
   return yn(v.get("statusMessage")[Am()] ?? "");
 }
 function _k(t) {
@@ -23661,7 +23661,7 @@ async function mO() {
       b.info("[Availability] 当前阶段 %s，跳过状态恢复（避免与底层状态机冲突）", t);
       return;
     }
-    const n = await x.getChatMe(), i = v.get("availability"), l = eb();
+    const n = await x.getChatMe(), i = v.get("availability"), l = tb();
     if (b.info(
       "[Availability] 当前状态快照: client.availability=%s, client.statusMessage=%s | saved.availability=%s, saved.statusMessage=%s",
       n.availability,
@@ -23697,7 +23697,7 @@ async function gO(t) {
       b.info("[Availability] 延迟校验(%s)时阶段为 %s，跳过", t, n);
       return;
     }
-    const i = await x.getChatMe(), l = v.get("availability"), r = eb(), m = Xi(i.statusMessage) ? yn(i.statusMessage) : "";
+    const i = await x.getChatMe(), l = v.get("availability"), r = tb(), m = Xi(i.statusMessage) ? yn(i.statusMessage) : "";
     b.info(
       "[Availability] 延迟校验(%s)快照: client.availability=%s, client.statusMessage=%s | saved.availability=%s, saved.statusMessage=%s",
       t,
@@ -23720,15 +23720,15 @@ async function pO() {
     for (const n of fO)
       await kt(n - t), t = n, await gO(`${n}ms`);
   } finally {
-    $0 = !1, b.info("[Availability] 延迟校验保护期结束，恢复签名变化持久化");
+    eb = !1, b.info("[Availability] 延迟校验保护期结束，恢复签名变化持久化");
   }
 }
 function Xi(t) {
   return typeof t == "string" && t.length > 0;
 }
-let EC = null;
+let CC = null;
 function hO() {
-  EC || (EC = x.observe(tt.CHAT_ME, async (t) => {
+  CC || (CC = x.observe(tt.CHAT_ME, async (t) => {
     const n = t.data;
     if (n) {
       if (Wk === "offline" && n.availability && n.availability !== "offline") {
@@ -23743,10 +23743,10 @@ function hO() {
       } catch {
         return;
       }
-      if ($0)
+      if (eb)
         Xi(n.statusMessage) && b.info("[Availability] 延迟校验保护期内忽略签名变化，不持久化: %s", n.statusMessage);
       else if (Xi(n.statusMessage)) {
-        const i = yn(n.statusMessage), l = eb();
+        const i = yn(n.statusMessage), l = tb();
         Xi(i) && i !== l && (_k(i), b.info("[Availability] 签名变化 → 已持久化: %s", i));
       }
       n.availability && n.availability !== "away" && v.get("availability") !== n.availability && (v.set("availability", n.availability), Qi = n.availability, b.info("[Availability] 在线状态变化 → 已持久化: %s", n.availability));
@@ -23755,12 +23755,12 @@ function hO() {
 }
 function Nc() {
   var t;
-  (t = document.getElementById(_0)) == null || t.remove();
+  (t = document.getElementById($0)) == null || t.remove();
 }
 function yO(t) {
   Nc();
   const n = document.createElement("div");
-  n.id = _0, n.className = "sona-availability-menu";
+  n.id = $0, n.className = "sona-availability-menu";
   for (const r of dO) {
     const m = document.createElement("button");
     m.className = `sona-availability-option${Qi === r.value ? " sona-availability-option--active" : ""}`, m.type = "button", m.innerHTML = `
@@ -23784,26 +23784,28 @@ function yO(t) {
   });
 }
 let $k = !1;
-function CC(t) {
-  $k = t, t ? Te.register(TC) : (Te.unregister(TC), Nc());
+function TC(t) {
+  $k = t, t ? Te.register(wC) : (Te.unregister(wC), Nc());
 }
-function TC() {
+function wC() {
   const t = document.querySelector(`.social-identity-block .lol-social-availability-hitbox:not([${Wi}])`);
   return t && (t.setAttribute(Wi, "true"), t.addEventListener("click", (n) => {
-    $k && (n.stopPropagation(), n.stopImmediatePropagation(), n.preventDefault(), b.debug("Availability hitbox clicked"), document.getElementById(_0) ? (Nc(), b.debug("Availability menu closed")) : (yO(t), b.debug("Availability menu shown")));
+    $k && (n.stopPropagation(), n.stopImmediatePropagation(), n.preventDefault(), b.debug("Availability hitbox clicked"), document.getElementById($0) ? (Nc(), b.debug("Availability menu closed")) : (yO(t), b.debug("Availability menu shown")));
   }, !0), b.info("Availability hitbox hijacked ✓")), !0;
 }
 let e2 = !1;
-function wC(t) {
+function kC(t) {
   e2 = t, t ? Te.register(xC) : (Te.unregister(xC), document.querySelectorAll(`[${Wi}-tft]`).forEach((n) => {
     n.style.display = "", n.removeAttribute(`${Wi}-tft`);
   }));
 }
-const kC = `${Wi}-tft`;
+const Nh = `${Wi}-tft`;
 function xC() {
-  if (!e2) return !0;
-  const t = document.querySelector(`.menu_item_navbar_tft:not([${kC}])`);
-  return t && (t.setAttribute(kC, "true"), t.style.display = "none"), !0;
+  return e2 && document.querySelectorAll(
+    `.menu_item_navbar_tft:not([${Nh}]), .menu_item_云顶之弈:not([${Nh}])`
+  ).forEach((n) => {
+    n.setAttribute(Nh, "true"), n.style.display = "none";
+  }), !0;
 }
 let t2 = !1;
 const ff = `${Wi}-classic-mode`;
@@ -23849,8 +23851,8 @@ function MC() {
   }), n > 0 && b.info("[HideRightNavText] 已隐藏或修复 %d 个右侧导航文字节点", n), !0;
 }
 function vO() {
-  Te.register(uO), AC || (AC = v.onChange("hideSonaIcon", rO)), mO().finally(() => {
-    $0 = !0, hO(), pO();
+  Te.register(uO), EC || (EC = v.onChange("hideSonaIcon", rO)), mO().finally(() => {
+    eb = !0, hO(), pO();
   }), Te.start();
 }
 const SO = "KIWI", DC = 1e3, jC = 4e3, AO = 2500, s2 = {
@@ -23873,14 +23875,14 @@ function NO(t) {
 function IO(t, n, i = {}) {
   const l = { ...s2, ...i }, r = t.map((h) => RO(h, n, l)).filter((h) => h !== null);
   if (r.length === 0) return null;
-  const m = r.map((h, y) => Math.pow(0.5, y / Math.max(l.recencyHalfLife, 1))), f = Xy(r.map((h) => h.performance), m), g = r.length / (r.length + Math.max(l.priorGames, 0));
+  const m = r.map((h, y) => Math.pow(0.5, y / Math.max(l.recencyHalfLife, 1))), f = Zy(r.map((h) => h.performance), m), g = r.length / (r.length + Math.max(l.priorGames, 0));
   return {
     puuid: n,
-    score: Math.round(Qy(f * g)),
-    rawScore: Math.round(Qy(f)),
+    score: Math.round(Xy(f * g)),
+    rawScore: Math.round(Xy(f)),
     confidence: g,
     validGames: r.length,
-    winRate: Xy(r.map((h) => h.win ? 1 : 0), m),
+    winRate: Zy(r.map((h) => h.win ? 1 : 0), m),
     breakdown: LO(r, m),
     games: r
   };
@@ -23898,7 +23900,7 @@ function RO(t, n, i = {}) {
     gameId: t.json.gameId,
     championId: m.championId,
     win: m.win,
-    score: Math.round(Qy(q)),
+    score: Math.round(Xy(q)),
     performance: q,
     breakdown: OO(A[E])
   };
@@ -23907,7 +23909,7 @@ function MO(t) {
   return {
     meanDamage: pn(t.map((n) => Wt(n.totalDamageDealtToChampions))),
     meanTank: pn(t.map(l2)),
-    meanTakedowns: pn(t.map(tb)),
+    meanTakedowns: pn(t.map(ab)),
     meanDeaths: pn(t.map((n) => Wt(n.deaths))),
     meanTurretDamage: pn(t.map((n) => Wt(n.damageDealtToTurrets)))
   };
@@ -23928,7 +23930,7 @@ function jO(t, n, i) {
     tank: r,
     utility: h,
     contribution: A,
-    participation: Bs(tb(t), n.meanTakedowns),
+    participation: Bs(ab(t), n.meanTakedowns),
     // 分子分母各 +1 做平滑，避免 0 死亡时比值发散、低死亡数对局里差 1 次死亡就天差地别。
     survival: Bs(n.meanDeaths + 1, Wt(t.deaths) + 1),
     kda: Bs(o2(t), i.meanKda),
@@ -23941,11 +23943,11 @@ function BO(t) {
 function l2(t) {
   return (Wt(t.totalDamageTaken) + Wt(t.damageSelfMitigated)) / Math.sqrt(Wt(t.deaths) + 1);
 }
-function tb(t) {
+function ab(t) {
   return Wt(t.kills) + Wt(t.assists);
 }
 function o2(t) {
-  return tb(t) / Math.max(Wt(t.deaths), 1);
+  return ab(t) / Math.max(Wt(t.deaths), 1);
 }
 function Bs(t, n) {
   if (!(n > 0)) return 0.5;
@@ -23953,7 +23955,7 @@ function Bs(t, n) {
   const i = Math.pow(t / n, TO);
   return i / (1 + i);
 }
-function Qy(t) {
+function Xy(t) {
   const n = (jC - DC) / 2;
   return c2(
     AO + n * Math.tanh(t / kO),
@@ -23965,7 +23967,7 @@ function OO(t) {
   return r2((n) => t[n] * 100);
 }
 function LO(t, n) {
-  return r2((i) => Xy(t.map((l) => l.breakdown[i]), n));
+  return r2((i) => Zy(t.map((l) => l.breakdown[i]), n));
 }
 function r2(t) {
   return {
@@ -23979,7 +23981,7 @@ function r2(t) {
     push: t("push")
   };
 }
-function Xy(t, n) {
+function Zy(t, n) {
   const i = n.reduce((l, r) => l + r, 0);
   return t.length === 0 || i <= 0 ? 0 : t.reduce((l, r, m) => l + r * (n[m] ?? 0), 0) / i;
 }
@@ -24122,7 +24124,7 @@ function oo(t) {
   return t.obfuscatedPuuid ? `obfuscated-puuid:${t.obfuscatedPuuid}` : t.obfuscatedSummonerId ? `obfuscated-summoner:${t.obfuscatedSummonerId}` : t.puuid ? `puuid:${t.puuid}` : t.summonerId ? `summoner:${t.summonerId}` : `floor:${t.floor}`;
 }
 function pm(t) {
-  return t.puuid ? t.puuid : t.nameVisibilityType !== "HIDDEN" || !t.obfuscatedPuuid ? "" : i0(t.obfuscatedPuuid);
+  return t.puuid ? t.puuid : t.nameVisibilityType !== "HIDDEN" || !t.obfuscatedPuuid ? "" : l0(t.obfuscatedPuuid);
 }
 let tc = null;
 async function d2() {
@@ -24158,7 +24160,7 @@ async function PO() {
     kdaNum: 0,
     strengthScore: null,
     hexMayhemScore: null
-  }), h = sb(t), y = h.filter((E) => E.nameVisibilityType === "HIDDEN" && !E.puuid);
+  }), h = ib(t), y = h.filter((E) => E.nameVisibilityType === "HIDDEN" && !E.puuid);
   if (y.length > 0) {
     const E = y.filter((j) => !!pm(j)).length;
     b.info("[TeamStats] 匿名模式身份还原: %d/%d", E, y.length);
@@ -24178,7 +24180,7 @@ async function PO() {
         P
       ]), ee = E.gameName || (Q == null ? void 0 : Q.gameName) || (Q == null ? void 0 : Q.displayName) || "", oe = E.tagLine || (Q == null ? void 0 : Q.tagLine) || "", F = E.summonerId || (Q == null ? void 0 : Q.summonerId) || 0, L = { summonerId: F, gameName: ee, tagLine: oe };
       q && ee && b.info("[TeamStats] %d楼匿名 Riot ID 回填成功 → %s%s", j + 1, ee, oe ? `#${oe}` : "");
-      const B = ae.games ?? [], _ = T0(B, l), le = [];
+      const B = ae.games ?? [], _ = w0(B, l), le = [];
       for (const ne of _) {
         const ge = ne.json.participants.find((Oe) => Oe.puuid === R);
         ge && (kf(ne, R) || le.push({
@@ -24231,8 +24233,8 @@ async function PO() {
   }));
   return { isBlue: i, isHexMayhem: m, queueId: l, stats: A, fetchCount: f };
 }
-const m2 = "data-sona-tier", hf = "data-sona-stats", Zy = "data-sona-click", Yy = "data-sona-player-key", Ic = "data-sona-hidden-player-name", ab = "data-sona-hidden-player-key", nb = "data-sona-hidden-real-name", Jy = "data-sona-hidden-name-suffix", Wy = "sona-hidden-player-name-style";
-let Gi = [], Jc = /* @__PURE__ */ new Map(), Wc = /* @__PURE__ */ new Map(), _c = /* @__PURE__ */ new Map(), $c = /* @__PURE__ */ new Map(), yf = "", bf = 0, _y = [], _l = [], Fs = null, Qs = null;
+const m2 = "data-sona-tier", hf = "data-sona-stats", Yy = "data-sona-click", Jy = "data-sona-player-key", Ic = "data-sona-hidden-player-name", nb = "data-sona-hidden-player-key", sb = "data-sona-hidden-real-name", Wy = "data-sona-hidden-name-suffix", _y = "sona-hidden-player-name-style";
+let Gi = [], Jc = /* @__PURE__ */ new Map(), Wc = /* @__PURE__ */ new Map(), _c = /* @__PURE__ */ new Map(), $c = /* @__PURE__ */ new Map(), yf = "", bf = 0, $y = [], _l = [], Fs = null, Qs = null;
 function HO(t, n, i) {
   Qs || (Qs = document.createElement("div"), Qs.id = "sona-match-history-modal-root", document.body.appendChild(Qs), Fs = bn.createRoot(Qs));
   const l = () => {
@@ -24248,14 +24250,14 @@ function qO() {
   Fs && (Fs.unmount(), Fs = null), Qs && (Qs.remove(), Qs = null);
 }
 function KO() {
-  if (document.getElementById(Wy)) return;
+  if (document.getElementById(_y)) return;
   const t = document.createElement("style");
-  t.id = Wy, t.textContent = `
+  t.id = _y, t.textContent = `
     .player-name-wrapper[${Ic}]::before {
-      content: attr(${nb}) "(";
+      content: attr(${sb}) "(";
     }
 
-    .player-name-wrapper[${Ic}] > [${Jy}] {
+    .player-name-wrapper[${Ic}] > [${Wy}] {
       display: inline-flex !important;
       align-items: center;
       gap: 3px;
@@ -24264,7 +24266,7 @@ function KO() {
       pointer-events: none;
     }
 
-    .player-name-wrapper[${Ic}] > [${Jy}] > svg {
+    .player-name-wrapper[${Ic}] > [${Wy}] > svg {
       width: 11px;
       height: 11px;
       flex: 0 0 11px;
@@ -24276,7 +24278,7 @@ function KO() {
 }
 function VO() {
   const t = document.createElement("span");
-  t.setAttribute(Jy, "true"), t.setAttribute("aria-hidden", "true"), t.appendChild(document.createTextNode(")"));
+  t.setAttribute(Wy, "true"), t.setAttribute("aria-hidden", "true"), t.appendChild(document.createTextNode(")"));
   const n = document.createElementNS("http://www.w3.org/2000/svg", "svg");
   n.setAttribute("viewBox", "0 0 16 16"), n.setAttribute("fill", "none"), n.setAttribute("focusable", "false");
   const i = document.createElementNS("http://www.w3.org/2000/svg", "path");
@@ -24290,7 +24292,7 @@ function UC(t, n) {
   return Array.from(t.childNodes).filter((i) => i !== n).map((i) => i.textContent ?? "").join("").trim();
 }
 function f2(t) {
-  t.suffixElement.remove(), t.nameElement.removeAttribute(Ic), t.nameElement.removeAttribute(ab), t.nameElement.removeAttribute(nb), t.previousTitle == null ? t.nameElement.removeAttribute("title") : t.nameElement.setAttribute("title", t.previousTitle), t.previousAriaLabel == null ? t.nameElement.removeAttribute("aria-label") : t.nameElement.setAttribute("aria-label", t.previousAriaLabel);
+  t.suffixElement.remove(), t.nameElement.removeAttribute(Ic), t.nameElement.removeAttribute(nb), t.nameElement.removeAttribute(sb), t.previousTitle == null ? t.nameElement.removeAttribute("title") : t.nameElement.setAttribute("title", t.previousTitle), t.previousAriaLabel == null ? t.nameElement.removeAttribute("aria-label") : t.nameElement.setAttribute("aria-label", t.previousAriaLabel);
 }
 function FO(t, n, i) {
   if (!n.obfuscatedPuuid || !n.gameName) return;
@@ -24315,13 +24317,13 @@ function FO(t, n, i) {
   }
   (r.suffixElement.parentElement !== l || l.lastChild !== r.suffixElement) && l.appendChild(r.suffixElement), KO();
   const f = `${n.gameName}(${r.originalAlias})`;
-  l.setAttribute(Ic, "true"), l.setAttribute(ab, i), l.setAttribute(nb, n.gameName), l.setAttribute("title", `${f} · 匿名模式`), l.setAttribute("aria-label", `${f}，匿名模式`), m && b.info("[ChampSelect] %d楼匿名名字增强 → %s", n.floor, f);
+  l.setAttribute(Ic, "true"), l.setAttribute(nb, i), l.setAttribute(sb, n.gameName), l.setAttribute("title", `${f} · 匿名模式`), l.setAttribute("aria-label", `${f}，匿名模式`), m && b.info("[ChampSelect] %d楼匿名名字增强 → %s", n.floor, f);
 }
-function sb(t) {
+function ib(t) {
   return t.myTeam.filter((n) => !!n.puuid || !!n.obfuscatedPuuid);
 }
 function QO(t) {
-  return sb(t).map((n) => `${zO(n)}:${n.cellId}`).join("|");
+  return ib(t).map((n) => `${zO(n)}:${n.cellId}`).join("|");
 }
 function XO(t, n) {
   const i = (t.puuid ? Jc.get(t.puuid) : void 0) ?? (t.summonerId ? Wc.get(t.summonerId) : void 0) ?? (t.obfuscatedPuuid ? _c.get(t.obfuscatedPuuid) : void 0) ?? (t.obfuscatedSummonerId ? $c.get(t.obfuscatedSummonerId) : void 0);
@@ -24354,17 +24356,17 @@ function XO(t, n) {
   };
 }
 function ZO(t) {
-  return sb(t).map((n, i) => XO(n, i + 1));
+  return ib(t).map((n, i) => XO(n, i + 1));
 }
-const $y = [];
-function ib() {
+const e0 = [];
+function lb() {
   const t = document.querySelectorAll(".party.visible .summoner-wrapper.visible.left");
   return t.length === 0 || Gi.length === 0 || (Array.from(t).some((i, l) => {
     const r = i.querySelector(".champion-icon-container"), m = i.querySelector(".player-name-wrapper"), f = Gi[l];
     if (!f) return !1;
-    const g = oo(f), h = r == null ? void 0 : r.getAttribute(Yy), y = m == null ? void 0 : m.getAttribute(ab);
+    const g = oo(f), h = r == null ? void 0 : r.getAttribute(Jy), y = m == null ? void 0 : m.getAttribute(nb);
     return !!(h && h !== g || y && y !== g);
-  }) && lb(), t.forEach((i, l) => {
+  }) && ob(), t.forEach((i, l) => {
     const r = Gi[l];
     if (!r) return;
     const m = oo(r);
@@ -24372,18 +24374,18 @@ function ib() {
     const f = i.querySelector(".champion-icon-container");
     if (!f || r.winRate == null) return;
     const g = r.winRate;
-    if (f.setAttribute(Yy, m), !f.querySelector("[data-sona-particle]")) {
+    if (f.setAttribute(Jy, m), !f.querySelector("[data-sona-particle]")) {
       f.setAttribute(m2, "true"), f.style.position = "relative", f.style.overflow = "visible", f.style.borderRadius = "50%";
       const A = u2(g);
       A.boxShadow && (f.style.boxShadow = A.boxShadow);
       const T = document.createElement("div");
       T.setAttribute("data-sona-particle", "true"), f.prepend(T);
       const E = f.getBoundingClientRect(), j = Math.max(E.width, E.height) + 40, R = bn.createRoot(T);
-      R.render(C.createElement(GO, { winRate: g, width: j, height: j })), $y.push({ root: R, container: T }), b.info("头像粒子特效 → %d楼 胜率%s%% → %s", l + 1, g.toFixed(1), A.id);
+      R.render(C.createElement(GO, { winRate: g, width: j, height: j })), e0.push({ root: R, container: T }), b.info("头像粒子特效 → %d楼 胜率%s%% → %s", l + 1, g.toFixed(1), A.id);
     }
     let h = null;
-    if (!f.hasAttribute(Zy) && r.puuid) {
-      f.setAttribute(Zy, "true"), f.style.cursor = "pointer";
+    if (!f.hasAttribute(Yy) && r.puuid) {
+      f.setAttribute(Yy, "true"), f.style.cursor = "pointer";
       const A = m;
       h = (T) => {
         if (T.target.closest(".swap-button-component, .swap-button-btn")) return;
@@ -24407,7 +24409,7 @@ function ib() {
       const q = r.kdaNum >= 5 ? "#5bbd72" : r.kdaNum >= 3 ? "#c8aa6e" : "#e74c3c", P = document.createElement("span");
       P.style.cssText = `color:${q};margin-left:8px;font-weight:bold;text-shadow:0 0 4px rgba(200,170,110,0.6);`, P.textContent = `KDA ${T}`, j.appendChild(R), j.appendChild(P), y.appendChild(j);
       const ae = r.hexMayhemScore ? JO(r.hexMayhemScore.score) : null;
-      ae && y.appendChild(ae), _y.push({ statsDiv: j, hexDiv: ae, iconContainer: f, summonerContainer: A, playerDetails: y, clickHandler: h }), b.info(
+      ae && y.appendChild(ae), $y.push({ statsDiv: j, hexDiv: ae, iconContainer: f, summonerContainer: A, playerDetails: y, clickHandler: h }), b.info(
         "[ChampSelect] %d楼战绩更新成功 → %s#%s 胜率%s%% (%d胜/%d负) KDA %s",
         l + 1,
         r.gameName ?? "?",
@@ -24442,11 +24444,11 @@ function JO(t) {
 }
 let vf = !1;
 function WO() {
-  vf || (Te.register(ib), vf = !0);
+  vf || (Te.register(lb), vf = !0);
 }
 function hm() {
   var t;
-  vf && (Te.unregister(ib), vf = !1), Gi = [], Jc.clear(), Wc.clear(), _c.clear(), $c.clear(), yf = "", bf = 0, lb(), (t = document.getElementById(Wy)) == null || t.remove(), qO();
+  vf && (Te.unregister(lb), vf = !1), Gi = [], Jc.clear(), Wc.clear(), _c.clear(), $c.clear(), yf = "", bf = 0, ob(), (t = document.getElementById(_y)) == null || t.remove(), qO();
 }
 async function _O() {
   try {
@@ -24466,19 +24468,19 @@ function $O(t) {
   const n = t.data;
   if (!(n != null && n.myTeam)) return;
   const i = QO(n);
-  i !== yf && (b.info("[ChampSelect] 检测到队友展示顺序或分路变化，重建头像战绩绑定"), lb(), Gi = ZO(n), yf = i, ib());
+  i !== yf && (b.info("[ChampSelect] 检测到队友展示顺序或分路变化，重建头像战绩绑定"), ob(), Gi = ZO(n), yf = i, lb());
 }
-function lb() {
+function ob() {
   var t;
-  $y.forEach(({ root: n, container: i }) => {
+  e0.forEach(({ root: n, container: i }) => {
     n.unmount(), i.remove();
-  }), $y.length = 0;
+  }), e0.length = 0;
   for (const n of _l)
     f2(n);
   _l = [];
-  for (const n of _y)
-    n.statsDiv.remove(), (t = n.hexDiv) == null || t.remove(), n.clickHandler && n.iconContainer.removeEventListener("click", n.clickHandler, !0), n.iconContainer.style.filter = "", n.iconContainer.style.boxShadow = "", n.iconContainer.removeAttribute(m2), n.iconContainer.removeAttribute(Zy), n.iconContainer.removeAttribute(Yy), n.iconContainer.style.cursor = "", n.playerDetails.removeAttribute(hf), n.playerDetails.style.cursor = "", n.summonerContainer && (n.summonerContainer.style.overflow = "");
-  _y = [];
+  for (const n of $y)
+    n.statsDiv.remove(), (t = n.hexDiv) == null || t.remove(), n.clickHandler && n.iconContainer.removeEventListener("click", n.clickHandler, !0), n.iconContainer.style.filter = "", n.iconContainer.style.boxShadow = "", n.iconContainer.removeAttribute(m2), n.iconContainer.removeAttribute(Yy), n.iconContainer.removeAttribute(Jy), n.iconContainer.style.cursor = "", n.playerDetails.removeAttribute(hf), n.playerDetails.style.cursor = "", n.summonerContainer && (n.summonerContainer.style.overflow = "");
+  $y = [];
 }
 function GC(t) {
   t && !ac ? (ac = x.observe(tt.GAMEFLOW_PHASE_CHANGE, (n) => {
@@ -24575,20 +24577,20 @@ function HC(t) {
     n.data === "ChampSelect" && n9();
   }), b.info("Side indicator enabled ✓")) : !t && sc && (sc(), sc = null, b.info("Side indicator disabled"));
 }
-function Nh() {
+function Ih() {
   const t = {
     blur: v.get("beautifyGlassBlur"),
     opacity: v.get("beautifyGlassOpacity")
   };
   zj(t), TB(t);
 }
-function Ih() {
+function Rh() {
   wB({
     blur: v.get("beautifyWallpaperSceneBlur"),
     opacity: v.get("beautifyWallpaperSceneOpacity")
   });
 }
-function Rh() {
+function Mh() {
   hB({
     blur: v.get("beautifyHomepageBackgroundBlur"),
     opacity: v.get("beautifyHomepageBackgroundOpacity")
@@ -24610,21 +24612,21 @@ function s9() {
   l && (v.set("beautifyHomepageBackgroundAssetPath", l), v.set("beautifyHomepageBackgroundLastRandomAssetPath", l), b.info("[HomepageBackground] 随机启动壁纸：%s", l));
 }
 function i9() {
-  WB(), L1(v.get("autoAcceptMatch")), v.onChange("autoAcceptMatch", L1), K1(v.get("allowDeclineAfterAccept")), v.onChange("allowDeclineAfterAccept", K1), Q1(v.get("developerMode")), v.onChange("developerMode", Q1), Z1(v.get("unlockStatus")), v.onChange("unlockStatus", Z1), W1(v.get("benchNoCooldown")), v.onChange("benchNoCooldown", W1), PC(v.get("analyzeTeamPower")), v.onChange("analyzeTeamPower", PC), HC(v.get("sideIndicator")), v.onChange("sideIndicator", HC), GC(v.get("champSelectAssist")), v.onChange("champSelectAssist", GC), xh(), v.onChange("champSelectTierBadge", () => xh()), v.onChange("champSelectGridTierBadge", () => xh());
+  WB(), U1(v.get("autoAcceptMatch")), v.onChange("autoAcceptMatch", U1), V1(v.get("allowDeclineAfterAccept")), v.onChange("allowDeclineAfterAccept", V1), X1(v.get("developerMode")), v.onChange("developerMode", X1), Y1(v.get("unlockStatus")), v.onChange("unlockStatus", Y1), _1(v.get("benchNoCooldown")), v.onChange("benchNoCooldown", _1), PC(v.get("analyzeTeamPower")), v.onChange("analyzeTeamPower", PC), HC(v.get("sideIndicator")), v.onChange("sideIndicator", HC), GC(v.get("champSelectAssist")), v.onChange("champSelectAssist", GC), xh(), v.onChange("champSelectTierBadge", () => xh()), v.onChange("champSelectGridTierBadge", () => xh());
   const t = () => {
     Bj(
       v.get("opggBuildRecommendation") || v.get("smartBuildRecommendation") || v.get("smartItemSetBuild")
     );
   };
-  t(), v.onChange("opggBuildRecommendation", t), v.onChange("smartBuildRecommendation", t), v.onChange("smartItemSetBuild", t), eE(v.get("globalParticle")), v.onChange("globalParticle", eE), aE(v.get("friendSmartGroup")), v.onChange("friendSmartGroup", aE), nE(v.get("enhancedFriendGameStatus")), v.onChange("enhancedFriendGameStatus", nE), fE(v.get("lobbyEnhancement")), v.onChange("lobbyEnhancement", fE), xE(v.get("customProfileBg")), v.onChange("customProfileBg", xE), UE(v.get("customBanner")), v.onChange("customBanner", UE), k1(), v.onChange("customAvatarAssetPaths", k1), Gj(), Nh(), v.onChange("beautifyGlassBlur", Nh), v.onChange("beautifyGlassOpacity", Nh), Hj(), aC(v.get("beautifyNavbarBlur")), v.onChange("beautifyNavbarBlur", aC), Fj(), sC(v.get("beautifyNavbarHideLines")), v.onChange("beautifyNavbarHideLines", sC), dB(), mC(v.get("beautifySummonerNameEffect")), v.onChange("beautifySummonerNameEffect", mC), Rh(), v.onChange("beautifyHomepageBackgroundBlur", Rh), v.onChange("beautifyHomepageBackgroundOpacity", Rh), fC(v.get("beautifyHomepageBackgroundAdjustments")), v.onChange("beautifyHomepageBackgroundAdjustments", fC), s9(), v.onChange("beautifyHomepageBackgroundAssetPath", p2), qC(), v.onChange("beautifyWallpaperMode", qC), Ih(), v.onChange("beautifyWallpaperSceneBlur", Ih), v.onChange("beautifyWallpaperSceneOpacity", Ih), pE(v.get("autoHonor")), v.onChange("autoHonor", pE), CE(v.get("rankDisguise")), v.onChange("rankDisguise", CE), v.onChange("rankQueue", () => {
+  t(), v.onChange("opggBuildRecommendation", t), v.onChange("smartBuildRecommendation", t), v.onChange("smartItemSetBuild", t), tE(v.get("globalParticle")), v.onChange("globalParticle", tE), nE(v.get("friendSmartGroup")), v.onChange("friendSmartGroup", nE), sE(v.get("enhancedFriendGameStatus")), v.onChange("enhancedFriendGameStatus", sE), gE(v.get("lobbyEnhancement")), v.onChange("lobbyEnhancement", gE), NE(v.get("customProfileBg")), v.onChange("customProfileBg", NE), GE(v.get("customBanner")), v.onChange("customBanner", GE), x1(), v.onChange("customAvatarAssetPaths", x1), Gj(), Ih(), v.onChange("beautifyGlassBlur", Ih), v.onChange("beautifyGlassOpacity", Ih), Hj(), nC(v.get("beautifyNavbarBlur")), v.onChange("beautifyNavbarBlur", nC), Fj(), iC(v.get("beautifyNavbarHideLines")), v.onChange("beautifyNavbarHideLines", iC), dB(), fC(v.get("beautifySummonerNameEffect")), v.onChange("beautifySummonerNameEffect", fC), Mh(), v.onChange("beautifyHomepageBackgroundBlur", Mh), v.onChange("beautifyHomepageBackgroundOpacity", Mh), gC(v.get("beautifyHomepageBackgroundAdjustments")), v.onChange("beautifyHomepageBackgroundAdjustments", gC), s9(), v.onChange("beautifyHomepageBackgroundAssetPath", p2), qC(), v.onChange("beautifyWallpaperMode", qC), Rh(), v.onChange("beautifyWallpaperSceneBlur", Rh), v.onChange("beautifyWallpaperSceneOpacity", Rh), hE(v.get("autoHonor")), v.onChange("autoHonor", hE), TE(v.get("rankDisguise")), v.onChange("rankDisguise", TE), v.onChange("rankQueue", () => {
     v.get("rankDisguise") && im();
   }), v.onChange("rankTier", () => {
     v.get("rankDisguise") && im();
   }), v.onChange("rankDivision", () => {
     v.get("rankDisguise") && im();
-  }), bE(v.get("autoLockChampion")), v.onChange("autoLockChampion", bE), dh(v.get("autoBanChampion")), v.onChange("autoBanChampion", dh), v.onChange("autoBanChampionIds", () => dh(v.get("autoBanChampion"))), D1(v.get("balanceBuffTooltip")), v.onChange("balanceBuffTooltip", D1), O1(v.get("champSelectQuitButton")), v.onChange("champSelectQuitButton", O1), zE(v.get("gameAnalysisPopup")), v.onChange("gameAnalysisPopup", zE), Ud(v.get("autoReturnToLobby")), v.onChange("autoReturnToLobby", Ud), v.onChange("autoReturnMode", () => {
+  }), vE(v.get("autoLockChampion")), v.onChange("autoLockChampion", vE), dh(v.get("autoBanChampion")), v.onChange("autoBanChampion", dh), v.onChange("autoBanChampionIds", () => dh(v.get("autoBanChampion"))), j1(v.get("balanceBuffTooltip")), v.onChange("balanceBuffTooltip", j1), L1(v.get("champSelectQuitButton")), v.onChange("champSelectQuitButton", L1), PE(v.get("gameAnalysisPopup")), v.onChange("gameAnalysisPopup", PE), Ud(v.get("autoReturnToLobby")), v.onChange("autoReturnToLobby", Ud), v.onChange("autoReturnMode", () => {
     v.get("autoReturnToLobby") && (Ud(!1), Ud(!0));
-  }), CC(v.get("unlockAvailability")), v.onChange("unlockAvailability", CC), wC(v.get("hideTFT")), v.onChange("hideTFT", wC), NC(v.get("hideClassicMode")), v.onChange("hideClassicMode", NC), RC(v.get("hideRightNavText")), v.onChange("hideRightNavText", RC), F1(v.get("hideEsportsPopup")), v.onChange("hideEsportsPopup", F1), pC(v.get("gameModeFilter")), v.onChange("gameModeFilter", pC), yC(v.get("quickLobbyMode")), v.onChange("quickLobbyMode", yC);
+  }), TC(v.get("unlockAvailability")), v.onChange("unlockAvailability", TC), kC(v.get("hideTFT")), v.onChange("hideTFT", kC), NC(v.get("hideClassicMode")), v.onChange("hideClassicMode", NC), RC(v.get("hideRightNavText")), v.onChange("hideRightNavText", RC), Q1(v.get("hideEsportsPopup")), v.onChange("hideEsportsPopup", Q1), hC(v.get("gameModeFilter")), v.onChange("gameModeFilter", hC), bC(v.get("quickLobbyMode")), v.onChange("quickLobbyMode", bC);
   const n = v.get("windowEffect");
   n && n !== "none" && (Effect.apply(n, { color: "#0006" }), b.info("Restored window effect: %s", n)), b.info("Features initialized ✓");
 }
@@ -24649,14 +24651,14 @@ const KC = {
   BRONZE: "#cd7f32",
   IRON: "#7e7e7e",
   UNRANKED: "#5c5b57"
-}, e0 = ["#e8a424", "#4a9eff", "#5bbd72", "#e74c3c", "#c084fc"], l9 = [
+}, t0 = ["#e8a424", "#4a9eff", "#5bbd72", "#e74c3c", "#c084fc"], l9 = [
   "rgba(232, 164, 36, 0.15)",
   "rgba(74, 158, 255, 0.15)",
   "rgba(91, 189, 114, 0.15)",
   "rgba(231, 76, 60, 0.15)",
   "rgba(192, 132, 252, 0.15)"
-], VC = 1e4, Mh = 15e3, o9 = 45e3;
-function t0({ open: t, onClose: n, mockData: i }) {
+], VC = 1e4, Dh = 15e3, o9 = 45e3;
+function a0({ open: t, onClose: n, mockData: i }) {
   const { t: l } = Et(), [r, m] = C.useState([]), [f, g] = C.useState([]), [h, y] = C.useState(null), [A, T] = C.useState(!1), [E, j] = C.useState(""), [R, q] = C.useState(/* @__PURE__ */ new Map()), P = C.useRef(0), ae = C.useCallback(async () => {
     const F = ++P.current;
     if (T(!0), j(""), m([]), g([]), y(null), q(/* @__PURE__ */ new Map()), i) {
@@ -24688,7 +24690,7 @@ function t0({ open: t, onClose: n, mockData: i }) {
       let ge = 0;
       ne.forEach((ue, Ne) => {
         if (ue.length >= 2) {
-          const qe = e0[ge % e0.length];
+          const qe = t0[ge % t0.length];
           ge++;
           const je = String.fromCharCode(65 + (ge - 1) % 26);
           for (const mt of ue)
@@ -24728,13 +24730,13 @@ function t0({ open: t, onClose: n, mockData: i }) {
         };
         try {
           const [zt, Ot, xt] = await Promise.all([
-            zl(x.getSummonerByPuuid(Ne.puuid), Mh, `getSummonerByPuuid(${Ne.puuid})`).catch(() => null),
-            zl(x.getRankedStats(Ne.puuid), Mh, `getRankedStats(${Ne.puuid})`).catch(() => null),
+            zl(x.getSummonerByPuuid(Ne.puuid), Dh, `getSummonerByPuuid(${Ne.puuid})`).catch(() => null),
+            zl(x.getRankedStats(Ne.puuid), Dh, `getRankedStats(${Ne.puuid})`).catch(() => null),
             zl(x.getSgpMatchHistory(Ne.puuid, {
               startIndex: 0,
               count: v.get("gameAnalysisFetchCount") || 50,
               tag: W || void 0
-            }), Mh, `getSgpMatchHistory(${Ne.puuid})`).catch(() => null)
+            }), Dh, `getSgpMatchHistory(${Ne.puuid})`).catch(() => null)
           ]), la = zt != null && zt.gameName ? `${zt.gameName} #${zt.tagLine}` : l("common.unknown");
           let Lt = l("gameAnalysis.unranked"), Ia = em.UNRANKED;
           const ta = ["IRON", "BRONZE", "SILVER", "GOLD", "PLATINUM", "EMERALD", "DIAMOND", "MASTER", "GRANDMASTER", "CHALLENGER"], ya = { IV: 1, III: 2, II: 3, I: 4 };
@@ -24760,7 +24762,7 @@ function t0({ open: t, onClose: n, mockData: i }) {
           }
           if (!xt || !((mt = xt.games) != null && mt.length))
             return { ...je, summonerName: la, rankText: Lt, rankColor: Ia, rating: "" };
-          const aa = T0(xt.games, Oe);
+          const aa = w0(xt.games, Oe);
           let it = 0, oa = 0, I = 0, z = 0, se = 0;
           const pe = [];
           for (const ce of aa) {
@@ -24878,12 +24880,12 @@ function t0({ open: t, onClose: n, mockData: i }) {
     ] })
   ] }) });
 }
-function Dh(t, n) {
+function jh(t, n) {
   const i = String(t);
   return n ? /* @__PURE__ */ c.jsx("span", { style: { color: "#ff4444" }, children: i }) : i;
 }
 function FC({ player: t, isRed: n, queueId: i }) {
-  const { t: l } = Et(), r = t.winRate, m = r != null ? r >= 70 ? "#e8a424" : r >= 50 ? "#5bbd72" : r >= 30 ? "#e84057" : "#9b59b6" : "#5c5b57", f = r != null ? r >= 70 ? "#e8a424" : r >= 50 ? "#5bbd72" : r >= 30 ? "#e84057" : "#9b59b6" : "#3c2e16", g = t.kdaNum >= 99 ? "Perfect" : t.kdaNum.toFixed(1), h = t.kdaNum >= 3 ? "#5bbd72" : "#e74c3c", y = t.premadeGroup, A = y ? y.charCodeAt(0) - 65 : -1, T = A >= 0 ? e0[A] ?? "#c8aa6e" : void 0, E = A >= 0 ? l9[A] ?? void 0 : void 0, j = () => {
+  const { t: l } = Et(), r = t.winRate, m = r != null ? r >= 70 ? "#e8a424" : r >= 50 ? "#5bbd72" : r >= 30 ? "#e84057" : "#9b59b6" : "#5c5b57", f = r != null ? r >= 70 ? "#e8a424" : r >= 50 ? "#5bbd72" : r >= 30 ? "#e84057" : "#9b59b6" : "#3c2e16", g = t.kdaNum >= 99 ? "Perfect" : t.kdaNum.toFixed(1), h = t.kdaNum >= 3 ? "#5bbd72" : "#e74c3c", y = t.premadeGroup, A = y ? y.charCodeAt(0) - 65 : -1, T = A >= 0 ? t0[A] ?? "#c8aa6e" : void 0, E = A >= 0 ? l9[A] ?? void 0 : void 0, j = () => {
     t.puuid && r9(t.puuid, t.summonerName || "???", i);
   };
   return /* @__PURE__ */ c.jsxs(
@@ -24939,11 +24941,11 @@ function FC({ player: t, isRed: n, queueId: i }) {
         t.recentGames.length > 0 ? /* @__PURE__ */ c.jsx("div", { className: "sga-recent", children: t.recentGames.map((R, q) => /* @__PURE__ */ c.jsxs("div", { className: `sga-recent-game ${R.win ? "sga-recent-win" : "sga-recent-loss"}`, children: [
           /* @__PURE__ */ c.jsx("img", { className: "sga-recent-champ", src: Em(R.championId), alt: "" }),
           /* @__PURE__ */ c.jsxs("span", { className: "sga-recent-kda", children: [
-            Dh(R.kills, R.kills >= R.deaths && R.kills >= R.assists),
+            jh(R.kills, R.kills >= R.deaths && R.kills >= R.assists),
             /* @__PURE__ */ c.jsx("span", { className: "sga-kda-slash", children: "/" }),
-            Dh(R.deaths, R.deaths >= R.kills && R.deaths >= R.assists),
+            jh(R.deaths, R.deaths >= R.kills && R.deaths >= R.assists),
             /* @__PURE__ */ c.jsx("span", { className: "sga-kda-slash", children: "/" }),
-            Dh(R.assists, R.assists >= R.kills && R.assists >= R.deaths)
+            jh(R.assists, R.assists >= R.kills && R.assists >= R.deaths)
           ] })
         ] }, q)) }) : null
       ]
@@ -25672,7 +25674,7 @@ ${((se = z.error) == null ? void 0 : se.message) ?? "未知错误"}`);
           if (I)
             try {
               const z = await it();
-              await $E(I, z), i(`✅ 已拉起 OP.GG 配装推荐面板
+              await eC(I, z), i(`✅ 已拉起 OP.GG 配装推荐面板
 championId=${z} · KIWI · queueId=3100`);
             } catch (z) {
               i(`❌ 拉起 OP.GG 配装推荐面板失败
@@ -25684,7 +25686,7 @@ ${z instanceof Error ? z.message : String(z)}`);
           if (I)
             try {
               const z = await it();
-              await $E(I, z, {
+              await eC(I, z, {
                 queueId: 420,
                 gameMode: "CLASSIC",
                 position: "mid"
@@ -25752,7 +25754,7 @@ ${z instanceof Error ? z.message : String(z)}`);
               value: F,
               onChange: (I) => {
                 L(I);
-                const z = zh(I);
+                const z = Ph(I);
                 _(z), re(z.length > 0);
               },
               placeholder: t("debug.placeholder.champion")
@@ -25972,7 +25974,7 @@ ${z instanceof Error ? z.message : String(z)}`);
       }, children: t("common.reset") }) })
     ] }),
     n && /* @__PURE__ */ c.jsx("div", { className: "sona-debug-output", children: /* @__PURE__ */ c.jsx("pre", { children: n }) }),
-    /* @__PURE__ */ c.jsx(t0, { open: Ye, onClose: () => Pe(!1), mockData: u9 })
+    /* @__PURE__ */ c.jsx(a0, { open: Ye, onClose: () => Pe(!1), mockData: u9 })
   ] });
 }
 const u9 = {
@@ -26266,7 +26268,7 @@ function d9(t) {
 }
 function m9() {
   const { t } = Et(), [n, i] = C.useState(() => Zn()), l = n.info;
-  C.useEffect(() => h0(i), []);
+  C.useEffect(() => y0(i), []);
   const r = (m) => {
     m && window.open(m, "_blank");
   };
@@ -26298,7 +26300,7 @@ function m9() {
     ] }) : /* @__PURE__ */ c.jsxs("div", { className: "sona-update-empty", children: [
       /* @__PURE__ */ c.jsx("p", { children: n.status === "checking" ? t("update.checking") : n.status === "error" ? t("update.checkFailed", { error: n.error ?? "" }) : t("update.none") }),
       /* @__PURE__ */ c.jsx($, { onClick: () => {
-        y0();
+        b0();
       }, children: t("update.recheck") })
     ] })
   ] });
@@ -26324,7 +26326,7 @@ function h9({ pageId: t }) {
     case "update":
       return /* @__PURE__ */ c.jsx(m9, {});
     case "home":
-      return /* @__PURE__ */ c.jsx(YA, {});
+      return /* @__PURE__ */ c.jsx(JA, {});
     case "tools":
       return /* @__PURE__ */ c.jsx(MI, {});
     case "rewards":
@@ -26338,7 +26340,7 @@ function h9({ pageId: t }) {
     case "debug":
       return /* @__PURE__ */ c.jsx(c9, {});
     default:
-      return /* @__PURE__ */ c.jsx(YA, {});
+      return /* @__PURE__ */ c.jsx(JA, {});
   }
 }
 function y9() {
@@ -26349,7 +26351,7 @@ function y9() {
     b.debug("Modal visibility changed: %s (root in DOM: %s)", String(R), String(q)), i(R), R && Zn().status === "available" && r("update");
   }), []), C.useEffect(() => v.onChange("developerMode", (R) => {
     h(R), !R && l === "debug" && r("home");
-  }), [l]), C.useEffect(() => h0((R) => {
+  }), [l]), C.useEffect(() => y0((R) => {
     A(R), R.status !== "available" && l === "update" && r("home");
   }), [l]);
   const T = C.useMemo(() => {
@@ -26591,7 +26593,7 @@ function k9() {
     })
   });
 }
-function ob() {
+function rb() {
   return window.__SONA_XHR_HOOK_STATE__ || (window.__SONA_XHR_HOOK_STATE__ = {
     installed: !1,
     originalOpen: XMLHttpRequest.prototype.open,
@@ -26602,17 +26604,17 @@ function ob() {
   }), window.__SONA_XHR_HOOK_STATE__;
 }
 function x9(t) {
-  const n = ob();
+  const n = rb();
   I9();
   const i = n.rules.findIndex((l) => l.id === t.id);
   return i >= 0 ? n.rules[i] = t : n.rules.push(t), () => N9(t.id);
 }
 function N9(t) {
-  const n = ob(), i = n.rules.findIndex((l) => l.id === t);
+  const n = rb(), i = n.rules.findIndex((l) => l.id === t);
   i >= 0 && n.rules.splice(i, 1);
 }
 function I9() {
-  const t = ob();
+  const t = rb();
   t.installed || (XMLHttpRequest.prototype.open = function(i, l, r = !0) {
     const m = {
       method: i.toUpperCase(),
@@ -26664,7 +26666,7 @@ function j9(t) {
 }
 function B9(t, n) {
   const i = () => {
-    gn(t, "readyState", XMLHttpRequest.DONE), gn(t, "status", 0), gn(t, "statusText", ""), gn(t, "responseURL", n.url), gn(t, "response", ""), gn(t, "responseText", ""), jh(t, "readystatechange"), jh(t, "error"), jh(t, "loadend");
+    gn(t, "readyState", XMLHttpRequest.DONE), gn(t, "status", 0), gn(t, "statusText", ""), gn(t, "responseURL", n.url), gn(t, "response", ""), gn(t, "responseText", ""), Bh(t, "readystatechange"), Bh(t, "error"), Bh(t, "loadend");
   };
   typeof queueMicrotask == "function" ? queueMicrotask(i) : window.setTimeout(i, 0);
 }
@@ -26688,7 +26690,7 @@ function gn(t, n, i) {
   } catch {
   }
 }
-function jh(t, n) {
+function Bh(t, n) {
   try {
     const i = n === "error" || n === "loadend" ? new ProgressEvent(n, { lengthComputable: !1, loaded: 0, total: 0 }) : new Event(n);
     t.dispatchEvent(i);
@@ -26714,7 +26716,7 @@ const G9 = [
 function z9() {
   JC || (JC = !0, G9.forEach(x9));
 }
-const P9 = "Sona", H9 = "1.11.0", WC = "sona-root", b = v9({
+const P9 = "Sona", H9 = "1.11.2", WC = "sona-root", b = v9({
   name: P9,
   version: H9
 });
@@ -26738,7 +26740,7 @@ function X9(t) {
   b2 = t, BI(import.meta.url, t), z9(), x.bindContext(t), T9(t), k9(), b.printBanner();
 }
 function Z9() {
-  b.info("Plugin loading..."), vO(), i9(), lO(), oI(), F9(), y0();
+  b.info("Plugin loading..."), vO(), i9(), lO(), oI(), F9(), b0();
 }
 function Y9() {
   return b2;
