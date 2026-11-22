@@ -36,8 +36,8 @@ const BLOCKED_KEY = 'sona-shell:blocked'
 
 /** 同一热更新版本连续这么多次没能完成启动，就拉黑并回退到内置版本。 */
 const MAX_FAILED_BOOTS = 2
-/** 启动后延迟检查更新，避免和客户端启动抢网络。 */
-const UPDATE_CHECK_DELAY_MS = 15_000
+/** 启动后延迟检查更新：清单只有约 100 字节，稍微错开客户端启动的请求高峰即可。 */
+const UPDATE_CHECK_DELAY_MS = 5_000
 const MANIFEST_TIMEOUT_MS = 10_000
 const CORE_DOWNLOAD_TIMEOUT_MS = 60_000
 const LOG_PREFIX = '[Sona][Shell]'
@@ -113,7 +113,7 @@ export function load() {
 /**
  * 在 DevTools 控制台使用：window.__SONA_SHELL__
  * - status()：查看当前运行版本、保存的版本、启动记录和黑名单
- * - checkForUpdate()：立即执行一次更新检查（不用等启动后 15 秒）
+ * - checkForUpdate()：立即执行一次更新检查（不用等启动后的自动检查）
  * - reset()：清除热更新保存的本体、启动记录和黑名单，下次启动回到内置版本
  */
 const shellDebugApi = {
