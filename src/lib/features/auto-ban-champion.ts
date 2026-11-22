@@ -58,7 +58,7 @@ function collectUnavailableBanIds(session: ChampSelectSession): Set<number> {
   return unavailable
 }
 
-async function resolveTargetChampionId(session: ChampSelectSession): Promise<number | null> {
+async function resolveTargetChampionId(session: ChampSelectSession, banAction: ChampSelectAction): Promise<number | null> {
   const championIds = getConfiguredChampionIds()
   if (championIds.length === 0) return null
 
@@ -73,6 +73,10 @@ async function resolveTargetChampionId(session: ChampSelectSession): Promise<num
 
   return championIds.find((id) => {
     if (unavailableIds.has(id)) return false
+    // 自己这个 Ban action 当前悬停的英雄会被客户端算进 disabled / 不可 Ban 列表里。
+    // 之前提交失败后悬停会留在目标英雄上，导致目标被误判为不可 Ban，一直等到玩家
+    // 手动点别的英雄把悬停换走才会继续。自己的悬停不应阻止自己 Ban 它。
+    if (id === banAction.championId) return true
     if (disabledIds?.has(id)) return false
     if (bannableIds && !bannableIds.has(id)) return false
     return true
@@ -88,6 +92,10 @@ async function resolveTargetChampionId(session: ChampSelectSession): Promise<num
  * 否则要等玩家点击英雄产生新的动作状态后才会开始 Ban。
  */
 function isLocalBanTurn(session: ChampSelectSession, action: ChampSelectAction): boolean {
+  // 排位等队列在 Ban 之前有「预选意向」(PLANNING) 阶段：服务端此时的当前动作组已经是
+  // Ban 组，但提交 Ban 会被拒绝（UPDATE_ACTION_FAILURE）。自定义征召没有这个阶段，
+  // 所以以前只有匹配/排位会出问题。
+  if (session.timer.phase === 'PLANNING') return false
   if (action.isInProgress) return true
   if (session.timer.phase !== 'BAN_PICK') return false
 
@@ -162,6 +170,12 @@ async function submitBanAction(action: ChampSelectAction, championId: number): P
 
 let autoBanRunToken = 0
 let autoBanRunPromise: Promise<void> | null = null
+/** 已经处理完（Ban 完成 / 本模式无需 Ban）的对局，避免每次选人事件都重新启动一轮检测。 */
+let settledGameId = 0
+
+function markSettled(session: ChampSelectSession) {
+  if (session.gameId > 0) settledGameId = session.gameId
+}
 
 async function tryAutoBanChampion(runToken: number, reason: string) {
   if (getConfiguredChampionIds().length === 0) {
@@ -191,17 +205,20 @@ async function tryAutoBanChampion(runToken: number, reason: string) {
       if (!myBanAction) {
         if (myBanActions.some((action) => action.completed)) {
           logger.info('[AutoBan] 本局 Ban action 已完成，无需重复处理')
+          markSettled(session)
           return
         }
 
         const queue = getQueue(session.queueId)
         if (queue?.gameTypeConfig.maxAllowableBans === 0 || session.benchEnabled) {
           logger.info('[AutoBan] 当前模式无需禁用英雄，跳过')
+          markSettled(session)
           return
         }
 
         if (session.timer.phase === 'FINALIZATION' || session.timer.phase === 'GAME_STARTING') {
           logger.info('[AutoBan] 选人已进入 %s，未发现本地 Ban action，停止等待', session.timer.phase)
+          markSettled(session)
           return
         }
 
@@ -225,7 +242,7 @@ async function tryAutoBanChampion(runToken: number, reason: string) {
         continue
       }
 
-      const championId = await resolveTargetChampionId(session)
+      const championId = await resolveTargetChampionId(session, myBanAction)
       if (!championId) {
         // 可 Ban / 禁用英雄列表在阶段切换瞬间也可能尚未初始化，继续回读，
         // 避免必须手动点击任意英雄后才出现可用目标。
@@ -246,6 +263,7 @@ async function tryAutoBanChampion(runToken: number, reason: string) {
       if (await submitBanAction(myBanAction, championId)) {
         logger.info('[AutoBan] 自动 Ban 成功 ✓')
         void notifyAutoBanSuccess(championId)
+        markSettled(session)
         return
       } else {
         logger.warn('[AutoBan] 本次提交未完成，将等待下一次会话更新重试')
@@ -276,8 +294,9 @@ function stopAutoBanRun() {
   autoBanRunPromise = null
 }
 
-function startAutoBanRun(reason: string) {
+function startAutoBanRun(reason: string, gameId = 0) {
   if (!store.get('autoBanChampion') || autoBanRunPromise) return
+  if (gameId > 0 && gameId === settledGameId) return
 
   const runToken = ++autoBanRunToken
   const task = tryAutoBanChampion(runToken, reason)
@@ -302,6 +321,7 @@ export function updateAutoBanChampion(enabled: boolean) {
       if (phase === 'ChampSelect') {
         startAutoBanRun('gameflow-phase')
       } else {
+        settledGameId = 0
         stopAutoBanRun()
       }
     })
@@ -310,7 +330,7 @@ export function updateAutoBanChampion(enabled: boolean) {
         stopAutoBanRun()
         return
       }
-      startAutoBanRun('champ-select-session')
+      startAutoBanRun('champ-select-session', (event.data as ChampSelectSession | null)?.gameId ?? 0)
     })
     probeCurrentAutoBanPhase('enable-probe')
     logger.info('Auto ban champion enabled ✓')
