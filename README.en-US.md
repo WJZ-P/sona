@@ -169,7 +169,7 @@ Sona focuses on practical quality-of-life improvements: champion select tools, m
 | 🎁 | **Battle Pass Rewards** | Review pending choice rewards and claim only the items you select, or claim everything in one click. |
 | 🪟 | **Window Effects** | Blur-behind, acrylic, unified, mica (Win11), and transparent window effects. |
 | ✨ | **Global Particles** | Adds star-like particles to the client background. |
-| 🔔 | **Update Checker** | Checks releases on startup and lets you read the notes, open the release, or skip a version. |
+| 🔔 | **Auto Update** | Checks for a new version in the background after startup and downloads it automatically; restart the client with Ctrl+Enter to apply. Broken versions roll back automatically. Can be turned off in Settings. |
 | 🔧 | **Debug Panel** | LCU, chat, replay, builds, status-payload inspection, and mock game-analysis tools for advanced users. |
 
 </details>
@@ -276,7 +276,7 @@ Sona focuses on practical quality-of-life improvements: champion select tools, m
 1. Install Pengu Loader from the [Pengu Loader releases](https://github.com/PenguLoader/PenguLoader), start it, and make sure it shows `ready`.
 2. Download the latest `sona-vX.Y.Z.zip` from this repository's [Releases](https://github.com/WJZ-P/sona/releases) page. Do not use the source-code archive as a plugin package.
 3. In Pengu Loader, open the Plugins tab and click "Open plugins folder".
-4. Extract the `sona` folder into the plugins folder. It should contain `index.js`, `index.css`, and an `assets` folder.
+4. Extract the `sona` folder into the plugins folder. It should contain `index.js` and an `assets` folder. Starting with v1.12.0, new versions are downloaded automatically, so you only need to install once.
 5. Click "Refresh" in Pengu Loader, make sure `sona` is checked, and restart the League client.
 
 > 💡 **Upgrading**: extract the new package over the existing folder. **Do not delete the whole `sona` folder first** — custom wallpapers and avatars you placed in `assets` would be lost. Settings are stored in Pengu Loader's DataStore and survive upgrades. Sona also checks for new releases on startup.
@@ -357,7 +357,8 @@ npm run build
 ```text
 sona/
 ├── src/
-│   ├── index.tsx                      # Plugin entry (init / load lifecycle)
+│   ├── shell/                         # Hot-update shell: picks / runs the core, downloads updates, rolls back
+│   ├── index.tsx                      # Core entry (init / load lifecycle)
 │   ├── App.tsx                        # Main app (sidebar + page routing)
 │   ├── i18n/                          # Lightweight i18n (zh / en / auto)
 │   ├── data/
@@ -379,6 +380,7 @@ sona/
 │   │   ├── champ-select-puuid.ts      # PUUID recovery in anonymous champ select
 │   │   ├── image-hosting-service.ts   # Image hosting for custom avatars
 │   │   ├── update-checker.ts          # Release update checker
+│   │   ├── shell-env.ts / core-style.ts # Runtime env and styles for the hot-updated core
 │   │   ├── plugin-resolver.ts         # Plugin asset path resolution
 │   │   ├── assets.ts                  # Game asset mapping (items / spells / champions / runes / queues / maps)
 │   │   ├── modal.ts                   # Panel visibility + hotkey

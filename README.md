@@ -188,7 +188,7 @@
 | 🎁 | **通行证奖励领取** | 展示所有待选择奖励，可按奖励规则勾选领取，也可「一键领取」全部 |
 | 🪟 | **窗口特效** | 毛玻璃、亚克力、混合、云母（Win11）、透明等窗口视觉效果 |
 | ✨ | **全局粒子美化** | 为客户端添加星光粒子背景效果 |
-| 🔔 | **版本更新检查** | 启动时检查新版本，可查看发布说明、前往 Release 或暂时跳过该版本 |
+| 🔔 | **自动热更新** | 启动后在后台检查新版本，有新版本自动下载，按 Ctrl+Enter 重启客户端即可生效；新版本出错会自动回退，可在设置中关闭 |
 | 🔧 | **开发者调试面板** | 完整的 LCU API 调试工具，含战绩、聊天、回放、配装、签名解析和对局分析模拟等 |
 
 </details>
@@ -317,7 +317,7 @@
 <img src="markdown/pengu1.png" alt="Pengu Loader" width="70%">
 </p>
 
-2. 从本项目的 [Releases](https://github.com/WJZ-P/sona/releases) 下载最新的 `sona-vX.Y.Z.zip`（**不要下载项目源码使用**），解压得到 `sona` 文件夹。文件夹里应该有 `index.js`、`index.css` 和 `assets` 文件夹。
+2. 从本项目的 [Releases](https://github.com/WJZ-P/sona/releases) 下载最新的 `sona-vX.Y.Z.zip`（**不要下载项目源码使用**），解压得到 `sona` 文件夹。文件夹里应该有 `index.js` 和 `assets` 文件夹。从 v1.12.0 起支持热更新，之后的新版本会自动下载，不用再重复安装。
 
 3. 在 Pengu Loader 中点击上方的 Plugins，再点右下角「打开插件目录」，把 `sona` 文件夹整个拖进去（Loader 不支持直接拖入文件）。
 
@@ -415,7 +415,8 @@ flowchart TD
 ```
 sona/
 ├── src/
-│   ├── index.tsx                      # 插件入口（init / load 生命周期）
+│   ├── shell/                         # 热更新壳：选择 / 执行本体、后台下载新版本、崩溃回滚
+│   ├── index.tsx                      # 本体入口（init / load 生命周期）
 │   ├── App.tsx                        # 主应用（侧边栏 + 页面路由）
 │   ├── i18n/                          # 轻量多语言（中 / 英 / 跟随客户端）
 │   ├── data/
@@ -437,6 +438,7 @@ sona/
 │   │   ├── champ-select-puuid.ts      # 匿名选人模式的 PUUID 还原
 │   │   ├── image-hosting-service.ts   # 自定义头像图床上传
 │   │   ├── update-checker.ts          # 版本更新检查
+│   │   ├── shell-env.ts / core-style.ts # 热更新本体的运行环境与样式注入
 │   │   ├── plugin-resolver.ts         # 插件资源路径解析
 │   │   ├── assets.ts                  # 游戏资源映射（装备 / 技能 / 英雄 / 符文 / 队列 / 地图）
 │   │   ├── modal.ts                   # 面板显隐 + 快捷键
