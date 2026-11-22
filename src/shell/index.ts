@@ -37,7 +37,7 @@ const BLOCKED_KEY = 'sona-shell:blocked'
 /** 同一热更新版本连续这么多次没能完成启动，就拉黑并回退到内置版本。 */
 const MAX_FAILED_BOOTS = 2
 /** 启动后延迟检查更新：清单只有约 100 字节，稍微错开客户端启动的请求高峰即可。 */
-const UPDATE_CHECK_DELAY_MS = 5_000
+const UPDATE_CHECK_DELAY_MS = 3_000
 const MANIFEST_TIMEOUT_MS = 10_000
 const CORE_DOWNLOAD_TIMEOUT_MS = 60_000
 const LOG_PREFIX = '[Sona][Shell]'
