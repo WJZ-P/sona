@@ -111,6 +111,32 @@ export interface ChampionBalance {
 }
 const championBalanceMap = new Map<number, ChampionBalance>()
 
+interface ChampionBalanceMeta {
+  source?: string
+  sourceUrl?: string
+  updatedAt?: string
+  sha1?: string
+  championCount?: number
+}
+
+interface ChampionBalanceData {
+  _meta?: ChampionBalanceMeta
+  champions: Record<string, ChampionBalance>
+}
+
+/** 当前生效的平衡数据元信息；CDN 拉取成功后会被替换。 */
+let championBalanceMeta: ChampionBalanceMeta & { loadedFrom?: 'bundled' | 'cdn' } = {
+  ...(balanceData as ChampionBalanceData)._meta,
+  loadedFrom: 'bundled',
+}
+
+/**
+ * GitHub Action（update-balance.yml）解析 Wiki 后提交到 main 的同一份 JSON，经 jsDelivr 分发。
+ * jsDelivr 边缘缓存 12 小时，Action 推送后会主动 purge。
+ */
+const CHAMPION_BALANCE_CDN_URL = 'https://cdn.jsdelivr.net/gh/WJZ-P/sona@main/src/data/champion-balance.json'
+const CHAMPION_BALANCE_CDN_TIMEOUT_MS = 10_000
+
 let initialized = false
 
 // ==================== 当前账号 puuid ====================
@@ -141,8 +167,9 @@ export async function initAssets() {
     logger.warn('[Assets] 获取 puuid 失败:', err)
   }
 
-  // 加载本地英雄平衡数据（构建期嵌入，无网络请求）
+  // 先加载构建期嵌入的平衡数据兜底，再异步从 jsDelivr 拉取最新版本覆盖
   loadChampionBalance()
+  void refreshChampionBalanceFromCdn()
 
   // 每个资源独立 catch，失败不影响其他；最多重试 3 次（每次间隔 3 秒）
   await tryInit(0)
@@ -158,17 +185,63 @@ export async function initAssets() {
  */
 function loadChampionBalance() {
   try {
-    const champions = balanceData.champions as Record<string, ChampionBalance>
-    for (const [id, balance] of Object.entries(champions)) {
-      championBalanceMap.set(Number(id), balance)
-    }
+    applyChampionBalanceData(balanceData as ChampionBalanceData)
     logger.info(
-      '[Assets] 英雄平衡数据加载完成 → %d 个英雄 (数据更新于 %s)',
+      '[Assets] 内置英雄平衡数据加载完成 → %d 个英雄 (数据更新于 %s)',
       championBalanceMap.size,
-      balanceData._meta?.updatedAt ?? '未知',
+      championBalanceMeta.updatedAt ?? '未知',
     )
   } catch (err) {
     logger.error('[Assets] 英雄平衡数据加载失败:', err)
+  }
+}
+
+function applyChampionBalanceData(data: ChampionBalanceData) {
+  championBalanceMap.clear()
+  for (const [id, balance] of Object.entries(data.champions)) {
+    championBalanceMap.set(Number(id), balance)
+  }
+}
+
+function isValidChampionBalanceData(data: unknown): data is ChampionBalanceData {
+  if (!data || typeof data !== 'object') return false
+  const champions = (data as ChampionBalanceData).champions
+  if (!champions || typeof champions !== 'object') return false
+
+  const entries = Object.values(champions)
+  // 防止拿到空表或结构错乱的数据把内置兜底整个覆盖掉
+  return entries.length >= 100 && entries.every((item) => {
+    return Boolean(item) && typeof item.id === 'number' && typeof item.stats === 'object'
+  })
+}
+
+/**
+ * 每次客户端启动时从 jsDelivr 拉取最新平衡数据；拉到合法数据就直接替换内置数据，
+ * 失败（超时、网络不通、数据不合法）则继续使用内置数据。
+ */
+async function refreshChampionBalanceFromCdn() {
+  const controller = new AbortController()
+  const timer = window.setTimeout(() => controller.abort(), CHAMPION_BALANCE_CDN_TIMEOUT_MS)
+
+  try {
+    // jsDelivr 给浏览器的 max-age 是 7 天，必须绕过 HTTP 缓存才能拿到 Action 刚推送的数据
+    const resp = await fetch(CHAMPION_BALANCE_CDN_URL, { cache: 'no-store', signal: controller.signal })
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`)
+
+    const data: unknown = await resp.json()
+    if (!isValidChampionBalanceData(data)) throw new Error('数据结构不合法')
+
+    applyChampionBalanceData(data)
+    championBalanceMeta = { ...data._meta, loadedFrom: 'cdn' }
+    logger.info(
+      '[Assets] 已从 jsDelivr 更新英雄平衡数据 → %d 个英雄 (数据更新于 %s)',
+      championBalanceMap.size,
+      championBalanceMeta.updatedAt ?? '未知',
+    )
+  } catch (err) {
+    logger.warn('[Assets] jsDelivr 英雄平衡数据拉取失败，继续使用内置数据:', err)
+  } finally {
+    window.clearTimeout(timer)
   }
 }
 
@@ -466,7 +539,7 @@ export function isChampionBalanceReady(): boolean {
 
 /** 获取英雄平衡数据的元信息（数据源、更新时间等） */
 export function getChampionBalanceMeta() {
-  return balanceData._meta
+  return championBalanceMeta
 }
 
 /**
