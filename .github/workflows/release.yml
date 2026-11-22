@@ -38,9 +38,8 @@ jobs:
       - name: Prepare release package
         run: |
           mkdir -p release/sona
-          # 复制构建产物
+          # 复制构建产物（index.js = 壳 + 内置本体，样式已内嵌，不再有 index.css）
           cp dist/index.js release/sona/
-          cp dist/index.css release/sona/
           # 复制 assets（如果存在）
           if [ -d "dist/assets" ]; then
             cp -r dist/assets release/sona/
@@ -82,6 +81,25 @@ jobs:
           echo "$NOTES" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
 
+      - name: Check hot-update files
+        run: |
+          # 热更新依赖仓库里随 tag 提交的 core.js 与 core-manifest.json，这里只做一致性提醒。
+          git show "${GITHUB_SHA}:core-manifest.json" > committed-manifest.json 2>/dev/null || echo '{}' > committed-manifest.json
+          git show "${GITHUB_SHA}:core.js" > committed-core.js 2>/dev/null || : > committed-core.js
+          node -e "
+            const fs = require('fs');
+            const crypto = require('crypto');
+            const manifest = JSON.parse(fs.readFileSync('committed-manifest.json', 'utf8'));
+            const sha = crypto.createHash('sha256').update(fs.readFileSync('committed-core.js')).digest('hex');
+            const problems = [];
+            if (manifest.version !== process.env.TAG_VERSION.replace(/^v/, '')) problems.push('core-manifest.json 版本 ' + manifest.version + ' 与 tag ' + process.env.TAG_VERSION.replace(/^v/, '') + ' 不一致');
+            if (manifest.sha256 !== sha) problems.push('core.js 与 core-manifest.json 的 sha256 不一致');
+            if (problems.length) problems.forEach((p) => console.log('::warning::热更新文件未同步：' + p + '（请先本地 npm run build 再提交打 tag）'));
+            else console.log('热更新文件一致 ✓');
+          "
+        env:
+          TAG_VERSION: ${{ github.ref_name }}
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
@@ -90,3 +108,11 @@ jobs:
           files: sona-${{ github.ref_name }}.zip
           draft: false
           prerelease: false
+
+      # 热更新：清单在 main 上随版本提交，发布后刷新 jsDelivr 缓存，并预热本版本的 core.js。
+      - name: Purge jsDelivr hot-update manifest
+        run: |
+          curl -fsS --retry 3 "https://purge.jsdelivr.net/gh/${{ github.repository }}@main/core-manifest.json" \
+            || echo "::warning::jsDelivr purge 失败，清单最多 12 小时后自动过期"
+          curl -fsS -o /dev/null --retry 3 "https://cdn.jsdelivr.net/gh/${{ github.repository }}@${{ github.ref_name }}/core.js" \
+            || echo "::warning::core.js 预热失败，不影响客户端下载"

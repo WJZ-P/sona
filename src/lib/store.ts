@@ -53,6 +53,8 @@ export interface SonaConfig {
   locale: 'auto' | 'zh-CN' | 'en-US'
   /** 已跳过提醒的 Sona 版本号 */
   skippedUpdateVersion: string | null
+  /** 热更新：后台下载新版本本体，下次启动生效（由壳读取，见 src/shell） */
+  dynamicCoreUpdate: boolean
   /** 窗口视觉特效 */
   windowEffect: string
   /** 英雄选择玩家头像交互（点击队友头像展示历史数据） */
@@ -245,6 +247,7 @@ const DEFAULT_CONFIG: SonaConfig = {
   hideSonaIcon: false,
   locale: 'auto',
   skippedUpdateVersion: null,
+  dynamicCoreUpdate: true,
   windowEffect: 'none',
   champSelectAssist: false,
   champSelectTierBadge: false,

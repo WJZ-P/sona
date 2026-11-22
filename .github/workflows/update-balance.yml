@@ -95,6 +95,23 @@ jobs:
             echo -e "# Changelog\n\n$NEW_BLOCK" > CHANGELOG.md
           fi
 
+      - name: Build plugin
+        if: steps.update.outputs.exit_code == '0'
+        run: |
+          # 热更新从 tag 下的 core.js / core-manifest.json 拉取，自动发版也必须重新构建并提交。
+          # loaderPath 只在构建时临时改成 ./，构建后还原，避免把 CI 用的配置提交上去。
+          cp package.json package.json.bak
+          node -e "
+            const fs = require('fs');
+            const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+            pkg.config.loaderPath = './';
+            fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2));
+          "
+          npx tsc
+          npx vite build
+          mv package.json.bak package.json
+          cp dist/index.js dist/core.js dist/core-manifest.json .
+
       - name: Configure git
         if: steps.update.outputs.exit_code == '0'
         run: |
@@ -105,9 +122,19 @@ jobs:
         if: steps.update.outputs.exit_code == '0'
         run: |
           NEW_VERSION="${{ steps.version.outputs.new_version }}"
-          git add src/data/champion-balance.json package.json CHANGELOG.md
+          git add src/data/champion-balance.json package.json CHANGELOG.md index.js core.js core-manifest.json
           git commit -m "chore: 自动更新英雄平衡数据 (v$NEW_VERSION)"
           git tag "v$NEW_VERSION"
           git push origin HEAD:main
           git push origin "v$NEW_VERSION"
           echo "✓ 已推送 v$NEW_VERSION，release.yml 将自动触发打包发布"
+
+      # 客户端启动时会从 jsDelivr 拉取 main 分支上的这份 JSON；jsDelivr 对分支文件有 12 小时
+      # 边缘缓存，推送后主动 purge，让用户下次启动客户端就能拿到新数据。purge 失败不影响流程。
+      - name: Purge jsDelivr cache
+        if: steps.update.outputs.exit_code == '0'
+        run: |
+          curl -fsS --retry 3 "https://purge.jsdelivr.net/gh/${{ github.repository }}@main/core-manifest.json" \
+            || echo "::warning::jsDelivr 热更新清单 purge 失败，最多 12 小时后自动过期"
+          curl -fsS --retry 3 "https://purge.jsdelivr.net/gh/${{ github.repository }}@main/src/data/champion-balance.json" \
+            || echo "::warning::jsDelivr purge 失败，CDN 最多 12 小时后自动过期"

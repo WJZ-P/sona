@@ -3,6 +3,8 @@ declare const __PLUGIN_VERSION__: string
 import { logger } from '@/index'
 import { lcu } from '@/lib/lcu'
 import { store } from '@/lib/store'
+import { getShellEnv } from '@/lib/shell-env'
+import { MANUAL_UPDATE_REQUIRED_STORE_KEY } from '@/shell/contract'
 
 export interface UpdateInfo {
   currentVersion: string
@@ -150,6 +152,13 @@ export function checkForUpdates(): Promise<UpdateState> {
         store.set('skippedUpdateVersion', null)
       }
 
+      if (isHandledByDynamicUpdate(latestVersion)) {
+        const next: UpdateState = { status: 'latest', info: null, error: '' }
+        setState(next)
+        logger.info('[Update] 新版本 %s 由热更新在后台下载，不再提示手动更新。', latestVersion)
+        return next
+      }
+
       if (!latestVersion || compareVersion(latestVersion, currentVersion) <= 0) {
         const next: UpdateState = { status: 'latest', info: null, error: '' }
         setState(next)
@@ -192,6 +201,16 @@ export function checkForUpdates(): Promise<UpdateState> {
     })
 
   return inFlight
+}
+
+/**
+ * 运行在壳上且开启了热更新时，新版本由壳在后台下载，不需要提示用户手动下载；
+ * 只有新版本要求更高的壳接口（壳写入了 MANUAL_UPDATE_REQUIRED_STORE_KEY）时才照常提示。
+ */
+function isHandledByDynamicUpdate(latestVersion: string): boolean {
+  if (!getShellEnv() || !store.get('dynamicCoreUpdate')) return false
+  const manualVersion = DataStore.get<string>(MANUAL_UPDATE_REQUIRED_STORE_KEY)
+  return !manualVersion || compareVersion(latestVersion, normalizeVersion(manualVersion)) < 0
 }
 
 export function skipUpdateVersion(version: string): UpdateState {

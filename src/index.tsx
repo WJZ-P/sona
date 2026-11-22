@@ -15,6 +15,9 @@ import { installEmberHook } from '@/lib/ember-hook'
 import { registerChromaRules } from '@/lib/features/chroma-unlock'
 import { checkForUpdates } from '@/lib/update-checker'
 import { installAdBlockXhrRules } from '@/lib/xhr'
+import { injectCoreStyle } from '@/lib/core-style'
+import { setShellEnv } from '@/lib/shell-env'
+import type { ShellEnv } from '@/shell/contract'
 import '@/styles/index.css'
 import '@/styles/inject.css'
 import '@/styles/availabilityMenu.css'
@@ -74,9 +77,12 @@ let penguContext: PenguContext | null = null
  * Called before League Client initializes its scripts.
  * Use this for early hooks like RCP interception.
  */
-export function init(context: PenguContext) {
+export function init(context: PenguContext, env?: ShellEnv) {
   penguContext = context
-  initPluginResolver(import.meta.url, context)
+  setShellEnv(env)
+  injectCoreStyle()
+  // 本体由壳执行时 import.meta.url 不是插件目录，必须用壳传入的地址解析插件路径。
+  initPluginResolver(env?.metaUrl ?? import.meta.url, context)
   installAdBlockXhrRules()
   lcu.bindContext(context)
 

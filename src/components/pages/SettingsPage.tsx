@@ -5,8 +5,11 @@ import { SonaSelect } from '@/components/ui/SonaSelect'
 import { SonaButton } from '@/components/ui/SonaButton'
 import { store } from '@/lib/store'
 import { checkForUpdates, clearSkippedUpdateVersion } from '@/lib/update-checker'
+import { getShellEnv } from '@/lib/shell-env'
 import { useI18n, type SonaLocaleSetting } from '@/i18n'
 import '@/styles/SettingsPage.css'
+
+declare const __PLUGIN_VERSION__: string
 
 const hotkeyOptions = [
   { value: 'F1', label: 'F1' },
@@ -23,6 +26,8 @@ export function SettingsPage() {
   const [hideSonaIcon, setHideSonaIcon] = useState(store.get('hideSonaIcon'))
   const [globalParticle, setGlobalParticle] = useState(store.get('globalParticle'))
   const [skippedUpdateVersion, setSkippedUpdateVersion] = useState(store.get('skippedUpdateVersion'))
+  const [dynamicCoreUpdate, setDynamicCoreUpdate] = useState(store.get('dynamicCoreUpdate'))
+  const shellEnv = getShellEnv()
   const localeOptions = [
     { value: 'auto', label: t('settings.language.auto') },
     { value: 'zh-CN', label: t('settings.language.zhCN') },
@@ -36,6 +41,7 @@ export function SettingsPage() {
       store.onChange('hideSonaIcon', setHideSonaIcon),
       store.onChange('globalParticle', setGlobalParticle),
       store.onChange('skippedUpdateVersion', setSkippedUpdateVersion),
+      store.onChange('dynamicCoreUpdate', setDynamicCoreUpdate),
     ]
     return () => unsubs.forEach((fn) => fn())
   }, [])
@@ -81,6 +87,18 @@ export function SettingsPage() {
           <SonaSwitch
             checked={globalParticle}
             onChange={(v) => { setGlobalParticle(v); store.set('globalParticle', v) }}
+          />
+        </SettingCard>
+        <SettingCard
+          title={t('settings.dynamicCoreUpdate.title')}
+          description={t('settings.dynamicCoreUpdate.description', {
+            version: shellEnv?.coreVersion ?? __PLUGIN_VERSION__,
+            source: t(shellEnv ? `settings.dynamicCoreUpdate.source.${shellEnv.coreSource}` : 'settings.dynamicCoreUpdate.source.dev'),
+          })}
+        >
+          <SonaSwitch
+            checked={dynamicCoreUpdate}
+            onChange={(v) => { setDynamicCoreUpdate(v); store.set('dynamicCoreUpdate', v) }}
           />
         </SettingCard>
         {skippedUpdateVersion && (

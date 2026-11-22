@@ -1,2 +1,6 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# 热更新会校验 core.js 的 SHA-256，必须按原样存储，禁止换行转换
+core.js -text
+core-manifest.json -text
