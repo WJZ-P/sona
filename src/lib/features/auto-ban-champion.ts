@@ -58,29 +58,49 @@ function collectUnavailableBanIds(session: ChampSelectSession): Set<number> {
   return unavailable
 }
 
+/** 上一次目标解析失败的原因，变化时才打印，避免轮询刷屏。 */
+let lastUnresolvedReason = ''
+
+/**
+ * 按配置顺序挑出第一个可 Ban 的英雄。
+ *
+ * 判定规则与 League Akari 的 getExpectedBans 一致：只看服务端的可 Ban 列表
+ * （bannable-champion-ids）以及会话里的事实（已被 Ban、被队友预选）。
+ * 不再使用 disabled-champion-ids：它是客户端给英雄格子置灰用的，跟随本地选择状态变化，
+ * Ban 阶段刚开始时会把可 Ban 的英雄也算进去，导致要玩家先点一个英雄刷新状态后才会 Ban。
+ */
 async function resolveTargetChampionId(session: ChampSelectSession, banAction: ChampSelectAction): Promise<number | null> {
   const championIds = getConfiguredChampionIds()
   if (championIds.length === 0) return null
 
-  const [rawBannableIds, disabledIds] = await Promise.all([
-    getOptionalIdSet(() => lcu.getBannableChampionIds()),
-    getOptionalIdSet(() => lcu.getDisabledChampionIds()),
-  ])
-  // Ban action 刚进入 isInProgress 时，这个接口偶尔会短暂返回空数组；空集合
-  // 不应把全部候选都误判为不可 Ban，后续提交仍由 action API 做最终校验。
+  const rawBannableIds = await getOptionalIdSet(() => lcu.getBannableChampionIds())
+  // Ban 阶段刚开始时这个接口偶尔会短暂返回空数组；空集合不应把全部候选都误判为不可 Ban，
+  // 提交时仍由 action API 做最终校验。
   const bannableIds = rawBannableIds && rawBannableIds.size > 0 ? rawBannableIds : null
   const unavailableIds = collectUnavailableBanIds(session)
 
-  return championIds.find((id) => {
-    if (unavailableIds.has(id)) return false
-    // 自己这个 Ban action 当前悬停的英雄会被客户端算进 disabled / 不可 Ban 列表里。
-    // 之前提交失败后悬停会留在目标英雄上，导致目标被误判为不可 Ban，一直等到玩家
-    // 手动点别的英雄把悬停换走才会继续。自己的悬停不应阻止自己 Ban 它。
-    if (id === banAction.championId) return true
-    if (disabledIds?.has(id)) return false
-    if (bannableIds && !bannableIds.has(id)) return false
+  const reasons: string[] = []
+  const target = championIds.find((id) => {
+    // 自己这个 Ban action 当前悬停的英雄不应阻止自己 Ban 它。
+    if (id === banAction.championId && !unavailableIds.has(id)) return true
+    if (unavailableIds.has(id)) {
+      reasons.push(`${id}:已被 Ban 或被队友预选`)
+      return false
+    }
+    if (bannableIds && !bannableIds.has(id)) {
+      reasons.push(`${id}:不在可 Ban 列表(共 ${bannableIds.size} 个)`)
+      return false
+    }
     return true
   }) ?? null
+
+  const reason = target ? '' : reasons.join('，') || '没有候选英雄'
+  if (reason && reason !== lastUnresolvedReason) {
+    // 直接拼进字符串：客户端日志文件只记录格式串，不记录 %s 参数。
+    logger.warn(`[AutoBan] 暂无可 Ban 目标：${reason}`)
+  }
+  lastUnresolvedReason = reason
+  return target
 }
 
 /**
@@ -184,6 +204,7 @@ async function tryAutoBanChampion(runToken: number, reason: string) {
   }
 
   logger.info('[AutoBan] 开始监听本局 Ban action：%s', reason)
+  lastUnresolvedReason = ''
 
   // 选人事件负责及时唤醒，轮询负责兜住丢失的 WS 更新。
   for (let attempt = 0; attempt < AUTO_BAN_MAX_ATTEMPTS; attempt++) {
@@ -244,20 +265,13 @@ async function tryAutoBanChampion(runToken: number, reason: string) {
 
       const championId = await resolveTargetChampionId(session, myBanAction)
       if (!championId) {
-        // 可 Ban / 禁用英雄列表在阶段切换瞬间也可能尚未初始化，继续回读，
-        // 避免必须手动点击任意英雄后才出现可用目标。
-        if (attempt === 0 || attempt % AUTO_BAN_WAIT_LOG_INTERVAL === 0) {
-          logger.warn('[AutoBan] 暂未解析到可 Ban 目标，等待客户端英雄列表就绪')
-        }
+        // 可 Ban 列表在阶段切换瞬间也可能尚未初始化，继续轮询；原因已在 resolveTargetChampionId 中打印。
         await sleep(AUTO_BAN_POLL_INTERVAL_MS)
         continue
       }
 
       logger.info(
-        '[AutoBan] 轮到禁用英雄，目标英雄 ID: %d (actionId: %d, isInProgress: %s)',
-        championId,
-        myBanAction.id,
-        String(myBanAction.isInProgress),
+        `[AutoBan] 轮到禁用英雄，目标英雄 ID: ${championId} (actionId: ${myBanAction.id}, isInProgress: ${myBanAction.isInProgress}, phase: ${session.timer.phase})`,
       )
 
       if (await submitBanAction(myBanAction, championId)) {
